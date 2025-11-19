@@ -1,0 +1,243 @@
+import fs from 'fs/promises';
+import path from 'path';
+import crypto from 'crypto';
+import pdf from 'pdf-parse';
+import { prisma } from '../lib/prisma';
+import { generateEmbeddings } from './embeddings';
+import { logger } from '../utils/logger';
+import { AppError } from '../middleware/errorHandler';
+
+interface ProcessedFile {
+  id: string;
+  fileName: string;
+  fileType: string;
+  fileSize: bigint;
+  content: string;
+  chunks: number;
+}
+
+export async function processUploadedFile(
+  siteId: string,
+  file: Express.Multer.File
+): Promise<ProcessedFile> {
+  try {
+    // Validate file type
+    const allowedTypes = ['application/pdf', 'text/plain'];
+    if (!allowedTypes.includes(file.mimetype)) {
+      throw new AppError(400, 'File type not supported. Only PDF and TXT files are allowed.');
+    }
+
+    // Validate file size (10MB limit)
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+      throw new AppError(400, 'File size too large. Maximum size is 10MB.');
+    }
+
+    // Extract text content based on file type
+    let textContent: string;
+
+    if (file.mimetype === 'application/pdf') {
+      textContent = await extractPDFText(file.buffer);
+    } else if (file.mimetype === 'text/plain') {
+      textContent = file.buffer.toString('utf-8');
+    } else {
+      throw new AppError(400, 'Unsupported file type');
+    }
+
+    // Validate content length
+    if (textContent.length < 10) {
+      throw new AppError(400, 'File content is too short or could not be extracted.');
+    }
+
+    // Create file storage path
+    const fileHash = crypto.createHash('md5').update(file.buffer).digest('hex');
+    const storagePath = await saveFile(file.buffer, file.originalname, fileHash);
+
+    // Save file record to database
+    const knowledgeFile = await prisma.knowledgeFile.create({
+      data: {
+        siteId,
+        fileName: file.originalname,
+        fileType: file.mimetype,
+        fileSize: BigInt(file.size),
+        fileUrl: storagePath,
+        processed: false,
+      },
+    });
+
+    // Generate embeddings for the content
+    // Create a temporary URL entry to leverage existing embedding system
+    const tempUrl = await prisma.siteUrl.create({
+      data: {
+        siteId,
+        url: `file://${knowledgeFile.id}`,
+        title: `File: ${file.originalname}`,
+        content: textContent,
+        contentHash: fileHash,
+        lastCrawledAt: new Date(),
+        isActive: true,
+        isExcluded: false,
+      },
+    });
+
+    // Generate embeddings
+    await generateEmbeddings(tempUrl.id, textContent);
+
+    // Update file as processed
+    await prisma.knowledgeFile.update({
+      where: { id: knowledgeFile.id },
+      data: {
+        processed: true,
+        processedAt: new Date(),
+      },
+    });
+
+    // Get chunk count
+    const embeddings = await prisma.embedding.findMany({
+      where: { siteUrlId: tempUrl.id },
+    });
+
+    logger.info(`Successfully processed file ${file.originalname} with ${embeddings.length} chunks`);
+
+    return {
+      id: knowledgeFile.id,
+      fileName: knowledgeFile.fileName,
+      fileType: knowledgeFile.fileType,
+      fileSize: knowledgeFile.fileSize,
+      content: textContent.substring(0, 1000), // Return first 1000 chars as preview
+      chunks: embeddings.length,
+    };
+  } catch (error) {
+    logger.error('File processing failed:', error);
+    throw error;
+  }
+}
+
+async function extractPDFText(buffer: Buffer): Promise<string> {
+  try {
+    const data = await pdf(buffer);
+
+    if (!data.text || data.text.trim().length === 0) {
+      throw new AppError(400, 'PDF contains no extractable text content.');
+    }
+
+    // Clean up the text
+    const cleanText = data.text
+      .replace(/\s+/g, ' ') // Normalize whitespace
+      .replace(/[^\x20-\x7E\s]/g, '') // Remove non-printable characters
+      .trim();
+
+    if (cleanText.length < 10) {
+      throw new AppError(400, 'PDF text content is too short after processing.');
+    }
+
+    return cleanText;
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    logger.error('PDF extraction failed:', error);
+    throw new AppError(500, 'Failed to extract text from PDF. The file may be corrupted or password-protected.');
+  }
+}
+
+async function saveFile(
+  buffer: Buffer,
+  originalName: string,
+  fileHash: string
+): Promise<string> {
+  try {
+    // Create uploads directory if it doesn't exist
+    const uploadsDir = path.join(process.cwd(), 'uploads');
+    await fs.mkdir(uploadsDir, { recursive: true });
+
+    // Generate unique filename
+    const ext = path.extname(originalName);
+    const fileName = `${fileHash}${ext}`;
+    const filePath = path.join(uploadsDir, fileName);
+
+    // Save file
+    await fs.writeFile(filePath, buffer);
+
+    // Return relative path for storage
+    return `/uploads/${fileName}`;
+  } catch (error) {
+    logger.error('File save failed:', error);
+    throw new AppError(500, 'Failed to save file to storage.');
+  }
+}
+
+export async function deleteKnowledgeFile(fileId: string, siteId: string): Promise<void> {
+  try {
+    // Get file record
+    const file = await prisma.knowledgeFile.findFirst({
+      where: { id: fileId, siteId },
+    });
+
+    if (!file) {
+      throw new AppError(404, 'File not found');
+    }
+
+    // Find associated URL record
+    const tempUrl = await prisma.siteUrl.findFirst({
+      where: {
+        siteId,
+        url: `file://${fileId}`,
+      },
+      include: {
+        embeddings: true,
+      },
+    });
+
+    if (tempUrl) {
+      // Delete embeddings from vector database
+      for (const embedding of tempUrl.embeddings) {
+        // This will be handled by the embeddings service
+      }
+
+      // Delete URL record (will cascade delete embeddings)
+      await prisma.siteUrl.delete({
+        where: { id: tempUrl.id },
+      });
+    }
+
+    // Delete file from storage
+    if (file.fileUrl && file.fileUrl.startsWith('/uploads/')) {
+      const filePath = path.join(process.cwd(), file.fileUrl);
+      try {
+        await fs.unlink(filePath);
+      } catch (error) {
+        logger.warn(`Failed to delete file from storage: ${filePath}`, error);
+      }
+    }
+
+    // Delete file record
+    await prisma.knowledgeFile.delete({
+      where: { id: fileId },
+    });
+
+    logger.info(`Successfully deleted file ${file.fileName} (${fileId})`);
+  } catch (error) {
+    logger.error('File deletion failed:', error);
+    throw error;
+  }
+}
+
+export async function getFileContent(fileId: string, siteId: string): Promise<string> {
+  try {
+    // Find the associated URL record
+    const tempUrl = await prisma.siteUrl.findFirst({
+      where: {
+        siteId,
+        url: `file://${fileId}`,
+      },
+    });
+
+    if (!tempUrl || !tempUrl.content) {
+      throw new AppError(404, 'File content not found');
+    }
+
+    return tempUrl.content;
+  } catch (error) {
+    logger.error('Failed to get file content:', error);
+    throw error;
+  }
+}

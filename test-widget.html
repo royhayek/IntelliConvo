@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Widget Test Page</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .info {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .info h2 {
+            margin-top: 0;
+            color: #555;
+            font-size: 18px;
+        }
+
+        .info p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        code {
+            background: #e8e8e8;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .test-content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .test-content h3 {
+            margin-top: 0;
+        }
+
+        .test-content ul {
+            color: #555;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+    <h1>Chat Widget Test Page</h1>
+
+    <div class="info">
+        <h2>Instructions</h2>
+        <p>
+            This page tests the embedded chat widget. Make sure:
+        </p>
+        <ul>
+            <li>Backend is running on <code>http://localhost:5001</code></li>
+            <li>Widget server is running on <code>http://localhost:8080</code> (run <code>npm run serve</code> in widget folder)</li>
+        </ul>
+    </div>
+
+    <div class="test-content">
+        <h3>Sample Content for Testing</h3>
+        <p>Once the widget loads, try asking questions about your crawled website content to test:</p>
+        <ul>
+            <li>Semantic search (finds relevant content from embeddings)</li>
+            <li>AI response generation (uses GPT-4)</li>
+            <li>Real-time streaming (Socket.io)</li>
+            <li>Conversation persistence (stored in database)</li>
+        </ul>
+    </div>
+
+    <!-- Load the widget script -->
+    <script src="http://localhost:8080/widget.js"></script>
+
+    <!-- Initialize the widget -->
+    <script>
+        intelligentconvo('init', {
+            siteId: '20df7aab-ed46-45ed-ae9e-56f7527eec9b',
+            mode: 'button',
+            position: 'bottom-right',
+            apiUrl: 'http://localhost:5001'
+        });
+    </script>
+</body>
+</html>

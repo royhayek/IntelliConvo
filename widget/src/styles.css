@@ -1,0 +1,633 @@
+/* Intelligentconvo Widget - Modern UI */
+
+/* CSS Variables for theming */
+:root {
+  --ic-primary: #6366f1;
+  --ic-primary-dark: #4f46e5;
+  --ic-primary-light: #818cf8;
+  --ic-bg: #ffffff;
+  --ic-bg-secondary: #f8fafc;
+  --ic-text: #1e293b;
+  --ic-text-secondary: #64748b;
+  --ic-border: #e2e8f0;
+  --ic-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --ic-shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --ic-radius: 16px;
+  --ic-radius-sm: 12px;
+  --ic-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+}
+
+/* Screen reader only class */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Floating Button */
+.intelligentconvo-button {
+  position: fixed;
+  z-index: 999999;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  background: var(--ic-primary);
+  box-shadow: var(--ic-shadow-sm), 0 0 0 0 rgba(99, 102, 241, 0.4);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.intelligentconvo-button:hover {
+  transform: scale(1.05);
+  box-shadow: var(--ic-shadow), 0 0 0 0 rgba(99, 102, 241, 0.4);
+  background: var(--ic-primary-dark);
+}
+
+.intelligentconvo-button:active {
+  transform: scale(0.95);
+}
+
+.intelligentconvo-button.intelligentconvo-bottom-right {
+  bottom: 24px;
+  right: 24px;
+}
+
+.intelligentconvo-button.intelligentconvo-bottom-left {
+  bottom: 24px;
+  left: 24px;
+}
+
+.intelligentconvo-button.intelligentconvo-top-right {
+  top: 24px;
+  right: 24px;
+}
+
+.intelligentconvo-button.intelligentconvo-top-left {
+  top: 24px;
+  left: 24px;
+}
+
+.intelligentconvo-button-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: white;
+}
+
+.intelligentconvo-button-inner svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* Chat Window */
+.intelligentconvo-chat-window {
+  position: fixed;
+  bottom: 96px;
+  right: 24px;
+  width: 400px;
+  height: 600px;
+  background: var(--ic-bg);
+  border-radius: var(--ic-radius);
+  box-shadow: var(--ic-shadow);
+  z-index: 999998;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: var(--ic-font);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Widget Container (embedded mode) */
+.intelligentconvo-widget-container {
+  width: 100%;
+  max-width: 400px;
+  height: 600px;
+  border: 1px solid var(--ic-border);
+  border-radius: var(--ic-radius);
+  background: var(--ic-bg);
+  display: flex;
+  flex-direction: column;
+  font-family: var(--ic-font);
+  overflow: hidden;
+}
+
+.intelligentconvo-widget {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Header */
+.intelligentconvo-header,
+.intelligentconvo-chat-header {
+  background: var(--ic-primary);
+  color: white;
+  padding: 20px;
+  flex-shrink: 0;
+}
+
+.intelligentconvo-chat-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.intelligentconvo-chat-title h4 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.intelligentconvo-close {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.intelligentconvo-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.intelligentconvo-tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.intelligentconvo-tab {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: rgba(255, 255, 255, 0.8);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+.intelligentconvo-tab:hover {
+  background: rgba(255, 255, 255, 0.25);
+  color: white;
+}
+
+.intelligentconvo-tab.active {
+  background: white;
+  color: var(--ic-primary);
+}
+
+/* Content Area */
+.intelligentconvo-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  overflow: hidden;
+  background: var(--ic-bg-secondary);
+}
+
+/* Messages */
+.intelligentconvo-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.intelligentconvo-messages::-webkit-scrollbar {
+  width: 4px;
+}
+
+.intelligentconvo-messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.intelligentconvo-messages::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 2px;
+}
+
+.intelligentconvo-message {
+  margin-bottom: 16px;
+  animation: messageIn 0.2s ease-out;
+}
+
+@keyframes messageIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.intelligentconvo-message-content {
+  padding: 12px 16px;
+  border-radius: var(--ic-radius-sm);
+  max-width: 85%;
+  word-wrap: break-word;
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+/* User messages */
+.intelligentconvo-user {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.intelligentconvo-user .intelligentconvo-message-content {
+  background: var(--ic-primary);
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+/* Assistant messages */
+.intelligentconvo-assistant {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.intelligentconvo-assistant .intelligentconvo-message-content {
+  background: white;
+  color: var(--ic-text);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  border-bottom-left-radius: 4px;
+}
+
+.intelligentconvo-message-time {
+  font-size: 11px;
+  color: var(--ic-text-secondary);
+  margin-top: 4px;
+  padding: 0 4px;
+}
+
+/* Conversation Starters */
+.intelligentconvo-starters {
+  padding: 8px 0;
+}
+
+.intelligentconvo-welcome {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ic-text);
+  margin-bottom: 16px;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.intelligentconvo-starter-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.intelligentconvo-starter-btn {
+  background: white;
+  border: 1px solid var(--ic-border);
+  color: var(--ic-text);
+  padding: 12px 16px;
+  border-radius: var(--ic-radius-sm);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.intelligentconvo-starter-btn:hover {
+  border-color: var(--ic-primary);
+  color: var(--ic-primary);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Typing Indicator */
+.intelligentconvo-typing {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: white;
+  border-radius: var(--ic-radius-sm);
+  width: fit-content;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.intelligentconvo-typing span:last-child {
+  font-size: 12px;
+  color: var(--ic-text-secondary);
+}
+
+.intelligentconvo-typing-dots {
+  display: flex;
+  gap: 4px;
+}
+
+.intelligentconvo-typing-dots span {
+  width: 6px;
+  height: 6px;
+  background: var(--ic-primary);
+  border-radius: 50%;
+  animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.intelligentconvo-typing-dots span:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.intelligentconvo-typing-dots span:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes bounce {
+  0%, 80%, 100% {
+    transform: scale(0.6);
+    opacity: 0.4;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Input Area */
+.intelligentconvo-input {
+  display: flex;
+  gap: 8px;
+  padding: 16px;
+  background: white;
+  border-top: 1px solid var(--ic-border);
+}
+
+.intelligentconvo-input input {
+  flex: 1;
+  border: 1px solid var(--ic-border);
+  border-radius: var(--ic-radius-sm);
+  padding: 12px 16px;
+  font-size: 14px;
+  outline: none;
+  background: var(--ic-bg-secondary);
+  color: var(--ic-text);
+  transition: all 0.15s ease;
+  font-family: var(--ic-font);
+}
+
+.intelligentconvo-input input::placeholder {
+  color: var(--ic-text-secondary);
+}
+
+.intelligentconvo-input input:focus {
+  border-color: var(--ic-primary);
+  background: white;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.intelligentconvo-mic,
+.intelligentconvo-send {
+  background: var(--ic-primary);
+  border: none;
+  color: white;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--ic-radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.intelligentconvo-mic:hover,
+.intelligentconvo-send:hover {
+  background: var(--ic-primary-dark);
+  transform: translateY(-1px);
+}
+
+.intelligentconvo-mic:active,
+.intelligentconvo-send:active {
+  transform: translateY(0);
+}
+
+.intelligentconvo-send:disabled {
+  background: #cbd5e1;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.intelligentconvo-mic.listening {
+  background: #ef4444;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+
+/* Error Messages */
+.intelligentconvo-error .intelligentconvo-message-content {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+}
+
+.intelligentconvo-error .error-icon {
+  margin-right: 8px;
+}
+
+/* Connection Status */
+.intelligentconvo-connection-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+.intelligentconvo-connection-status.connected {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.intelligentconvo-connection-status.disconnected {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.intelligentconvo-connection-status.connecting {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.intelligentconvo-connection-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* Focus States */
+.intelligentconvo-button:focus-visible,
+.intelligentconvo-send:focus-visible,
+.intelligentconvo-mic:focus-visible,
+.intelligentconvo-close:focus-visible,
+.intelligentconvo-tab:focus-visible,
+.intelligentconvo-starter-btn:focus-visible {
+  outline: 2px solid var(--ic-primary);
+  outline-offset: 2px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 480px) {
+  .intelligentconvo-chat-window {
+    bottom: 0;
+    right: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    max-height: 100vh;
+  }
+
+  .intelligentconvo-button {
+    bottom: 16px;
+    right: 16px;
+  }
+
+  .intelligentconvo-widget-container {
+    height: 100vh;
+    max-width: 100%;
+    border-radius: 0;
+  }
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ic-bg: #1e293b;
+    --ic-bg-secondary: #0f172a;
+    --ic-text: #f1f5f9;
+    --ic-text-secondary: #94a3b8;
+    --ic-border: #334155;
+  }
+
+  .intelligentconvo-assistant .intelligentconvo-message-content {
+    background: #334155;
+  }
+
+  .intelligentconvo-starter-btn {
+    background: #334155;
+  }
+
+  .intelligentconvo-input input {
+    background: #334155;
+  }
+
+  .intelligentconvo-input {
+    background: #1e293b;
+  }
+
+  .intelligentconvo-typing {
+    background: #334155;
+  }
+
+  .intelligentconvo-connection-status.connected {
+    background: #166534;
+    color: #dcfce7;
+  }
+
+  .intelligentconvo-connection-status.disconnected {
+    background: #991b1b;
+    color: #fecaca;
+  }
+
+  .intelligentconvo-connection-status.connecting {
+    background: #92400e;
+    color: #fef3c7;
+  }
+
+  .intelligentconvo-error .intelligentconvo-message-content {
+    background: #7f1d1d;
+    border-color: #991b1b;
+    color: #fecaca;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .intelligentconvo-button,
+  .intelligentconvo-chat-window,
+  .intelligentconvo-message,
+  .intelligentconvo-starter-btn,
+  .intelligentconvo-mic,
+  .intelligentconvo-send,
+  .intelligentconvo-typing-dots span {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .intelligentconvo-button {
+    border: 2px solid currentColor;
+  }
+
+  .intelligentconvo-message-content {
+    border: 2px solid currentColor;
+  }
+
+  .intelligentconvo-tab.active {
+    border: 2px solid currentColor;
+  }
+}

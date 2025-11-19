@@ -1,0 +1,576 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AuthProvider {
+  GOOGLE
+  GITHUB
+  MICROSOFT
+  EMAIL
+}
+
+enum SubscriptionStatus {
+  TRIAL
+  ACTIVE
+  CANCELLED
+  EXPIRED
+}
+
+enum PlanType {
+  PREMIUM_MONTHLY
+  PREMIUM_ANNUAL
+}
+
+enum CrawlStatus {
+  PENDING
+  CRAWLING
+  COMPLETED
+  FAILED
+}
+
+enum ConversationRole {
+  USER
+  ASSISTANT
+}
+
+model User {
+  id                String            @id @default(uuid())
+  email             String            @unique
+  fullName          String?
+  authProvider      AuthProvider
+  authProviderId    String?
+  passwordHash      String?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  lastLoginAt       DateTime?
+
+  sites             Site[]
+  subscriptions     Subscription[]
+  billingInfo       BillingInfo?
+  billingHistory    BillingTransaction[]
+
+  @@index([email])
+  @@index([authProvider, authProviderId])
+}
+
+model BillingInfo {
+  id              String    @id @default(uuid())
+  userId          String    @unique
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  fullName        String
+  email           String
+  addressLine1    String
+  addressLine2    String?
+  city            String
+  state           String
+  country         String
+  postalCode      String
+
+  stripeCustomerId String?  @unique
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model Site {
+  id                    String                @id @default(uuid())
+  userId                String
+  user                  User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  siteUrl               String
+  siteName              String
+  siteDescription       String?
+  siteIndustry          String?
+  specialInstructions   String?
+  welcomeMessage        String                @default("Welcome! How can I help you today?")
+
+  crawlStatus           CrawlStatus           @default(PENDING)
+  lastCrawledAt         DateTime?
+
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @updatedAt
+
+  urls                  SiteUrl[]
+  conversationStarters  ConversationStarter[]
+  conversations         Conversation[]
+  knowledgeFiles        KnowledgeFile[]
+  activeHosts           ActiveHost[]
+  subscription          Subscription?
+  widgetSettings        WidgetSettings?
+
+  @@unique([userId, siteUrl])
+  @@index([userId])
+  @@index([crawlStatus])
+}
+
+model WidgetSettings {
+  id                        String      @id @default(uuid())
+  siteId                    String      @unique
+  site                      Site        @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  // ============================================
+  // CATEGORY A: APPEARANCE & BRANDING
+  // ============================================
+
+  // Colors
+  primaryColor              String      @default("#6366f1")
+  secondaryColor            String      @default("#818cf8")
+  backgroundColor           String      @default("#ffffff")
+  textColor                 String      @default("#1e293b")
+  textSecondaryColor        String      @default("#64748b")
+  borderColor               String      @default("#e2e8f0")
+
+  // Typography
+  fontFamily                String      @default("system")
+  fontSize                  Int         @default(14)
+  fontWeightNormal          Int         @default(400)
+  fontWeightMedium          Int         @default(500)
+  fontWeightBold            Int         @default(600)
+
+  // Shapes & Borders
+  borderRadius              Int         @default(16)
+  borderRadiusSmall         Int         @default(12)
+  borderRadiusButton        Int         @default(8)
+  borderWidth               Int         @default(1)
+
+  // Shadows
+  shadowColor               String      @default("rgba(0, 0, 0, 0.1)")
+  shadowSize                String      @default("medium") // none, small, medium, large
+
+  // ============================================
+  // CATEGORY B: LAUNCHER BUTTON
+  // ============================================
+
+  launcherIcon              String      @default("chat") // chat, message, help, support, custom
+  launcherCustomIconUrl     String?
+  launcherSize              String      @default("medium") // small (48px), medium (56px), large (64px)
+  launcherPosition          String      @default("bottom-right") // bottom-right, bottom-left, top-right, top-left
+  launcherOffsetX           Int         @default(20)
+  launcherOffsetY           Int         @default(20)
+  launcherShape             String      @default("circle") // circle, rounded-square, square
+  launcherBackgroundColor   String?     // null = use primaryColor
+  launcherIconColor         String      @default("#ffffff")
+  launcherBorderColor       String?
+  launcherBorderWidth       Int         @default(0)
+
+  // Launcher text/tooltip
+  launcherText              String?
+  launcherTooltip           String      @default("Chat with us")
+  launcherShowTooltip       Boolean     @default(true)
+
+  // Launcher badge
+  launcherShowBadge         Boolean     @default(false)
+  launcherBadgeColor        String      @default("#ef4444")
+  launcherBadgeTextColor    String      @default("#ffffff")
+
+  // Launcher animation
+  launcherAnimation         String      @default("pulse") // none, pulse, bounce, shake, glow
+  launcherAnimationDelay    Int         @default(3000) // ms before animation starts
+
+  // ============================================
+  // CATEGORY C: CHAT WINDOW
+  // ============================================
+
+  // Sizing
+  chatWindowWidth           Int         @default(400)
+  chatWindowHeight          Int         @default(600)
+  chatWindowMaxHeight       String      @default("90vh")
+  chatWindowZIndex          Int         @default(999998)
+
+  // Header
+  headerBackgroundColor     String?     // null = use primaryColor
+  headerTextColor           String      @default("#ffffff")
+  headerHeight              Int         @default(60)
+  headerTitle               String      @default("Chat Assistant")
+  headerSubtitle            String?
+  headerShowAvatar          Boolean     @default(true)
+  headerAvatarUrl           String?
+  headerShowStatus          Boolean     @default(true)
+  headerShowCloseButton     Boolean     @default(true)
+  headerShowMinimizeButton  Boolean     @default(false)
+
+  // Message area
+  messageAreaBackgroundColor String?    // null = use backgroundColor
+  messageAreaPadding        Int         @default(16)
+
+  // Message bubbles - User
+  userBubbleBackgroundColor String?     // null = use primaryColor
+  userBubbleTextColor       String      @default("#ffffff")
+  userBubbleBorderRadius    Int         @default(16)
+  userBubbleAlignment       String      @default("right")
+
+  // Message bubbles - Assistant
+  assistantBubbleBackgroundColor String @default("#f1f5f9")
+  assistantBubbleTextColor  String      @default("#1e293b")
+  assistantBubbleBorderRadius Int       @default(16)
+  assistantBubbleAlignment  String      @default("left")
+
+  // Message styling
+  messageMaxWidth           String      @default("80%")
+  messageFontSize           Int         @default(14)
+  messageLineHeight         Float       @default(1.5)
+  messageTimestampShow      Boolean     @default(true)
+  messageTimestampFormat    String      @default("HH:mm")
+
+  // Avatar in messages
+  showMessageAvatar         Boolean     @default(true)
+  botAvatarUrl              String?
+  botAvatarFallback         String      @default("AI")
+
+  // Input area
+  inputBackgroundColor      String      @default("#ffffff")
+  inputTextColor            String      @default("#1e293b")
+  inputBorderColor          String      @default("#e2e8f0")
+  inputBorderRadius         Int         @default(24)
+  inputPlaceholder          String      @default("Type your message...")
+  inputMinHeight            Int         @default(44)
+  inputMaxHeight            Int         @default(120)
+
+  // Send button
+  sendButtonBackgroundColor String?     // null = use primaryColor
+  sendButtonIconColor       String      @default("#ffffff")
+  sendButtonShape           String      @default("circle") // circle, rounded-square, square
+
+  // ============================================
+  // CATEGORY D: BEHAVIOR & FEATURES
+  // ============================================
+
+  // Auto-open behavior
+  autoOpenEnabled           Boolean     @default(false)
+  autoOpenDelay             Int         @default(5000) // ms
+  autoOpenOnlyOnce          Boolean     @default(true)
+  autoOpenOnMobile          Boolean     @default(false)
+
+  // Typing indicator
+  showTypingIndicator       Boolean     @default(true)
+  typingIndicatorStyle      String      @default("dots") // dots, text, pulse
+  typingIndicatorText       String      @default("Assistant is typing...")
+
+  // Read receipts
+  showReadReceipts          Boolean     @default(false)
+
+  // Sound notifications
+  enableSoundNotifications  Boolean     @default(false)
+  soundNotificationUrl      String?
+  soundVolume               Float       @default(0.5)
+
+  // Desktop notifications
+  enableDesktopNotifications Boolean    @default(false)
+
+  // Voice input
+  enableVoiceInput          Boolean     @default(true)
+  voiceInputLanguage        String      @default("en-US")
+
+  // File attachments
+  enableFileAttachments     Boolean     @default(false)
+  allowedFileTypes          String[]    @default(["image/*", "application/pdf"])
+  maxFileSizeMB             Int         @default(5)
+  maxFilesPerMessage        Int         @default(3)
+
+  // Emoji
+  enableEmojiPicker         Boolean     @default(true)
+
+  // Conversation
+  persistConversation       Boolean     @default(true)
+  conversationTimeout       Int         @default(1800) // seconds (30 min)
+  maxMessagesHistory        Int         @default(100)
+
+  // Quick replies / Suggestions
+  showQuickReplies          Boolean     @default(true)
+  quickRepliesPosition      String      @default("above-input") // above-input, below-header
+
+  // ============================================
+  // CATEGORY E: CONTENT & TEXT
+  // ============================================
+
+  // Bot identity
+  botName                   String      @default("Assistant")
+  botTagline                String?
+
+  // Messages
+  welcomeMessage            String      @default("Hello! How can I help you today?")
+  offlineMessage            String      @default("We're currently offline. Please leave a message and we'll get back to you.")
+  errorMessage              String      @default("Something went wrong. Please try again.")
+  reconnectingMessage       String      @default("Reconnecting...")
+
+  // Placeholders & labels
+  inputPlaceholderText      String      @default("Type your message...")
+  sendButtonAriaLabel       String      @default("Send message")
+  closeButtonAriaLabel      String      @default("Close chat")
+  minimizeButtonAriaLabel   String      @default("Minimize chat")
+
+  // Conversation starters (JSON array of strings)
+  showConversationStarters  Boolean     @default(true)
+  startersTitle             String      @default("Suggested questions")
+
+  // Branding
+  showPoweredBy             Boolean     @default(true)
+  poweredByText             String      @default("Powered by Intelligentconvo")
+  poweredByUrl              String      @default("https://intelligentconvo.com")
+
+  // ============================================
+  // CATEGORY F: RESPONSIVE / MOBILE
+  // ============================================
+
+  // Breakpoints
+  mobileBreakpoint          Int         @default(768)
+  tabletBreakpoint          Int         @default(1024)
+
+  // Mobile-specific overrides
+  mobileFullScreen          Boolean     @default(true)
+  mobileChatWindowWidth     String      @default("100%")
+  mobileChatWindowHeight    String      @default("100%")
+  mobileHeaderHeight        Int         @default(56)
+  mobileFontSize            Int         @default(16)
+  mobileInputMinHeight      Int         @default(48)
+  mobileLauncherSize        String      @default("medium")
+  mobileLauncherOffsetX     Int         @default(16)
+  mobileLauncherOffsetY     Int         @default(16)
+  mobileMessageMaxWidth     String      @default("85%")
+  mobileShowMinimizeButton  Boolean     @default(false)
+
+  // Tablet-specific overrides
+  tabletChatWindowWidth     Int         @default(380)
+  tabletChatWindowHeight    Int         @default(550)
+  tabletFontSize            Int         @default(15)
+
+  // Touch optimizations
+  enableTouchOptimizations  Boolean     @default(true)
+  touchTargetMinSize        Int         @default(44) // WCAG recommendation
+
+  // Keyboard behavior (mobile)
+  adjustForKeyboard         Boolean     @default(true)
+  keyboardPaddingBottom     Int         @default(0)
+
+  // ============================================
+  // CATEGORY G: ADVANCED
+  // ============================================
+
+  // Animations
+  enableAnimations          Boolean     @default(true)
+  animationDuration         Int         @default(200) // ms
+  animationEasing           String      @default("ease-out")
+
+  // Accessibility
+  enableHighContrast        Boolean     @default(false)
+  respectReducedMotion      Boolean     @default(true)
+  enableKeyboardNavigation  Boolean     @default(true)
+  focusRingColor            String      @default("#6366f1")
+  focusRingWidth            Int         @default(2)
+
+  // Theme
+  theme                     String      @default("light") // light, dark, auto
+  darkModeBackgroundColor   String      @default("#1e293b")
+  darkModeTextColor         String      @default("#f8fafc")
+  darkModeBorderColor       String      @default("#334155")
+
+  // Custom CSS
+  customCss                 String?     @db.Text
+
+  // Performance
+  lazyLoadMessages          Boolean     @default(true)
+  preloadWidget             Boolean     @default(false)
+
+  // Security
+  sanitizeHtml              Boolean     @default(true)
+  allowedHtmlTags           String[]    @default(["b", "i", "u", "a", "br", "p", "ul", "ol", "li", "code", "pre"])
+
+  // Analytics
+  enableAnalytics           Boolean     @default(true)
+  trackMessageEvents        Boolean     @default(true)
+  trackUserInteractions     Boolean     @default(true)
+
+  // Timestamps
+  createdAt                 DateTime    @default(now())
+  updatedAt                 DateTime    @updatedAt
+
+  @@index([siteId])
+}
+
+model SiteUrl {
+  id              String      @id @default(uuid())
+  siteId          String
+  site            Site        @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  url             String
+  title           String?
+  content         String?     @db.Text
+  htmlContent     String?     @db.Text  // Cleaned HTML for rich preview
+  isActive        Boolean     @default(true)
+  isExcluded      Boolean     @default(false)
+  lastCrawledAt   DateTime?
+  contentHash     String?
+
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  embeddings      Embedding[]
+
+  @@unique([siteId, url])
+  @@index([siteId])
+  @@index([isActive, isExcluded])
+}
+
+model Embedding {
+  id              String      @id @default(uuid())
+  siteUrlId       String
+  siteUrl         SiteUrl     @relation(fields: [siteUrlId], references: [id], onDelete: Cascade)
+
+  content         String      @db.Text
+  contentChunk    String      @db.Text
+  chunkIndex      Int
+  vectorId        String      @unique // ID in vector database
+
+  createdAt       DateTime    @default(now())
+
+  @@index([siteUrlId])
+  @@index([vectorId])
+}
+
+model ConversationStarter {
+  id              String      @id @default(uuid())
+  siteId          String
+  site            Site        @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  starterText     String
+  orderIndex      Int
+  isActive        Boolean     @default(true)
+
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@unique([siteId, orderIndex])
+  @@index([siteId])
+}
+
+model Conversation {
+  id              String      @id @default(uuid())
+  siteId          String
+  site            Site        @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  sessionId       String
+  userIdentifier  String?     // Can be anonymous
+  userAgent       String?
+  ipAddress       String?
+
+  startedAt       DateTime    @default(now())
+  lastMessageAt   DateTime    @default(now())
+  messageCount    Int         @default(0)
+
+  messages        Message[]
+
+  @@index([siteId])
+  @@index([sessionId])
+  @@index([startedAt])
+}
+
+model Message {
+  id              String            @id @default(uuid())
+  conversationId  String
+  conversation    Conversation      @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  role            ConversationRole
+  content         String            @db.Text
+  timestamp       DateTime          @default(now())
+
+  tokensUsed      Int?
+  costInCents     Float?
+
+  @@index([conversationId])
+  @@index([timestamp])
+}
+
+model KnowledgeFile {
+  id              String      @id @default(uuid())
+  siteId          String
+  site            Site        @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  fileName        String
+  fileType        String
+  fileSize        BigInt
+  fileUrl         String
+  processed       Boolean     @default(false)
+
+  uploadedAt      DateTime    @default(now())
+  processedAt     DateTime?
+
+  @@index([siteId])
+  @@index([processed])
+}
+
+model ActiveHost {
+  id              String      @id @default(uuid())
+  siteId          String
+  site            Site        @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  hostName        String
+  isEnabled       Boolean     @default(true)
+
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@unique([siteId, hostName])
+  @@index([siteId])
+}
+
+model Subscription {
+  id                      String              @id @default(uuid())
+  userId                  String
+  user                    User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  siteId                  String              @unique
+  site                    Site                @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  planType                PlanType
+  status                  SubscriptionStatus  @default(TRIAL)
+
+  trialEndsAt             DateTime?
+  currentPeriodStart      DateTime            @default(now())
+  currentPeriodEnd        DateTime
+
+  stripeSubscriptionId    String?             @unique
+  stripePriceId           String?
+
+  createdAt               DateTime            @default(now())
+  updatedAt               DateTime            @updatedAt
+  cancelledAt             DateTime?
+
+  @@index([userId])
+  @@index([status])
+  @@index([stripeSubscriptionId])
+}
+
+model BillingTransaction {
+  id                String      @id @default(uuid())
+  userId            String
+  user              User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  siteId            String
+
+  invoiceId         String      @unique
+  amount            Float
+  currency          String      @default("USD")
+  status            String      // 'paid', 'pending', 'failed'
+
+  stripeInvoiceId   String?     @unique
+
+  createdAt         DateTime    @default(now())
+
+  @@index([userId])
+  @@index([status])
+}
+
+model RefreshToken {
+  id              String      @id @default(uuid())
+  token           String      @unique
+  userId          String
+  expiresAt       DateTime
+  createdAt       DateTime    @default(now())
+
+  @@index([userId])
+  @@index([token])
+}
