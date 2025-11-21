@@ -1,17 +1,23 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { Site, User } from "./api/generated/models";
+import { SiteResponse, AuthTokensResponseUser } from "./api/generated/models";
+
+// Alias types for easier use
+type User = AuthTokensResponseUser;
+type Site = SiteResponse;
 
 interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
+  _hasHydrated: boolean;
   login: (
     user: User,
     tokens: { accessToken: string; refreshToken: string }
   ) => void;
   logout: () => void;
   setUser: (user: User) => void;
-  updateUser: (user: User) => void;
+  updateUser: (updates: Partial<User>) => void;
+  _setHasHydrated: (hasHydrated: boolean) => void;
 }
 
 interface SiteState {
@@ -24,12 +30,13 @@ interface SiteState {
   removeSite: (id: string) => void;
 }
 
-// Auth store
+// Auth store with hydration tracking
 export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
       user: null,
       isAuthenticated: false,
+      _hasHydrated: false,
 
       login: (user, tokens) => {
         localStorage.setItem("accessToken", tokens.accessToken);
@@ -47,8 +54,15 @@ export const useAuthStore = create<AuthState>()(
         set({ user, isAuthenticated: true });
       },
 
-      updateUser: (user) => {
-        set({ user, isAuthenticated: true });
+      updateUser: (updates) => {
+        const currentUser = get().user;
+        if (currentUser) {
+          set({ user: { ...currentUser, ...updates }, isAuthenticated: true });
+        }
+      },
+
+      _setHasHydrated: (hasHydrated) => {
+        set({ _hasHydrated: hasHydrated });
       },
     }),
     {
@@ -57,6 +71,9 @@ export const useAuthStore = create<AuthState>()(
         user: state.user,
         isAuthenticated: state.isAuthenticated,
       }),
+      onRehydrateStorage: () => (state) => {
+        state?._setHasHydrated(true);
+      },
     }
   )
 );
@@ -94,16 +111,53 @@ export const useSiteStore = create<SiteState>((set, get) => ({
 }));
 
 // UI state store
+type NavigationLayout = "horizontal" | "vertical";
+
 interface UIState {
   sidebarOpen: boolean;
   loading: boolean;
+  navigationLayout: NavigationLayout;
   setSidebarOpen: (open: boolean) => void;
   setLoading: (loading: boolean) => void;
+  setNavigationLayout: (layout: NavigationLayout) => void;
 }
 
-export const useUIStore = create<UIState>((set) => ({
-  sidebarOpen: true,
-  loading: false,
-  setSidebarOpen: (sidebarOpen) => set({ sidebarOpen }),
-  setLoading: (loading) => set({ loading }),
-}));
+export const useUIStore = create<UIState>()(
+  persist(
+    (set) => ({
+      sidebarOpen: true,
+      loading: false,
+      navigationLayout: "vertical", // Default to vertical
+      setSidebarOpen: (sidebarOpen) => set({ sidebarOpen }),
+      setLoading: (loading) => set({ loading }),
+      setNavigationLayout: (navigationLayout) => set({ navigationLayout }),
+    }),
+    {
+      name: "ui-storage",
+      partialize: (state) => ({
+        sidebarOpen: state.sidebarOpen,
+        navigationLayout: state.navigationLayout,
+      }),
+    }
+  )
+);
+
+// Theme store
+type Theme = "light" | "dark" | "system";
+
+interface ThemeState {
+  theme: Theme;
+  setTheme: (theme: Theme) => void;
+}
+
+export const useThemeStore = create<ThemeState>()(
+  persist(
+    (set) => ({
+      theme: "system",
+      setTheme: (theme) => set({ theme }),
+    }),
+    {
+      name: "theme-storage",
+    }
+  )
+);

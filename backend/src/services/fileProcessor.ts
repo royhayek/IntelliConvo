@@ -5,7 +5,13 @@ import pdf from 'pdf-parse';
 import { prisma } from '../lib/prisma';
 import { generateEmbeddings } from './embeddings';
 import { logger } from '../utils/logger';
-import { AppError } from '../middleware/errorHandler';
+import {
+  AppError,
+  ValidationError,
+  NotFoundError,
+  InternalError,
+  ErrorCode,
+} from '../middleware/errors';
 
 interface ProcessedFile {
   id: string;
@@ -24,13 +30,13 @@ export async function processUploadedFile(
     // Validate file type
     const allowedTypes = ['application/pdf', 'text/plain'];
     if (!allowedTypes.includes(file.mimetype)) {
-      throw new AppError(400, 'File type not supported. Only PDF and TXT files are allowed.');
+      throw new ValidationError('File type not supported. Only PDF and TXT files are allowed.');
     }
 
     // Validate file size (10MB limit)
     const maxSize = 10 * 1024 * 1024; // 10MB
     if (file.size > maxSize) {
-      throw new AppError(400, 'File size too large. Maximum size is 10MB.');
+      throw new ValidationError('File size too large. Maximum size is 10MB.');
     }
 
     // Extract text content based on file type
@@ -41,12 +47,12 @@ export async function processUploadedFile(
     } else if (file.mimetype === 'text/plain') {
       textContent = file.buffer.toString('utf-8');
     } else {
-      throw new AppError(400, 'Unsupported file type');
+      throw new ValidationError('Unsupported file type');
     }
 
     // Validate content length
     if (textContent.length < 10) {
-      throw new AppError(400, 'File content is too short or could not be extracted.');
+      throw new ValidationError('File content is too short or could not be extracted.');
     }
 
     // Create file storage path
@@ -62,6 +68,7 @@ export async function processUploadedFile(
         fileSize: BigInt(file.size),
         fileUrl: storagePath,
         processed: false,
+        status: 'PENDING',
       },
     });
 
@@ -80,33 +87,49 @@ export async function processUploadedFile(
       },
     });
 
-    // Generate embeddings
-    await generateEmbeddings(tempUrl.id, textContent);
+    try {
+      // Generate embeddings
+      await generateEmbeddings(tempUrl.id, textContent);
 
-    // Update file as processed
-    await prisma.knowledgeFile.update({
-      where: { id: knowledgeFile.id },
-      data: {
-        processed: true,
-        processedAt: new Date(),
-      },
-    });
+      // Get chunk count
+      const embeddings = await prisma.embedding.findMany({
+        where: { siteUrlId: tempUrl.id },
+      });
 
-    // Get chunk count
-    const embeddings = await prisma.embedding.findMany({
-      where: { siteUrlId: tempUrl.id },
-    });
+      // Update file as completed
+      await prisma.knowledgeFile.update({
+        where: { id: knowledgeFile.id },
+        data: {
+          processed: true,
+          status: 'COMPLETED',
+          processedAt: new Date(),
+        },
+      });
 
-    logger.info(`Successfully processed file ${file.originalname} with ${embeddings.length} chunks`);
+      logger.info(`Successfully processed file ${file.originalname} with ${embeddings.length} chunks`);
 
-    return {
-      id: knowledgeFile.id,
-      fileName: knowledgeFile.fileName,
-      fileType: knowledgeFile.fileType,
-      fileSize: knowledgeFile.fileSize,
-      content: textContent.substring(0, 1000), // Return first 1000 chars as preview
-      chunks: embeddings.length,
-    };
+      return {
+        id: knowledgeFile.id,
+        fileName: knowledgeFile.fileName,
+        fileType: knowledgeFile.fileType,
+        fileSize: knowledgeFile.fileSize,
+        content: textContent.substring(0, 1000), // Return first 1000 chars as preview
+        chunks: embeddings.length,
+      };
+    } catch (embeddingError) {
+      // Update file as failed
+      const errorMsg = embeddingError instanceof Error ? embeddingError.message : 'Unknown error during embedding generation';
+      await prisma.knowledgeFile.update({
+        where: { id: knowledgeFile.id },
+        data: {
+          status: 'FAILED',
+          errorMessage: errorMsg,
+        },
+      });
+
+      logger.error(`File processing failed for ${file.originalname}:`, embeddingError);
+      throw new InternalError(`Failed to process file: ${errorMsg}`);
+    }
   } catch (error) {
     logger.error('File processing failed:', error);
     throw error;
@@ -118,7 +141,7 @@ async function extractPDFText(buffer: Buffer): Promise<string> {
     const data = await pdf(buffer);
 
     if (!data.text || data.text.trim().length === 0) {
-      throw new AppError(400, 'PDF contains no extractable text content.');
+      throw new ValidationError('PDF contains no extractable text content.');
     }
 
     // Clean up the text
@@ -128,14 +151,14 @@ async function extractPDFText(buffer: Buffer): Promise<string> {
       .trim();
 
     if (cleanText.length < 10) {
-      throw new AppError(400, 'PDF text content is too short after processing.');
+      throw new ValidationError('PDF text content is too short after processing.');
     }
 
     return cleanText;
   } catch (error) {
     if (error instanceof AppError) throw error;
     logger.error('PDF extraction failed:', error);
-    throw new AppError(500, 'Failed to extract text from PDF. The file may be corrupted or password-protected.');
+    throw new InternalError('Failed to extract text from PDF. The file may be corrupted or password-protected.');
   }
 }
 
@@ -161,7 +184,7 @@ async function saveFile(
     return `/uploads/${fileName}`;
   } catch (error) {
     logger.error('File save failed:', error);
-    throw new AppError(500, 'Failed to save file to storage.');
+    throw new InternalError('Failed to save file to storage.');
   }
 }
 
@@ -173,7 +196,7 @@ export async function deleteKnowledgeFile(fileId: string, siteId: string): Promi
     });
 
     if (!file) {
-      throw new AppError(404, 'File not found');
+      throw new NotFoundError('File');
     }
 
     // Find associated URL record
@@ -232,7 +255,7 @@ export async function getFileContent(fileId: string, siteId: string): Promise<st
     });
 
     if (!tempUrl || !tempUrl.content) {
-      throw new AppError(404, 'File content not found');
+      throw new NotFoundError('File content');
     }
 
     return tempUrl.content;

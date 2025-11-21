@@ -2,7 +2,10 @@
 // Do not edit manually
 
 export type ConversationAnalyticsTimeSeriesDataItem = {
-  date?: string;
-  conversations?: number;
-  messages?: number;
+  /** Date */
+  date: string;
+  /** Conversations count */
+  conversations: number;
+  /** Messages count */
+  messages: number;
 };

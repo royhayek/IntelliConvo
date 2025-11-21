@@ -1,12 +1,14 @@
 "use client";
 
-import Link from "next/link";
-import { ArrowRight, Globe, FileText, MessageSquare, Code } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { type GetApiSitesSiteId200 } from "@/lib/api/generated/models";
+import { Globe, FileText, MessageSquare, Code, Link as LinkIcon, Clock } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { StatPill } from "@/components/ui/stat-pill";
+import { SectionHeader } from "@/components/ui/section-header";
+import { OverviewCard } from "@/components/site/overview-card";
+import { type GetApiV1SitesSiteId200 } from "@/lib/api/generated/models";
 
 interface OverviewTabProps {
-  site: GetApiSitesSiteId200;
+  site: GetApiV1SitesSiteId200;
 }
 
 export function OverviewTab({ site }: OverviewTabProps) {
@@ -18,7 +20,7 @@ export function OverviewTab({ site }: OverviewTabProps) {
         { label: "Sitemap & URLs", href: `/sites/${site.id}?tab=sitemap` },
         { label: "Knowledge & PDFs", href: `/sites/${site.id}?tab=knowledge` },
       ],
-      icon: <Globe className="h-6 w-6 text-indigo-600" />,
+      icon: Globe,
     },
     {
       title: "How Does Intelligentconvo Represent You?",
@@ -27,7 +29,7 @@ export function OverviewTab({ site }: OverviewTabProps) {
         { label: "Site Info", href: `/sites/${site.id}?tab=preferences` },
         { label: "Conversation Starters", href: `/sites/${site.id}?tab=preferences` },
       ],
-      icon: <MessageSquare className="h-6 w-6 text-indigo-600" />,
+      icon: MessageSquare,
     },
     {
       title: "Who is Intelligentconvo Talking to?",
@@ -35,7 +37,7 @@ export function OverviewTab({ site }: OverviewTabProps) {
       links: [
         { label: "Conversations", href: `/sites/${site.id}?tab=conversations` },
       ],
-      icon: <MessageSquare className="h-6 w-6 text-indigo-600" />,
+      icon: MessageSquare,
     },
     {
       title: "How can I try Intelligentconvo for my site?",
@@ -44,52 +46,26 @@ export function OverviewTab({ site }: OverviewTabProps) {
         { label: "Install Code", href: `/sites/${site.id}?tab=widget` },
         { label: "Playground", href: `/sites/${site.id}?tab=playground` },
       ],
-      icon: <Code className="h-6 w-6 text-indigo-600" />,
+      icon: Code,
     },
   ];
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">Site Overview</h2>
-        <p className="text-gray-600">
-          Quick access to key features and settings for your AI assistant.
-        </p>
-      </div>
+      <SectionHeader
+        title="Site Overview"
+        description="Quick access to key features and settings for your AI assistant."
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {cards.map((card, index) => (
-          <Card key={index} className="hover:shadow-md transition-shadow">
-            <CardHeader>
-              <div className="flex items-start space-x-4">
-                <div className="h-12 w-12 bg-indigo-100 rounded-lg flex items-center justify-center">
-                  {card.icon}
-                </div>
-                <div className="flex-1">
-                  <CardTitle className="text-lg">{card.title}</CardTitle>
-                  <CardDescription className="mt-2">
-                    {card.description}
-                  </CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {card.links.map((link, linkIndex) => (
-                  <Link
-                    key={linkIndex}
-                    href={link.href}
-                    className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors group"
-                  >
-                    <span className="text-sm font-medium text-gray-900 group-hover:text-indigo-600">
-                      {link.label}
-                    </span>
-                    <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-indigo-600" />
-                  </Link>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          <OverviewCard
+            key={index}
+            title={card.title}
+            description={card.description}
+            links={card.links}
+            icon={card.icon}
+          />
         ))}
       </div>
 
@@ -99,25 +75,31 @@ export function OverviewTab({ site }: OverviewTabProps) {
           <CardTitle>Site Statistics</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">{site._count?.urls || 0}</div>
-              <div className="text-sm text-gray-600">URLs Indexed</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">{site._count?.conversations || 0}</div>
-              <div className="text-sm text-gray-600">Conversations</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">{site._count?.knowledgeFiles || 0}</div>
-              <div className="text-sm text-gray-600">Knowledge Files</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">
-                {site.lastCrawledAt ? new Date(site.lastCrawledAt).toLocaleDateString() : 'Never'}
-              </div>
-              <div className="text-sm text-gray-600">Last Updated</div>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <StatPill
+              value={site._count?.urls || 0}
+              label="URLs Indexed"
+              icon={LinkIcon}
+              variant="blue"
+            />
+            <StatPill
+              value={site._count?.conversations || 0}
+              label="Conversations"
+              icon={MessageSquare}
+              variant="green"
+            />
+            <StatPill
+              value={site._count?.knowledgeFiles || 0}
+              label="Knowledge Files"
+              icon={FileText}
+              variant="purple"
+            />
+            <StatPill
+              value={site.lastCrawledAt ? new Date(site.lastCrawledAt).toLocaleDateString() : 'Never'}
+              label="Last Updated"
+              icon={Clock}
+              variant="indigo"
+            />
           </div>
         </CardContent>
       </Card>

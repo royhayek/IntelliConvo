@@ -3,11 +3,12 @@
 import { memo } from "react";
 import { UseFormRegister, UseFormSetValue, FieldErrors } from "react-hook-form";
 import { motion } from "framer-motion";
-import { Globe, ExternalLink, CheckCircle } from "lucide-react";
+import { Globe, ExternalLink, CheckCircle, AlertCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface SiteUrlFormData {
   siteUrl: string;
@@ -53,7 +54,7 @@ export const SiteUrlStep = memo(function SiteUrlStep({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="text-lg text-gray-600 max-w-lg mx-auto"
+          className="text-lg text-gray-600 dark:text-gray-400 max-w-lg mx-auto"
         >
           We'll crawl your website, analyze your content, and create a smart AI
           assistant that can help your visitors instantly.
@@ -61,22 +62,24 @@ export const SiteUrlStep = memo(function SiteUrlStep({
       </div>
 
       {/* URL Input Form */}
-      <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-8">
         <form onSubmit={onSubmit} className="space-y-6">
           {error && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="rounded-xl bg-red-50 border border-red-200 p-4"
             >
-              <p className="text-sm font-medium text-red-800">{error}</p>
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
             </motion.div>
           )}
 
           <div className="space-y-4">
             <Label
               htmlFor="siteUrl"
-              className="text-lg font-semibold text-gray-900"
+              className="text-lg font-semibold text-gray-900 dark:text-white"
             >
               Website URL
             </Label>
@@ -105,7 +108,7 @@ export const SiteUrlStep = memo(function SiteUrlStep({
                 </motion.p>
               )}
             </div>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
               We'll automatically add https:// if not provided
             </p>
           </div>
@@ -139,25 +142,25 @@ export const SiteUrlStep = memo(function SiteUrlStep({
 
       {/* Help Section */}
       <div className="mt-8 text-center">
-        <div className="bg-blue-50 rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-blue-900 mb-2">
+        <div className="bg-blue-50 dark:bg-blue-900/30 rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-300 mb-2">
             What happens next?
           </h3>
-          <div className="grid md:grid-cols-3 gap-4 text-sm text-blue-800">
+          <div className="grid md:grid-cols-3 gap-4 text-sm text-blue-800 dark:text-blue-300">
             <div className="flex items-start space-x-2">
-              <div className="h-6 w-6 rounded-full bg-blue-200 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <div className="h-6 w-6 rounded-full bg-blue-200 dark:bg-blue-800 flex items-center justify-center flex-shrink-0 mt-0.5">
                 <span className="text-xs font-semibold">1</span>
               </div>
               <span>We'll scan your website and discover all pages</span>
             </div>
             <div className="flex items-start space-x-2">
-              <div className="h-6 w-6 rounded-full bg-blue-200 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <div className="h-6 w-6 rounded-full bg-blue-200 dark:bg-blue-800 flex items-center justify-center flex-shrink-0 mt-0.5">
                 <span className="text-xs font-semibold">2</span>
               </div>
               <span>You'll review and customize the discovered content</span>
             </div>
             <div className="flex items-start space-x-2">
-              <div className="h-6 w-6 rounded-full bg-blue-200 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <div className="h-6 w-6 rounded-full bg-blue-200 dark:bg-blue-800 flex items-center justify-center flex-shrink-0 mt-0.5">
                 <span className="text-xs font-semibold">3</span>
               </div>
               <span>Choose a plan and deploy your AI assistant</span>

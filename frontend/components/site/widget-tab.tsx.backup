@@ -1,0 +1,1330 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Copy, Check, Palette, MessageSquare, Layout, Zap, FileText, Smartphone, Sliders, Save, RotateCcw, ChevronDown, ChevronRight } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Form } from "@/components/ui/form";
+import { CodeBlock } from "@/components/ui/code-block";
+import { WidgetPreview } from "@/components/ui/widget-preview";
+import {
+  FormColorPicker,
+  FormSelectField,
+  FormNumberField,
+  FormToggleField,
+  FormInput,
+  FormTextarea,
+} from "@/components/form";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  useGetApiWidgetSiteIdSettingsAdmin,
+  usePatchApiWidgetSiteIdSettings,
+  usePutApiWidgetSiteIdSettingsReset,
+  getGetApiWidgetSiteIdSettingsAdminQueryKey,
+} from "@/lib/api/generated/queries/widget/widget";
+import { type GetApiSitesSiteId200 } from "@/lib/api/generated/models";
+import { useToast } from "@/hooks/use-toast";
+import { Input } from "../ui/input";
+
+interface WidgetTabProps {
+  site: GetApiSitesSiteId200;
+}
+
+interface WidgetSettings {
+  // Appearance
+  primaryColor: string;
+  secondaryColor: string;
+  backgroundColor: string;
+  textColor: string;
+  textSecondaryColor: string;
+  borderColor: string;
+  fontFamily: string;
+  fontSize: number;
+  borderRadius: number;
+  shadowSize: "none" | "small" | "medium" | "large";
+
+  // Launcher
+  launcherIcon: "chat" | "message" | "help" | "support";
+  launcherSize: "small" | "medium" | "large";
+  launcherPosition: "bottom-right" | "bottom-left" | "top-right" | "top-left";
+  launcherOffsetX: number;
+  launcherOffsetY: number;
+  launcherShape: "circle" | "rounded-square" | "square";
+  launcherBackgroundColor: string;
+  launcherIconColor: string;
+  launcherTooltip: string;
+  launcherShowTooltip: boolean;
+  launcherAnimation: "none" | "pulse" | "bounce" | "shake";
+  launcherShowBadge: boolean;
+  launcherBadgeColor: string;
+
+  // Chat Window
+  chatWindowWidth: number;
+  chatWindowHeight: number;
+  headerTitle: string;
+  headerSubtitle: string;
+  headerShowAvatar: boolean;
+  headerAvatarUrl: string;
+  headerShowStatus: boolean;
+  headerShowCloseButton: boolean;
+  headerShowMinimizeButton: boolean;
+  userBubbleBackgroundColor: string;
+  userBubbleTextColor: string;
+  assistantBubbleBackgroundColor: string;
+  assistantBubbleTextColor: string;
+  inputPlaceholder: string;
+  inputBorderRadius: number;
+
+  // Behavior
+  autoOpenEnabled: boolean;
+  autoOpenDelay: number;
+  autoOpenOnlyOnce: boolean;
+  autoOpenOnMobile: boolean;
+  showTypingIndicator: boolean;
+  typingIndicatorText: string;
+  enableSoundNotifications: boolean;
+  enableVoiceInput: boolean;
+  enableFileAttachments: boolean;
+  enableEmojiPicker: boolean;
+  persistConversation: boolean;
+  showQuickReplies: boolean;
+
+  // Content
+  botName: string;
+  welcomeMessage: string;
+  offlineMessage: string;
+  errorMessage: string;
+  showConversationStarters: boolean;
+  startersTitle: string;
+  showPoweredBy: boolean;
+  poweredByText: string;
+
+  // Responsive
+  mobileBreakpoint: number;
+  tabletBreakpoint: number;
+  mobileFullScreen: boolean;
+  mobileFontSize: number;
+  mobileLauncherSize: "small" | "medium" | "large";
+  enableTouchOptimizations: boolean;
+
+  // Advanced
+  enableAnimations: boolean;
+  animationDuration: number;
+  theme: "light" | "dark" | "auto";
+  enableHighContrast: boolean;
+  respectReducedMotion: boolean;
+  enableKeyboardNavigation: boolean;
+  customCss: string;
+  enableAnalytics: boolean;
+
+  // Dark Mode Colors
+  darkModePrimaryColor: string;
+  darkModeSecondaryColor: string;
+  darkModeBackgroundColor: string;
+  darkModeSecondaryBackgroundColor: string;
+  darkModeTextColor: string;
+  darkModeTextSecondaryColor: string;
+  darkModeBorderColor: string;
+}
+
+const defaultSettings: WidgetSettings = {
+  // Appearance
+  primaryColor: "#6366f1",
+  secondaryColor: "#818cf8",
+  backgroundColor: "#ffffff",
+  textColor: "#1e293b",
+  textSecondaryColor: "#64748b",
+  borderColor: "#e2e8f0",
+  fontFamily: "system",
+  fontSize: 14,
+  borderRadius: 16,
+  shadowSize: "medium",
+
+  // Launcher
+  launcherIcon: "chat",
+  launcherSize: "medium",
+  launcherPosition: "bottom-right",
+  launcherOffsetX: 20,
+  launcherOffsetY: 20,
+  launcherShape: "circle",
+  launcherBackgroundColor: "",
+  launcherIconColor: "#ffffff",
+  launcherTooltip: "Chat with us",
+  launcherShowTooltip: true,
+  launcherAnimation: "pulse",
+  launcherShowBadge: false,
+  launcherBadgeColor: "#ef4444",
+
+  // Chat Window
+  chatWindowWidth: 400,
+  chatWindowHeight: 600,
+  headerTitle: "Chat Assistant",
+  headerSubtitle: "",
+  headerShowAvatar: true,
+  headerAvatarUrl: "",
+  headerShowStatus: true,
+  headerShowCloseButton: true,
+  headerShowMinimizeButton: false,
+  userBubbleBackgroundColor: "",
+  userBubbleTextColor: "#ffffff",
+  assistantBubbleBackgroundColor: "#f1f5f9",
+  assistantBubbleTextColor: "#1e293b",
+  inputPlaceholder: "Type your message...",
+  inputBorderRadius: 24,
+
+  // Behavior
+  autoOpenEnabled: false,
+  autoOpenDelay: 5000,
+  autoOpenOnlyOnce: true,
+  autoOpenOnMobile: false,
+  showTypingIndicator: true,
+  typingIndicatorText: "Assistant is typing...",
+  enableSoundNotifications: false,
+  enableVoiceInput: true,
+  enableFileAttachments: false,
+  enableEmojiPicker: true,
+  persistConversation: true,
+  showQuickReplies: true,
+
+  // Content
+  botName: "Assistant",
+  welcomeMessage: "Hello! How can I help you today?",
+  offlineMessage: "We're currently offline. Please leave a message.",
+  errorMessage: "Something went wrong. Please try again.",
+  showConversationStarters: true,
+  startersTitle: "Suggested questions",
+  showPoweredBy: true,
+  poweredByText: "Powered by Intelligentconvo",
+
+  // Responsive
+  mobileBreakpoint: 768,
+  tabletBreakpoint: 1024,
+  mobileFullScreen: true,
+  mobileFontSize: 16,
+  mobileLauncherSize: "medium",
+  enableTouchOptimizations: true,
+
+  // Advanced
+  enableAnimations: true,
+  animationDuration: 200,
+  theme: "light",
+  enableHighContrast: false,
+  respectReducedMotion: true,
+  enableKeyboardNavigation: true,
+  customCss: "",
+  enableAnalytics: true,
+
+  // Dark Mode Colors
+  darkModePrimaryColor: "#6366f1",
+  darkModeSecondaryColor: "#818cf8",
+  darkModeBackgroundColor: "#1e293b",
+  darkModeSecondaryBackgroundColor: "#374151",
+  darkModeTextColor: "#f1f5f9",
+  darkModeTextSecondaryColor: "#94a3b8",
+  darkModeBorderColor: "#475569",
+};
+
+// Zod Validation Schema
+const widgetSettingsSchema = z.object({
+  // Appearance
+  primaryColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
+  secondaryColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
+  backgroundColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
+  textColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
+  textSecondaryColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
+  borderColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
+  fontFamily: z.string().min(1),
+  fontSize: z.number().min(10).max(24),
+  borderRadius: z.number().min(0).max(32),
+  shadowSize: z.enum(["none", "small", "medium", "large"]),
+
+  // Launcher
+  launcherIcon: z.enum(["chat", "message", "help", "support"]),
+  launcherSize: z.enum(["small", "medium", "large"]),
+  launcherPosition: z.enum(["bottom-right", "bottom-left", "top-right", "top-left"]),
+  launcherOffsetX: z.number().min(0).max(100),
+  launcherOffsetY: z.number().min(0).max(100),
+  launcherShape: z.enum(["circle", "rounded-square", "square"]),
+  launcherBackgroundColor: z.string(),
+  launcherIconColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
+  launcherTooltip: z.string().max(50),
+  launcherShowTooltip: z.boolean(),
+  launcherAnimation: z.enum(["none", "pulse", "bounce", "shake"]),
+  launcherShowBadge: z.boolean(),
+  launcherBadgeColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
+
+  // Chat Window
+  chatWindowWidth: z.number().min(300).max(800),
+  chatWindowHeight: z.number().min(400).max(1000),
+  headerTitle: z.string().min(1).max(50),
+  headerSubtitle: z.string().max(100),
+  headerShowAvatar: z.boolean(),
+  headerAvatarUrl: z.string().url().or(z.literal("")),
+  headerShowStatus: z.boolean(),
+  headerShowCloseButton: z.boolean(),
+  headerShowMinimizeButton: z.boolean(),
+  userBubbleBackgroundColor: z.string(),
+  userBubbleTextColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
+  assistantBubbleBackgroundColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
+  assistantBubbleTextColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
+  inputPlaceholder: z.string().max(100),
+  inputBorderRadius: z.number().min(0).max(50),
+
+  // Behavior
+  autoOpenEnabled: z.boolean(),
+  autoOpenDelay: z.number().min(0).max(60000),
+  autoOpenOnlyOnce: z.boolean(),
+  autoOpenOnMobile: z.boolean(),
+  showTypingIndicator: z.boolean(),
+  typingIndicatorText: z.string().max(50),
+  enableSoundNotifications: z.boolean(),
+  enableVoiceInput: z.boolean(),
+  enableFileAttachments: z.boolean(),
+  enableEmojiPicker: z.boolean(),
+  persistConversation: z.boolean(),
+  showQuickReplies: z.boolean(),
+
+  // Content
+  botName: z.string().min(1).max(50),
+  welcomeMessage: z.string().max(200),
+  offlineMessage: z.string().max(200),
+  errorMessage: z.string().max(200),
+  showConversationStarters: z.boolean(),
+  startersTitle: z.string().max(50),
+  showPoweredBy: z.boolean(),
+  poweredByText: z.string().max(100),
+
+  // Responsive
+  mobileBreakpoint: z.number().min(320).max(1024),
+  tabletBreakpoint: z.number().min(768).max(1440),
+  mobileFullScreen: z.boolean(),
+  mobileFontSize: z.number().min(12).max(20),
+  mobileLauncherSize: z.enum(["small", "medium", "large"]),
+  enableTouchOptimizations: z.boolean(),
+
+  // Advanced
+  enableAnimations: z.boolean(),
+  animationDuration: z.number().min(0).max(1000),
+  theme: z.enum(["light", "dark", "auto"]),
+  enableHighContrast: z.boolean(),
+  respectReducedMotion: z.boolean(),
+  enableKeyboardNavigation: z.boolean(),
+  customCss: z.string().max(10000),
+  enableAnalytics: z.boolean(),
+
+  // Dark Mode Colors
+  darkModePrimaryColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
+  darkModeSecondaryColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
+  darkModeBackgroundColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
+  darkModeSecondaryBackgroundColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
+  darkModeTextColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
+  darkModeTextSecondaryColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
+  darkModeBorderColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
+});
+
+type WidgetSettingsFormData = z.infer<typeof widgetSettingsSchema>;
+
+// Collapsible Section Component
+function CollapsibleSection({ title, children, defaultOpen = false }: { title: string; children: React.ReactNode; defaultOpen?: boolean }) {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+
+  return (
+    <div className="border dark:border-gray-600 rounded-lg">
+      <Button
+        variant="ghost"
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center w-full p-3 text-left font-medium text-sm hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-900 dark:text-white h-auto justify-start"
+      >
+        {title}
+        {isOpen ? <ChevronDown className="h-4 w-4 ml-auto" /> : <ChevronRight className="h-4 w-4 ml-auto" />}
+      </Button>
+      {isOpen && <div className="p-4 pt-0 space-y-4">{children}</div>}
+    </div>
+  );
+}
+
+export function WidgetTab({ site }: WidgetTabProps) {
+  const queryClient = useQueryClient();
+  const [copied, setCopied] = useState<string | null>(null);
+  const { toast } = useToast();
+
+  // React Hook Form
+  const form = useForm<WidgetSettingsFormData>({
+    resolver: zodResolver(widgetSettingsSchema),
+    defaultValues: defaultSettings,
+    mode: "onChange",
+  });
+
+  // Load settings from API
+  const { data: loadedSettings, isLoading } = useGetApiWidgetSiteIdSettingsAdmin(site.id);
+
+  // Update form when settings are loaded
+  useEffect(() => {
+    if (loadedSettings) {
+      form.reset({ ...defaultSettings, ...loadedSettings as unknown as WidgetSettings });
+    }
+  }, [loadedSettings, form]);
+
+  // Save settings mutation
+  const saveMutation = usePatchApiWidgetSiteIdSettings({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: getGetApiWidgetSiteIdSettingsAdminQueryKey(site.id) });
+        toast({
+          title: "Settings saved",
+          description: "Your widget settings have been updated successfully.",
+        });
+        form.reset(form.getValues()); // Reset dirty state
+      },
+      onError: () => {
+        toast({
+          title: "Error",
+          description: "Failed to save widget settings. Please try again.",
+          variant: "destructive",
+        });
+      },
+    },
+  });
+
+  // Reset settings mutation
+  const resetMutation = usePutApiWidgetSiteIdSettingsReset({
+    mutation: {
+      onSuccess: (data) => {
+        form.reset({ ...defaultSettings, ...data as unknown as WidgetSettings });
+        queryClient.invalidateQueries({ queryKey: getGetApiWidgetSiteIdSettingsAdminQueryKey(site.id) });
+        toast({
+          title: "Settings reset",
+          description: "Widget settings have been reset to defaults.",
+        });
+      },
+      onError: () => {
+        toast({
+          title: "Error",
+          description: "Failed to reset settings. Please try again.",
+          variant: "destructive",
+        });
+      },
+    },
+  });
+
+  // Save settings
+  const onSaveSettings = (data: WidgetSettingsFormData) => {
+    saveMutation.mutate({ siteId: site.id, data: data as any });
+  };
+
+  // Reset to defaults
+  const resetSettings = () => {
+    resetMutation.mutate({ siteId: site.id });
+  };
+
+  const isSaving = saveMutation.isPending;
+  const hasChanges = form.formState.isDirty;
+  const settings = form.watch(); // Get current form values for preview
+
+  const copyToClipboard = async (text: string, type: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(type);
+      setTimeout(() => setCopied(null), 2000);
+    } catch (err) {
+      console.error('Failed to copy text: ', err);
+    }
+  };
+
+  const embedCode = `<!-- Intelligentconvo Widget -->
+<script>
+  (function() {
+    var script = document.createElement('script');
+    script.src = '${process.env.NEXT_PUBLIC_WIDGET_URL || 'https://widget.intelligentconvo.com'}/widget.js';
+    script.async = true;
+    script.onload = function() {
+      window.intelligentconvo('init', {
+        siteId: '${site.id}',
+        apiUrl: '${process.env.NEXT_PUBLIC_API_URL || 'https://api.intelligentconvo.com'}'
+      });
+    };
+    document.head.appendChild(script);
+  })();
+</script>`;
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+      </div>
+    );
+  }
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSaveSettings)} className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Widget Customization</h2>
+            <p className="text-gray-600 dark:text-gray-400">Customize every aspect of your chat widget</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button type="button" variant="outline" size="sm" onClick={resetSettings}>
+              <RotateCcw className="h-4 w-4 mr-2" />
+              Reset
+            </Button>
+            <Button
+              type="submit"
+              size="sm"
+              disabled={!hasChanges || isSaving}
+            >
+              <Save className="h-4 w-4 mr-2" />
+              {isSaving ? "Saving..." : "Save Changes"}
+            </Button>
+          </div>
+        </div>
+
+      {/* Preview Panel - Now on top */}
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm flex items-center gap-2">
+            <Layout className="h-4 w-4" />
+            Live Preview
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div
+            className="relative bg-gray-100 dark:bg-slate-800 rounded-lg overflow-hidden"
+            style={{ height: "500px" }}
+          >
+            {/* Chat Window Preview - Exact CSS match at 0.6x scale */}
+            <div
+              className="absolute overflow-hidden flex flex-col"
+              style={{
+                width: `${Math.min(settings.chatWindowWidth * 0.6, 240)}px`,
+                height: `${Math.min(settings.chatWindowHeight * 0.6, 360)}px`,
+                // Position based on launcher position (launcher size + 16px gap scaled)
+                ...(settings.launcherPosition.includes('bottom') ? { bottom: '60px' } : { top: '12px' }),
+                ...(settings.launcherPosition.includes('right') ? { right: '12px' } : { left: '12px' }),
+                backgroundColor: settings.theme === 'dark' ? settings.darkModeBackgroundColor : settings.backgroundColor,
+                borderRadius: `${settings.borderRadius}px`,
+                boxShadow: settings.shadowSize === 'none' ? 'none' :
+                  settings.shadowSize === 'small' ? '0 4px 6px -1px rgba(0,0,0,0.1)' :
+                  settings.shadowSize === 'large' ? '0 25px 50px -12px rgba(0,0,0,0.25)' : '0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)',
+                fontFamily: settings.fontFamily === 'system' ? "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif" : settings.fontFamily,
+                fontSize: `${settings.fontSize * 0.6}px`,
+              }}
+            >
+              {/* Header - padding: 16px 20px scaled to ~10px 12px */}
+              <div
+                className="shrink-0"
+                style={{
+                  backgroundColor: settings.theme === 'dark' ? settings.darkModePrimaryColor : settings.primaryColor,
+                  borderTopLeftRadius: `${settings.borderRadius}px`,
+                  borderTopRightRadius: `${settings.borderRadius}px`,
+                  padding: '10px 12px',
+                  color: 'white',
+                }}
+              >
+                {/* Chat Title - margin-bottom: 12px scaled to 7px */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '7px' }}>
+                  {/* Header Info - gap: 12px scaled to 7px */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+                    {settings.headerShowAvatar && (
+                      <div
+                        style={{
+                          position: 'relative',
+                          width: '24px', // 40px scaled
+                          height: '24px',
+                          borderRadius: '50%',
+                          backgroundColor: 'rgba(255,255,255,0.2)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '8px', // 14px scaled
+                          fontWeight: 600,
+                          overflow: 'visible',
+                        }}
+                      >
+                        {settings.headerAvatarUrl ? (
+                          <img src={settings.headerAvatarUrl} alt="" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+                        ) : (
+                          'AI'
+                        )}
+                        {settings.headerShowStatus && (
+                          <div
+                            style={{
+                              position: 'absolute',
+                              top: 0,
+                              right: 0,
+                              width: '5px', // 8px scaled
+                              height: '5px',
+                              borderRadius: '50%',
+                              backgroundColor: '#22c55e',
+                              border: `1px solid ${settings.primaryColor}`,
+                            }}
+                          />
+                        )}
+                      </div>
+                    )}
+                    {/* Header Text - gap: 2px */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                      <span style={{
+                        fontSize: '10px', // 16px scaled
+                        fontWeight: 600,
+                        letterSpacing: '-0.02em',
+                        margin: 0,
+                      }}>
+                        {settings.headerTitle}
+                      </span>
+                      {settings.headerSubtitle && (
+                        <span style={{ fontSize: '7px', opacity: 0.8, fontWeight: 400 }}> {/* 12px scaled */}
+                          {settings.headerSubtitle}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  {/* Header Actions - gap: 8px scaled to 5px */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    {settings.headerShowMinimizeButton && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="p-0 hover:bg-transparent"
+                        style={{
+                          width: '19px', // 32px scaled
+                          height: '19px',
+                          borderRadius: '5px', // 8px scaled
+                          backgroundColor: 'rgba(255,255,255,0.2)',
+                          color: 'inherit',
+                          fontSize: '14px', // 24px scaled
+                          lineHeight: 1,
+                          minWidth: '19px',
+                        }}
+                      >
+                        −
+                      </Button>
+                    )}
+                    {settings.headerShowCloseButton && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="p-0 hover:bg-transparent"
+                        style={{
+                          width: '19px',
+                          height: '19px',
+                          borderRadius: '5px',
+                          backgroundColor: 'rgba(255,255,255,0.2)',
+                          color: 'inherit',
+                          fontSize: '12px', // 20px scaled
+                          minWidth: '19px',
+                        }}
+                      >
+                        ×
+                      </Button>
+                    )}
+                  </div>
+                </div>
+                {/* Tabs - gap: 8px scaled to 5px */}
+                <div style={{ display: 'flex', gap: '5px' }}>
+                  <Button
+                    variant="ghost"
+                    className="h-auto hover:bg-transparent"
+                    style={{
+                      padding: '5px 10px', // 8px 16px scaled
+                      borderRadius: '5px', // 8px scaled
+                      fontSize: '8px', // 13px scaled
+                      fontWeight: 500,
+                      backgroundColor: settings.theme === 'dark' ? settings.darkModeBackgroundColor : 'white',
+                      color: settings.theme === 'dark' ? settings.darkModePrimaryColor : settings.primaryColor,
+                    }}
+                  >
+                    Chat
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className="h-auto hover:bg-transparent"
+                    style={{
+                      padding: '5px 10px',
+                      borderRadius: '5px',
+                      fontSize: '8px',
+                      fontWeight: 500,
+                      backgroundColor: 'rgba(255,255,255,0.15)',
+                      color: 'rgba(255,255,255,0.8)',
+                    }}
+                  >
+                    Speak
+                  </Button>
+                </div>
+              </div>
+
+              {/* Content Area - padding: 16px scaled to 10px */}
+              <div
+                style={{
+                  flex: 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  padding: '10px',
+                  overflow: 'hidden',
+                  backgroundColor: settings.theme === 'dark' ? settings.darkModeSecondaryBackgroundColor : '#f8fafc',
+                }}
+              >
+                {/* Messages */}
+                <div style={{ flex: 1, overflowY: 'auto', paddingRight: '2px' }}>
+                  {/* Messages - margin-bottom: 16px scaled to 10px */}
+                  {/* Assistant message - gap: 8px scaled to 5px */}
+                  <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', gap: '5px', marginBottom: '10px' }}>
+                    {/* Avatar - 32px scaled to 19px */}
+                    <div
+                      style={{
+                        width: '19px',
+                        height: '19px',
+                        borderRadius: '50%',
+                        backgroundColor: settings.secondaryColor,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '7px', // 12px scaled
+                        fontWeight: 600,
+                        color: settings.primaryColor,
+                        flexShrink: 0,
+                      }}
+                    >
+                      AI
+                    </div>
+                    {/* Message Content - padding: 12px 16px */}
+                    <div
+                      style={{
+                        padding: '7px 10px',
+                        borderRadius: `${Math.min(settings.borderRadius - 4, 12) * 0.6}px`,
+                        borderBottomLeftRadius: '2px',
+                        backgroundColor: settings.assistantBubbleBackgroundColor,
+                        color: settings.assistantBubbleTextColor,
+                        boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                        maxWidth: '85%',
+                        lineHeight: 1.5,
+                        fontSize: '8px', // 14px scaled
+                      }}
+                    >
+                      Hi! How can I help?
+                    </div>
+                  </div>
+
+                  {/* User message */}
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', marginBottom: '10px' }}>
+                    <div
+                      style={{
+                        padding: '7px 10px',
+                        borderRadius: `${Math.min(settings.borderRadius - 4, 12) * 0.6}px`,
+                        borderBottomRightRadius: '2px',
+                        backgroundColor: settings.userBubbleBackgroundColor || settings.primaryColor,
+                        color: settings.userBubbleTextColor,
+                        maxWidth: '85%',
+                        lineHeight: 1.5,
+                        fontSize: '8px',
+                      }}
+                    >
+                      Hello!
+                    </div>
+                  </div>
+
+                  {/* Typing Indicator - padding: 12px 16px, gap: 8px */}
+                  {settings.showTypingIndicator && (
+                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', gap: '5px', marginBottom: '10px' }}>
+                      <div
+                        style={{
+                          width: '19px',
+                          height: '19px',
+                          borderRadius: '50%',
+                          backgroundColor: settings.secondaryColor,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '7px',
+                          fontWeight: 600,
+                          color: settings.primaryColor,
+                          flexShrink: 0,
+                        }}
+                      >
+                        AI
+                      </div>
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '5px',
+                          padding: '7px 10px',
+                          backgroundColor: settings.assistantBubbleBackgroundColor,
+                          borderRadius: `${Math.min(settings.borderRadius - 4, 12) * 0.6}px`,
+                          borderBottomLeftRadius: '2px',
+                          boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                        }}
+                      >
+                        {/* Dots - 6px scaled to 4px, gap: 4px scaled to 2px */}
+                        <div style={{ display: 'flex', gap: '2px' }}>
+                          <span className="animate-bounce" style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: settings.theme === 'dark' ? settings.darkModePrimaryColor : settings.primaryColor, animationDelay: '-0.32s', animationDuration: '1.4s' }} />
+                          <span className="animate-bounce" style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: settings.theme === 'dark' ? settings.darkModePrimaryColor : settings.primaryColor, animationDelay: '-0.16s', animationDuration: '1.4s' }} />
+                          <span className="animate-bounce" style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: settings.theme === 'dark' ? settings.darkModePrimaryColor : settings.primaryColor, animationDelay: '0s', animationDuration: '1.4s' }} />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Input Area - gap: 8px, padding: 16px scaled */}
+              <div
+                style={{
+                  flexShrink: 0,
+                  display: 'flex',
+                  gap: '5px', // 8px scaled
+                  padding: '10px',
+                  backgroundColor: settings.theme === 'dark' ? settings.darkModeSecondaryBackgroundColor : settings.backgroundColor,
+                  borderTop: `1px solid ${settings.theme === 'dark' ? settings.darkModeBorderColor : settings.borderColor}`,
+                }}
+              >
+                {/* Input - padding: 12px 16px, min-height: 44px */}
+                <Input
+                  type="text"
+                  readOnly
+                  placeholder={settings.inputPlaceholder}
+                  className="flex-1"
+                  style={{
+                    border: `1px solid ${settings.theme === 'dark' ? settings.darkModeTextSecondaryColor : settings.borderColor}`,
+                    borderRadius: `${settings.inputBorderRadius * 0.6}px`,
+                    padding: '7px 10px',
+                    fontSize: '8px',
+                    backgroundColor: settings.theme === 'dark' ? settings.darkModeSecondaryBackgroundColor : '#f8fafc',
+                    color: settings.theme === 'dark' ? settings.darkModeTextColor : settings.textSecondaryColor,
+                    minHeight: '26px', // 44px scaled
+                    height: '26px',
+                  }}
+                />
+                {/* Buttons - 44px scaled to 26px */}
+                {settings.enableFileAttachments && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="p-0 hover:bg-transparent shrink-0"
+                    style={{
+                      width: '26px',
+                      height: '26px',
+                      minWidth: '26px',
+                      borderRadius: `${Math.min(settings.borderRadius - 4, 12) * 0.6}px`,
+                      backgroundColor: settings.theme === 'dark' ? settings.darkModeBackgroundColor : '#f8fafc',
+                      color: settings.theme === 'dark' ? settings.darkModeTextSecondaryColor : settings.textSecondaryColor,
+                      fontSize: '11px',
+                    }}
+                  >
+                    📎
+                  </Button>
+                )}
+                {settings.enableEmojiPicker && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="p-0 hover:bg-transparent shrink-0"
+                    style={{
+                      width: '26px',
+                      height: '26px',
+                      minWidth: '26px',
+                      borderRadius: `${Math.min(settings.borderRadius - 4, 12) * 0.6}px`,
+                      backgroundColor: settings.theme === 'dark' ? settings.darkModeBackgroundColor : '#f8fafc',
+                      color: settings.theme === 'dark' ? settings.darkModeTextSecondaryColor : settings.textSecondaryColor,
+                      fontSize: '11px',
+                    }}
+                  >
+                    😊
+                  </Button>
+                )}
+                {settings.enableVoiceInput && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="p-0 hover:bg-transparent shrink-0"
+                    style={{
+                      width: '26px',
+                      height: '26px',
+                      minWidth: '26px',
+                      borderRadius: `${Math.min(settings.borderRadius - 4, 12) * 0.6}px`,
+                      backgroundColor: settings.theme === 'dark' ? settings.darkModeBackgroundColor : '#f8fafc',
+                      color: settings.theme === 'dark' ? settings.darkModeTextSecondaryColor : settings.textSecondaryColor,
+                    }}
+                  >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 14C13.66 14 15 12.66 15 11V5C15 3.34 13.66 2 12 2C10.34 2 9 3.34 9 5V11C9 12.66 10.34 14 12 14Z"/>
+                      <path d="M17 11C17 13.76 14.76 16 12 16C9.24 16 7 13.76 7 11H5C5 14.53 7.61 17.43 11 17.92V21H13V17.92C16.39 17.43 19 14.53 19 11H17Z"/>
+                    </svg>
+                  </Button>
+                )}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="p-0 hover:bg-transparent shrink-0"
+                  style={{
+                    width: '26px',
+                    height: '26px',
+                    minWidth: '26px',
+                    borderRadius: '50%',
+                    backgroundColor: settings.theme === 'dark' ? settings.darkModePrimaryColor : settings.primaryColor,
+                    color: 'white',
+                  }}
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M2 21L23 12L2 3V10L17 12L2 14V21Z"/>
+                  </svg>
+                </Button>
+              </div>
+
+              {/* Powered By - padding: 8px 16px, font-size: 11px */}
+              {settings.showPoweredBy && (
+                <div
+                  style={{
+                    flexShrink: 0,
+                    padding: '5px 10px',
+                    textAlign: 'center',
+                    backgroundColor: settings.theme === 'dark' ? settings.darkModeBackgroundColor : settings.backgroundColor,
+                    borderTop: `1px solid ${settings.theme === 'dark' ? settings.darkModeBorderColor : settings.borderColor}`,
+                  }}
+                >
+                  <span style={{ fontSize: '7px', color: settings.theme === 'dark' ? settings.darkModeTextSecondaryColor : settings.textSecondaryColor, fontWeight: 400 }}>
+                    {settings.poweredByText}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Launcher Button - 56px default scaled to 34px */}
+            <style>
+              {`
+                @keyframes launcherPulse {
+                  0%, 100% { box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 0 0 0 rgba(99, 102, 241, 0.4); }
+                  50% { box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 0 0 8px rgba(99, 102, 241, 0); }
+                }
+                @keyframes launcherBounce {
+                  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+                  40% { transform: translateY(-6px); }
+                  60% { transform: translateY(-3px); }
+                }
+                @keyframes launcherShake {
+                  0%, 100% { transform: rotate(0deg); }
+                  10%, 30% { transform: rotate(-5deg); }
+                  20%, 40% { transform: rotate(5deg); }
+                  50% { transform: rotate(0deg); }
+                }
+                @keyframes launcherGlow {
+                  0%, 100% { box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 0 5px ${settings.primaryColor}; }
+                  50% { box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 0 15px ${settings.primaryColor}; }
+                }
+                .preview-launcher-btn {
+                  transition: all 200ms ease-out;
+                }
+                .preview-launcher-btn:hover {
+                  transform: scale(1.05);
+                  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25), 0 0 0 0 rgba(99, 102, 241, 0.4);
+                  filter: brightness(0.9);
+                }
+                .preview-launcher-btn:active {
+                  transform: scale(0.95);
+                }
+              `}
+            </style>
+            <div
+              className={`preview-launcher-btn absolute flex items-center justify-center cursor-pointer ${
+                settings.launcherPosition.includes('bottom') ? 'bottom-3' : 'top-3'
+              } ${
+                settings.launcherPosition.includes('right') ? 'right-3' : 'left-3'
+              }`}
+              style={{
+                width: settings.launcherSize === 'small' ? '29px' : settings.launcherSize === 'large' ? '38px' : '34px', // 48/56/64 scaled
+                height: settings.launcherSize === 'small' ? '29px' : settings.launcherSize === 'large' ? '38px' : '34px',
+                backgroundColor: settings.launcherBackgroundColor || (settings.theme === 'dark' ? settings.darkModePrimaryColor : settings.primaryColor),
+                color: settings.launcherIconColor,
+                borderRadius: settings.launcherShape === 'circle' ? '50%' : settings.launcherShape === 'rounded-square' ? `${settings.borderRadius * 0.6}px` : '0',
+                boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1), 0 0 0 0 rgba(99,102,241,0.4)',
+                animation: settings.launcherAnimation === 'pulse' ? 'launcherPulse 2s infinite' :
+                  settings.launcherAnimation === 'bounce' ? 'launcherBounce 2s infinite' :
+                  settings.launcherAnimation === 'shake' ? 'launcherShake 2s infinite' : 'none',
+              }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                {settings.launcherIcon === 'message' ? (
+                  <path d="M20 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4ZM20 8L12 13L4 8V6L12 11L20 6V8Z"/>
+                ) : settings.launcherIcon === 'help' ? (
+                  <path d="M12 2C6.48 2 2 6.48 2 12S6.48 22 12 22 22 17.52 22 12 17.52 2 12 2ZM13 19H11V17H13V19ZM15.07 11.25L14.17 12.17C13.45 12.9 13 13.5 13 15H11V14.5C11 13.4 11.45 12.4 12.17 11.67L13.41 10.41C13.78 10.05 14 9.55 14 9C14 7.9 13.1 7 12 7S10 7.9 10 9H8C8 6.79 9.79 5 12 5S16 6.79 16 9C16 9.88 15.64 10.68 15.07 11.25Z"/>
+                ) : settings.launcherIcon === 'support' ? (
+                  <path d="M12 1C5.9 1 1 5.9 1 12S5.9 23 12 23 23 18.1 23 12 18.1 1 12 1ZM12 21C7 21 3 17 3 12S7 3 12 3 21 7 21 12 17 21 12 21ZM12 11C10.3 11 9 9.7 9 8S10.3 5 12 5 15 6.3 15 8 13.7 11 12 11ZM12 13C14.7 13 20 14.3 20 17V19H4V17C4 14.3 9.3 13 12 13Z"/>
+                ) : (
+                  <path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2Z"/>
+                )}
+              </svg>
+              {/* Badge - min-width: 18px, height: 18px scaled */}
+              {settings.launcherShowBadge && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '-2px',
+                    right: '-2px',
+                    minWidth: '11px',
+                    height: '11px',
+                    padding: '0 2px',
+                    borderRadius: '5px',
+                    fontSize: '7px',
+                    fontWeight: 600,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor: settings.launcherBadgeColor,
+                    color: 'white',
+                  }}
+                >
+                  1
+                </div>
+              )}
+            </div>
+
+            {/* Tooltip */}
+            {settings.launcherShowTooltip && (
+              <div
+                className={`absolute ${
+                  settings.launcherPosition.includes('bottom') ? 'bottom-3' : 'top-3'
+                } ${
+                  settings.launcherPosition.includes('right') ? 'right-14' : 'left-14'
+                }`}
+                style={{
+                  fontSize: '8px',
+                  fontWeight: 500,
+                  padding: '5px 7px',
+                  borderRadius: `${Math.min(settings.borderRadius - 4, 12) * 0.6}px`,
+                  backgroundColor: settings.theme === 'dark' ? settings.darkModeBackgroundColor : settings.backgroundColor,
+                  color: settings.theme === 'dark' ? settings.darkModeTextColor : settings.textColor,
+                  boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {settings.launcherTooltip}
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Settings Panel - Now below */}
+      <Card>
+        <CardContent className="p-0">
+          <Tabs defaultValue="appearance" className="w-full">
+            <TabsList className="w-full justify-start rounded-none border-b bg-transparent p-0 flex-wrap">
+              <TabsTrigger value="appearance" className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:bg-transparent">
+                <Palette className="h-4 w-4 mr-2" />
+                Appearance
+              </TabsTrigger>
+              <TabsTrigger value="launcher" className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:bg-transparent">
+                <MessageSquare className="h-4 w-4 mr-2" />
+                Launcher
+              </TabsTrigger>
+              <TabsTrigger value="window" className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:bg-transparent">
+                <Layout className="h-4 w-4 mr-2" />
+                Window
+              </TabsTrigger>
+              <TabsTrigger value="behavior" className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:bg-transparent">
+                <Zap className="h-4 w-4 mr-2" />
+                Behavior
+              </TabsTrigger>
+              <TabsTrigger value="content" className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:bg-transparent">
+                <FileText className="h-4 w-4 mr-2" />
+                Content
+              </TabsTrigger>
+              <TabsTrigger value="responsive" className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:bg-transparent">
+                <Smartphone className="h-4 w-4 mr-2" />
+                Mobile
+              </TabsTrigger>
+              <TabsTrigger value="advanced" className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:bg-transparent">
+                <Sliders className="h-4 w-4 mr-2" />
+                Advanced
+              </TabsTrigger>
+            </TabsList>
+
+                {/* Appearance Tab */}
+                <TabsContent value="appearance" className="p-4 space-y-4">
+                  <CollapsibleSection title="Colors" defaultOpen>
+                    <div className="space-y-4">
+                      <div>
+                        <p className="text-sm font-medium mb-3">Light Theme</p>
+                        <div className="grid grid-cols-2 gap-4">
+                          <FormColorPicker name="primaryColor" label="Primary Color" control={form.control} description="Main brand color" />
+                          <FormColorPicker name="secondaryColor" label="Secondary Color" control={form.control} description="Accent color" />
+                          <FormColorPicker name="backgroundColor" label="Background" control={form.control} />
+                          <FormColorPicker name="textColor" label="Text Color" control={form.control} />
+                          <FormColorPicker name="textSecondaryColor" label="Secondary Text" control={form.control} />
+                          <FormColorPicker name="borderColor" label="Border Color" control={form.control} />
+                        </div>
+                      </div>
+
+                      <div className="border-t pt-4">
+                        <p className="text-sm font-medium mb-3">Dark Theme</p>
+                        <div className="grid grid-cols-2 gap-4">
+                          <FormColorPicker name="darkModePrimaryColor" label="Primary Color" control={form.control} description="Main brand color" />
+                          <FormColorPicker name="darkModeSecondaryColor" label="Secondary Color" control={form.control} description="Accent color" />
+                          <FormColorPicker name="darkModeBackgroundColor" label="Background" control={form.control} />
+                          <FormColorPicker name="darkModeTextColor" label="Text Color" control={form.control} />
+                          <FormColorPicker name="darkModeTextSecondaryColor" label="Secondary Text" control={form.control} />
+                          <FormColorPicker name="darkModeBorderColor" label="Border Color" control={form.control} />
+                        </div>
+                      </div>
+                    </div>
+                  </CollapsibleSection>
+
+                  <CollapsibleSection title="Typography">
+                    <FormSelectField name="fontFamily" label="Font Family" control={form.control} options={[
+                        { value: "system", label: "System Default" },
+                        { value: "Inter, sans-serif", label: "Inter" },
+                        { value: "Roboto, sans-serif", label: "Roboto" },
+                        { value: "Open Sans, sans-serif", label: "Open Sans" },
+                        { value: "Lato, sans-serif", label: "Lato" },
+                      ]} />
+                    <FormNumberField name="fontSize" label="Font Size" control={form.control} min={10} max={20} suffix="px" />
+                  </CollapsibleSection>
+
+                  <CollapsibleSection title="Shape & Shadow">
+                    <FormNumberField name="borderRadius" label="Border Radius" control={form.control} min={0} max={32} suffix="px" />
+                    <FormSelectField name="shadowSize" label="Shadow Size" control={form.control} options={[
+                        { value: "none", label: "None" },
+                        { value: "small", label: "Small" },
+                        { value: "medium", label: "Medium" },
+                        { value: "large", label: "Large" },
+                      ]} />
+                  </CollapsibleSection>
+                </TabsContent>
+
+                {/* Launcher Tab */}
+                <TabsContent value="launcher" className="p-4 space-y-4">
+                  <CollapsibleSection title="Position & Size" defaultOpen>
+                    <FormSelectField name="launcherPosition" label="Position" control={form.control} options={[
+                        { value: "bottom-right", label: "Bottom Right" },
+                        { value: "bottom-left", label: "Bottom Left" },
+                        { value: "top-right", label: "Top Right" },
+                        { value: "top-left", label: "Top Left" },
+                      ]} />
+                    <FormSelectField name="launcherSize" label="Size" control={form.control} options={[
+                        { value: "small", label: "Small (48px)" },
+                        { value: "medium", label: "Medium (56px)" },
+                        { value: "large", label: "Large (64px)" },
+                      ]} />
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormNumberField name="launcherOffsetX" label="Offset X" control={form.control} min={0} max={100} suffix="px" />
+                      <FormNumberField name="launcherOffsetY" label="Offset Y" control={form.control} min={0} max={100} suffix="px" />
+                    </div>
+                  </CollapsibleSection>
+
+                  <CollapsibleSection title="Appearance">
+                    <FormSelectField name="launcherIcon" label="Icon" control={form.control} options={[
+                        { value: "chat", label: "Chat Bubble" },
+                        { value: "message", label: "Message" },
+                        { value: "help", label: "Help" },
+                        { value: "support", label: "Support" },
+                      ]} />
+                    <FormSelectField name="launcherShape" label="Shape" control={form.control} options={[
+                        { value: "circle", label: "Circle" },
+                        { value: "rounded-square", label: "Rounded Square" },
+                        { value: "square", label: "Square" },
+                      ]} />
+                    <FormColorPicker name="launcherBackgroundColor" label="Background Color" control={form.control} description="Leave empty to use primary color" />
+                    <FormColorPicker name="launcherIconColor" label="Icon Color" control={form.control} />
+                  </CollapsibleSection>
+
+                  <CollapsibleSection title="Tooltip & Animation">
+                    <FormToggleField name="launcherShowTooltip" label="Show Tooltip" control={form.control} />
+                    <FormInput name="launcherTooltip" label="Tooltip Text" control={form.control} />
+                    <FormSelectField name="launcherAnimation" label="Animation" control={form.control} options={[
+                        { value: "none", label: "None" },
+                        { value: "pulse", label: "Pulse" },
+                        { value: "bounce", label: "Bounce" },
+                        { value: "shake", label: "Shake" },
+                        { value: "glow", label: "Glow" },
+                      ]} />
+                  </CollapsibleSection>
+
+                  <CollapsibleSection title="Badge">
+                    <FormToggleField name="launcherShowBadge" label="Show Badge" control={form.control} description="Show unread message count" />
+                    <FormColorPicker name="launcherBadgeColor" label="Badge Color" control={form.control} />
+                  </CollapsibleSection>
+                </TabsContent>
+
+                {/* Window Tab */}
+                <TabsContent value="window" className="p-4 space-y-4">
+                  <CollapsibleSection title="Size" defaultOpen>
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormNumberField name="chatWindowWidth" label="Width" control={form.control} min={300} max={600} suffix="px" />
+                      <FormNumberField name="chatWindowHeight" label="Height" control={form.control} min={400} max={800} suffix="px" />
+                    </div>
+                  </CollapsibleSection>
+
+                  <CollapsibleSection title="Header">
+                    <FormInput name="headerTitle" label="Title" control={form.control} />
+                    <FormInput name="headerSubtitle" label="Subtitle" placeholder="Optional" control={form.control} />
+                    <FormToggleField name="headerShowAvatar" label="Show Avatar" control={form.control} />
+                    <FormInput name="headerAvatarUrl" label="Avatar URL" placeholder="https://..." control={form.control} />
+                    <FormToggleField name="headerShowStatus" label="Show Connection Status" control={form.control} />
+                    <FormToggleField name="headerShowCloseButton" label="Show Close Button" control={form.control} />
+                    <FormToggleField name="headerShowMinimizeButton" label="Show Minimize Button" control={form.control} />
+                  </CollapsibleSection>
+
+                  <CollapsibleSection title="Message Bubbles">
+                    <div className="space-y-4">
+                      <p className="text-sm font-medium">User Messages</p>
+                      <div className="grid grid-cols-2 gap-4">
+                        <FormColorPicker name="userBubbleBackgroundColor" label="Background" control={form.control} />
+                        <FormColorPicker name="userBubbleTextColor" label="Text" control={form.control} />
+                      </div>
+                      <p className="text-sm font-medium">Assistant Messages</p>
+                      <div className="grid grid-cols-2 gap-4">
+                        <FormColorPicker name="assistantBubbleBackgroundColor" label="Background" control={form.control} />
+                        <FormColorPicker name="assistantBubbleTextColor" label="Text" control={form.control} />
+                      </div>
+                    </div>
+                  </CollapsibleSection>
+
+                  <CollapsibleSection title="Input Area">
+                    <FormInput name="inputPlaceholder" label="Placeholder Text" control={form.control} />
+                    <FormNumberField name="inputBorderRadius" label="Border Radius" control={form.control} min={0} max={32} suffix="px" />
+                  </CollapsibleSection>
+                </TabsContent>
+
+                {/* Behavior Tab */}
+                <TabsContent value="behavior" className="p-4 space-y-4">
+                  <CollapsibleSection title="Auto-open" defaultOpen>
+                    <FormToggleField name="autoOpenEnabled" label="Enable Auto-open" control={form.control} description="Automatically open chat after delay" />
+                    <FormNumberField name="autoOpenDelay" label="Delay" control={form.control} min={0} max={60000} step={1000} suffix="ms" />
+                    <FormToggleField name="autoOpenOnlyOnce" label="Only Once Per Session" control={form.control} />
+                    <FormToggleField name="autoOpenOnMobile" label="Auto-open on Mobile" control={form.control} />
+                  </CollapsibleSection>
+
+                  <CollapsibleSection title="Features">
+                    <FormToggleField name="enableVoiceInput" label="Voice Input" control={form.control} description="Enable microphone button" />
+                    <FormToggleField name="enableFileAttachments" label="File Attachments" control={form.control} description="Allow users to upload files" />
+                    <FormToggleField name="enableEmojiPicker" label="Emoji Picker" control={form.control} />
+                    <FormToggleField name="showQuickReplies" label="Quick Replies" control={form.control} description="Show suggested responses" />
+                  </CollapsibleSection>
+
+                  <CollapsibleSection title="Notifications">
+                    <FormToggleField name="enableSoundNotifications" label="Sound Notifications" control={form.control} description="Play sound on new messages" />
+                  </CollapsibleSection>
+
+                  <CollapsibleSection title="Typing Indicator">
+                    <FormToggleField name="showTypingIndicator" label="Show Typing Indicator" control={form.control} />
+                    <FormInput name="typingIndicatorText" label="Typing Text" control={form.control} />
+                  </CollapsibleSection>
+
+                  <CollapsibleSection title="Persistence">
+                    <FormToggleField name="persistConversation" label="Persist Conversation" control={form.control} description="Remember chat history between sessions" />
+                  </CollapsibleSection>
+                </TabsContent>
+
+                {/* Content Tab */}
+                <TabsContent value="content" className="p-4 space-y-4">
+                  <CollapsibleSection title="Bot Identity" defaultOpen>
+                    <FormInput name="botName" label="Bot Name" control={form.control} />
+                  </CollapsibleSection>
+
+                  <CollapsibleSection title="Messages">
+                    <FormTextarea name="welcomeMessage" label="Welcome Message" rows={3} control={form.control} />
+                    <FormTextarea name="offlineMessage" label="Offline Message" rows={2} control={form.control} />
+                    <FormTextarea name="errorMessage" label="Error Message" rows={2} control={form.control} />
+                  </CollapsibleSection>
+
+                  <CollapsibleSection title="Conversation Starters">
+                    <FormToggleField name="showConversationStarters" label="Show Conversation Starters" control={form.control} />
+                    <FormInput name="startersTitle" label="Section Title" control={form.control} />
+                  </CollapsibleSection>
+
+                  <CollapsibleSection title="Branding">
+                    <FormToggleField name="showPoweredBy" label="Show Powered By" control={form.control} />
+                    <FormInput name="poweredByText" label="Powered By Text" control={form.control} />
+                  </CollapsibleSection>
+                </TabsContent>
+
+                {/* Responsive Tab */}
+                <TabsContent value="responsive" className="p-4 space-y-4">
+                  <CollapsibleSection title="Breakpoints" defaultOpen>
+                    <FormNumberField name="mobileBreakpoint" label="Mobile Breakpoint" control={form.control} min={320} max={1024} suffix="px" description="Screen width below this is mobile" />
+                    <FormNumberField name="tabletBreakpoint" label="Tablet Breakpoint" control={form.control} min={768} max={1440} suffix="px" description="Screen width below this is tablet" />
+                  </CollapsibleSection>
+
+                  <CollapsibleSection title="Mobile Settings">
+                    <FormToggleField name="mobileFullScreen" label="Full Screen on Mobile" control={form.control} description="Chat window fills entire screen" />
+                    <FormNumberField name="mobileFontSize" label="Mobile Font Size" control={form.control} min={12} max={20} suffix="px" />
+                    <FormSelectField name="mobileLauncherSize" label="Mobile Launcher Size" control={form.control} options={[
+                        { value: "small", label: "Small (48px)" },
+                        { value: "medium", label: "Medium (56px)" },
+                        { value: "large", label: "Large (64px)" },
+                      ]} />
+                  </CollapsibleSection>
+
+                  <CollapsibleSection title="Touch Optimization">
+                    <FormToggleField name="enableTouchOptimizations" label="Enable Touch Optimizations" control={form.control} description="Larger touch targets for mobile" />
+                  </CollapsibleSection>
+                </TabsContent>
+
+                {/* Advanced Tab */}
+                <TabsContent value="advanced" className="p-4 space-y-4">
+                  <CollapsibleSection title="Theme" defaultOpen>
+                    <FormSelectField name="theme" label="Color Theme" control={form.control} options={[
+                        { value: "light", label: "Light" },
+                        { value: "dark", label: "Dark" },
+                        { value: "auto", label: "Auto (System)" },
+                      ]} />
+                  </CollapsibleSection>
+
+                  <CollapsibleSection title="Animations">
+                    <FormToggleField name="enableAnimations" label="Enable Animations" control={form.control} />
+                    <FormNumberField name="animationDuration" label="Animation Duration" control={form.control} min={0} max={1000} step={50} suffix="ms" />
+                  </CollapsibleSection>
+
+                  <CollapsibleSection title="Accessibility">
+                    <FormToggleField name="enableHighContrast" label="High Contrast Mode" control={form.control} />
+                    <FormToggleField name="respectReducedMotion" label="Respect Reduced Motion" control={form.control} description="Disable animations for users who prefer reduced motion" />
+                    <FormToggleField name="enableKeyboardNavigation" label="Keyboard Navigation" control={form.control} />
+                  </CollapsibleSection>
+
+                  <CollapsibleSection title="Custom CSS">
+                    <FormTextarea
+                      name="customCss"
+                      label="Custom Styles"
+                      placeholder=".intelligentconvo-widget { /* your styles */ }"
+                      rows={6}
+                      description="Advanced: Add custom CSS to override widget styles"
+                      control={form.control}
+                    />
+                  </CollapsibleSection>
+
+                  <CollapsibleSection title="Analytics">
+                    <FormToggleField name="enableAnalytics" label="Enable Analytics" control={form.control} description="Track widget usage and interactions" />
+                  </CollapsibleSection>
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
+
+      {/* Installation Instructions */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Installation</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div>
+            <CodeBlock
+              code={embedCode}
+              language="html"
+              title="Embed Code"
+              showLanguageLabel={true}
+            />
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+              Add this code to your website. The widget will automatically load your saved settings.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+      </form>
+    </Form>
+  );
+}

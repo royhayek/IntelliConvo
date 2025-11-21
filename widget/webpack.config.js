@@ -3,10 +3,17 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+const Dotenv = require('dotenv-webpack');
+const dotenv = require('dotenv');
 
 module.exports = (env, argv) => {
   const isProduction = argv.mode === 'production';
   const isDevelopment = argv.mode === 'development';
+
+  // Load environment variables for webpack config usage
+  const envFile = isProduction ? '.env.production' : '.env.development';
+  const envConfig = dotenv.config({ path: path.resolve(__dirname, envFile) });
+  const API_URL = envConfig.parsed?.WIDGET_API_URL || process.env.WIDGET_API_URL || 'http://localhost:5001';
 
   return {
     entry: './src/index.ts',
@@ -62,22 +69,50 @@ module.exports = (env, argv) => {
       ],
     },
     plugins: [
+      new Dotenv({
+        path: isProduction ? './.env.production' : './.env.development',
+        safe: false,
+        systemvars: true,
+        defaults: false,
+      }),
       new HtmlWebpackPlugin({
         template: './public/demo.html',
         filename: 'demo.html',
         minify: isProduction,
+        templateParameters: {
+          API_URL: API_URL,
+        },
+      }),
+      new HtmlWebpackPlugin({
+        template: './public/index.html',
+        filename: 'index.html',
+        minify: isProduction,
+        inject: false,
       }),
       ...(env && env.analyze ? [new BundleAnalyzerPlugin()] : []),
     ],
     devServer: {
-      static: {
-        directory: path.join(__dirname, 'dist'),
-      },
+      static: [
+        {
+          directory: path.join(__dirname, 'dist'),
+          publicPath: '/',
+        },
+        {
+          directory: path.join(__dirname, 'public'),
+          publicPath: '/',
+        }
+      ],
       port: 8080,
-      open: true,
       hot: true,
       compress: true,
-      historyApiFallback: true,
+      historyApiFallback: {
+        rewrites: [
+          { from: /^\/demo$/, to: '/demo.html' },
+        ],
+      },
+      devMiddleware: {
+        writeToDisk: true,
+      },
     },
     optimization: {
       minimize: isProduction,

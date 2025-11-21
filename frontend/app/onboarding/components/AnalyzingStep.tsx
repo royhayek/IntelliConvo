@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Loader2, CheckCircle, AlertCircle, ArrowRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Site } from "./types";
 
 interface AnalyzingStepProps {
@@ -34,7 +35,7 @@ export const AnalyzingStep = memo(function AnalyzingStep({
         transition={{ duration: 0.3 }}
         className="max-w-2xl mx-auto"
       >
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-12">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-12">
           <div className="text-center">
             {/* Animated loader */}
             <motion.div
@@ -45,17 +46,17 @@ export const AnalyzingStep = memo(function AnalyzingStep({
               <Loader2 className="h-10 w-10 text-white" />
             </motion.div>
 
-            <h3 className="text-2xl font-semibold text-gray-900 mb-4">
+            <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
               Analyzing Your Website
             </h3>
 
-            <p className="text-gray-600 mb-6 max-w-md mx-auto">
-              We're scanning <span className="font-medium text-gray-900">{site?.siteUrl}</span> and
+            <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto">
+              We're scanning <span className="font-medium text-gray-900 dark:text-white">{site?.siteUrl}</span> and
               discovering all the pages that will help train your AI assistant.
             </p>
 
-            <div className="bg-gray-50 rounded-xl p-4 mb-6">
-              <p className="text-sm text-gray-500">
+            <div className="bg-gray-50 dark:bg-slate-700 rounded-xl p-4 mb-6">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 This usually takes 1-2 minutes depending on the size of your website.
               </p>
             </div>
@@ -91,44 +92,47 @@ export const AnalyzingStep = memo(function AnalyzingStep({
         transition={{ duration: 0.3 }}
         className="max-w-2xl mx-auto"
       >
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-12">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-12">
           <div className="text-center">
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: "spring", stiffness: 200 }}
-              className="h-20 w-20 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-6"
+              className="h-20 w-20 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mx-auto mb-6"
             >
-              <AlertCircle className="h-10 w-10 text-red-600" />
+              <AlertCircle className="h-10 w-10 text-red-600 dark:text-red-400" />
             </motion.div>
 
-            <h3 className="text-2xl font-semibold text-gray-900 mb-4">
+            <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
               Unable to Analyze Website
             </h3>
 
-            <div className="bg-red-50 rounded-xl p-6 mb-8">
-              <p className="text-sm text-red-800 mb-4">
-                We couldn't access your website. This might be because:
-              </p>
-              <ul className="text-sm text-red-700 space-y-2 text-left max-w-sm mx-auto">
-                <li className="flex items-start">
-                  <span className="mr-2">•</span>
-                  <span>The website is blocking automated access</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="mr-2">•</span>
-                  <span>The website is temporarily unavailable</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="mr-2">•</span>
-                  <span>The URL requires authentication</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="mr-2">•</span>
-                  <span>The URL is incorrect or unreachable</span>
-                </li>
-              </ul>
-            </div>
+            <Alert variant="destructive" className="mb-8 text-left">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                <p className="mb-3">
+                  We couldn't access your website. This might be because:
+                </p>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-start">
+                    <span className="mr-2">•</span>
+                    <span>The website is blocking automated access</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="mr-2">•</span>
+                    <span>The website is temporarily unavailable</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="mr-2">•</span>
+                    <span>The URL requires authentication</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="mr-2">•</span>
+                    <span>The URL is incorrect or unreachable</span>
+                  </li>
+                </ul>
+              </AlertDescription>
+            </Alert>
 
             <div className="flex flex-col sm:flex-row gap-4">
               <Button
@@ -161,38 +165,38 @@ export const AnalyzingStep = memo(function AnalyzingStep({
         transition={{ duration: 0.3 }}
         className="max-w-2xl mx-auto"
       >
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-12">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-12">
           <div className="text-center">
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: "spring", stiffness: 200 }}
-              className="h-20 w-20 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-6"
+              className="h-20 w-20 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mx-auto mb-6"
             >
-              <CheckCircle className="h-10 w-10 text-green-600" />
+              <CheckCircle className="h-10 w-10 text-green-600 dark:text-green-400" />
             </motion.div>
 
-            <h3 className="text-2xl font-semibold text-gray-900 mb-4">
+            <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
               Analysis Complete!
             </h3>
 
-            <div className="bg-green-50 rounded-xl p-6 mb-8">
+            <div className="bg-green-50 dark:bg-green-900/30 rounded-xl p-6 mb-8">
               <div className="grid grid-cols-3 gap-4 text-center">
                 <div>
-                  <div className="text-3xl font-bold text-green-700">
+                  <div className="text-3xl font-bold text-green-700 dark:text-green-400">
                     {site?.urlCount || 0}
                   </div>
-                  <div className="text-sm text-green-600">Pages Found</div>
+                  <div className="text-sm text-green-600 dark:text-green-400">Pages Found</div>
                 </div>
                 <div>
-                  <div className="text-3xl font-bold text-green-700">100%</div>
-                  <div className="text-sm text-green-600">Analyzed</div>
+                  <div className="text-3xl font-bold text-green-700 dark:text-green-400">100%</div>
+                  <div className="text-sm text-green-600 dark:text-green-400">Analyzed</div>
                 </div>
                 <div>
-                  <div className="text-3xl font-bold text-green-700">
+                  <div className="text-3xl font-bold text-green-700 dark:text-green-400">
                     <CheckCircle className="h-8 w-8 mx-auto" />
                   </div>
-                  <div className="text-sm text-green-600">Ready</div>
+                  <div className="text-sm text-green-600 dark:text-green-400">Ready</div>
                 </div>
               </div>
             </div>

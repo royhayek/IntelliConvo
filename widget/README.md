@@ -17,20 +17,35 @@ A production-ready, accessible chat widget that integrates seamlessly with any w
 
 ## Quick Start
 
-### 1. Build the Widget
+### 1. Setup Environment
 
 ```bash
 # Install dependencies
 npm install
 
+# Configure environment variables (optional)
+# Copy and edit the environment files:
+cp .env.example .env.development
+cp .env.example .env.production
+
+# Edit .env.production with your production API URL
+# WIDGET_API_URL=https://api.yourdomain.com
+```
+
+### 2. Build the Widget
+
+```bash
 # Development build with hot reload
 npm run dev
 
 # Production build (optimized and minified)
 npm run build
+
+# Build and preview production bundle
+npm run preview
 ```
 
-### 2. Basic Implementation
+### 3. Basic Implementation
 
 ```html
 <!DOCTYPE html>
@@ -189,30 +204,87 @@ intelligentconvo('init', {
 ```
 widget/
 ├── src/
-│   ├── index.ts          # Main widget code
-│   └── styles.css        # Widget styles
+│   ├── index.ts              # Main widget code
+│   ├── styles.css            # Widget styles
+│   ├── constants/            # Configuration constants
+│   ├── managers/             # Feature managers
+│   ├── handlers/             # Event handlers
+│   ├── renderers/            # UI renderers
+│   ├── utils/                # Utility functions
+│   └── types/                # TypeScript types
 ├── public/
-│   └── demo.html         # Development demo
-├── dist/                 # Built files
-├── webpack.config.js     # Build configuration
-├── tsconfig.json         # TypeScript config
-└── postcss.config.js     # PostCSS config
+│   └── demo.html             # Development demo
+├── dist/                     # Built files
+├── .env.development          # Development environment variables
+├── .env.production           # Production environment variables
+├── .env.example              # Environment template
+├── webpack.config.js         # Build configuration
+├── tsconfig.json             # TypeScript config
+└── postcss.config.js         # PostCSS config
 ```
 
 ### Development Commands
 
 ```bash
-# Start development server with hot reload
+# Start development build with watch mode
 npm run dev
 
-# Build for production
+# Build for production with minification
 npm run build
 
-# Serve built files
+# Build and preview production bundle locally
+npm run preview
+
+# Start webpack dev server (development only)
 npm run serve
+
+# Run TypeScript type checking
+npm run type-check
+
+# Run linter
+npm run lint
+
+# Fix linting issues automatically
+npm run lint:fix
+
+# Run all validation (lint + type-check)
+npm run validate
 
 # Analyze bundle size
 npm run build -- --env analyze
+```
+
+### Environment Configuration
+
+The widget supports environment-specific configuration through `.env` files:
+
+#### `.env.development`
+```bash
+# Development environment
+WIDGET_API_URL=http://localhost:5001
+```
+
+#### `.env.production`
+```bash
+# Production environment
+WIDGET_API_URL=https://api.intelligentconvo.com
+```
+
+**How it works:**
+- During development (`npm run dev`), the widget uses `.env.development`
+- During production build (`npm run build`), the widget uses `.env.production`
+- The `WIDGET_API_URL` is baked into the bundle at build time
+- Website owners can still override it via the `apiUrl` config parameter
+
+**Verify environment variables:**
+```bash
+# Check production build
+npm run build
+grep -o "https://api.intelligentconvo.com" dist/widget.*.js
+
+# Check development build
+rm -rf dist && webpack --mode development
+grep -o "http://localhost:5001" dist/widget.js
 ```
 
 ### API Integration

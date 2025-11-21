@@ -1,6 +1,7 @@
 import { prisma } from '../lib/prisma';
 import { WidgetSettings, Prisma } from '@prisma/client';
 import { logger } from '../utils/logger';
+import { cacheService, CacheNamespace, CacheTTL } from './cache';
 
 // Default widget settings (matches Prisma schema defaults)
 export const defaultWidgetSettings: Omit<Prisma.WidgetSettingsCreateInput, 'site'> = {
@@ -150,9 +151,13 @@ export const defaultWidgetSettings: Omit<Prisma.WidgetSettingsCreateInput, 'site
   focusRingColor: '#6366f1',
   focusRingWidth: 2,
   theme: 'light',
+  darkModePrimaryColor: '#6366f1',
+  darkModeSecondaryColor: '#818cf8',
   darkModeBackgroundColor: '#1e293b',
-  darkModeTextColor: '#f8fafc',
-  darkModeBorderColor: '#334155',
+  darkModeSecondaryBackgroundColor: '#374151',
+  darkModeTextColor: '#f1f5f9',
+  darkModeTextSecondaryColor: '#94a3b8',
+  darkModeBorderColor: '#475569',
   lazyLoadMessages: true,
   preloadWidget: false,
   sanitizeHtml: true,
@@ -164,14 +169,22 @@ export const defaultWidgetSettings: Omit<Prisma.WidgetSettingsCreateInput, 'site
 
 /**
  * Get widget settings for a site
+ * Uses caching for improved performance
  */
 export async function getWidgetSettings(siteId: string): Promise<WidgetSettings | null> {
   try {
-    const settings = await prisma.widgetSettings.findUnique({
-      where: { siteId },
-    });
-
-    return settings;
+    // Try cache first
+    return await cacheService.getOrSet(
+      CacheNamespace.WIDGET_SETTINGS,
+      siteId,
+      async () => {
+        const settings = await prisma.widgetSettings.findUnique({
+          where: { siteId },
+        });
+        return settings;
+      },
+      CacheTTL.LONG // 1 hour cache
+    );
   } catch (error) {
     logger.error('Failed to get widget settings:', error);
     throw error;
@@ -180,9 +193,17 @@ export async function getWidgetSettings(siteId: string): Promise<WidgetSettings 
 
 /**
  * Get widget settings or create defaults if they don't exist
+ * Uses caching for improved performance
  */
 export async function getOrCreateWidgetSettings(siteId: string): Promise<WidgetSettings> {
   try {
+    // Try cache first
+    const cached = await cacheService.get<WidgetSettings>(CacheNamespace.WIDGET_SETTINGS, siteId);
+    if (cached) {
+      return cached;
+    }
+
+    // Not in cache, check database
     let settings = await prisma.widgetSettings.findUnique({
       where: { siteId },
     });
@@ -198,6 +219,9 @@ export async function getOrCreateWidgetSettings(siteId: string): Promise<WidgetS
       });
       logger.info(`Created default widget settings for site ${siteId}`);
     }
+
+    // Cache the result
+    await cacheService.set(CacheNamespace.WIDGET_SETTINGS, siteId, settings, CacheTTL.LONG);
 
     return settings;
   } catch (error) {
@@ -254,6 +278,9 @@ export async function updateWidgetSettings(
       data,
     });
 
+    // Invalidate cache
+    await cacheService.delete(CacheNamespace.WIDGET_SETTINGS, siteId);
+
     logger.info(`Updated widget settings for site ${siteId}`);
     return settings;
   } catch (error) {
@@ -277,6 +304,9 @@ export async function resetWidgetSettings(siteId: string): Promise<WidgetSetting
         },
       },
     });
+
+    // Invalidate cache
+    await cacheService.delete(CacheNamespace.WIDGET_SETTINGS, siteId);
 
     logger.info(`Reset widget settings to defaults for site ${siteId}`);
     return settings;
@@ -348,8 +378,12 @@ export function validateWidgetSettings(
     'inputBorderColor',
     'sendButtonIconColor',
     'focusRingColor',
+    'darkModePrimaryColor',
+    'darkModeSecondaryColor',
     'darkModeBackgroundColor',
+    'darkModeSecondaryBackgroundColor',
     'darkModeTextColor',
+    'darkModeTextSecondaryColor',
     'darkModeBorderColor',
   ];
 

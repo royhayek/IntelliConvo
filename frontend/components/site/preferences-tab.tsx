@@ -1,96 +1,148 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Save, Plus, Eye, Trash2 } from "lucide-react";
+import { useForm, useFieldArray } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Save, Plus, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  usePatchApiSitesSiteId,
-  useGetApiSitesSiteIdStarters,
-  usePutApiSitesSiteIdStarters,
-  getGetApiSitesSiteIdQueryKey,
-  getGetApiSitesSiteIdStartersQueryKey,
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { SectionHeader } from "@/components/ui/section-header";
+import { FormSection } from "@/components/ui/form-section";
+import { StarterFieldItem } from "@/components/site/starter-field-item";
+import { DangerZoneCard } from "@/components/site/danger-zone-card";
+import {
+  usePatchApiV1SitesSiteId,
+  useGetApiV1SitesSiteIdStarters,
+  usePutApiV1SitesSiteIdStarters,
+  getGetApiV1SitesSiteIdQueryKey,
+  getGetApiV1SitesSiteIdStartersQueryKey,
 } from "@/lib/api/generated/queries/sites/sites";
-import { type GetApiSitesSiteId200 } from "@/lib/api/generated/models";
+import { type GetApiV1SitesSiteId200 } from "@/lib/api/generated/models";
+
+// Validation schemas
+const siteInfoSchema = z.object({
+  siteName: z.string().min(1, "Site name is required").max(100, "Site name must be less than 100 characters"),
+  siteDescription: z.string().min(1, "Site description is required").max(500, "Description must be less than 500 characters"),
+  specialInstructions: z.string().max(1000, "Instructions must be less than 1000 characters").optional(),
+  siteIndustry: z.string().max(100, "Industry must be less than 100 characters").optional(),
+});
+
+const conversationStartersSchema = z.object({
+  welcomeMessage: z.string().max(200, "Welcome message must be less than 200 characters").optional(),
+  starters: z.array(
+    z.object({
+      text: z.string().min(1, "Starter text is required").max(150, "Starter must be less than 150 characters"),
+    })
+  ).max(10, "Maximum 10 conversation starters allowed"),
+});
+
+type SiteInfoFormData = z.infer<typeof siteInfoSchema>;
+type ConversationStartersFormData = z.infer<typeof conversationStartersSchema>;
 
 interface PreferencesTabProps {
-  site: GetApiSitesSiteId200;
+  site: GetApiV1SitesSiteId200;
 }
 
 export function PreferencesTab({ site }: PreferencesTabProps) {
   const queryClient = useQueryClient();
-  const [siteInfo, setSiteInfo] = useState({
-    siteName: site.siteName,
-    siteDescription: site.siteDescription || "",
-    siteIndustry: site.siteIndustry || "",
-    specialInstructions: site.specialInstructions || "",
+
+  // Site Info Form
+  const siteInfoForm = useForm<SiteInfoFormData>({
+    resolver: zodResolver(siteInfoSchema),
+    defaultValues: {
+      siteName: site.siteName,
+      siteDescription: site.siteDescription || "",
+      siteIndustry: site.siteIndustry || "",
+      specialInstructions: site.specialInstructions || "",
+    },
   });
 
-  const { data: starters } = useGetApiSitesSiteIdStarters(site.id);
+  // Conversation Starters Data
+  const { data: starters } = useGetApiV1SitesSiteIdStarters(site.id);
 
-  const [welcomeMessage, setWelcomeMessage] = useState("");
-  const [startersList, setStartersList] = useState<string[]>([]);
-  const [newStarter, setNewStarter] = useState("");
+  // Conversation Starters Form
+  const startersForm = useForm<ConversationStartersFormData>({
+    resolver: zodResolver(conversationStartersSchema),
+    defaultValues: {
+      welcomeMessage: "",
+      starters: [],
+    },
+  });
 
-  // Update local state when starters data is loaded
+  const { fields, append, remove } = useFieldArray({
+    control: startersForm.control,
+    name: "starters",
+  });
+
+  // Update form when starters data is loaded
   useEffect(() => {
     if (starters) {
-      setWelcomeMessage(starters.welcomeMessage || "");
-      setStartersList(starters.starters?.map(s => s.starterText || "").filter(Boolean) || []);
+      startersForm.reset({
+        welcomeMessage: starters.welcomeMessage || "",
+        starters: starters.starters?.map(s => ({ text: s.starterText || "" })).filter(s => s.text) || [],
+      });
     }
-  }, [starters]);
+  }, [starters, startersForm]);
 
-  const updateSiteMutation = usePatchApiSitesSiteId({
+  const updateSiteMutation = usePatchApiV1SitesSiteId({
     mutation: {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: getGetApiSitesSiteIdQueryKey(site.id) });
+        queryClient.invalidateQueries({ queryKey: getGetApiV1SitesSiteIdQueryKey(site.id) });
       },
     },
   });
 
-  const updateStartersMutation = usePutApiSitesSiteIdStarters({
+  const updateStartersMutation = usePutApiV1SitesSiteIdStarters({
     mutation: {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: getGetApiSitesSiteIdStartersQueryKey(site.id) });
+        queryClient.invalidateQueries({ queryKey: getGetApiV1SitesSiteIdStartersQueryKey(site.id) });
       },
     },
   });
 
-  const handleSaveSiteInfo = () => {
-    updateSiteMutation.mutate({ siteId: site.id, data: siteInfo });
-  };
-
-  const handleSaveStarters = () => {
-    updateStartersMutation.mutate({
+  const onSaveSiteInfo = (data: SiteInfoFormData) => {
+    updateSiteMutation.mutate({
       siteId: site.id,
       data: {
-        welcomeMessage,
-        starters: startersList,
+        siteName: data.siteName,
+        siteDescription: data.siteDescription,
+        siteIndustry: data.siteIndustry,
+        specialInstructions: data.specialInstructions,
       },
     });
   };
 
-  const addStarter = () => {
-    if (newStarter.trim()) {
-      setStartersList([...startersList, newStarter.trim()]);
-      setNewStarter("");
-    }
-  };
-
-  const removeStarter = (index: number) => {
-    setStartersList(startersList.filter((_, i) => i !== index));
+  const onSaveStarters = (data: ConversationStartersFormData) => {
+    updateStartersMutation.mutate({
+      siteId: site.id,
+      data: {
+        welcomeMessage: data.welcomeMessage,
+        starters: data.starters.map(s => s.text),
+      },
+    });
   };
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-xl font-semibold text-gray-900">Site Preferences</h2>
-        <p className="text-gray-600">Configure your site information and conversation settings</p>
-      </div>
+      <SectionHeader
+        title="Site Preferences"
+        description="Configure your site information and conversation settings"
+      />
 
       <Tabs defaultValue="site-info" className="space-y-6">
         <TabsList>
@@ -101,157 +153,195 @@ export function PreferencesTab({ site }: PreferencesTabProps) {
         </TabsList>
 
         <TabsContent value="site-info" className="space-y-6">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
-                <CardTitle>Site Info</CardTitle>
-                <p className="text-sm text-gray-600">Manage your site information and settings</p>
-              </div>
-              <Button onClick={handleSaveSiteInfo} disabled={updateSiteMutation.isPending}>
+          <FormSection
+            title="Site Info"
+            description="Manage your site information and settings"
+            asCard={true}
+            action={
+              <Button
+                onClick={siteInfoForm.handleSubmit(onSaveSiteInfo)}
+                disabled={updateSiteMutation.isPending || !siteInfoForm.formState.isDirty}
+              >
                 <Save className="h-4 w-4 mr-2" />
                 {updateSiteMutation.isPending ? "Saving..." : "Update Site Info"}
               </Button>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="siteName">Site Name *</Label>
-                <Input
-                  id="siteName"
-                  value={siteInfo.siteName}
-                  onChange={(e) => setSiteInfo({ ...siteInfo, siteName: e.target.value })}
-                  className="mt-1"
-                />
-              </div>
+            }
+          >
+            <Form {...siteInfoForm}>
+              <form onSubmit={siteInfoForm.handleSubmit(onSaveSiteInfo)} className="space-y-4">
+                  <FormField
+                    control={siteInfoForm.control}
+                    name="siteName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Site Name *</FormLabel>
+                        <FormControl>
+                          <Input placeholder="My Awesome Site" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-              <div>
-                <Label htmlFor="siteDescription">Site Description *</Label>
-                <textarea
-                  id="siteDescription"
-                  value={siteInfo.siteDescription}
-                  onChange={(e) => setSiteInfo({ ...siteInfo, siteDescription: e.target.value })}
-                  rows={3}
-                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  placeholder="Mojo is a digital wallet platform in Lebanon..."
-                />
-              </div>
+                  <FormField
+                    control={siteInfoForm.control}
+                    name="siteDescription"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Site Description *</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="Mojo is a digital wallet platform in Lebanon..."
+                            rows={3}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-              <div>
-                <Label htmlFor="specialInstructions">Special Instructions</Label>
-                <textarea
-                  id="specialInstructions"
-                  value={siteInfo.specialInstructions}
-                  onChange={(e) => setSiteInfo({ ...siteInfo, specialInstructions: e.target.value })}
-                  rows={3}
-                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  placeholder="Enter special site instructions"
-                />
-              </div>
+                  <FormField
+                    control={siteInfoForm.control}
+                    name="specialInstructions"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Special Instructions</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="Enter special site instructions"
+                            rows={3}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Optional instructions for how the AI should handle conversations
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-              <div>
-                <Label htmlFor="industry">Industry</Label>
-                <Input
-                  id="industry"
-                  value={siteInfo.siteIndustry}
-                  onChange={(e) => setSiteInfo({ ...siteInfo, siteIndustry: e.target.value })}
-                  placeholder="Digital Payments"
-                  className="mt-1"
-                />
-              </div>
-            </CardContent>
-          </Card>
+                  <FormField
+                    control={siteInfoForm.control}
+                    name="siteIndustry"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Industry</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Digital Payments" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </form>
+              </Form>
+          </FormSection>
         </TabsContent>
 
         <TabsContent value="conversation-starters" className="space-y-6">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
-                <CardTitle>Conversation Starters (Total {startersList.length})</CardTitle>
-              </div>
+          <FormSection
+            title={`Conversation Starters (Total ${fields.length})`}
+            asCard={true}
+            action={
               <div className="flex space-x-2">
                 <Button variant="outline" size="sm">
                   <Eye className="h-4 w-4 mr-2" />
                   Preview
                 </Button>
-                <Button onClick={handleSaveStarters} disabled={updateStartersMutation.isPending}>
+                <Button
+                  onClick={startersForm.handleSubmit(onSaveStarters)}
+                  disabled={updateStartersMutation.isPending || !startersForm.formState.isDirty}
+                >
                   <Save className="h-4 w-4 mr-2" />
                   {updateStartersMutation.isPending ? "Saving..." : "Save"}
                 </Button>
               </div>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div>
-                <Label htmlFor="welcomeMessage">Welcome Message</Label>
-                <p className="text-sm text-gray-600 mb-2">
-                  Use this headline to prompt the user to start a conversation.
-                </p>
-                <Input
-                  id="welcomeMessage"
-                  value={welcomeMessage}
-                  onChange={(e) => setWelcomeMessage(e.target.value)}
-                  placeholder="Welcome to Mojo, how can I help you today?"
-                  className="mt-1"
+            }
+          >
+            <Form {...startersForm}>
+              <form onSubmit={startersForm.handleSubmit(onSaveStarters)} className="space-y-6">
+                <FormField
+                  control={startersForm.control}
+                  name="welcomeMessage"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Welcome Message</FormLabel>
+                      <FormDescription>
+                        Use this headline to prompt the user to start a conversation.
+                      </FormDescription>
+                      <FormControl>
+                        <Input
+                          placeholder="Welcome to Mojo, how can I help you today?"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
 
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <Label>Conversation Starters</Label>
-                    <p className="text-sm text-gray-600">
-                      Help users get a conversation started with these prompts.
-                    </p>
-                  </div>
-                  <Button
-                    onClick={addStarter}
-                    disabled={!newStarter.trim() || startersList.length >= 10}
-                    size="sm"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add
-                  </Button>
-                </div>
-
-                <div className="space-y-2 mb-4">
-                  <Input
-                    value={newStarter}
-                    onChange={(e) => setNewStarter(e.target.value)}
-                    placeholder="Add a new conversation starter"
-                    onKeyPress={(e) => e.key === "Enter" && addStarter()}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  {startersList.map((starter, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <span className="text-sm">{index + 1}. {starter}</span>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeStarter(index)}
-                        className="text-red-600 hover:text-red-800"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label>Conversation Starters</Label>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        Help users get a conversation started with these prompts.
+                      </p>
                     </div>
-                  ))}
+                    <Button
+                      type="button"
+                      onClick={() => append({ text: "" })}
+                      disabled={fields.length >= 10}
+                      size="sm"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Starter
+                    </Button>
+                  </div>
+
+                  {fields.length === 0 && (
+                    <div className="text-center py-8 text-gray-500 dark:text-gray-400 border-2 border-dashed rounded-lg">
+                      No conversation starters yet. Click "Add Starter" to create one.
+                    </div>
+                  )}
+
+                  <div className="space-y-3">
+                    {fields.map((field, index) => (
+                      <FormField
+                        key={field.id}
+                        control={startersForm.control}
+                        name={`starters.${index}.text`}
+                        render={({ field }) => (
+                          <StarterFieldItem
+                            index={index}
+                            field={field}
+                            onRemove={() => remove(index)}
+                            disabled={updateStartersMutation.isPending}
+                          />
+                        )}
+                      />
+                    ))}
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </form>
+            </Form>
+          </FormSection>
         </TabsContent>
 
         <TabsContent value="active-hosts" className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle>Active Host Names</CardTitle>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
                 Manage the host names connected to your system
               </p>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 border rounded-lg">
-                  <span className="font-medium">{site.siteUrl}</span>
+                <div className="flex items-center justify-between p-4 border dark:border-gray-600 rounded-lg">
+                  <span className="font-medium text-gray-900 dark:text-white">{site.siteUrl}</span>
                   <span className="text-green-600 text-sm">✓ Enabled</span>
                 </div>
               </div>
@@ -260,25 +350,18 @@ export function PreferencesTab({ site }: PreferencesTabProps) {
         </TabsContent>
 
         <TabsContent value="danger-zone" className="space-y-6">
-          <Card className="border-red-200">
-            <CardHeader>
-              <CardTitle className="text-red-600">Danger Zone</CardTitle>
-              <p className="text-sm text-gray-600">
-                You can delete your site and all associated data so long as you do not have any active subscriptions.
-              </p>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between p-4 border border-red-200 rounded-lg bg-red-50">
-                <div>
-                  <p className="font-medium">{site.siteUrl}</p>
-                  <p className="text-sm text-red-600">⚠ Active Subscription</p>
-                </div>
-                <Button variant="destructive" disabled>
-                  Delete Site
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          <DangerZoneCard
+            siteUrl={site.siteUrl}
+            hasActiveSubscription={
+              site.subscription?.status === 'ACTIVE' ||
+              site.subscription?.status === 'TRIAL' ||
+              false
+            }
+            onDelete={() => {
+              // TODO: Implement site deletion
+              console.log("Delete site:", site.id);
+            }}
+          />
         </TabsContent>
       </Tabs>
     </div>

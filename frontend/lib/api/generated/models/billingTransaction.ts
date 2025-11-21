@@ -2,15 +2,29 @@
 // Do not edit manually
 import type { BillingTransactionStatus } from './billingTransactionStatus';
 
+/**
+ * Billing transaction
+ */
 export interface BillingTransaction {
+  /** Transaction ID */
   id: string;
+  /** User ID */
   userId: string;
+  /** Site ID */
   siteId: string;
+  /** Invoice ID */
   invoiceId: string;
+  /** Transaction amount */
   amount: number;
-  currency: string;
+  /** Currency code */
+  currency?: string;
+  /** Transaction status */
   status: BillingTransactionStatus;
-  /** @nullable */
-  stripeInvoiceId?: string | null;
+  /**
+   * Stripe invoice ID
+   * @nullable
+   */
+  stripeInvoiceId: string | null;
+  /** Transaction timestamp */
   createdAt: string;
 }

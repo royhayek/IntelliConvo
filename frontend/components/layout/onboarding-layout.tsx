@@ -132,7 +132,7 @@ export function OnboardingLayout({
                 variant="ghost"
                 size="sm"
                 onClick={handleBack}
-                className="text-gray-600 hover:text-gray-900 hover:bg-white/60"
+                className="text-gray-600 hover:text-gray-900 hover:bg-white/60 dark:text-gray-400 dark:hover:text-white dark:hover:bg-slate-700/40"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back
@@ -163,12 +163,12 @@ export function OnboardingLayout({
               className="text-center"
             >
               {title && (
-                <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent mb-3">
+                <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent mb-3">
                   {title}
                 </h1>
               )}
               {description && (
-                <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
                   {description}
                 </p>
               )}
@@ -191,8 +191,8 @@ export function OnboardingLayout({
 
       {/* Background Decorations */}
       <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 -left-16 w-64 h-64 bg-gradient-to-br from-indigo-200/20 to-purple-200/20 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-1/4 -right-16 w-64 h-64 bg-gradient-to-br from-blue-200/20 to-indigo-200/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/4 -left-16 w-64 h-64 bg-gradient-to-br from-indigo-200/20 to-purple-200/20 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-1/4 -right-16 w-64 h-64 bg-gradient-to-br from-blue-200/20 to-indigo-200/20 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-full blur-3xl"></div>
       </div>
     </div>
   );

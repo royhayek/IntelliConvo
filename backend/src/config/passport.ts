@@ -3,7 +3,72 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { Strategy as GitHubStrategy } from 'passport-github2';
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 import { prisma } from '../lib/prisma';
-import { AuthProvider } from '@prisma/client';
+import { AuthProvider, User } from '@prisma/client';
+
+/**
+ * Extract display name from OAuth profile
+ */
+function extractDisplayName(profile: any, email: string): string {
+  return (
+    profile.displayName ||
+    profile.username ||
+    profile.name?.givenName ||
+    profile.name?.familyName ||
+    email.split('@')[0]
+  );
+}
+
+/**
+ * Generic OAuth callback handler
+ * Handles user lookup, creation, and account linking for OAuth providers
+ */
+async function handleOAuthCallback(
+  provider: AuthProvider,
+  profile: any,
+  email: string
+): Promise<User> {
+  // Find existing user by email or provider ID
+  let user = await prisma.user.findFirst({
+    where: {
+      OR: [
+        { email },
+        {
+          authProvider: provider,
+          authProviderId: profile.id,
+        },
+      ],
+    },
+  });
+
+  if (!user) {
+    // Create new user
+    user = await prisma.user.create({
+      data: {
+        email,
+        fullName: extractDisplayName(profile, email),
+        authProvider: provider,
+        authProviderId: profile.id,
+      },
+    });
+  } else if (!user.authProviderId) {
+    // Link existing email-based account to OAuth provider
+    user = await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        authProvider: provider,
+        authProviderId: profile.id,
+      },
+    });
+  }
+
+  // Update last login timestamp
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { lastLoginAt: new Date() },
+  });
+
+  return user;
+}
 
 export const initializePassport = (passport: PassportStatic) => {
   // JWT Strategy
@@ -41,43 +106,12 @@ export const initializePassport = (passport: PassportStatic) => {
         },
         async (accessToken, refreshToken, profile, done) => {
           try {
-            let user = await prisma.user.findFirst({
-              where: {
-                OR: [
-                  { email: profile.emails?.[0].value },
-                  {
-                    authProvider: AuthProvider.GOOGLE,
-                    authProviderId: profile.id,
-                  },
-                ],
-              },
-            });
-
-            if (!user) {
-              user = await prisma.user.create({
-                data: {
-                  email: profile.emails![0].value,
-                  fullName: profile.displayName,
-                  authProvider: AuthProvider.GOOGLE,
-                  authProviderId: profile.id,
-                },
-              });
-            } else if (!user.authProviderId) {
-              // Link existing account
-              user = await prisma.user.update({
-                where: { id: user.id },
-                data: {
-                  authProvider: AuthProvider.GOOGLE,
-                  authProviderId: profile.id,
-                },
-              });
+            const email = profile.emails?.[0]?.value;
+            if (!email) {
+              return done(new Error('No email provided by Google OAuth'), undefined);
             }
 
-            await prisma.user.update({
-              where: { id: user.id },
-              data: { lastLoginAt: new Date() },
-            });
-
+            const user = await handleOAuthCallback(AuthProvider.GOOGLE, profile, email);
             return done(null, user);
           } catch (error) {
             return done(error as Error, undefined);
@@ -98,43 +132,12 @@ export const initializePassport = (passport: PassportStatic) => {
         },
         async (accessToken: string, refreshToken: string, profile: any, done: any) => {
           try {
-            let user = await prisma.user.findFirst({
-              where: {
-                OR: [
-                  { email: profile.emails?.[0].value },
-                  {
-                    authProvider: AuthProvider.GITHUB,
-                    authProviderId: profile.id,
-                  },
-                ],
-              },
-            });
-
-            if (!user) {
-              user = await prisma.user.create({
-                data: {
-                  email: profile.emails![0].value,
-                  fullName: profile.displayName || profile.username,
-                  authProvider: AuthProvider.GITHUB,
-                  authProviderId: profile.id,
-                },
-              });
-            } else if (!user.authProviderId) {
-              // Link existing account
-              user = await prisma.user.update({
-                where: { id: user.id },
-                data: {
-                  authProvider: AuthProvider.GITHUB,
-                  authProviderId: profile.id,
-                },
-              });
+            const email = profile.emails?.[0]?.value;
+            if (!email) {
+              return done(new Error('No email provided by GitHub OAuth'), undefined);
             }
 
-            await prisma.user.update({
-              where: { id: user.id },
-              data: { lastLoginAt: new Date() },
-            });
-
+            const user = await handleOAuthCallback(AuthProvider.GITHUB, profile, email);
             return done(null, user);
           } catch (error) {
             return done(error, false);

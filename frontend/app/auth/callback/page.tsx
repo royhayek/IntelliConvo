@@ -2,7 +2,12 @@
 
 import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Loader2, AlertCircle } from "lucide-react";
 import { useAuthStore } from "@/lib/store";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Card, CardContent } from "@/components/ui/card";
+// AuthProvider is now just a string field in the user object
 
 function AuthCallbackContent() {
   const router = useRouter();
@@ -22,6 +27,7 @@ function AuthCallbackContent() {
           id: payload.userId,
           email: payload.email,
           fullName: payload.fullName || payload.email.split('@')[0],
+          authProvider: payload.authProvider || 'EMAIL',
         };
 
         login(user, {
@@ -40,37 +46,39 @@ function AuthCallbackContent() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-        <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-xl shadow-lg text-center">
-          <div className="h-12 w-12 rounded-full bg-red-100 mx-auto flex items-center justify-center">
-            <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </div>
-          <h2 className="text-2xl font-bold text-gray-900">Authentication Failed</h2>
-          <p className="text-gray-600">{error}</p>
-          <button
-            onClick={() => router.push("/auth/login")}
-            className="w-full px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
-          >
-            Return to Login
-          </button>
-        </div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-950 dark:to-indigo-950">
+        <Card className="max-w-md w-full">
+          <CardContent className="space-y-6 p-8 text-center">
+            <div className="h-12 w-12 rounded-full bg-red-100 dark:bg-red-900/30 mx-auto flex items-center justify-center">
+              <AlertCircle className="h-6 w-6 text-red-600 dark:text-red-400" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Authentication Failed</h2>
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+            <Button
+              onClick={() => router.push("/auth/login")}
+              className="w-full"
+              variant="default"
+            >
+              Return to Login
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-xl shadow-lg text-center">
-        <div className="h-12 w-12 rounded-full bg-indigo-100 mx-auto flex items-center justify-center animate-spin">
-          <svg className="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-          </svg>
-        </div>
-        <h2 className="text-2xl font-bold text-gray-900">Completing Sign In</h2>
-        <p className="text-gray-600">Please wait while we finish setting up your account...</p>
-      </div>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-950 dark:to-indigo-950">
+      <Card className="max-w-md w-full">
+        <CardContent className="space-y-6 p-8 text-center">
+          <Loader2 className="h-12 w-12 mx-auto animate-spin text-indigo-600 dark:text-indigo-400" />
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Completing Sign In</h2>
+          <p className="text-gray-600 dark:text-gray-400">Please wait while we finish setting up your account...</p>
+        </CardContent>
+      </Card>
     </div>
   );
 }
@@ -79,15 +87,13 @@ export default function AuthCallbackPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-          <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-xl shadow-lg text-center">
-            <div className="h-12 w-12 rounded-full bg-indigo-100 mx-auto flex items-center justify-center animate-spin">
-              <svg className="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-            </div>
-            <h2 className="text-2xl font-bold text-gray-900">Loading...</h2>
-          </div>
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-950 dark:to-indigo-950">
+          <Card className="max-w-md w-full">
+            <CardContent className="space-y-6 p-8 text-center">
+              <Loader2 className="h-12 w-12 mx-auto animate-spin text-indigo-600 dark:text-indigo-400" />
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Loading...</h2>
+            </CardContent>
+          </Card>
         </div>
       }
     >

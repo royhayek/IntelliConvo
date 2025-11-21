@@ -2,9 +2,16 @@
 // Do not edit manually
 import type { SiteConfigResponseConversationStartersItem } from './siteConfigResponseConversationStartersItem';
 
+/**
+ * Site configuration for widget initialization
+ */
 export interface SiteConfigResponse {
-  id?: string;
-  siteName?: string;
-  welcomeMessage?: string;
-  conversationStarters?: SiteConfigResponseConversationStartersItem[];
+  /** Site ID */
+  id: string;
+  /** Site name */
+  siteName: string;
+  /** Welcome message */
+  welcomeMessage: string;
+  /** Conversation starters */
+  conversationStarters: SiteConfigResponseConversationStartersItem[];
 }

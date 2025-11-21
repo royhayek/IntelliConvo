@@ -1,42 +1,35 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Crown, Zap, Check, Calendar, CreditCard } from "lucide-react";
+import { ArrowLeft, Crown, Zap, Check, Calendar, CreditCard, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useAuthStore } from "@/lib/store";
+import { Badge } from "@/components/ui/badge";
+import { useRequireAuth } from "@/lib/hooks/useAuth";
+import { AuthLoading } from "@/components/auth/auth-loading";
 import {
-  useGetApiBillingHistory,
-  useGetApiBillingSummary,
-  useGetApiBillingSubscriptions,
-  useGetApiBillingPlans,
-  usePostApiBillingSubscriptions,
-  usePostApiBillingSubscriptionsSubscriptionIdPortal,
-} from "@/lib/api/generated/queries/billing/billing";
+  useGetApiV1BillingSubscriptions,
+  useGetApiV1BillingPlans,
+  usePostApiV1BillingSubscriptions,
+  usePostApiV1BillingSubscriptionsSubscriptionIdPortal,
+} from "@/lib/api/generated/queries/subscriptions/subscriptions";
+import type { GetApiV1BillingSubscriptions200Item } from "@/lib/api/generated/models";
 
 export default function SubscriptionsPage() {
-  const router = useRouter();
-  const { user, isAuthenticated } = useAuthStore();
+  // Protected route - redirects to login if not authenticated
+  const { isLoading: isAuthLoading, isAuthenticated, user } = useRequireAuth();
 
-  const { data: subscriptions = [], isLoading } = useGetApiBillingSubscriptions({
+  const { data: subscriptions = [], isLoading } = useGetApiV1BillingSubscriptions({
     query: { enabled: isAuthenticated },
   });
 
-  const { data: plans = [] } = useGetApiBillingPlans({
+  const { data: plans = [] } = useGetApiV1BillingPlans({
     query: { enabled: isAuthenticated },
   });
 
-  const createSubscriptionMutation = usePostApiBillingSubscriptions();
-  const portalMutation = usePostApiBillingSubscriptionsSubscriptionIdPortal();
-
-  useEffect(() => {
-    if (!isAuthenticated) {
-      router.push("/auth/login");
-    }
-  }, [isAuthenticated, router]);
+  const createSubscriptionMutation = usePostApiV1BillingSubscriptions();
+  const portalMutation = usePostApiV1BillingSubscriptionsSubscriptionIdPortal();
 
   const handleSubscribe = async (planType: string) => {
     // Note: This needs a siteId - redirect to site selection or show modal
@@ -55,35 +48,40 @@ export default function SubscriptionsPage() {
     }
   };
 
-  if (!isAuthenticated || !user) {
+  // Show loading state while auth is hydrating
+  if (isAuthLoading) {
+    return <AuthLoading message="Loading subscriptions" />;
+  }
+
+  if (!user) {
     return null;
   }
 
-  const activeSubscription = subscriptions.find((sub) => sub.status === "ACTIVE");
-  const trialSubscription = subscriptions.find((sub) => sub.status === "TRIAL");
+  const activeSubscription = subscriptions.find((sub: GetApiV1BillingSubscriptions200Item) => sub.status === "ACTIVE");
+  const trialSubscription = subscriptions.find((sub: GetApiV1BillingSubscriptions200Item) => sub.status === "TRIAL");
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-950">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-white dark:bg-slate-800 shadow-sm border-b dark:border-slate-700">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
               <Link href="/dashboard">
-                <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900">
+                <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Back to Dashboard
                 </Button>
               </Link>
-              <div className="h-6 border-l border-gray-300"></div>
+              <div className="h-6 border-l border-gray-300 dark:border-gray-600"></div>
               <div className="flex items-center space-x-3">
                 <div className="h-8 w-8 rounded-lg bg-indigo-600"></div>
-                <span className="text-xl font-bold text-gray-900">Intelligentconvo</span>
+                <span className="text-xl font-bold text-gray-900 dark:text-white">Intelligentconvo</span>
               </div>
             </div>
 
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">{user.email}</span>
+              <span className="text-sm text-gray-600 dark:text-gray-400">{user.email}</span>
             </div>
           </div>
         </div>
@@ -92,8 +90,8 @@ export default function SubscriptionsPage() {
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-8">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Subscriptions</h1>
-            <p className="text-gray-600">Manage your subscription plans and billing</p>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Subscriptions</h1>
+            <p className="text-gray-600 dark:text-gray-400">Manage your subscription plans and billing</p>
           </div>
 
           {/* Current Subscription */}
@@ -105,38 +103,38 @@ export default function SubscriptionsPage() {
               <CardContent>
                 {isLoading ? (
                   <div className="flex items-center justify-center py-8">
-                    <div className="h-6 w-6 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+                    <Loader2 className="h-6 w-6 animate-spin text-indigo-600" />
                   </div>
                 ) : (
                   <div className="space-y-4">
                     {trialSubscription && (
-                      <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                      <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/50 rounded-lg">
                         <div className="flex items-start justify-between">
                           <div>
-                            <h4 className="font-medium text-blue-900">Free Trial</h4>
-                            <p className="text-sm text-blue-700 mt-1">
+                            <h4 className="font-medium text-blue-900 dark:text-blue-300">Free Trial</h4>
+                            <p className="text-sm text-blue-700 dark:text-blue-400 mt-1">
                               Expires on {new Date(trialSubscription.trialEndsAt!).toLocaleDateString()}
                             </p>
-                            <p className="text-sm text-blue-600 mt-2">
+                            <p className="text-sm text-blue-600 dark:text-blue-400 mt-2">
                               Experience all features with your 14-day free trial
                             </p>
                           </div>
-                          <Crown className="h-6 w-6 text-blue-600" />
+                          <Crown className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                         </div>
                       </div>
                     )}
 
                     {activeSubscription && (
-                      <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                      <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800/50 rounded-lg">
                         <div className="flex items-start justify-between">
                           <div>
-                            <h4 className="font-medium text-green-900">
+                            <h4 className="font-medium text-green-900 dark:text-green-300">
                               {activeSubscription.planType === "PREMIUM_ANNUAL" ? "Premium Annual" : "Premium Monthly"}
                             </h4>
-                            <p className="text-sm text-green-700 mt-1">
+                            <p className="text-sm text-green-700 dark:text-green-400 mt-1">
                               {activeSubscription.planType === "PREMIUM_ANNUAL" ? "$279/year" : "$29/month"}
                             </p>
-                            <p className="text-sm text-green-600 mt-2">
+                            <p className="text-sm text-green-600 dark:text-green-400 mt-2">
                               Next billing: {new Date(activeSubscription.currentPeriodEnd!).toLocaleDateString()}
                             </p>
                           </div>
@@ -161,13 +159,13 @@ export default function SubscriptionsPage() {
 
           {/* Available Plans */}
           <div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Available Plans</h2>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Available Plans</h2>
 
             {plans.length === 0 ? (
               <Card>
                 <CardContent className="pt-6">
                   <div className="text-center py-8">
-                    <p className="text-gray-600">No subscription plans available at the moment.</p>
+                    <p className="text-gray-600 dark:text-gray-400">No subscription plans available at the moment.</p>
                   </div>
                 </CardContent>
               </Card>
@@ -198,13 +196,13 @@ export default function SubscriptionsPage() {
                         <CardTitle>{plan.name}</CardTitle>
                       </div>
                       <div className="mt-4">
-                        <span className="text-3xl font-bold text-gray-900">
+                        <span className="text-3xl font-bold text-gray-900 dark:text-white">
                           ${plan.price}
                         </span>
-                        <span className="text-gray-600">/{plan.interval}</span>
+                        <span className="text-gray-600 dark:text-gray-400">/{plan.interval}</span>
                       </div>
                       {plan.description && (
-                        <p className="text-sm text-gray-600 mt-2">{plan.description}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">{plan.description}</p>
                       )}
                     </CardHeader>
 
@@ -214,7 +212,7 @@ export default function SubscriptionsPage() {
                           {plan.features?.map((feature, index) => (
                             <li key={index} className="flex items-center space-x-2">
                               <Check className="h-4 w-4 text-green-500" />
-                              <span className="text-sm text-gray-600">{feature}</span>
+                              <span className="text-sm text-gray-600 dark:text-gray-400">{feature}</span>
                             </li>
                           ))}
                         </ul>
@@ -252,10 +250,10 @@ export default function SubscriptionsPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-slate-800 rounded-lg">
                   <div>
-                    <h4 className="font-medium text-gray-900">Payment Method</h4>
-                    <p className="text-sm text-gray-600">
+                    <h4 className="font-medium text-gray-900 dark:text-white">Payment Method</h4>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
                       {activeSubscription ? "Manage your payment methods" : "No active subscription"}
                     </p>
                   </div>
@@ -267,10 +265,10 @@ export default function SubscriptionsPage() {
                   </Link>
                 </div>
 
-                <div className="text-sm text-gray-600 space-y-2">
+                <div className="text-sm text-gray-600 dark:text-gray-400 space-y-2">
                   <p>• All plans include a 14-day free trial</p>
                   <p>• Cancel anytime - no long-term commitments</p>
-                  <p>• Questions? <a href="mailto:support@intelligentconvo.com" className="text-indigo-600 hover:text-indigo-500">Contact our support team</a></p>
+                  <p>• Questions? <a href="mailto:support@intelligentconvo.com" className="text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">Contact our support team</a></p>
                 </div>
               </div>
             </CardContent>

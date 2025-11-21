@@ -45,7 +45,7 @@
 
     <div class="card">
         <h2>Configuration</h2>
-        <p>Backend API: <code>http://localhost:5001</code></p>
+        <p>Backend API: <code id="api-url"><%= API_URL %></code></p>
         <div id="status" class="status">Widget loading...</div>
     </div>
 
@@ -58,13 +58,19 @@
         window.addEventListener('load', function() {
             if (typeof intelligentconvo === 'function') {
                 intelligentconvo('init', {
-                    siteId: '20df7aab-ed46-45ed-ae9e-56f7527eec9b',
+                    siteId: '909e1e32-5ec5-4bd3-a834-976575a8f003',
                     mode: 'button',
                     position: 'bottom-right',
-                    apiUrl: 'http://localhost:5001',
+                    // apiUrl removed - uses DEFAULT_API_URL from environment build
+                    // Development build: http://localhost:5001
+                    // Production build: https://api.intelligentconvo.com
                     onConnect: function() {
                         document.getElementById('status').className = 'status success';
                         document.getElementById('status').textContent = 'Widget connected successfully!';
+
+                        // Show which API URL is being used (for demo purposes)
+                        // This requires exposing the config in the widget - we'll show it in the console instead
+                        console.log('Widget initialized with default API URL from build');
                     },
                     onError: function(error) {
                         document.getElementById('status').className = 'status error';

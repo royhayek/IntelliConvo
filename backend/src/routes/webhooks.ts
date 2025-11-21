@@ -1,16 +1,46 @@
 import { Router } from 'express';
 import Stripe from 'stripe';
 import { prisma } from '../lib/prisma';
+import { asyncHandler } from '../middleware/errorHandler';
 import { logger } from '../utils/logger';
 
 const router = Router();
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-06-20',
+  apiVersion: '2023-10-16',
 });
 
-// Stripe webhook handler
-router.post('/stripe', async (req, res) => {
+/**
+ * @swagger
+ * /api/v1/webhooks/stripe:
+ *   post:
+ *     summary: Stripe webhook handler
+ *     description: Handle Stripe webhook events for subscription and payment updates
+ *     tags: [Webhooks]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             description: Stripe event payload
+ *     responses:
+ *       200:
+ *         description: Webhook processed successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 received:
+ *                   type: boolean
+ *                   example: true
+ *       400:
+ *         description: Invalid webhook signature or missing secret
+ *       500:
+ *         description: Webhook processing failed
+ */
+router.post('/stripe', asyncHandler(async (req, res) => {
   const sig = req.headers['stripe-signature'];
 
   if (!sig || !process.env.STRIPE_WEBHOOK_SECRET) {
@@ -61,7 +91,7 @@ router.post('/stripe', async (req, res) => {
     logger.error('Error processing Stripe webhook:', error);
     res.status(500).send('Webhook processing failed');
   }
-});
+}));
 
 async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
   logger.info(`Subscription created: ${subscription.id}`);

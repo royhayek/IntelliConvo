@@ -1,239 +1,65 @@
-import { io, Socket } from 'socket.io-client';
 import './styles.css';
 
-interface WidgetConfig {
-  siteId: string;
-  mode?: 'button' | 'widget';
-  position?: 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left';
-  apiUrl?: string;
-  theme?: 'light' | 'dark' | 'auto';
-  language?: string;
-  customStyles?: Partial<CSSStyleDeclaration>;
-  onMessage?: (message: Message) => void;
-  onError?: (error: Error) => void;
-  onConnect?: () => void;
-  onDisconnect?: () => void;
-  // New: option to skip loading settings from server
-  loadSettingsFromServer?: boolean;
-}
+// Import types from refactored modules
+import type {
+  WidgetConfig,
+  WidgetSettings,
+  Message,
+  ConversationStarters,
+  WidgetState,
+  WidgetMode,
+  AnalyticsEventData,
+} from './types';
 
-// Widget settings from the server
-interface WidgetSettings {
-  // Appearance & Branding
-  primaryColor: string;
-  secondaryColor: string;
-  backgroundColor: string;
-  textColor: string;
-  textSecondaryColor: string;
-  borderColor: string;
-  fontFamily: string;
-  fontSize: number;
-  fontWeightNormal: number;
-  fontWeightMedium: number;
-  fontWeightBold: number;
-  borderRadius: number;
-  borderRadiusSmall: number;
-  borderRadiusButton: number;
-  borderWidth: number;
-  shadowColor: string;
-  shadowSize: string;
+// Import utilities
+import {
+  validateConfig,
+  sanitizeHtml,
+  debounce,
+  throttle,
+  RateLimiter,
+  FocusTrap,
+} from './utils';
 
-  // Launcher Button
-  launcherIcon: string;
-  launcherCustomIconUrl?: string;
-  launcherSize: string;
-  launcherPosition: string;
-  launcherOffsetX: number;
-  launcherOffsetY: number;
-  launcherShape: string;
-  launcherBackgroundColor?: string;
-  launcherIconColor: string;
-  launcherBorderColor?: string;
-  launcherBorderWidth: number;
-  launcherText?: string;
-  launcherTooltip: string;
-  launcherShowTooltip: boolean;
-  launcherShowBadge: boolean;
-  launcherBadgeColor: string;
-  launcherBadgeTextColor: string;
-  launcherAnimation: string;
-  launcherAnimationDelay: number;
+// Import constants
+import {
+  WIDGET_ERRORS,
+  MESSAGES_PER_PAGE,
+  DEFAULT_API_URL,
+  STARTERS_TIMEOUT,
+  NOTIFICATION_PREVIEW_LENGTH,
+  BREAKPOINTS,
+  STORAGE_KEYS,
+  MARK_READ_DELAY,
+  DEBOUNCE_DELAY,
+  THROTTLE_DELAY,
+  RATE_LIMITS,
+} from './constants';
 
-  // Chat Window
-  chatWindowWidth: number;
-  chatWindowHeight: number;
-  chatWindowMaxHeight: string;
-  chatWindowZIndex: number;
-  headerBackgroundColor?: string;
-  headerTextColor: string;
-  headerHeight: number;
-  headerTitle: string;
-  headerSubtitle?: string;
-  headerShowAvatar: boolean;
-  headerAvatarUrl?: string;
-  headerShowStatus: boolean;
-  headerShowCloseButton: boolean;
-  headerShowMinimizeButton: boolean;
-  messageAreaBackgroundColor?: string;
-  messageAreaPadding: number;
-  userBubbleBackgroundColor?: string;
-  userBubbleTextColor: string;
-  userBubbleBorderRadius: number;
-  userBubbleAlignment: string;
-  assistantBubbleBackgroundColor: string;
-  assistantBubbleTextColor: string;
-  assistantBubbleBorderRadius: number;
-  assistantBubbleAlignment: string;
-  messageMaxWidth: string;
-  messageFontSize: number;
-  messageLineHeight: number;
-  messageTimestampShow: boolean;
-  messageTimestampFormat: string;
-  showMessageAvatar: boolean;
-  botAvatarUrl?: string;
-  botAvatarFallback: string;
-  inputBackgroundColor: string;
-  inputTextColor: string;
-  inputBorderColor: string;
-  inputBorderRadius: number;
-  inputPlaceholder: string;
-  inputMinHeight: number;
-  inputMaxHeight: number;
-  sendButtonBackgroundColor?: string;
-  sendButtonIconColor: string;
-  sendButtonShape: string;
+// Import core
+import { WidgetError } from './core/WidgetError';
+import { StateManager } from './core/StateManager';
 
-  // Behavior & Features
-  autoOpenEnabled: boolean;
-  autoOpenDelay: number;
-  autoOpenOnlyOnce: boolean;
-  autoOpenOnMobile: boolean;
-  showTypingIndicator: boolean;
-  typingIndicatorStyle: string;
-  typingIndicatorText: string;
-  showReadReceipts: boolean;
-  enableSoundNotifications: boolean;
-  soundNotificationUrl?: string;
-  soundVolume: number;
-  enableDesktopNotifications: boolean;
-  enableVoiceInput: boolean;
-  voiceInputLanguage: string;
-  enableFileAttachments: boolean;
-  allowedFileTypes: string[];
-  maxFileSizeMB: number;
-  maxFilesPerMessage: number;
-  enableEmojiPicker: boolean;
-  persistConversation: boolean;
-  conversationTimeout: number;
-  maxMessagesHistory: number;
-  showQuickReplies: boolean;
-  quickRepliesPosition: string;
+// Import managers
+import { StorageManager } from './managers/StorageManager';
+import { NotificationManager } from './managers/NotificationManager';
+import { AnalyticsManager } from './managers/AnalyticsManager';
+import { SettingsManager } from './managers/SettingsManager';
+import { SocketManager } from './managers/SocketManager';
 
-  // Content & Text
-  botName: string;
-  botTagline?: string;
-  welcomeMessage: string;
-  offlineMessage: string;
-  errorMessage: string;
-  reconnectingMessage: string;
-  inputPlaceholderText: string;
-  sendButtonAriaLabel: string;
-  closeButtonAriaLabel: string;
-  minimizeButtonAriaLabel: string;
-  showConversationStarters: boolean;
-  startersTitle: string;
-  showPoweredBy: boolean;
-  poweredByText: string;
-  poweredByUrl: string;
+// Import handlers
+import { MessageHandler } from './handlers/MessageHandler';
+import { FileHandler } from './handlers/FileHandler';
+import { VoiceHandler } from './handlers/VoiceHandler';
+import { KeyboardHandler } from './handlers/KeyboardHandler';
 
-  // Responsive / Mobile
-  mobileBreakpoint: number;
-  tabletBreakpoint: number;
-  mobileFullScreen: boolean;
-  mobileChatWindowWidth: string;
-  mobileChatWindowHeight: string;
-  mobileHeaderHeight: number;
-  mobileFontSize: number;
-  mobileInputMinHeight: number;
-  mobileLauncherSize: string;
-  mobileLauncherOffsetX: number;
-  mobileLauncherOffsetY: number;
-  mobileMessageMaxWidth: string;
-  mobileShowMinimizeButton: boolean;
-  tabletChatWindowWidth: number;
-  tabletChatWindowHeight: number;
-  tabletFontSize: number;
-  enableTouchOptimizations: boolean;
-  touchTargetMinSize: number;
-  adjustForKeyboard: boolean;
-  keyboardPaddingBottom: number;
+// Import renderers
+import { LauncherRenderer } from './renderers/LauncherRenderer';
+import { ChatWindowRenderer } from './renderers/ChatWindowRenderer';
+import { ComponentRenderer } from './renderers/ComponentRenderer';
 
-  // Advanced
-  enableAnimations: boolean;
-  animationDuration: number;
-  animationEasing: string;
-  enableHighContrast: boolean;
-  respectReducedMotion: boolean;
-  enableKeyboardNavigation: boolean;
-  focusRingColor: string;
-  focusRingWidth: number;
-  theme: string;
-  darkModeBackgroundColor: string;
-  darkModeTextColor: string;
-  darkModeBorderColor: string;
-  customCss?: string;
-  lazyLoadMessages: boolean;
-  preloadWidget: boolean;
-  sanitizeHtml: boolean;
-  allowedHtmlTags: string[];
-  enableAnalytics: boolean;
-  trackMessageEvents: boolean;
-  trackUserInteractions: boolean;
-}
-
-interface Message {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: string;
-  metadata?: Record<string, any>;
-}
-
-interface ConversationStarters {
-  welcomeMessage: string;
-  starters: { starterText: string }[];
-}
-
-interface WidgetState {
-  isOpen: boolean;
-  isConnected: boolean;
-  isTyping: boolean;
-  hasError: boolean;
-  errorMessage?: string;
-}
-
-type WidgetMode = 'chat' | 'speak';
-
-interface SpeechRecognitionEvent {
-  results: {
-    [index: number]: {
-      [index: number]: {
-        transcript: string;
-      };
-    };
-  };
-}
-
-interface WebKitSpeechRecognition {
-  continuous: boolean;
-  interimResults: boolean;
-  onstart: () => void;
-  onresult: (event: SpeechRecognitionEvent) => void;
-  onend: () => void;
-  onerror: (event: any) => void;
-  start(): void;
-  stop(): void;
-}
+// Import speech recognition types from types module
+import type { WebKitSpeechRecognition } from './types/speech';
 
 declare global {
   interface Window {
@@ -242,41 +68,50 @@ declare global {
   }
 }
 
-class WidgetError extends Error {
-  constructor(
-    message: string,
-    public code: string,
-    public details?: any
-  ) {
-    super(message);
-    this.name = 'WidgetError';
-  }
-}
-
-const WIDGET_ERRORS = {
-  CONNECTION_FAILED: 'CONNECTION_FAILED',
-  SITE_NOT_FOUND: 'SITE_NOT_FOUND',
-  MESSAGE_SEND_FAILED: 'MESSAGE_SEND_FAILED',
-  SPEECH_NOT_SUPPORTED: 'SPEECH_NOT_SUPPORTED',
-  INVALID_CONFIG: 'INVALID_CONFIG'
-} as const;
-
 class IntelligentconvoWidget {
   private config: WidgetConfig;
-  private socket: Socket | null = null;
   private sessionId: string;
   private container: HTMLElement | null = null;
   private messages: Message[] = [];
-  private state: WidgetState;
-  private currentMode: WidgetMode = 'chat';
+  private stateManager: StateManager;
   private speechRecognition: WebKitSpeechRecognition | null = null;
-  private reconnectAttempts = 0;
-  private readonly maxReconnectAttempts = 5;
-  private reconnectTimeout: NodeJS.Timeout | null = null;
   private settings: WidgetSettings | null = null;
   private isMobile: boolean = false;
   private isTablet: boolean = false;
-  private resizeObserver: ResizeObserver | null = null;
+  private notificationAudio: HTMLAudioElement | null = null;
+  private notificationPermission: NotificationPermission = 'default';
+  private pendingFiles: File[] = [];
+  private quickReplies: string[] = [];
+
+  // Event handler references for cleanup
+  private resizeHandler: (() => void) | null = null;
+  private escapeKeyHandler: ((e: KeyboardEvent) => void) | null = null;
+  private beforeUnloadHandler: (() => void) | null = null;
+
+  // Rate limiters
+  private messageRateLimiter: RateLimiter;
+  private fileRateLimiter: RateLimiter;
+
+  // Focus trap for modal accessibility
+  private focusTrap: FocusTrap | null = null;
+
+  // Managers
+  private storageManager: StorageManager;
+  private notificationManager: NotificationManager;
+  private analyticsManager: AnalyticsManager;
+  private settingsManager: SettingsManager;
+  private socketManager: SocketManager;
+
+  // Handlers
+  private messageHandler: MessageHandler;
+  private fileHandler: FileHandler;
+  private voiceHandler: VoiceHandler;
+  private keyboardHandler: KeyboardHandler;
+
+  // Renderers
+  private launcherRenderer: LauncherRenderer;
+  private chatWindowRenderer: ChatWindowRenderer;
+  private componentRenderer: ComponentRenderer;
 
   constructor(config: WidgetConfig) {
     this.validateConfig(config);
@@ -284,332 +119,261 @@ class IntelligentconvoWidget {
     this.config = {
       mode: 'button',
       position: 'bottom-right',
-      apiUrl: 'http://localhost:5001',
+      apiUrl: DEFAULT_API_URL,
       theme: 'auto',
       language: 'en',
       loadSettingsFromServer: true,
       ...config,
     };
 
-    this.state = {
+    // Initialize centralized state manager
+    this.stateManager = new StateManager({
       isOpen: false,
       isConnected: false,
       isTyping: false,
-      hasError: false
+      hasError: false,
+      currentMode: 'chat',
+      emojiPickerVisible: false,
+      conversationLoaded: false,
+      loadedMessageCount: 0,
+      unreadCount: 0,
+    });
+
+    // Initialize rate limiters
+    this.messageRateLimiter = new RateLimiter(
+      RATE_LIMITS.MESSAGES_PER_MINUTE,
+      RATE_LIMITS.MESSAGES_TIME_WINDOW
+    );
+    this.fileRateLimiter = new RateLimiter(
+      RATE_LIMITS.FILES_PER_MINUTE,
+      RATE_LIMITS.FILES_TIME_WINDOW
+    );
+
+    // Initialize managers
+    this.storageManager = new StorageManager(this.config.siteId);
+    this.sessionId = this.storageManager.getOrCreateSession();
+
+    // Create a simple state object that will be kept in sync
+    const compatibleState: WidgetState = {
+      isOpen: false,
+      isConnected: false,
+      isTyping: false,
+      hasError: false,
     };
 
-    this.sessionId = this.getOrCreateSession();
+    // Subscribe to state changes and update the compatible state object
+    this.stateManager.subscribe((newState) => {
+      compatibleState.isOpen = newState.isOpen;
+      compatibleState.isConnected = newState.isConnected;
+      compatibleState.isTyping = newState.isTyping;
+      compatibleState.hasError = newState.hasError;
+      compatibleState.errorMessage = newState.errorMessage;
+    });
+
+    this.notificationManager = new NotificationManager(compatibleState, () => this.openChat());
+    this.analyticsManager = new AnalyticsManager(this.config.siteId, () => this.sessionId);
+    this.settingsManager = new SettingsManager(
+      this.config.siteId,
+      this.config.apiUrl || DEFAULT_API_URL,
+      this.config.loadSettingsFromServer !== false
+    );
+
+    // Initialize socket manager with event handlers
+    this.socketManager = new SocketManager(
+      this.config,
+      compatibleState,
+      {
+        onConnect: () => {
+          console.log('[Widget] Socket onConnect fired');
+          // Update state through StateManager
+          this.stateManager.setConnected(true);
+          console.log('[Widget] State updated - isConnected:', this.stateManager.getState().isConnected);
+          this.stateManager.setError(false);
+
+          if (this.config.onConnect) {
+            this.config.onConnect();
+          }
+        },
+        onDisconnect: (_reason: string) => {
+          // Update state through StateManager
+          this.stateManager.setConnected(false);
+
+          if (this.config.onDisconnect) {
+            this.config.onDisconnect();
+          }
+        },
+        onStream: (chunk: string) => {
+          try {
+            // Create assistant message on first chunk
+            if (!window.lastAssistantMessage) {
+              this.displayMessage('assistant', '');
+              this.setTyping(false); // Hide typing indicator once we start receiving
+            }
+            this.appendToLastMessage(chunk);
+          } catch {
+            this.handleError(new Error('Failed to process message stream'), 'stream');
+          }
+        },
+        onComplete: (content: string, quickReplies?: string[]) => {
+          this.setTyping(false);
+
+          // Play notification sound and show desktop notification
+          this.playNotificationSound();
+          this.showDesktopNotification(
+            this.settings?.botName || 'Assistant',
+            content.substring(0, NOTIFICATION_PREVIEW_LENGTH) + (content.length > NOTIFICATION_PREVIEW_LENGTH ? '...' : '')
+          );
+
+          // Track message received
+          this.trackAnalyticsEvent('message_received', { length: content.length });
+
+          // Save conversation
+          this.saveConversation();
+
+          // Mark messages as read if chat is open
+          if (this.stateManager.getState().isOpen) {
+            this.markAllMessagesAsRead();
+          }
+
+          // Render quick replies if provided
+          if (quickReplies && quickReplies.length > 0) {
+            this.renderQuickReplies(quickReplies);
+          }
+        },
+        onError: (message: string) => {
+          const error = new WidgetError(message || 'Unknown socket error', WIDGET_ERRORS.CONNECTION_FAILED);
+          this.handleError(error, 'socket');
+          this.setTyping(false);
+        },
+        onTyping: (isTyping: boolean) => {
+          this.setTyping(isTyping);
+        },
+        onConnectionError: (error: Error) => {
+          this.handleError(
+            new WidgetError(
+              'Failed to connect to chat service',
+              WIDGET_ERRORS.CONNECTION_FAILED,
+              { message: error.message, stack: error.stack }
+            ),
+            'connect'
+          );
+        }
+      }
+    );
+
+    // Initialize message handler
+    this.messageHandler = new MessageHandler({
+      getSocket: () => this.socketManager.getSocket(),
+      sessionId: this.sessionId,
+      siteId: this.config.siteId,
+      settings: this.settings,
+      messages: this.messages,
+      isConnected: () => this.stateManager.getState().isConnected,
+      onMessage: this.config.onMessage,
+      onError: this.config.onError,
+      setTyping: this.setTyping.bind(this),
+      trackAnalyticsEvent: (eventName: string, eventData?: AnalyticsEventData) => {
+        this.analyticsManager.trackAnalyticsEvent(eventName, eventData);
+      },
+      saveConversation: () => {
+        this.storageManager.saveConversation(this.messages, this.sessionId, this.settings);
+      },
+      showErrorMessage: this.showErrorMessage.bind(this),
+      prepareFileAttachments: this.prepareFileAttachments.bind(this),
+      clearPendingFiles: () => {
+        this.pendingFiles = [];
+      },
+      updateFilePreview: this.updateFilePreview.bind(this),
+      rateLimiter: this.messageRateLimiter,
+    });
+
+    // Initialize file handler
+    this.fileHandler = new FileHandler({
+      settings: this.settings,
+      pendingFiles: this.pendingFiles,
+      showErrorMessage: this.showErrorMessage.bind(this),
+      trackAnalyticsEvent: (eventName: string, eventData?: AnalyticsEventData) => {
+        this.analyticsManager.trackAnalyticsEvent(eventName, eventData);
+      },
+      sanitizeHtml: (html: string) => sanitizeHtml(html),
+      rateLimiter: this.fileRateLimiter,
+    });
+
+    // Initialize voice handler
+    this.voiceHandler = new VoiceHandler({
+      settings: this.settings,
+      sendMessage: this.sendMessage.bind(this),
+      onError: this.config.onError,
+    });
+
+    // Initialize keyboard handler
+    this.keyboardHandler = new KeyboardHandler({
+      settings: this.settings,
+    });
+
+    // Initialize renderers
+    this.launcherRenderer = new LauncherRenderer(this.settings, this.config);
+    this.chatWindowRenderer = new ChatWindowRenderer(this.settings, this.config, this.isMobile);
+    this.componentRenderer = new ComponentRenderer(this.settings);
+
     this.detectDevice();
     this.init();
   }
 
   private detectDevice(): void {
     const width = window.innerWidth;
-    this.isMobile = width < (this.settings?.mobileBreakpoint || 768);
-    this.isTablet = width >= (this.settings?.mobileBreakpoint || 768) && width < (this.settings?.tabletBreakpoint || 1024);
+    this.isMobile = width < (this.settings?.mobileBreakpoint || BREAKPOINTS.MOBILE);
+    this.isTablet = width >= (this.settings?.mobileBreakpoint || BREAKPOINTS.MOBILE) && width < (this.settings?.tabletBreakpoint || BREAKPOINTS.TABLET);
 
-    // Listen for resize events
-    window.addEventListener('resize', () => {
+    // Update SettingsManager with device type
+    this.settingsManager.setDeviceType(this.isMobile, this.isTablet);
+
+    // Update chat window renderer with mobile state
+    this.chatWindowRenderer.updateMobileState(this.isMobile);
+
+    // Create debounced resize handler
+    this.resizeHandler = debounce(() => {
       const newWidth = window.innerWidth;
       const wasMobile = this.isMobile;
       const wasTablet = this.isTablet;
 
-      this.isMobile = newWidth < (this.settings?.mobileBreakpoint || 768);
-      this.isTablet = newWidth >= (this.settings?.mobileBreakpoint || 768) && newWidth < (this.settings?.tabletBreakpoint || 1024);
+      this.isMobile = newWidth < (this.settings?.mobileBreakpoint || BREAKPOINTS.MOBILE);
+      this.isTablet = newWidth >= (this.settings?.mobileBreakpoint || BREAKPOINTS.MOBILE) && newWidth < (this.settings?.tabletBreakpoint || BREAKPOINTS.TABLET);
 
       // Re-apply settings if device type changed
       if (wasMobile !== this.isMobile || wasTablet !== this.isTablet) {
-        this.applyResponsiveSettings();
+        this.settingsManager.setDeviceType(this.isMobile, this.isTablet);
+        // Update chat window renderer with new mobile state
+        this.chatWindowRenderer.updateMobileState(this.isMobile);
       }
-    });
+    }, DEBOUNCE_DELAY.RESIZE);
+
+    // Listen for resize events
+    window.addEventListener('resize', this.resizeHandler);
   }
 
   private async loadSettings(): Promise<void> {
-    if (!this.config.loadSettingsFromServer) {
-      return;
-    }
+    await this.settingsManager.loadSettings();
+    this.settings = this.settingsManager.getSettings();
 
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
+    // Update other managers with settings
+    this.notificationManager.setSettings(this.settings);
+    this.analyticsManager.setSettings(this.settings);
 
-      const response = await fetch(`${this.config.apiUrl}/api/widget/${this.config.siteId}/settings`, {
-        signal: controller.signal,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        console.warn('Failed to load widget settings, using defaults');
-        return;
-      }
-
-      this.settings = await response.json();
-      this.applySettings();
-
-      // Cache settings in session storage
-      try {
-        sessionStorage.setItem(`ic_settings_${this.config.siteId}`, JSON.stringify(this.settings));
-      } catch (e) {
-        // Ignore storage errors
-      }
-    } catch (error) {
-      // Try to load from cache
-      try {
-        const cached = sessionStorage.getItem(`ic_settings_${this.config.siteId}`);
-        if (cached) {
-          this.settings = JSON.parse(cached);
-          this.applySettings();
-          console.log('Loaded widget settings from cache');
-        }
-      } catch (e) {
-        console.warn('Failed to load widget settings:', error);
-      }
-    }
-  }
-
-  private applySettings(): void {
-    if (!this.settings) return;
-
-    const root = document.documentElement;
-
-    // Apply colors
-    root.style.setProperty('--ic-primary', this.settings.primaryColor);
-    root.style.setProperty('--ic-primary-dark', this.adjustColor(this.settings.primaryColor, -20));
-    root.style.setProperty('--ic-primary-light', this.settings.secondaryColor);
-    root.style.setProperty('--ic-bg', this.settings.backgroundColor);
-    root.style.setProperty('--ic-bg-secondary', this.adjustColor(this.settings.backgroundColor, -5));
-    root.style.setProperty('--ic-text', this.settings.textColor);
-    root.style.setProperty('--ic-text-secondary', this.settings.textSecondaryColor);
-    root.style.setProperty('--ic-border', this.settings.borderColor);
-
-    // Apply typography
-    if (this.settings.fontFamily !== 'system') {
-      root.style.setProperty('--ic-font', this.settings.fontFamily);
-    }
-    root.style.setProperty('--ic-font-size', `${this.settings.fontSize}px`);
-    root.style.setProperty('--ic-font-weight-normal', this.settings.fontWeightNormal.toString());
-    root.style.setProperty('--ic-font-weight-medium', this.settings.fontWeightMedium.toString());
-    root.style.setProperty('--ic-font-weight-bold', this.settings.fontWeightBold.toString());
-
-    // Apply shapes
-    root.style.setProperty('--ic-radius', `${this.settings.borderRadius}px`);
-    root.style.setProperty('--ic-radius-sm', `${this.settings.borderRadiusSmall}px`);
-    root.style.setProperty('--ic-radius-btn', `${this.settings.borderRadiusButton}px`);
-
-    // Apply shadows
-    const shadowSizes: Record<string, string> = {
-      none: 'none',
-      small: `0 2px 4px ${this.settings.shadowColor}`,
-      medium: `0 4px 6px -1px ${this.settings.shadowColor}, 0 2px 4px -1px ${this.settings.shadowColor}`,
-      large: `0 10px 15px -3px ${this.settings.shadowColor}, 0 4px 6px -2px ${this.settings.shadowColor}`,
-    };
-    root.style.setProperty('--ic-shadow', shadowSizes[this.settings.shadowSize] || shadowSizes.medium);
-
-    // Apply chat window sizing
-    root.style.setProperty('--ic-window-width', `${this.settings.chatWindowWidth}px`);
-    root.style.setProperty('--ic-window-height', `${this.settings.chatWindowHeight}px`);
-    root.style.setProperty('--ic-window-max-height', this.settings.chatWindowMaxHeight);
-    root.style.setProperty('--ic-z-index', this.settings.chatWindowZIndex.toString());
-
-    // Apply header settings
-    root.style.setProperty('--ic-header-bg', this.settings.headerBackgroundColor || this.settings.primaryColor);
-    root.style.setProperty('--ic-header-text', this.settings.headerTextColor);
-    root.style.setProperty('--ic-header-height', `${this.settings.headerHeight}px`);
-
-    // Apply message bubble settings
-    root.style.setProperty('--ic-user-bubble-bg', this.settings.userBubbleBackgroundColor || this.settings.primaryColor);
-    root.style.setProperty('--ic-user-bubble-text', this.settings.userBubbleTextColor);
-    root.style.setProperty('--ic-user-bubble-radius', `${this.settings.userBubbleBorderRadius}px`);
-    root.style.setProperty('--ic-assistant-bubble-bg', this.settings.assistantBubbleBackgroundColor);
-    root.style.setProperty('--ic-assistant-bubble-text', this.settings.assistantBubbleTextColor);
-    root.style.setProperty('--ic-assistant-bubble-radius', `${this.settings.assistantBubbleBorderRadius}px`);
-    root.style.setProperty('--ic-message-max-width', this.settings.messageMaxWidth);
-    root.style.setProperty('--ic-message-font-size', `${this.settings.messageFontSize}px`);
-    root.style.setProperty('--ic-message-line-height', this.settings.messageLineHeight.toString());
-
-    // Apply input settings
-    root.style.setProperty('--ic-input-bg', this.settings.inputBackgroundColor);
-    root.style.setProperty('--ic-input-text', this.settings.inputTextColor);
-    root.style.setProperty('--ic-input-border', this.settings.inputBorderColor);
-    root.style.setProperty('--ic-input-radius', `${this.settings.inputBorderRadius}px`);
-    root.style.setProperty('--ic-input-min-height', `${this.settings.inputMinHeight}px`);
-
-    // Apply send button settings
-    root.style.setProperty('--ic-send-btn-bg', this.settings.sendButtonBackgroundColor || this.settings.primaryColor);
-    root.style.setProperty('--ic-send-btn-icon', this.settings.sendButtonIconColor);
-
-    // Apply launcher settings
-    const launcherSizes: Record<string, string> = {
-      small: '48px',
-      medium: '56px',
-      large: '64px',
-    };
-    root.style.setProperty('--ic-launcher-size', launcherSizes[this.settings.launcherSize] || '56px');
-    root.style.setProperty('--ic-launcher-bg', this.settings.launcherBackgroundColor || this.settings.primaryColor);
-    root.style.setProperty('--ic-launcher-icon', this.settings.launcherIconColor);
-    root.style.setProperty('--ic-launcher-offset-x', `${this.settings.launcherOffsetX}px`);
-    root.style.setProperty('--ic-launcher-offset-y', `${this.settings.launcherOffsetY}px`);
-
-    // Apply animation settings
-    if (!this.settings.enableAnimations) {
-      root.style.setProperty('--ic-animation-duration', '0ms');
-    } else {
-      root.style.setProperty('--ic-animation-duration', `${this.settings.animationDuration}ms`);
-    }
-    root.style.setProperty('--ic-animation-easing', this.settings.animationEasing);
-
-    // Apply accessibility settings
-    root.style.setProperty('--ic-focus-ring-color', this.settings.focusRingColor);
-    root.style.setProperty('--ic-focus-ring-width', `${this.settings.focusRingWidth}px`);
-    root.style.setProperty('--ic-touch-target-size', `${this.settings.touchTargetMinSize}px`);
-
-    // Apply theme
-    if (this.settings.theme === 'dark' || (this.settings.theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      root.style.setProperty('--ic-bg', this.settings.darkModeBackgroundColor);
-      root.style.setProperty('--ic-text', this.settings.darkModeTextColor);
-      root.style.setProperty('--ic-border', this.settings.darkModeBorderColor);
-    }
-
-    // Respect reduced motion preference
-    if (this.settings.respectReducedMotion && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      root.style.setProperty('--ic-animation-duration', '0ms');
-    }
-
-    // Apply high contrast mode
-    if (this.settings.enableHighContrast) {
-      root.style.setProperty('--ic-text', '#000000');
-      root.style.setProperty('--ic-bg', '#ffffff');
-      root.style.setProperty('--ic-border', '#000000');
-    }
-
-    // Inject custom CSS if provided
-    if (this.settings.customCss) {
-      this.injectCustomCss(this.settings.customCss);
-    }
-
-    // Apply responsive settings
-    this.applyResponsiveSettings();
-  }
-
-  private applyResponsiveSettings(): void {
-    if (!this.settings) return;
-
-    const root = document.documentElement;
-
-    if (this.isMobile) {
-      // Mobile-specific settings
-      root.style.setProperty('--ic-window-width', this.settings.mobileChatWindowWidth);
-      root.style.setProperty('--ic-window-height', this.settings.mobileChatWindowHeight);
-      root.style.setProperty('--ic-header-height', `${this.settings.mobileHeaderHeight}px`);
-      root.style.setProperty('--ic-font-size', `${this.settings.mobileFontSize}px`);
-      root.style.setProperty('--ic-input-min-height', `${this.settings.mobileInputMinHeight}px`);
-      root.style.setProperty('--ic-message-max-width', this.settings.mobileMessageMaxWidth);
-      root.style.setProperty('--ic-launcher-offset-x', `${this.settings.mobileLauncherOffsetX}px`);
-      root.style.setProperty('--ic-launcher-offset-y', `${this.settings.mobileLauncherOffsetY}px`);
-
-      const launcherSizes: Record<string, string> = {
-        small: '48px',
-        medium: '56px',
-        large: '64px',
-      };
-      root.style.setProperty('--ic-launcher-size', launcherSizes[this.settings.mobileLauncherSize] || '56px');
-
-      // Add mobile class to body
-      document.body.classList.add('ic-mobile');
-      document.body.classList.remove('ic-tablet');
-    } else if (this.isTablet) {
-      // Tablet-specific settings
-      root.style.setProperty('--ic-window-width', `${this.settings.tabletChatWindowWidth}px`);
-      root.style.setProperty('--ic-window-height', `${this.settings.tabletChatWindowHeight}px`);
-      root.style.setProperty('--ic-font-size', `${this.settings.tabletFontSize}px`);
-
-      document.body.classList.add('ic-tablet');
-      document.body.classList.remove('ic-mobile');
-    } else {
-      // Desktop
-      document.body.classList.remove('ic-mobile', 'ic-tablet');
-    }
-  }
-
-  private adjustColor(hex: string, percent: number): string {
-    // Simple color adjustment function
-    const num = parseInt(hex.replace('#', ''), 16);
-    const amt = Math.round(2.55 * percent);
-    const R = (num >> 16) + amt;
-    const G = (num >> 8 & 0x00FF) + amt;
-    const B = (num & 0x0000FF) + amt;
-    return '#' + (
-      0x1000000 +
-      (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
-      (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
-      (B < 255 ? B < 1 ? 0 : B : 255)
-    ).toString(16).slice(1);
-  }
-
-  private injectCustomCss(css: string): void {
-    const existingStyle = document.getElementById('ic-custom-css');
-    if (existingStyle) {
-      existingStyle.remove();
-    }
-
-    const style = document.createElement('style');
-    style.id = 'ic-custom-css';
-    style.textContent = css;
-    document.head.appendChild(style);
-  }
-
-  private getLauncherIcon(): string {
-    if (!this.settings) {
-      return `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2Z" fill="currentColor"/>
-      </svg>`;
-    }
-
-    if (this.settings.launcherCustomIconUrl) {
-      return `<img src="${this.settings.launcherCustomIconUrl}" alt="Chat" width="24" height="24" />`;
-    }
-
-    const icons: Record<string, string> = {
-      chat: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2Z" fill="currentColor"/>
-      </svg>`,
-      message: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <path d="M20 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4ZM20 8L12 13L4 8V6L12 11L20 6V8Z" fill="currentColor"/>
-      </svg>`,
-      help: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <path d="M12 2C6.48 2 2 6.48 2 12S6.48 22 12 22 22 17.52 22 12 17.52 2 12 2ZM13 19H11V17H13V19ZM15.07 11.25L14.17 12.17C13.45 12.9 13 13.5 13 15H11V14.5C11 13.4 11.45 12.4 12.17 11.67L13.41 10.41C13.78 10.05 14 9.55 14 9C14 7.9 13.1 7 12 7S10 7.9 10 9H8C8 6.79 9.79 5 12 5S16 6.79 16 9C16 9.88 15.64 10.68 15.07 11.25Z" fill="currentColor"/>
-      </svg>`,
-      support: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <path d="M12 1C5.9 1 1 5.9 1 12S5.9 23 12 23 23 18.1 23 12 18.1 1 12 1ZM12 21C7 21 3 17 3 12S7 3 12 3 21 7 21 12 17 21 12 21ZM12 11C10.3 11 9 9.7 9 8S10.3 5 12 5 15 6.3 15 8 13.7 11 12 11ZM12 13C14.7 13 20 14.3 20 17V19H4V17C4 14.3 9.3 13 12 13Z" fill="currentColor"/>
-      </svg>`,
-    };
-
-    return icons[this.settings.launcherIcon] || icons.chat;
+    // Update renderers with loaded settings
+    this.launcherRenderer.updateSettings(this.settings);
+    this.chatWindowRenderer.updateSettings(this.settings);
+    this.componentRenderer.updateSettings(this.settings);
   }
 
   private validateConfig(config: WidgetConfig): void {
-    if (!config.siteId || typeof config.siteId !== 'string') {
-      throw new WidgetError('Site ID is required and must be a string', WIDGET_ERRORS.INVALID_CONFIG);
-    }
-
-    if (config.mode && !['button', 'widget'].includes(config.mode)) {
-      throw new WidgetError('Mode must be "button" or "widget"', WIDGET_ERRORS.INVALID_CONFIG);
-    }
-
-    if (config.position && !['bottom-right', 'bottom-left', 'top-right', 'top-left'].includes(config.position)) {
-      throw new WidgetError('Invalid position specified', WIDGET_ERRORS.INVALID_CONFIG);
-    }
+    validateConfig(config);
   }
 
   private handleError(error: Error | WidgetError, context?: string): void {
     console.error(`[IntelligentconvoWidget${context ? ` - ${context}` : ''}]:`, error);
 
-    this.state.hasError = true;
-    this.state.errorMessage = error.message;
+    this.stateManager.setError(true, error.message);
 
     if (this.config.onError) {
       this.config.onError(error);
@@ -621,16 +385,41 @@ class IntelligentconvoWidget {
   private showErrorMessage(message: string): void {
     const messagesContainer = document.getElementById('intelligentconvo-messages');
     if (messagesContainer) {
-      const errorDiv = document.createElement('div');
-      errorDiv.className = 'intelligentconvo-message intelligentconvo-error';
-      errorDiv.innerHTML = `
-        <div class="intelligentconvo-message-content error">
-          <span class="error-icon">⚠️</span>
-          ${message}
-        </div>
-        <div class="intelligentconvo-message-time">${new Date().toLocaleTimeString()}</div>
-      `;
-      messagesContainer.appendChild(errorDiv);
+      // Use the configured error message or fallback to the provided message
+      const displayMessage = this.settings?.errorMessage || message || 'Something went wrong. Please try again.';
+
+      // Check if there's already an error message in the last position
+      const lastMessage = messagesContainer.lastElementChild;
+      const isLastMessageError = lastMessage?.classList.contains('intelligentconvo-error');
+
+      if (isLastMessageError && lastMessage) {
+        // Update the existing error message instead of creating a new one
+        const errorContent = lastMessage.querySelector('.intelligentconvo-message-content');
+        const errorTime = lastMessage.querySelector('.intelligentconvo-message-time');
+
+        if (errorContent) {
+          errorContent.innerHTML = `
+            <span class="error-icon">⚠️</span>
+            ${displayMessage}
+          `;
+        }
+        if (errorTime) {
+          errorTime.textContent = new Date().toLocaleTimeString();
+        }
+      } else {
+        // Create a new error message
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'intelligentconvo-message intelligentconvo-error';
+        errorDiv.innerHTML = `
+          <div class="intelligentconvo-message-content error">
+            <span class="error-icon">⚠️</span>
+            ${displayMessage}
+          </div>
+          <div class="intelligentconvo-message-time">${new Date().toLocaleTimeString()}</div>
+        `;
+        messagesContainer.appendChild(errorDiv);
+      }
+
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
   }
@@ -642,46 +431,73 @@ class IntelligentconvoWidget {
 
       this.loadStyles();
       this.render();
-      await this.connectSocket();
-      await this.loadConversationStarters();
+      this.initializeNotifications();
+
+      // If preloadWidget is enabled, connect immediately
+      // Otherwise, connect lazily when chat is first opened
+      if (this.settings?.preloadWidget !== false) {
+        await this.socketManager.connect();
+        this.socketManager.joinSite(this.config.siteId);
+        await this.loadConversationStarters();
+      }
+
+      // Track widget initialization
+      this.trackAnalyticsEvent('widget_initialized');
 
       // Handle auto-open if enabled
       if (this.settings?.autoOpenEnabled) {
         const shouldAutoOpen = !this.settings.autoOpenOnMobile || !this.isMobile;
-        const hasOpenedBefore = sessionStorage.getItem(`ic_auto_opened_${this.config.siteId}`);
+        const hasOpenedBefore = sessionStorage.getItem(`${STORAGE_KEYS.AUTO_OPENED_PREFIX}${this.config.siteId}`);
 
         if (shouldAutoOpen && (!this.settings.autoOpenOnlyOnce || !hasOpenedBefore)) {
           setTimeout(() => {
             this.openChat();
             if (this.settings?.autoOpenOnlyOnce) {
-              sessionStorage.setItem(`ic_auto_opened_${this.config.siteId}`, 'true');
+              sessionStorage.setItem(`${STORAGE_KEYS.AUTO_OPENED_PREFIX}${this.config.siteId}`, 'true');
             }
           }, this.settings.autoOpenDelay);
         }
       }
 
       // Setup cleanup on page unload
-      window.addEventListener('beforeunload', () => this.cleanup());
+      this.beforeUnloadHandler = () => this.cleanup();
+      window.addEventListener('beforeunload', this.beforeUnloadHandler);
     } catch (error) {
       this.handleError(error instanceof Error ? error : new Error('Widget initialization failed'), 'init');
     }
   }
 
   public cleanup(): void {
-    if (this.socket) {
-      this.socket.disconnect();
-    }
+    // Disconnect socket
+    this.socketManager.disconnect();
 
-    if (this.reconnectTimeout) {
-      clearTimeout(this.reconnectTimeout);
-    }
+    // Cleanup handlers
+    this.voiceHandler.cleanup();
+    this.keyboardHandler.cleanup();
 
+    // Cleanup state manager
+    this.stateManager.cleanup();
+
+    // Stop speech recognition
     if (this.speechRecognition) {
       this.speechRecognition.stop();
     }
 
     // Remove event listeners
-    window.removeEventListener('beforeunload', () => this.cleanup());
+    if (this.resizeHandler) {
+      window.removeEventListener('resize', this.resizeHandler);
+      this.resizeHandler = null;
+    }
+
+    if (this.escapeKeyHandler) {
+      document.removeEventListener('keydown', this.escapeKeyHandler);
+      this.escapeKeyHandler = null;
+    }
+
+    if (this.beforeUnloadHandler) {
+      window.removeEventListener('beforeunload', this.beforeUnloadHandler);
+      this.beforeUnloadHandler = null;
+    }
   }
 
   private loadStyles() {
@@ -697,49 +513,7 @@ class IntelligentconvoWidget {
   }
 
   private renderButton(): void {
-    const position = this.settings?.launcherPosition || this.config.position || 'bottom-right';
-    const tooltip = this.settings?.launcherTooltip || 'Open chat';
-    const shape = this.settings?.launcherShape || 'circle';
-    const animation = this.settings?.launcherAnimation || 'pulse';
-
-    const button = document.createElement('button');
-    button.id = 'intelligentconvo-button';
-    button.className = `intelligentconvo-button intelligentconvo-${position} intelligentconvo-shape-${shape} intelligentconvo-animation-${animation}`;
-    button.setAttribute('aria-label', tooltip);
-    button.setAttribute('title', this.settings?.launcherShowTooltip ? tooltip : '');
-    button.setAttribute('role', 'button');
-
-    // Apply launcher-specific styles
-    if (this.settings) {
-      button.style.width = `var(--ic-launcher-size, 56px)`;
-      button.style.height = `var(--ic-launcher-size, 56px)`;
-      button.style.backgroundColor = `var(--ic-launcher-bg)`;
-      button.style.color = `var(--ic-launcher-icon)`;
-
-      if (this.settings.launcherBorderColor && this.settings.launcherBorderWidth > 0) {
-        button.style.border = `${this.settings.launcherBorderWidth}px solid ${this.settings.launcherBorderColor}`;
-      }
-    }
-
-    button.innerHTML = `
-      <div class="intelligentconvo-button-inner">
-        ${this.getLauncherIcon()}
-        ${this.settings?.launcherShowBadge ? `<span class="intelligentconvo-badge" style="background-color: ${this.settings.launcherBadgeColor}; color: ${this.settings.launcherBadgeTextColor};">0</span>` : ''}
-      </div>
-      ${this.settings?.launcherText ? `<span class="intelligentconvo-launcher-text">${this.settings.launcherText}</span>` : ''}
-    `;
-
-    button.addEventListener('click', () => {
-      this.toggleChat();
-    });
-
-    button.addEventListener('keydown', (e: KeyboardEvent) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        this.toggleChat();
-      }
-    });
-
+    const button = this.launcherRenderer.renderButton(() => this.toggleChat());
     document.body.appendChild(button);
     this.container = button;
   }
@@ -759,218 +533,22 @@ class IntelligentconvoWidget {
   }
 
   private getWidgetHTML(): string {
-    return `
-      <div class="intelligentconvo-widget" role="main" aria-label="Chat widget">
-        <div class="intelligentconvo-header">
-          <button class="intelligentconvo-menu" aria-label="Menu" tabindex="0">☰</button>
-          <div class="intelligentconvo-tabs" role="tablist">
-            <button
-              class="intelligentconvo-tab active"
-              data-mode="chat"
-              role="tab"
-              aria-selected="true"
-              aria-controls="chat-panel"
-              id="chat-tab"
-            >Chat</button>
-            <button
-              class="intelligentconvo-tab"
-              data-mode="speak"
-              role="tab"
-              aria-selected="false"
-              aria-controls="speak-panel"
-              id="speak-tab"
-            >Speak</button>
-          </div>
-        </div>
-        <div class="intelligentconvo-content">
-          <div class="intelligentconvo-connection-status" id="intelligentconvo-connection-status">
-            <div class="intelligentconvo-connection-dot"></div>
-            <span id="intelligentconvo-connection-text">Connecting...</span>
-          </div>
-          <div
-            class="intelligentconvo-messages"
-            id="intelligentconvo-messages"
-            role="log"
-            aria-live="polite"
-            aria-label="Chat messages"
-          ></div>
-          <div class="intelligentconvo-starters" id="intelligentconvo-starters"></div>
-          <div class="intelligentconvo-typing" id="intelligentconvo-typing" style="display: none;" aria-live="polite">
-            <div class="intelligentconvo-typing-dots">
-              <span></span>
-              <span></span>
-              <span></span>
-            </div>
-            <span>AI is typing...</span>
-          </div>
-        </div>
-        <div class="intelligentconvo-input" role="form">
-          <label for="intelligentconvo-input" class="sr-only">Type your message</label>
-          <input
-            type="text"
-            placeholder="Type your message..."
-            id="intelligentconvo-input"
-            aria-label="Type your message"
-            autocomplete="off"
-            maxlength="1000"
-          />
-          <button
-            class="intelligentconvo-mic"
-            id="intelligentconvo-mic"
-            aria-label="Start voice input"
-            title="Start voice input"
-          >🎤</button>
-          <button
-            class="intelligentconvo-send"
-            id="intelligentconvo-send"
-            aria-label="Send message"
-            title="Send message"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M2 21L23 12L2 3V10L17 12L2 14V21Z" fill="currentColor"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-    `;
+    return this.chatWindowRenderer.getWidgetHTML();
   }
 
   private getChatWindowHTML(): string {
-    const headerTitle = this.settings?.headerTitle || 'Chat Assistant';
-    const headerSubtitle = this.settings?.headerSubtitle || '';
-    const placeholder = this.settings?.inputPlaceholderText || 'Type your message...';
-    const typingText = this.settings?.typingIndicatorText || 'AI is typing...';
-    const closeLabel = this.settings?.closeButtonAriaLabel || 'Close chat';
-    const sendLabel = this.settings?.sendButtonAriaLabel || 'Send message';
-    const showVoiceInput = this.settings?.enableVoiceInput !== false;
-    const showMinimize = this.settings?.headerShowMinimizeButton || false;
-    const showPoweredBy = this.settings?.showPoweredBy !== false;
-    const poweredByText = this.settings?.poweredByText || 'Powered by Intelligentconvo';
-    const poweredByUrl = this.settings?.poweredByUrl || 'https://intelligentconvo.com';
-
-    return `
-      <div class="intelligentconvo-chat-window" id="intelligentconvo-chat-window" role="dialog" aria-labelledby="chat-title" aria-modal="true">
-        <div class="intelligentconvo-chat-header">
-          <div class="intelligentconvo-chat-title">
-            <div class="intelligentconvo-header-info">
-              ${this.settings?.headerShowAvatar ? `
-                <div class="intelligentconvo-header-avatar">
-                  ${this.settings?.headerAvatarUrl
-                    ? `<img src="${this.settings.headerAvatarUrl}" alt="${this.settings?.botName || 'Assistant'}" />`
-                    : `<span>${this.settings?.botAvatarFallback || 'AI'}</span>`
-                  }
-                </div>
-              ` : ''}
-              <div class="intelligentconvo-header-text">
-                <h4 id="chat-title">${headerTitle}</h4>
-                ${headerSubtitle ? `<span class="intelligentconvo-header-subtitle">${headerSubtitle}</span>` : ''}
-              </div>
-            </div>
-            <div class="intelligentconvo-header-actions">
-              ${showMinimize ? `
-                <button
-                  class="intelligentconvo-minimize"
-                  id="intelligentconvo-minimize"
-                  aria-label="${this.settings?.minimizeButtonAriaLabel || 'Minimize chat'}"
-                  title="Minimize"
-                >−</button>
-              ` : ''}
-              <button
-                class="intelligentconvo-close"
-                id="intelligentconvo-close"
-                aria-label="${closeLabel}"
-                title="Close"
-              >×</button>
-            </div>
-          </div>
-          <div class="intelligentconvo-tabs" role="tablist">
-            <button
-              class="intelligentconvo-tab active"
-              data-mode="chat"
-              role="tab"
-              aria-selected="true"
-              aria-controls="chat-panel"
-            >Chat</button>
-            <button
-              class="intelligentconvo-tab"
-              data-mode="speak"
-              role="tab"
-              aria-selected="false"
-              aria-controls="speak-panel"
-            >Speak</button>
-          </div>
-        </div>
-        <div class="intelligentconvo-content">
-          ${this.settings?.headerShowStatus !== false ? `
-            <div class="intelligentconvo-connection-status" id="intelligentconvo-connection-status">
-              <div class="intelligentconvo-connection-dot"></div>
-              <span id="intelligentconvo-connection-text">Connecting...</span>
-            </div>
-          ` : ''}
-          <div
-            class="intelligentconvo-messages"
-            id="intelligentconvo-messages"
-            role="log"
-            aria-live="polite"
-            aria-label="Chat messages"
-          ></div>
-          <div class="intelligentconvo-starters" id="intelligentconvo-starters"></div>
-          <div class="intelligentconvo-typing" id="intelligentconvo-typing" style="display: none;" aria-live="polite">
-            <div class="intelligentconvo-typing-dots">
-              <span></span>
-              <span></span>
-              <span></span>
-            </div>
-            <span>${typingText}</span>
-          </div>
-        </div>
-        <div class="intelligentconvo-input" role="form">
-          <label for="intelligentconvo-input" class="sr-only">${placeholder}</label>
-          <input
-            type="text"
-            placeholder="${placeholder}"
-            id="intelligentconvo-input"
-            aria-label="${placeholder}"
-            autocomplete="off"
-            maxlength="1000"
-          />
-          ${showVoiceInput ? `
-            <button
-              class="intelligentconvo-mic"
-              id="intelligentconvo-mic"
-              aria-label="Start voice input"
-              title="Start voice input"
-            >🎤</button>
-          ` : ''}
-          <button
-            class="intelligentconvo-send"
-            id="intelligentconvo-send"
-            aria-label="${sendLabel}"
-            title="Send"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M2 21L23 12L2 3V10L17 12L2 14V21Z" fill="currentColor"/>
-            </svg>
-          </button>
-        </div>
-        ${showPoweredBy ? `
-          <div class="intelligentconvo-powered-by">
-            <a href="${poweredByUrl}" target="_blank" rel="noopener noreferrer">${poweredByText}</a>
-          </div>
-        ` : ''}
-      </div>
-    `;
+    return this.chatWindowRenderer.getChatWindowHTML();
   }
 
   private toggleChat(): void {
-    if (this.state.isOpen) {
+    if (this.stateManager.getState().isOpen) {
       this.closeChat();
     } else {
       this.openChat();
     }
   }
 
-  private openChat(): void {
+  private async openChat(): Promise<void> {
     if (this.config.mode === 'button') {
       // Create chat window
       const chatWindow = document.createElement('div');
@@ -980,22 +558,40 @@ class IntelligentconvoWidget {
 
       this.setupEventListeners();
 
-      // Update connection status to reflect current state
-      if (this.state.isConnected) {
-        this.updateConnectionStatus('connected');
-      } else {
-        this.updateConnectionStatus('connecting');
+      // Setup keyboard navigation if enabled
+      this.setupKeyboardNavigation();
+
+      // Setup lazy loading if enabled
+      this.setupLazyLoading();
+
+      // Load persisted conversation if enabled
+      this.loadPersistedConversation();
+
+      // If preloadWidget was false, connect now
+      if (this.settings?.preloadWidget === false && !this.socketManager.isConnected()) {
+        try {
+          await this.socketManager.connect();
+          this.socketManager.joinSite(this.config.siteId);
+          await this.loadConversationStarters();
+        } catch (error) {
+          console.error('Failed to connect:', error);
+        }
       }
 
-      // Focus management for accessibility
-      const firstFocusable = windowElement.querySelector('button, input, [tabindex]') as HTMLElement;
-      if (firstFocusable) {
-        firstFocusable.focus();
-      }
+
+      // Setup focus trap for accessibility
+      this.focusTrap = new FocusTrap(windowElement);
+      this.focusTrap.activate();
+
+      // Mark all messages as read when opening
+      setTimeout(() => this.markAllMessagesAsRead(), MARK_READ_DELAY);
     }
 
-    this.state.isOpen = true;
+    this.stateManager.setOpen(true);
     document.body.classList.add('intelligentconvo-chat-open');
+
+    // Track chat opened
+    this.trackAnalyticsEvent('chat_opened');
 
     // Update button aria-label
     const button = document.getElementById('intelligentconvo-button');
@@ -1006,21 +602,24 @@ class IntelligentconvoWidget {
   }
 
   private closeChat(): void {
+    // Deactivate focus trap
+    if (this.focusTrap) {
+      this.focusTrap.deactivate();
+      this.focusTrap = null;
+    }
+
     if (this.config.mode === 'button') {
       const chatWindow = document.getElementById('intelligentconvo-chat-window');
       if (chatWindow) {
         chatWindow.remove();
       }
-
-      // Return focus to button
-      const button = document.getElementById('intelligentconvo-button');
-      if (button) {
-        button.focus();
-      }
     }
 
-    this.state.isOpen = false;
+    this.stateManager.setOpen(false);
     document.body.classList.remove('intelligentconvo-chat-open');
+
+    // Track chat closed
+    this.trackAnalyticsEvent('chat_closed');
 
     // Update button aria-label
     const button = document.getElementById('intelligentconvo-button');
@@ -1032,14 +631,27 @@ class IntelligentconvoWidget {
 
   private setupEventListeners(): void {
     const closeBtn = document.getElementById('intelligentconvo-close');
+    const minimizeBtn = document.getElementById('intelligentconvo-minimize');
     const sendBtn = document.getElementById('intelligentconvo-send');
     const input = document.getElementById('intelligentconvo-input') as HTMLInputElement;
     const micBtn = document.getElementById('intelligentconvo-mic');
+    const attachBtn = document.getElementById('intelligentconvo-attach');
+    const emojiBtn = document.getElementById('intelligentconvo-emoji-btn');
     const tabs = document.querySelectorAll('.intelligentconvo-tab');
 
     if (closeBtn) {
       closeBtn.addEventListener('click', () => this.closeChat());
       closeBtn.addEventListener('keydown', (e: KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          this.closeChat();
+        }
+      });
+    }
+
+    if (minimizeBtn) {
+      minimizeBtn.addEventListener('click', () => this.closeChat());
+      minimizeBtn.addEventListener('keydown', (e: KeyboardEvent) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           this.closeChat();
@@ -1085,6 +697,26 @@ class IntelligentconvoWidget {
       });
     }
 
+    if (attachBtn) {
+      attachBtn.addEventListener('click', () => this.handleFileAttachment());
+      attachBtn.addEventListener('keydown', (e: KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          this.handleFileAttachment();
+        }
+      });
+    }
+
+    if (emojiBtn) {
+      emojiBtn.addEventListener('click', () => this.toggleEmojiPicker());
+      emojiBtn.addEventListener('keydown', (e: KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          this.toggleEmojiPicker();
+        }
+      });
+    }
+
     // Tab navigation
     tabs.forEach((tab) => {
       tab.addEventListener('click', (e) => this.handleTabSwitch(e));
@@ -1098,18 +730,19 @@ class IntelligentconvoWidget {
     });
 
     // Escape key to close chat
-    document.addEventListener('keydown', (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && this.state.isOpen) {
+    this.escapeKeyHandler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && this.stateManager.getState().isOpen) {
         this.closeChat();
       }
-    });
+    };
+    document.addEventListener('keydown', this.escapeKeyHandler);
   }
 
   private handleTabSwitch(e: Event): void {
     const clickedTab = e.target as HTMLElement;
     const mode = clickedTab.getAttribute('data-mode') as WidgetMode;
 
-    if (mode && mode !== this.currentMode) {
+    if (mode && mode !== this.stateManager.getState().currentMode) {
       // Update visual state
       document.querySelectorAll('.intelligentconvo-tab').forEach(tab => {
         tab.classList.remove('active');
@@ -1119,148 +752,19 @@ class IntelligentconvoWidget {
       clickedTab.classList.add('active');
       clickedTab.setAttribute('aria-selected', 'true');
 
-      this.currentMode = mode;
+      this.stateManager.setMode(mode);
 
       // Could implement mode-specific functionality here
       console.log(`Switched to ${mode} mode`);
     }
   }
 
-  private async connectSocket(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      try {
-        this.socket = io(this.config.apiUrl!, {
-          transports: ['websocket', 'polling'],
-          timeout: 10000,
-          reconnection: true,
-          reconnectionAttempts: this.maxReconnectAttempts,
-          reconnectionDelay: 1000,
-        });
-
-        this.socket.on('connect', () => {
-          console.log('Connected to Intelligentconvo');
-          this.state.isConnected = true;
-          this.state.hasError = false;
-          this.reconnectAttempts = 0;
-
-          this.updateConnectionStatus('connected');
-          this.socket!.emit('join-site', this.config.siteId);
-
-          if (this.config.onConnect) {
-            this.config.onConnect();
-          }
-
-          resolve();
-        });
-
-        this.socket.on('stream', (data: { chunk: string }) => {
-          try {
-            // Create assistant message on first chunk
-            if (!window.lastAssistantMessage) {
-              this.displayMessage('assistant', '');
-              this.setTyping(false); // Hide typing indicator once we start receiving
-            }
-            this.appendToLastMessage(data.chunk);
-          } catch (error) {
-            this.handleError(new Error('Failed to process message stream'), 'stream');
-          }
-        });
-
-        this.socket.on('complete', (data: { content: string }) => {
-          this.setTyping(false);
-        });
-
-        this.socket.on('error', (data: { message: string }) => {
-          const error = new WidgetError(data.message || 'Unknown socket error', WIDGET_ERRORS.CONNECTION_FAILED);
-          this.handleError(error, 'socket');
-          this.setTyping(false);
-        });
-
-        this.socket.on('typing', (data: { isTyping: boolean }) => {
-          this.setTyping(data.isTyping);
-        });
-
-        this.socket.on('disconnect', (reason: string) => {
-          console.log('Disconnected from Intelligentconvo:', reason);
-          this.state.isConnected = false;
-          this.updateConnectionStatus('disconnected');
-
-          if (this.config.onDisconnect) {
-            this.config.onDisconnect();
-          }
-
-          // Attempt to reconnect if not intentional
-          if (reason === 'io server disconnect') {
-            this.attemptReconnect();
-          }
-        });
-
-        this.socket.on('connect_error', (error: Error) => {
-          console.error('Connection error:', error);
-          this.handleError(new WidgetError('Failed to connect to chat service', WIDGET_ERRORS.CONNECTION_FAILED, error), 'connect');
-          reject(error);
-        });
-
-        // Timeout for initial connection
-        setTimeout(() => {
-          if (!this.state.isConnected) {
-            reject(new WidgetError('Connection timeout', WIDGET_ERRORS.CONNECTION_FAILED));
-          }
-        }, 10000);
-
-      } catch (error) {
-        reject(error);
-      }
-    });
-  }
-
-  private attemptReconnect(): void {
-    if (this.reconnectAttempts >= this.maxReconnectAttempts) {
-      this.handleError(new WidgetError('Max reconnection attempts reached', WIDGET_ERRORS.CONNECTION_FAILED), 'reconnect');
-      this.updateConnectionStatus('disconnected');
-      return;
-    }
-
-    this.reconnectAttempts++;
-    this.updateConnectionStatus('connecting');
-    const delay = Math.min(1000 * Math.pow(2, this.reconnectAttempts), 30000); // Exponential backoff, max 30s
-
-    this.reconnectTimeout = setTimeout(() => {
-      console.log(`Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts})...`);
-      this.connectSocket().catch(error => {
-        console.error('Reconnection failed:', error);
-        this.updateConnectionStatus('disconnected');
-      });
-    }, delay);
-  }
-
-  private updateConnectionStatus(status: 'connected' | 'connecting' | 'disconnected'): void {
-    const statusElement = document.getElementById('intelligentconvo-connection-status');
-    const textElement = document.getElementById('intelligentconvo-connection-text');
-
-    if (statusElement && textElement) {
-      statusElement.className = `intelligentconvo-connection-status ${status}`;
-
-      switch (status) {
-        case 'connected':
-          textElement.textContent = 'Connected';
-          break;
-        case 'connecting':
-          textElement.textContent = 'Connecting...';
-          break;
-        case 'disconnected':
-          textElement.textContent = 'Disconnected';
-          break;
-      }
-    }
-  }
-
   private async loadConversationStarters(): Promise<void> {
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      const timeoutId = setTimeout(() => controller.abort(), STARTERS_TIMEOUT);
 
-      const response = await fetch(`${this.config.apiUrl}/api/widget/${this.config.siteId}/starters`, {
+      const response = await fetch(`${this.config.apiUrl}/api/v1/widget/${this.config.siteId}/starters`, {
         signal: controller.signal,
         headers: {
           'Content-Type': 'application/json',
@@ -1288,205 +792,37 @@ class IntelligentconvoWidget {
   }
 
   private renderStarters(data: ConversationStarters): void {
-    const container = document.getElementById('intelligentconvo-starters');
-    if (!container) return;
-
-    // Sanitize welcome message
-    const sanitizedWelcome = this.sanitizeHtml(data.welcomeMessage);
-
-    container.innerHTML = `
-      <div class="intelligentconvo-welcome" role="heading" aria-level="3">${sanitizedWelcome}</div>
-      <div class="intelligentconvo-starter-buttons" role="group" aria-label="Conversation starters">
-        ${data.starters.map((starter, index) => {
-          const sanitizedText = this.sanitizeHtml(starter.starterText);
-          return `<button
-            class="intelligentconvo-starter-btn"
-            data-text="${sanitizedText}"
-            aria-label="Send: ${sanitizedText}"
-            tabindex="0"
-          >
-            ${sanitizedText}
-          </button>`;
-        }).join('')}
-      </div>
-    `;
-
-    // Add click and keyboard handlers to starter buttons
-    container.querySelectorAll('.intelligentconvo-starter-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const text = (e.target as HTMLElement).getAttribute('data-text');
-        if (text) {
-          this.sendMessage(text);
-        }
-      });
-
-      btn.addEventListener('keydown', (e: Event) => {
-        const keyEvent = e as KeyboardEvent;
-        if (keyEvent.key === 'Enter' || keyEvent.key === ' ') {
-          keyEvent.preventDefault();
-          const text = (e.target as HTMLElement).getAttribute('data-text');
-          if (text) {
-            this.sendMessage(text);
-          }
-        }
-      });
-    });
+    this.componentRenderer.renderStarters(
+      data,
+      (text: string) => this.sendMessage(text),
+      (html: string) => sanitizeHtml(html)
+    );
   }
 
   private handleSendMessage(): void {
-    const input = document.getElementById('intelligentconvo-input') as HTMLInputElement;
-    const sendBtn = document.getElementById('intelligentconvo-send');
-    const text = input.value.trim();
-
-    if (!text) {
-      input.focus();
-      return;
-    }
-
-    if (!this.state.isConnected) {
-      this.showErrorMessage('Not connected to chat service. Please wait while we reconnect.');
-      return;
-    }
-
-    // Disable input during send
-    if (input) input.disabled = true;
-    if (sendBtn) sendBtn.setAttribute('disabled', 'true');
-
-    try {
-      this.sendMessage(text);
-      input.value = '';
-    } finally {
-      // Re-enable input
-      if (input) {
-        input.disabled = false;
-        input.focus();
-      }
-      if (sendBtn) sendBtn.removeAttribute('disabled');
-    }
+    this.messageHandler.handleSendMessage();
   }
 
-  private sendMessage(text: string): void {
-    try {
-      if (!text.trim()) {
-        throw new WidgetError('Message cannot be empty', WIDGET_ERRORS.MESSAGE_SEND_FAILED);
-      }
-
-      if (!this.socket || !this.state.isConnected) {
-        throw new WidgetError('Not connected to chat service', WIDGET_ERRORS.CONNECTION_FAILED);
-      }
-
-      // Reset lastAssistantMessage for new response
-      window.lastAssistantMessage = undefined;
-
-      const message: Message = {
-        id: this.generateMessageId(),
-        role: 'user',
-        content: text.trim(),
-        timestamp: new Date().toISOString(),
-      };
-
-      this.displayMessage('user', text.trim(), message.id);
-      this.messages.push(message);
-
-      // Hide starters after first message
-      const starters = document.getElementById('intelligentconvo-starters');
-      if (starters) {
-        starters.style.display = 'none';
-      }
-
-      this.socket.emit('message', {
-        sessionId: this.sessionId,
-        siteId: this.config.siteId,
-        content: text.trim(),
-        messageId: message.id,
-      });
-
-      this.setTyping(true);
-
-      if (this.config.onMessage) {
-        this.config.onMessage(message);
-      }
-    } catch (error) {
-      this.handleError(error instanceof WidgetError ? error : new Error('Failed to send message'), 'sendMessage');
-    }
+  private async sendMessage(text: string): Promise<void> {
+    await this.messageHandler.sendMessage(text);
   }
 
-  private generateMessageId(): string {
-    return `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  }
 
   private displayMessage(role: 'user' | 'assistant', content: string, messageId?: string): void {
-    const messagesContainer = document.getElementById('intelligentconvo-messages');
-    if (!messagesContainer) return;
-
-    const messageDiv = document.createElement('div');
-    messageDiv.className = `intelligentconvo-message intelligentconvo-${role}`;
-    messageDiv.setAttribute('data-message-id', messageId || this.generateMessageId());
-
-    // Escape HTML to prevent XSS
-    const sanitizedContent = this.sanitizeHtml(content);
-
-    messageDiv.innerHTML = `
-      <div class="intelligentconvo-message-content">${sanitizedContent || ''}</div>
-      <div class="intelligentconvo-message-time">${new Date().toLocaleTimeString()}</div>
-    `;
-
-    messagesContainer.appendChild(messageDiv);
-    this.scrollToBottom();
-
-    if (role === 'assistant' && content) {
-      const message: Message = {
-        id: messageId || this.generateMessageId(),
-        role,
-        content: sanitizedContent,
-        timestamp: new Date().toISOString(),
-      };
-      this.messages.push(message);
-
-      if (this.config.onMessage) {
-        this.config.onMessage(message);
-      }
-    }
-
-    if (role === 'assistant') {
-      // Store the message element for streaming
-      window.lastAssistantMessage = messageDiv;
-    }
+    this.messageHandler.displayMessage(role, content, messageId);
   }
 
   private sanitizeHtml(html: string): string {
-    const div = document.createElement('div');
-    div.textContent = html;
-    return div.innerHTML;
+    return sanitizeHtml(html);
   }
 
-  private scrollToBottom(): void {
-    const messagesContainer = document.getElementById('intelligentconvo-messages');
-    if (messagesContainer) {
-      messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    }
-  }
 
   private appendToLastMessage(chunk: string): void {
-    try {
-      const lastMessage = window.lastAssistantMessage;
-      if (lastMessage) {
-        const contentDiv = lastMessage.querySelector('.intelligentconvo-message-content');
-        if (contentDiv) {
-          // Sanitize chunk to prevent XSS
-          const sanitizedChunk = this.sanitizeHtml(chunk);
-          contentDiv.textContent += chunk; // Use textContent to prevent HTML injection
-        }
-
-        this.scrollToBottom();
-      }
-    } catch (error) {
-      this.handleError(new Error('Failed to append message chunk'), 'appendMessage');
-    }
+    this.messageHandler.appendToLastMessage(chunk);
   }
 
   private setTyping(typing: boolean): void {
-    this.state.isTyping = typing;
+    this.stateManager.setTyping(typing);
     const typingIndicator = document.getElementById('intelligentconvo-typing');
 
     if (typingIndicator) {
@@ -1495,104 +831,261 @@ class IntelligentconvoWidget {
   }
 
   private handleVoiceInput(): void {
-    try {
-      if (!('webkitSpeechRecognition' in window)) {
-        throw new WidgetError('Speech recognition not supported in this browser', WIDGET_ERRORS.SPEECH_NOT_SUPPORTED);
+    this.voiceHandler.handleVoiceInput();
+  }
+
+  private initializeNotifications(): void {
+    this.notificationManager.initializeNotifications();
+  }
+
+  private playNotificationSound(): void {
+    this.notificationManager.playNotificationSound();
+  }
+
+  private showDesktopNotification(title: string, body: string): void {
+    this.notificationManager.showDesktopNotification(title, body);
+  }
+
+  private trackAnalyticsEvent(eventName: string, eventData?: AnalyticsEventData): void {
+    this.analyticsManager.trackAnalyticsEvent(eventName, eventData);
+  }
+
+  // Read Receipts
+  private markMessageAsRead(messageId: string): void {
+    if (!this.settings?.showReadReceipts) return;
+
+    const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
+    if (messageElement && !messageElement.classList.contains('read')) {
+      messageElement.classList.add('read');
+
+      // Add read receipt indicator
+      const wrapper = messageElement.querySelector('.intelligentconvo-message-wrapper');
+      if (wrapper && !wrapper.querySelector('.intelligentconvo-read-receipt')) {
+        const receipt = document.createElement('span');
+        receipt.className = 'intelligentconvo-read-receipt';
+        receipt.innerHTML = '✓✓';
+        receipt.setAttribute('aria-label', 'Read');
+        wrapper.appendChild(receipt);
       }
 
-      // Stop any existing recognition
-      if (this.speechRecognition) {
-        this.speechRecognition.stop();
-      }
-
-      this.speechRecognition = new window.webkitSpeechRecognition();
-      this.speechRecognition.continuous = false;
-      this.speechRecognition.interimResults = false;
-
-      this.speechRecognition.onstart = () => {
-        const micBtn = document.getElementById('intelligentconvo-mic');
-        if (micBtn) {
-          micBtn.classList.add('listening');
-          micBtn.setAttribute('aria-label', 'Listening...');
-        }
-      };
-
-      this.speechRecognition.onresult = (event: SpeechRecognitionEvent) => {
-        try {
-          const transcript = event.results[0][0].transcript;
-          if (transcript.trim()) {
-            this.sendMessage(transcript);
-          }
-        } catch (error) {
-          this.handleError(new Error('Failed to process speech recognition result'), 'speechRecognition');
-        }
-      };
-
-      this.speechRecognition.onend = () => {
-        const micBtn = document.getElementById('intelligentconvo-mic');
-        if (micBtn) {
-          micBtn.classList.remove('listening');
-          micBtn.setAttribute('aria-label', 'Start voice input');
-        }
-        this.speechRecognition = null;
-      };
-
-      this.speechRecognition.onerror = (event: any) => {
-        this.handleError(new WidgetError(`Speech recognition error: ${event.error}`, WIDGET_ERRORS.SPEECH_NOT_SUPPORTED), 'speechRecognition');
-        const micBtn = document.getElementById('intelligentconvo-mic');
-        if (micBtn) {
-          micBtn.classList.remove('listening');
-        }
-      };
-
-      this.speechRecognition.start();
-    } catch (error) {
-      this.handleError(error instanceof WidgetError ? error : new Error('Voice input failed'), 'voiceInput');
+      // Track read receipt
+      this.trackAnalyticsEvent('message_read', { messageId });
     }
   }
 
-  private getOrCreateSession(): string {
-    let sessionId = localStorage.getItem('intelligentconvo_session');
+  private markAllMessagesAsRead(): void {
+    if (!this.settings?.showReadReceipts) return;
 
-    if (!sessionId) {
-      sessionId = 'ic_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-      localStorage.setItem('intelligentconvo_session', sessionId);
+    const messages = document.querySelectorAll('.intelligentconvo-message.intelligentconvo-user:not(.read)');
+    messages.forEach(message => {
+      const messageId = message.getAttribute('data-message-id');
+      if (messageId) {
+        this.markMessageAsRead(messageId);
+      }
+    });
+  }
+
+  private handleFileAttachment(): void {
+    this.fileHandler.handleFileAttachment();
+  }
+
+  private updateFilePreview(): void {
+    this.fileHandler.updateFilePreview();
+  }
+
+  private async prepareFileAttachments(): Promise<Array<{ name: string; type: string; data: string }>> {
+    return await this.fileHandler.prepareFileAttachments();
+  }
+
+
+  // Emoji Picker
+  private toggleEmojiPicker(): void {
+    if (!this.settings?.enableEmojiPicker) return;
+
+    const newVisibility = !this.stateManager.getState().emojiPickerVisible;
+    this.stateManager.setEmojiPicker(newVisibility);
+
+    let picker = document.getElementById('intelligentconvo-emoji-picker');
+
+    if (newVisibility) {
+      if (!picker) {
+        picker = document.createElement('div');
+        picker.id = 'intelligentconvo-emoji-picker';
+        picker.className = 'intelligentconvo-emoji-picker';
+        picker.innerHTML = this.getEmojiPickerHTML();
+
+        const inputArea = document.querySelector('.intelligentconvo-input');
+        if (inputArea) {
+          // Insert inside the input area so absolute positioning works
+          inputArea.insertBefore(picker, inputArea.firstChild);
+        }
+
+        // Add emoji click handlers
+        picker.querySelectorAll('.intelligentconvo-emoji').forEach(emoji => {
+          emoji.addEventListener('click', (e) => {
+            const emojiChar = (e.target as HTMLElement).textContent;
+            this.insertEmoji(emojiChar || '');
+          });
+        });
+      }
+      picker.style.display = 'block';
+    } else if (picker) {
+      picker.style.display = 'none';
     }
 
-    return sessionId;
+    this.trackAnalyticsEvent('emoji_picker_toggled', { visible: this.stateManager.getState().emojiPickerVisible });
   }
+
+  private getEmojiPickerHTML(): string {
+    return this.componentRenderer.getEmojiPickerHTML();
+  }
+
+  private insertEmoji(emoji: string): void {
+    const input = document.getElementById('intelligentconvo-input') as HTMLInputElement;
+    if (input) {
+      const start = input.selectionStart || 0;
+      const end = input.selectionEnd || 0;
+      const text = input.value;
+      input.value = text.substring(0, start) + emoji + text.substring(end);
+      input.selectionStart = input.selectionEnd = start + emoji.length;
+      input.focus();
+    }
+    this.toggleEmojiPicker(); // Close picker after selection
+  }
+
+  // Conversation Persistence
+  private saveConversation(): void {
+    this.storageManager.saveConversation(this.messages, this.sessionId, this.settings);
+  }
+
+  private loadPersistedConversation(): void {
+    const data = this.storageManager.loadPersistedConversation(this.settings);
+
+    if (data && data.messages.length > 0) {
+      this.messages = data.messages;
+      if (data.sessionId) {
+        this.sessionId = data.sessionId;
+      }
+
+      // Display loaded messages
+      data.messages.forEach((msg: Message) => {
+        this.displayMessage(msg.role, msg.content, msg.id);
+      });
+
+      // Hide starters if there are messages
+      const starters = document.getElementById('intelligentconvo-starters');
+      if (starters) {
+        starters.style.display = 'none';
+      }
+    }
+  }
+
+  private renderQuickReplies(replies: string[]): void {
+    this.quickReplies = replies;
+    this.componentRenderer.renderQuickReplies(
+      replies,
+      (text: string) => this.sendMessage(text),
+      (html: string) => sanitizeHtml(html)
+    );
+  }
+
+  private setupKeyboardNavigation(): void {
+    this.keyboardHandler.setupKeyboardNavigation();
+  }
+
+  // Lazy Load Messages
+  private setupLazyLoading(): void {
+    if (!this.settings?.lazyLoadMessages) return;
+
+    const messagesContainer = document.getElementById('intelligentconvo-messages');
+    if (!messagesContainer) return;
+
+    // Throttle scroll event for better performance
+    const throttledScroll = throttle(() => {
+      // Load more messages when scrolled to top
+      if (messagesContainer.scrollTop === 0 && this.messages.length > this.stateManager.getState().loadedMessageCount) {
+        this.loadMoreMessages();
+      }
+    }, THROTTLE_DELAY.SCROLL);
+
+    messagesContainer.addEventListener('scroll', throttledScroll);
+  }
+
+  private loadMoreMessages(): void {
+    if (!this.settings?.lazyLoadMessages) return;
+
+    const messagesContainer = document.getElementById('intelligentconvo-messages');
+    if (!messagesContainer) return;
+
+    const previousScrollHeight = messagesContainer.scrollHeight;
+    const currentLoaded = this.stateManager.getState().loadedMessageCount;
+    const startIndex = Math.max(0, this.messages.length - currentLoaded - MESSAGES_PER_PAGE);
+    const endIndex = this.messages.length - currentLoaded;
+
+    const messagesToLoad = this.messages.slice(startIndex, endIndex);
+
+    // Prepend messages
+    messagesToLoad.reverse().forEach(msg => {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `intelligentconvo-message intelligentconvo-${msg.role}`;
+      messageDiv.setAttribute('data-message-id', msg.id);
+
+      const sanitizedContent = this.sanitizeHtml(msg.content);
+      messageDiv.innerHTML = `
+        <div class="intelligentconvo-message-wrapper">
+          <div class="intelligentconvo-message-content">${sanitizedContent}</div>
+        </div>
+      `;
+
+      messagesContainer.insertBefore(messageDiv, messagesContainer.firstChild);
+    });
+
+    this.stateManager.setLoadedMessageCount(
+      this.stateManager.getState().loadedMessageCount + messagesToLoad.length
+    );
+
+    // Maintain scroll position
+    messagesContainer.scrollTop = messagesContainer.scrollHeight - previousScrollHeight;
+  }
+
 }
 
+// Import global types
+import type { WidgetCommand, IntelligentconvoQueue, IntelligentconvoInit } from './types/global';
+
 // Global initialization function
-(window as any).intelligentconvo = (window as any).intelligentconvo || function(...args: any[]) {
-  ((window as any).intelligentconvo.q = (window as any).intelligentconvo.q || []).push(args);
+const intelligentconvoGlobal = window.intelligentconvo as IntelligentconvoQueue;
+window.intelligentconvo = intelligentconvoGlobal || function(...args: unknown[]) {
+  ((window.intelligentconvo as IntelligentconvoQueue).q =
+    (window.intelligentconvo as IntelligentconvoQueue).q || []).push(args as WidgetCommand);
 };
 
 // Process queued commands
-(window as any).intelligentconvo._init = () => {
-  const commands = (window as any).intelligentconvo.q || [];
+(window.intelligentconvo as IntelligentconvoQueue)._init = () => {
+  const commands = (window.intelligentconvo as IntelligentconvoQueue).q || [];
 
-  commands.forEach((command: any[]) => {
+  commands.forEach((command: WidgetCommand) => {
     if (command[0] === 'init' && command[1]) {
-      new IntelligentconvoWidget(command[1]);
+      new IntelligentconvoWidget(command[1] as WidgetConfig);
     }
   });
 
   // Replace function to handle future commands
-  (window as any).intelligentconvo = (command: string, config?: WidgetConfig) => {
+  const initFn: IntelligentconvoInit = (command: string, config?: WidgetConfig) => {
     if (command === 'init' && config) {
       new IntelligentconvoWidget(config);
     }
   };
+  window.intelligentconvo = initFn;
 };
 
 // Auto-init if DOM is ready
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
-    (window as any).intelligentconvo._init();
+    (window.intelligentconvo as IntelligentconvoQueue)._init?.();
   });
 } else {
-  (window as any).intelligentconvo._init();
+  (window.intelligentconvo as IntelligentconvoQueue)._init?.();
 }
 
 export default IntelligentconvoWidget;

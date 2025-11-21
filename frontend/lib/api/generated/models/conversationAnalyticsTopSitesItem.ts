@@ -2,8 +2,12 @@
 // Do not edit manually
 
 export type ConversationAnalyticsTopSitesItem = {
-  siteId?: string;
-  siteName?: string;
-  conversationCount?: number;
-  messageCount?: number;
+  /** Site ID */
+  siteId: string;
+  /** Site name */
+  siteName: string;
+  /** Conversations count */
+  conversationCount: number;
+  /** Messages count */
+  messageCount: number;
 };

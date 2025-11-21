@@ -1,8 +1,17 @@
+/**
+ * Account Routes
+ * Route handlers for user account management
+ */
+
 import { Router } from 'express';
 import { z } from 'zod';
+import bcrypt from 'bcryptjs';
 import { prisma } from '../lib/prisma';
 import { authenticate } from '../middleware/auth';
-import { AppError } from '../middleware/errorHandler';
+import { asyncHandler } from '../middleware/errorHandler';
+import { validateBody } from '../middleware/validate';
+import { messageResponse } from '../utils/response';
+import { AppError, NotFoundError, ErrorCode } from '../middleware/errors';
 
 const router = Router();
 
@@ -28,77 +37,23 @@ const changePasswordSchema = z.object({
   newPassword: z.string().min(8),
 });
 
+// ============================================
+// Account Management
+// ============================================
+
 /**
  * @swagger
- * /api/account:
+ * /api/v1/account:
  *   get:
  *     summary: Get current user account information
- *     description: Retrieve the authenticated user's account details
  *     tags: [Account]
  *     security:
  *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Account information retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 user:
- *                   type: object
- *                   properties:
- *                     id:
- *                       type: string
- *                     email:
- *                       type: string
- *                     fullName:
- *                       type: string
- *                       nullable: true
- *                     authProvider:
- *                       type: string
- *                     createdAt:
- *                       type: string
- *                       format: date-time
- *                     lastLoginAt:
- *                       type: string
- *                       format: date-time
- *                       nullable: true
- *                 billingInfo:
- *                   type: object
- *                   nullable: true
- *                   properties:
- *                     fullName:
- *                       type: string
- *                     email:
- *                       type: string
- *                     addressLine1:
- *                       type: string
- *                     addressLine2:
- *                       type: string
- *                       nullable: true
- *                     city:
- *                       type: string
- *                     state:
- *                       type: string
- *                     country:
- *                       type: string
- *                     postalCode:
- *                       type: string
- *                 stats:
- *                   type: object
- *                   properties:
- *                     totalSites:
- *                       type: integer
- *                     activeSubscriptions:
- *                       type: integer
- *       401:
- *         $ref: '#/components/responses/UnauthorizedError'
- *       500:
- *         $ref: '#/components/responses/InternalServerError'
  */
-router.get('/', authenticate, async (req, res, next) => {
-  try {
+router.get(
+  '/',
+  authenticate,
+  asyncHandler(async (req, res) => {
     const user = await prisma.user.findUnique({
       where: { id: req.user!.id },
       include: {
@@ -117,7 +72,7 @@ router.get('/', authenticate, async (req, res, next) => {
     });
 
     if (!user) {
-      throw new AppError(404, 'User not found');
+      throw new NotFoundError('User', req.user!.id);
     }
 
     // Remove sensitive data
@@ -125,87 +80,41 @@ router.get('/', authenticate, async (req, res, next) => {
 
     res.json({
       user: userInfo,
-      billingInfo: user.billingInfo ? {
-        fullName: user.billingInfo.fullName,
-        email: user.billingInfo.email,
-        addressLine1: user.billingInfo.addressLine1,
-        addressLine2: user.billingInfo.addressLine2,
-        city: user.billingInfo.city,
-        state: user.billingInfo.state,
-        country: user.billingInfo.country,
-        postalCode: user.billingInfo.postalCode,
-      } : null,
+      billingInfo: user.billingInfo
+        ? {
+            fullName: user.billingInfo.fullName,
+            email: user.billingInfo.email,
+            addressLine1: user.billingInfo.addressLine1,
+            addressLine2: user.billingInfo.addressLine2,
+            city: user.billingInfo.city,
+            state: user.billingInfo.state,
+            country: user.billingInfo.country,
+            postalCode: user.billingInfo.postalCode,
+          }
+        : null,
       stats: {
         totalSites: user._count.sites,
         activeSubscriptions: user._count.subscriptions,
       },
     });
-  } catch (error) {
-    next(error);
-  }
-});
+  })
+);
 
 /**
  * @swagger
- * /api/account:
+ * /api/v1/account:
  *   patch:
  *     summary: Update user account information
- *     description: Update the authenticated user's basic account details
  *     tags: [Account]
  *     security:
  *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               fullName:
- *                 type: string
- *                 description: User's full name
- *                 example: John Doe
- *               email:
- *                 type: string
- *                 format: email
- *                 description: User's email address
- *                 example: john.doe@example.com
- *     responses:
- *       200:
- *         description: Account updated successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: Account updated successfully
- *                 user:
- *                   type: object
- *                   properties:
- *                     id:
- *                       type: string
- *                     email:
- *                       type: string
- *                     fullName:
- *                       type: string
- *       400:
- *         $ref: '#/components/responses/ValidationError'
- *       401:
- *         $ref: '#/components/responses/UnauthorizedError'
- *       409:
- *         description: Email already exists
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- *       500:
- *         $ref: '#/components/responses/InternalServerError'
  */
-router.patch('/', authenticate, async (req, res, next) => {
-  try {
-    const updates = updateAccountSchema.parse(req.body);
+router.patch(
+  '/',
+  authenticate,
+  validateBody(updateAccountSchema),
+  asyncHandler(async (req, res) => {
+    const updates = req.body;
 
     // Check if email is being changed and if it's already taken
     if (updates.email) {
@@ -217,7 +126,11 @@ router.patch('/', authenticate, async (req, res, next) => {
       });
 
       if (existingUser) {
-        throw new AppError(409, 'Email address is already in use');
+        throw new AppError(
+          409,
+          ErrorCode.CONFLICT,
+          'Email address is already in use'
+        );
       }
     }
 
@@ -231,60 +144,78 @@ router.patch('/', authenticate, async (req, res, next) => {
       },
     });
 
-    res.json({
-      message: 'Account updated successfully',
-      user: updatedUser,
-    });
-  } catch (error) {
-    next(error);
-  }
-});
+    res.json({ user: updatedUser });
+  })
+);
 
 /**
  * @swagger
- * /api/account/billing-info:
- *   get:
- *     summary: Get billing information
- *     description: Retrieve the user's billing address and information
+ * /api/v1/account:
+ *   delete:
+ *     summary: Delete user account
  *     tags: [Account]
  *     security:
  *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Billing information retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 billingInfo:
- *                   type: object
- *                   nullable: true
- *                   properties:
- *                     fullName:
- *                       type: string
- *                     email:
- *                       type: string
- *                     addressLine1:
- *                       type: string
- *                     addressLine2:
- *                       type: string
- *                       nullable: true
- *                     city:
- *                       type: string
- *                     state:
- *                       type: string
- *                     country:
- *                       type: string
- *                     postalCode:
- *                       type: string
- *       401:
- *         $ref: '#/components/responses/UnauthorizedError'
- *       500:
- *         $ref: '#/components/responses/InternalServerError'
  */
-router.get('/billing-info', authenticate, async (req, res, next) => {
-  try {
+router.delete(
+  '/',
+  authenticate,
+  asyncHandler(async (req, res) => {
+    // Check for active subscriptions
+    const activeSubscriptions = await prisma.subscription.findMany({
+      where: {
+        userId: req.user!.id,
+        status: { in: ['TRIAL', 'ACTIVE'] },
+      },
+      include: {
+        site: {
+          select: { id: true, siteName: true },
+        },
+      },
+    });
+
+    if (activeSubscriptions.length > 0) {
+      throw new AppError(
+        400,
+        ErrorCode.VALIDATION_ERROR,
+        'Cannot delete account with active subscriptions',
+        true,
+        {
+          activeSubscriptions: activeSubscriptions.map((sub) => ({
+            siteId: sub.siteId,
+            siteName: sub.site.siteName,
+            status: sub.status,
+          })),
+        }
+      );
+    }
+
+    // Delete user and all related data (cascading will handle most relationships)
+    await prisma.user.delete({
+      where: { id: req.user!.id },
+    });
+
+    res.json(messageResponse('Account deleted successfully'));
+  })
+);
+
+// ============================================
+// Billing Information
+// ============================================
+
+/**
+ * @swagger
+ * /api/v1/account/billing-info:
+ *   get:
+ *     summary: Get billing information
+ *     tags: [Account]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.get(
+  '/billing-info',
+  authenticate,
+  asyncHandler(async (req, res) => {
     const billingInfo = await prisma.billingInfo.findUnique({
       where: { userId: req.user!.id },
       select: {
@@ -300,109 +231,24 @@ router.get('/billing-info', authenticate, async (req, res, next) => {
     });
 
     res.json({ billingInfo });
-  } catch (error) {
-    next(error);
-  }
-});
+  })
+);
 
 /**
  * @swagger
- * /api/account/billing-info:
+ * /api/v1/account/billing-info:
  *   put:
  *     summary: Update billing information
- *     description: Update the user's billing address and information
  *     tags: [Account]
  *     security:
  *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - fullName
- *               - email
- *               - addressLine1
- *               - city
- *               - state
- *               - country
- *               - postalCode
- *             properties:
- *               fullName:
- *                 type: string
- *                 description: Full name for billing
- *                 example: John Doe
- *               email:
- *                 type: string
- *                 format: email
- *                 description: Email for billing notifications
- *                 example: john.doe@example.com
- *               addressLine1:
- *                 type: string
- *                 description: Primary address line
- *                 example: 1234 Main Street
- *               addressLine2:
- *                 type: string
- *                 description: Secondary address line (optional)
- *                 example: Apt 101
- *               city:
- *                 type: string
- *                 description: City
- *                 example: San Francisco
- *               state:
- *                 type: string
- *                 description: State or province
- *                 example: California
- *               country:
- *                 type: string
- *                 description: Country
- *                 example: United States
- *               postalCode:
- *                 type: string
- *                 description: Postal or ZIP code
- *                 example: 94102
- *     responses:
- *       200:
- *         description: Billing information updated successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: Billing information updated successfully
- *                 billingInfo:
- *                   type: object
- *                   properties:
- *                     fullName:
- *                       type: string
- *                     email:
- *                       type: string
- *                     addressLine1:
- *                       type: string
- *                     addressLine2:
- *                       type: string
- *                       nullable: true
- *                     city:
- *                       type: string
- *                     state:
- *                       type: string
- *                     country:
- *                       type: string
- *                     postalCode:
- *                       type: string
- *       400:
- *         $ref: '#/components/responses/ValidationError'
- *       401:
- *         $ref: '#/components/responses/UnauthorizedError'
- *       500:
- *         $ref: '#/components/responses/InternalServerError'
  */
-router.put('/billing-info', authenticate, async (req, res, next) => {
-  try {
-    const data = updateBillingInfoSchema.parse(req.body);
+router.put(
+  '/billing-info',
+  authenticate,
+  validateBody(updateBillingInfoSchema),
+  asyncHandler(async (req, res) => {
+    const data = req.body;
 
     const billingInfo = await prisma.billingInfo.upsert({
       where: { userId: req.user!.id },
@@ -423,143 +269,29 @@ router.put('/billing-info', authenticate, async (req, res, next) => {
       },
     });
 
-    res.json({
-      message: 'Billing information updated successfully',
-      billingInfo,
-    });
-  } catch (error) {
-    next(error);
-  }
-});
+    res.json({ billingInfo });
+  })
+);
+
+// ============================================
+// Password Management
+// ============================================
 
 /**
  * @swagger
- * /api/account:
- *   delete:
- *     summary: Delete user account
- *     description: Permanently delete the user account and all associated data
- *     tags: [Account]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Account deletion initiated successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: Account deleted successfully
- *       400:
- *         description: Cannot delete account with active subscriptions
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: Cannot delete account with active subscriptions
- *                 activeSubscriptions:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       siteId:
- *                         type: string
- *                       siteName:
- *                         type: string
- *                       status:
- *                         type: string
- *       401:
- *         $ref: '#/components/responses/UnauthorizedError'
- *       500:
- *         $ref: '#/components/responses/InternalServerError'
- */
-router.delete('/', authenticate, async (req, res, next) => {
-  try {
-    // Check for active subscriptions
-    const activeSubscriptions = await prisma.subscription.findMany({
-      where: {
-        userId: req.user!.id,
-        status: { in: ['TRIAL', 'ACTIVE'] },
-      },
-      include: {
-        site: {
-          select: { id: true, siteName: true },
-        },
-      },
-    });
-
-    if (activeSubscriptions.length > 0) {
-      throw new AppError(400, 'Cannot delete account with active subscriptions', {
-        activeSubscriptions: activeSubscriptions.map(sub => ({
-          siteId: sub.siteId,
-          siteName: sub.site.siteName,
-          status: sub.status,
-        })),
-      });
-    }
-
-    // Delete user and all related data (cascading will handle most relationships)
-    await prisma.user.delete({
-      where: { id: req.user!.id },
-    });
-
-    res.json({ message: 'Account deleted successfully' });
-  } catch (error) {
-    next(error);
-  }
-});
-
-/**
- * @swagger
- * /api/account/password:
+ * /api/v1/account/password:
  *   patch:
  *     summary: Change password
- *     description: Change the authenticated user's password
  *     tags: [Account]
  *     security:
  *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - currentPassword
- *               - newPassword
- *             properties:
- *               currentPassword:
- *                 type: string
- *                 description: Current password
- *               newPassword:
- *                 type: string
- *                 minLength: 8
- *                 description: New password (minimum 8 characters)
- *     responses:
- *       200:
- *         description: Password changed successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *       400:
- *         description: Current password is incorrect
- *       401:
- *         $ref: '#/components/responses/UnauthorizedError'
- *       500:
- *         $ref: '#/components/responses/InternalServerError'
  */
-router.patch('/password', authenticate, async (req, res, next) => {
-  try {
-    const { currentPassword, newPassword } = changePasswordSchema.parse(req.body);
+router.patch(
+  '/password',
+  authenticate,
+  validateBody(changePasswordSchema),
+  asyncHandler(async (req, res) => {
+    const { currentPassword, newPassword } = req.body;
 
     // Get user with password
     const user = await prisma.user.findUnique({
@@ -567,15 +299,22 @@ router.patch('/password', authenticate, async (req, res, next) => {
     });
 
     if (!user || !user.passwordHash) {
-      throw new AppError(400, 'Cannot change password for this account');
+      throw new AppError(
+        400,
+        ErrorCode.VALIDATION_ERROR,
+        'Cannot change password for this account'
+      );
     }
 
     // Verify current password
-    const bcrypt = await import('bcrypt');
     const isValid = await bcrypt.compare(currentPassword, user.passwordHash);
 
     if (!isValid) {
-      throw new AppError(400, 'Current password is incorrect');
+      throw new AppError(
+        400,
+        ErrorCode.VALIDATION_ERROR,
+        'Current password is incorrect'
+      );
     }
 
     // Hash new password
@@ -587,10 +326,8 @@ router.patch('/password', authenticate, async (req, res, next) => {
       data: { passwordHash: newPasswordHash },
     });
 
-    res.json({ message: 'Password changed successfully' });
-  } catch (error) {
-    next(error);
-  }
-});
+    res.json(messageResponse('Password changed successfully'));
+  })
+);
 
 export default router;

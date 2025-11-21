@@ -4,8 +4,14 @@ import type { ConversationAnalyticsOverview } from './conversationAnalyticsOverv
 import type { ConversationAnalyticsTimeSeriesDataItem } from './conversationAnalyticsTimeSeriesDataItem';
 import type { ConversationAnalyticsTopSitesItem } from './conversationAnalyticsTopSitesItem';
 
+/**
+ * Conversation analytics data
+ */
 export interface ConversationAnalytics {
-  overview?: ConversationAnalyticsOverview;
-  timeSeriesData?: ConversationAnalyticsTimeSeriesDataItem[];
-  topSites?: ConversationAnalyticsTopSitesItem[];
+  /** Overview statistics */
+  overview: ConversationAnalyticsOverview;
+  /** Time series data */
+  timeSeriesData: ConversationAnalyticsTimeSeriesDataItem[];
+  /** Top sites by activity */
+  topSites: ConversationAnalyticsTopSitesItem[];
 }

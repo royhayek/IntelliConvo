@@ -39,10 +39,10 @@ export function Stepper({
   };
 
   const stepVariants = {
-    waiting: { scale: 1, backgroundColor: "#f3f4f6" },
-    current: { scale: 1.1, backgroundColor: "#6366f1" },
-    complete: { scale: 1, backgroundColor: "#10b981" },
-    error: { scale: 1, backgroundColor: "#ef4444" },
+    waiting: { scale: 1 },
+    current: { scale: 1.1 },
+    complete: { scale: 1 },
+    error: { scale: 1 },
   };
 
   const Step = ({ step, index }: { step: StepperStep; index: number }) => {
@@ -65,8 +65,8 @@ export function Stepper({
           <motion.div
             className={cn(
               "relative flex items-center justify-center rounded-full border-2 transition-all duration-300",
-              status === "waiting" && "border-gray-300 bg-white text-gray-400",
-              status === "current" && "border-indigo-600 bg-indigo-600 text-white shadow-lg shadow-indigo-200",
+              status === "waiting" && "border-gray-300 bg-white dark:border-gray-600 dark:bg-slate-700 text-gray-400 dark:text-gray-500",
+              status === "current" && "border-indigo-600 bg-indigo-600 text-white shadow-lg shadow-indigo-200 dark:shadow-indigo-900/50",
               status === "complete" && "border-green-600 bg-green-600 text-white",
               status === "error" && "border-red-600 bg-red-600 text-white",
               orientation === "horizontal" ? "h-8 w-8" : "h-10 w-10"
@@ -135,10 +135,10 @@ export function Stepper({
             <motion.h3
               className={cn(
                 "font-medium text-xs transition-colors duration-300",
-                status === "current" && "text-indigo-600",
-                status === "complete" && "text-green-600",
-                status === "error" && "text-red-600",
-                status === "waiting" && "text-gray-500"
+                status === "current" && "text-indigo-600 dark:text-indigo-400",
+                status === "complete" && "text-green-600 dark:text-green-400",
+                status === "error" && "text-red-600 dark:text-red-400",
+                status === "waiting" && "text-gray-500 dark:text-gray-400"
               )}
               animate={status === "current" && animated ? { scale: [1, 1.05, 1] } : { scale: 1 }}
               transition={{ duration: 2, repeat: Infinity }}
@@ -149,10 +149,10 @@ export function Stepper({
               <motion.p
                 className={cn(
                   "text-xs mt-0.5 transition-colors duration-300",
-                  status === "current" && "text-indigo-500",
-                  status === "complete" && "text-green-500",
-                  status === "error" && "text-red-500",
-                  status === "waiting" && "text-gray-400"
+                  status === "current" && "text-indigo-500 dark:text-indigo-400",
+                  status === "complete" && "text-green-500 dark:text-green-400",
+                  status === "error" && "text-red-500 dark:text-red-400",
+                  status === "waiting" && "text-gray-400 dark:text-gray-500"
                 )}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -170,8 +170,8 @@ export function Stepper({
             className={cn(
               "relative",
               orientation === "horizontal"
-                ? "mx-4 h-0.5 flex-1 bg-gray-200"
-                : "my-4 w-0.5 h-12 bg-gray-200"
+                ? "mx-4 h-0.5 flex-1 bg-gray-200 dark:bg-gray-700"
+                : "my-4 w-0.5 h-12 bg-gray-200 dark:bg-gray-700"
             )}
             initial={{ scaleX: orientation === "horizontal" ? 0 : 1, scaleY: orientation === "vertical" ? 0 : 1 }}
             animate={{ scaleX: 1, scaleY: 1 }}

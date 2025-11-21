@@ -7,30 +7,40 @@ import {
   TrendingUp,
   Search,
   BarChart3,
+  Loader2,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { AnalyticsMetricCard } from "@/components/ui/analytics-metric-card";
+import { DateRangeFilter, type DateRange } from "@/components/ui/date-range-filter";
 import { Input } from "@/components/ui/input";
+import { Pagination } from "@/components/ui/pagination";
+import { SectionHeader } from "@/components/ui/section-header";
+import { ConversationListItem } from "@/components/site/conversation-list-item";
+import { TopSiteItem } from "@/components/site/top-site-item";
 import {
-  useGetApiConversationsAnalytics,
-  useGetApiConversations,
-  useGetApiConversationsSearch,
-  useGetApiConversationsConversationId,
+  useGetApiV1ConversationsAnalytics,
+  useGetApiV1Conversations,
+  useGetApiV1ConversationsSearch,
+  useGetApiV1ConversationsConversationId,
 } from "@/lib/api/generated/queries/conversations/conversations";
 import {
-  type GetApiSitesSiteId200,
-  type GetApiConversations200ConversationsItem,
+  type GetApiV1SitesSiteId200,
+  type GetApiV1Conversations200ConversationsItem,
+  type GetApiV1ConversationsSearch200MessagesItem,
+  type GetApiV1ConversationsConversationId200MessagesItem,
 } from "@/lib/api/generated/models";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface ConversationsTabProps {
-  site: GetApiSitesSiteId200;
+  site: GetApiV1SitesSiteId200;
 }
 
 export function ConversationsTab({ site }: ConversationsTabProps) {
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [dateFilter, setDateFilter] = useState<"7d" | "30d" | "90d">("7d");
+  const [dateFilter, setDateFilter] = useState<DateRange>("7d");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   // Calculate date range
   const endDate = new Date().toISOString();
@@ -39,25 +49,31 @@ export function ConversationsTab({ site }: ConversationsTabProps) {
   ).toISOString();
 
   // Get analytics data
-  const { data: analytics, isLoading: analyticsLoading } = useGetApiConversationsAnalytics({
+  const { data: analytics, isLoading: analyticsLoading } = useGetApiV1ConversationsAnalytics({
     siteId: site.id,
     period: "7d",
   });
 
   // Get conversations list
-  const { data: conversationsData, isLoading: conversationsLoading } = useGetApiConversations({
+  const { data: conversationsData, isLoading: conversationsLoading } = useGetApiV1Conversations({
     siteId: site.id,
   });
   const conversations = conversationsData?.conversations || [];
 
+  // Pagination logic
+  const totalPages = Math.ceil(conversations.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedConversations = conversations.slice(startIndex, endIndex);
+
   // Get search results
-  const { data: searchResults } = useGetApiConversationsSearch(
+  const { data: searchResults } = useGetApiV1ConversationsSearch(
     { siteId: site.id, query: searchQuery, limit: 20 },
     { query: { enabled: searchQuery.length > 2 } }
   );
 
   // Selected conversation details
-  const { data: selectedConversationData } = useGetApiConversationsConversationId(
+  const { data: selectedConversationData } = useGetApiV1ConversationsConversationId(
     selectedConversation || "",
     { query: { enabled: !!selectedConversation } }
   );
@@ -66,91 +82,39 @@ export function ConversationsTab({ site }: ConversationsTabProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h2 className="text-xl font-semibold text-gray-900">Conversations & Analytics</h2>
-          <p className="text-gray-600">Monitor conversations and analyze engagement patterns</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setDateFilter("7d")}
-            className={dateFilter === "7d" ? "bg-indigo-50 border-indigo-200" : ""}
-          >
-            7 Days
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setDateFilter("30d")}
-            className={dateFilter === "30d" ? "bg-indigo-50 border-indigo-200" : ""}
-          >
-            30 Days
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setDateFilter("90d")}
-            className={dateFilter === "90d" ? "bg-indigo-50 border-indigo-200" : ""}
-          >
-            90 Days
-          </Button>
-        </div>
-      </div>
+      <SectionHeader
+        title="Conversations & Analytics"
+        description="Monitor conversations and analyze engagement patterns"
+        action={<DateRangeFilter value={dateFilter} onChange={setDateFilter} />}
+      />
 
       {/* Analytics Overview */}
       {analytics && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center space-x-2">
-                <MessageSquare className="h-5 w-5 text-blue-600" />
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Total Conversations</p>
-                  <p className="text-2xl font-bold text-gray-900">{(analytics.overview?.totalConversations ?? 0).toLocaleString()}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center space-x-2">
-                <TrendingUp className="h-5 w-5 text-green-600" />
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Total Messages</p>
-                  <p className="text-2xl font-bold text-gray-900">{(analytics.overview?.totalMessages ?? 0).toLocaleString()}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center space-x-2">
-                <BarChart3 className="h-5 w-5 text-purple-600" />
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Avg Messages/Conv</p>
-                  <p className="text-2xl font-bold text-gray-900">{(analytics.overview?.averageMessagesPerConversation ?? 0).toFixed(1)}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center space-x-2">
-                <Users className="h-5 w-5 text-orange-600" />
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Active Users</p>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {(analytics.overview?.activeUsers ?? 0).toLocaleString()}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <AnalyticsMetricCard
+            icon={MessageSquare}
+            label="Total Conversations"
+            value={analytics.overview?.totalConversations ?? 0}
+            iconColor="blue"
+          />
+          <AnalyticsMetricCard
+            icon={TrendingUp}
+            label="Total Messages"
+            value={analytics.overview?.totalMessages ?? 0}
+            iconColor="green"
+          />
+          <AnalyticsMetricCard
+            icon={BarChart3}
+            label="Avg Messages/Conv"
+            value={(analytics.overview?.averageMessagesPerConversation ?? 0).toFixed(1)}
+            iconColor="purple"
+          />
+          <AnalyticsMetricCard
+            icon={Users}
+            label="Active Users"
+            value={analytics.overview?.activeUsers ?? 0}
+            iconColor="orange"
+          />
         </div>
       )}
 
@@ -224,24 +188,13 @@ export function ConversationsTab({ site }: ConversationsTabProps) {
           <CardContent>
             <div className="space-y-3">
               {analytics.topSites.slice(0, 5).map((site, index) => (
-                <div key={site.siteId} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <div className="h-8 w-8 bg-indigo-100 rounded-full flex items-center justify-center">
-                      <span className="text-sm font-medium text-indigo-700">#{index + 1}</span>
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900">
-                        {site.siteName || "Unknown Site"}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        {site.conversationCount} conversations
-                      </p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-gray-900">{site.messageCount} messages</p>
-                  </div>
-                </div>
+                <TopSiteItem
+                  key={site.siteId}
+                  rank={index + 1}
+                  siteName={site.siteName}
+                  conversationCount={site.conversationCount}
+                  messageCount={site.messageCount}
+                />
               ))}
             </div>
           </CardContent>
@@ -272,14 +225,14 @@ export function ConversationsTab({ site }: ConversationsTabProps) {
             {searchQuery.length > 2 && searchResults?.messages && (
               <div className="space-y-2 max-h-60 overflow-y-auto">
                 {searchResults.messages.length === 0 ? (
-                  <p className="text-sm text-gray-600 text-center py-4">No results found</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 text-center py-4">No results found</p>
                 ) : (
-                  searchResults.messages.map((result) => (
-                    <div key={result.id} className="p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
-                      <p className="text-sm font-medium text-gray-900">
-                        {(result.conversation as any)?.userIdentifier || "Anonymous"}
+                  searchResults.messages.map((result: GetApiV1ConversationsSearch200MessagesItem) => (
+                    <div key={result.id} className="p-3 border dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 cursor-pointer">
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                        {result.conversation?.sessionId || "Anonymous"}
                       </p>
-                      <p className="text-xs text-gray-600 truncate">{result.content}</p>
+                      <p className="text-xs text-gray-600 dark:text-gray-400 truncate">{result.content}</p>
                     </div>
                   ))
                 )}
@@ -296,50 +249,38 @@ export function ConversationsTab({ site }: ConversationsTabProps) {
           <CardContent>
             {isLoading ? (
               <div className="flex items-center justify-center py-8">
-                <div className="h-6 w-6 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+                <Loader2 className="h-6 w-6 animate-spin text-indigo-600" />
               </div>
             ) : conversations.length === 0 ? (
               <div className="text-center py-8">
                 <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600">No conversations yet</p>
+                <p className="text-gray-600 dark:text-gray-400">No conversations yet</p>
               </div>
             ) : (
-              <div className="space-y-2 max-h-80 overflow-y-auto">
-                {conversations.slice(0, 10).map((conversation: GetApiConversations200ConversationsItem) => (
-                  <button
-                    key={conversation.id}
-                    onClick={() => conversation.id && setSelectedConversation(conversation.id)}
-                    className={`w-full text-left p-3 rounded-lg transition-colors ${
-                      selectedConversation === conversation.id
-                        ? "bg-indigo-50 border border-indigo-200"
-                        : "hover:bg-gray-50 border border-transparent"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <div className="h-8 w-8 bg-gray-200 rounded-full flex items-center justify-center">
-                          <span className="text-sm font-medium">
-                            {(conversation.userIdentifier || "A").charAt(0).toUpperCase()}
-                          </span>
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-gray-900">
-                            {conversation.userIdentifier || "Anonymous"}
-                          </p>
-                          <p className="text-xs text-gray-600">
-                            {conversation.messageCount} messages
-                          </p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-xs text-gray-500">
-                          {conversation.startedAt ? new Date(conversation.startedAt).toLocaleDateString() : 'N/A'}
-                        </p>
-                      </div>
-                    </div>
-                  </button>
-                ))}
-              </div>
+              <>
+                <div className="space-y-2">
+                  {paginatedConversations.map((conversation: GetApiV1Conversations200ConversationsItem) => (
+                    <ConversationListItem
+                      key={conversation.id}
+                      conversationId={conversation.id || ""}
+                      userIdentifier={conversation.userIdentifier}
+                      messageCount={conversation.messageCount}
+                      startedAt={conversation.startedAt}
+                      isSelected={selectedConversation === conversation.id}
+                      onClick={() => conversation.id && setSelectedConversation(conversation.id)}
+                    />
+                  ))}
+                </div>
+                {totalPages > 1 && (
+                  <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={setCurrentPage}
+                    />
+                  </div>
+                )}
+              </>
             )}
           </CardContent>
         </Card>
@@ -355,34 +296,34 @@ export function ConversationsTab({ site }: ConversationsTabProps) {
             <div className="space-y-4">
               <div className="flex justify-between items-start">
                 <div>
-                  <h4 className="font-medium text-gray-900">
+                  <h4 className="font-medium text-gray-900 dark:text-white">
                     {selectedConversationData.userIdentifier || "Anonymous User"}
                   </h4>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
                     Started: {selectedConversationData.startedAt ? new Date(selectedConversationData.startedAt).toLocaleString() : 'N/A'}
                   </p>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
                     Messages: {selectedConversationData.messageCount}
                   </p>
                 </div>
               </div>
 
               {selectedConversationData.messages && selectedConversationData.messages.length > 0 && (
-                <div className="border-t pt-4">
-                  <h5 className="font-medium text-gray-900 mb-3">Messages</h5>
+                <div className="border-t dark:border-gray-600 pt-4">
+                  <h5 className="font-medium text-gray-900 dark:text-white mb-3">Messages</h5>
                   <div className="space-y-3 max-h-60 overflow-y-auto">
-                    {selectedConversationData.messages.map((message: any) => (
+                    {selectedConversationData.messages.map((message: GetApiV1ConversationsConversationId200MessagesItem) => (
                       <div key={message.id} className={`flex ${message.role === 'USER' ? 'justify-start' : 'justify-end'}`}>
                         <div className={`max-w-xs lg:max-w-md px-3 py-2 rounded-lg text-sm ${
                           message.role === 'USER'
-                            ? 'bg-gray-100 text-gray-900'
+                            ? 'bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-white'
                             : 'bg-indigo-600 text-white'
                         }`}>
                           <p>{message.content}</p>
                           <p className={`text-xs mt-1 ${
-                            message.role === 'USER' ? 'text-gray-500' : 'text-indigo-200'
+                            message.role === 'USER' ? 'text-gray-500 dark:text-gray-400' : 'text-indigo-200'
                           }`}>
-                            {new Date(message.timestamp).toLocaleTimeString()}
+                            {message.timestamp ? new Date(message.timestamp).toLocaleTimeString() : ''}
                           </p>
                         </div>
                       </div>

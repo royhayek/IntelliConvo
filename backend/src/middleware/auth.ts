@@ -1,7 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { prisma } from '../lib/prisma';
-import { AppError } from './errorHandler';
+import {
+  UnauthorizedError,
+  TokenExpiredError,
+  InvalidTokenError,
+  NotFoundError,
+} from './errors';
+import { getConfig } from '../config';
+import { tokenBlacklist } from '../services/tokenBlacklist';
 
 interface JWTPayload {
   userId: string;
@@ -10,67 +17,97 @@ interface JWTPayload {
   exp?: number;
 }
 
-declare global {
-  namespace Express {
-    interface Request {
-      user?: {
-        id: string;
-        email: string;
-      };
-    }
+// Extend Express Request to include user from authentication
+declare module 'express-serve-static-core' {
+  interface Request {
+    user?: {
+      id: string;
+      email: string;
+      fullName?: string | null;
+    };
   }
 }
 
+/**
+ * Authentication middleware
+ * Requires a valid JWT token in the Authorization header
+ * Throws UnauthorizedError if token is missing or invalid
+ */
 export const authenticate = async (
   req: Request,
-  res: Response,
+  _res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   try {
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw new AppError(401, 'No token provided');
+      throw new UnauthorizedError('Authentication token required');
     }
 
     const token = authHeader.split(' ')[1];
 
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET!
-    ) as JWTPayload;
+    if (!token) {
+      throw new UnauthorizedError('Authentication token required');
+    }
+
+    // Get configuration
+    const config = getConfig();
+
+    // Verify token
+    let decoded: JWTPayload;
+    try {
+      decoded = jwt.verify(token, config.JWT_SECRET) as JWTPayload;
+    } catch (error) {
+      if (error instanceof jwt.TokenExpiredError) {
+        throw new TokenExpiredError();
+      } else if (error instanceof jwt.JsonWebTokenError) {
+        throw new InvalidTokenError();
+      }
+      throw new InvalidTokenError('Token verification failed');
+    }
+
+    // Check if token is blacklisted
+    const isBlacklisted = await tokenBlacklist.isBlacklisted(token);
+    if (isBlacklisted) {
+      throw new UnauthorizedError('Token has been revoked');
+    }
 
     // Check if user exists
     const user = await prisma.user.findUnique({
-      where: { id: decoded.userId }
+      where: { id: decoded.userId },
+      select: {
+        id: true,
+        email: true,
+      },
     });
 
     if (!user) {
-      throw new AppError(401, 'User not found');
+      throw new NotFoundError('User', decoded.userId);
     }
 
+    // Attach user to request
     req.user = {
       id: user.id,
-      email: user.email
+      email: user.email,
     };
 
     next();
   } catch (error) {
-    if (error instanceof jwt.TokenExpiredError) {
-      next(new AppError(401, 'Token expired'));
-    } else if (error instanceof jwt.JsonWebTokenError) {
-      next(new AppError(401, 'Invalid token'));
-    } else {
-      next(error);
-    }
+    next(error);
   }
 };
 
+/**
+ * Optional authentication middleware
+ * Attempts to authenticate but doesn't throw errors if token is missing/invalid
+ * Useful for endpoints that work with or without authentication
+ */
 export const optionalAuth = async (
   req: Request,
-  res: Response,
+  _res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   try {
     const authHeader = req.headers.authorization;
 
@@ -80,41 +117,84 @@ export const optionalAuth = async (
 
     const token = authHeader.split(' ')[1];
 
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET!
-    ) as JWTPayload;
+    if (!token) {
+      return next();
+    }
 
+    // Get configuration
+    const config = getConfig();
+
+    // Verify token
+    let decoded: JWTPayload;
+    try {
+      decoded = jwt.verify(token, config.JWT_SECRET) as JWTPayload;
+    } catch {
+      // Ignore errors for optional auth
+      return next();
+    }
+
+    // Check if user exists
     const user = await prisma.user.findUnique({
-      where: { id: decoded.userId }
+      where: { id: decoded.userId },
+      select: {
+        id: true,
+        email: true,
+      },
     });
 
     if (user) {
       req.user = {
         id: user.id,
-        email: user.email
+        email: user.email,
       };
     }
 
     next();
   } catch {
-    // Ignore errors for optional auth
+    // Ignore all errors for optional auth
     next();
   }
 };
 
-export const generateTokens = (userId: string, email: string) => {
+/**
+ * Generate JWT access and refresh tokens
+ */
+export const generateTokens = (
+  userId: string,
+  email: string
+): { accessToken: string; refreshToken: string } => {
+  const config = getConfig();
+
   const accessToken = jwt.sign(
     { userId, email },
-    process.env.JWT_SECRET!,
-    { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+    config.JWT_SECRET,
+    { expiresIn: config.JWT_EXPIRES_IN as jwt.SignOptions['expiresIn'] }
   );
 
   const refreshToken = jwt.sign(
     { userId, email },
-    process.env.JWT_SECRET!,
-    { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '30d' }
+    config.JWT_SECRET,
+    { expiresIn: config.JWT_REFRESH_EXPIRES_IN as jwt.SignOptions['expiresIn'] }
   );
 
   return { accessToken, refreshToken };
+};
+
+/**
+ * Verify a JWT token without requiring full authentication
+ * Useful for validating refresh tokens
+ */
+export const verifyToken = (token: string): JWTPayload => {
+  const config = getConfig();
+
+  try {
+    return jwt.verify(token, config.JWT_SECRET) as JWTPayload;
+  } catch (error) {
+    if (error instanceof jwt.TokenExpiredError) {
+      throw new TokenExpiredError();
+    } else if (error instanceof jwt.JsonWebTokenError) {
+      throw new InvalidTokenError();
+    }
+    throw new InvalidTokenError('Token verification failed');
+  }
 };

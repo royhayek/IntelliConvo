@@ -7,22 +7,26 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { AnimatePresence } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Stepper, type StepperStep } from "@/components/ui/stepper";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
-import { useAuthStore } from "@/lib/store";
+import { useRequireAuth } from "@/lib/hooks/useAuth";
+import { AuthLoading } from "@/components/auth/auth-loading";
 import {
-  useGetApiSitesSiteId,
-  usePostApiSites,
-  usePostApiSitesSiteIdCrawl,
-  useGetApiSitesSiteIdUrls,
-  getGetApiSitesSiteIdQueryKey,
+  useGetApiV1SitesSiteId,
+  usePostApiV1Sites,
+  usePostApiV1SitesSiteIdCrawl,
+  getGetApiV1SitesSiteIdQueryKey,
 } from "@/lib/api/generated/queries/sites/sites";
 import {
-  usePostApiBillingSubscriptions,
-} from "@/lib/api/generated/queries/billing/billing";
+  useGetApiV1SitesSiteIdUrls,
+} from "@/lib/api/generated/queries/urls/urls";
+import {
+  usePostApiV1BillingSubscriptions,
+} from "@/lib/api/generated/queries/subscriptions/subscriptions";
 
 // Memoized header component to prevent re-renders on form changes
 const OnboardingHeader = memo(function OnboardingHeader({
@@ -112,7 +116,9 @@ function OnboardingContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
-  const { isAuthenticated, user } = useAuthStore();
+
+  // Protected route - redirects to login if not authenticated
+  const { isLoading: isAuthLoading, isAuthenticated, user } = useRequireAuth();
 
   // Refs to prevent stale closures
   const siteIdRef = useRef<string | null>(null);
@@ -153,18 +159,13 @@ function OnboardingContent() {
     }
   }, [searchParams]);
 
-  // Auth redirect
-  useEffect(() => {
-    if (!isAuthenticated) {
-      const timer = setTimeout(() => {
-        router.push("/auth/login");
-      }, 100);
-      return () => clearTimeout(timer);
-    }
-  }, [isAuthenticated, router]);
+  // Show loading state while auth is hydrating
+  if (isAuthLoading) {
+    return <AuthLoading message="Verifying authentication" />;
+  }
 
   // Fetch site data
-  const { data: site } = useGetApiSitesSiteId(siteId!, {
+  const { data: site } = useGetApiV1SitesSiteId(siteId!, {
     query: {
       enabled: isAuthenticated && !!siteId,
       refetchInterval: (query) => {
@@ -180,7 +181,7 @@ function OnboardingContent() {
   });
 
   // Fetch URLs when needed
-  const { data: urls = [] } = useGetApiSitesSiteIdUrls(
+  const { data: urls = [] } = useGetApiV1SitesSiteIdUrls(
     siteId!,
     {},
     {
@@ -191,9 +192,9 @@ function OnboardingContent() {
   );
 
   // Mutations
-  const createSiteMutation = usePostApiSites();
-  const crawlMutation = usePostApiSitesSiteIdCrawl();
-  const subscriptionMutation = usePostApiBillingSubscriptions();
+  const createSiteMutation = usePostApiV1Sites();
+  const crawlMutation = usePostApiV1SitesSiteIdCrawl();
+  const subscriptionMutation = usePostApiV1BillingSubscriptions();
 
   // Handle crawl completion - auto-advance to next step
   useEffect(() => {
@@ -270,7 +271,7 @@ function OnboardingContent() {
       setError("");
       await crawlMutation.mutateAsync({ siteId });
       // Invalidate and refetch site data
-      queryClient.invalidateQueries({ queryKey: getGetApiSitesSiteIdQueryKey(siteId) });
+      queryClient.invalidateQueries({ queryKey: getGetApiV1SitesSiteIdQueryKey(siteId) });
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };
       setError(error.response?.data?.message || "Failed to retry analysis. Please try again.");
@@ -504,14 +505,7 @@ function OnboardingContent() {
 export default function OnboardingPage() {
   return (
     <Suspense
-      fallback={
-        <div className="min-h-screen gradient-surface flex items-center justify-center">
-          <div className="text-center">
-            <div className="h-12 w-12 border-4 border-indigo-600 border-t-transparent rounded-full mx-auto mb-4 animate-spin"></div>
-            <p className="text-lg text-gray-600">Loading onboarding...</p>
-          </div>
-        </div>
-      }
+      fallback={<LoadingSpinner size="lg" text="Loading onboarding..." centered />}
     >
       <OnboardingContent />
     </Suspense>

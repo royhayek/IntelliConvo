@@ -1,175 +1,324 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, Search, RefreshCw, X, Check, ExternalLink, Trash2, Eye, Edit2, Save, Loader2 } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import {
+  Plus,
+  Edit2,
+  Save,
+  Loader2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
+import { SearchBar } from "@/components/ui/search-bar";
+import { ActionButtons } from "@/components/ui/action-buttons";
+import { LoadingCard } from "@/components/ui/loading-card";
+import { UrlTableRow } from "@/components/site/url-table-row";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  useGetApiSitesSiteIdUrls,
-  usePostApiSitesSiteIdUrls,
-  usePatchApiSitesSiteIdUrlsUrlId,
-  usePostApiSitesSiteIdUrlsUrlIdCrawl,
-  useDeleteApiSitesSiteIdUrlsUrlId,
-  useGetApiSitesSiteIdUrlsUrlId,
-  usePutApiSitesSiteIdUrlsUrlIdContent,
-  getGetApiSitesSiteIdUrlsQueryKey,
-  getGetApiSitesSiteIdUrlsUrlIdQueryKey,
-} from "@/lib/api/generated/queries/sites/sites";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
-  type GetApiSitesSiteId200,
-  type GetApiSitesSiteIdUrls200Item,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  useGetApiV1SitesSiteIdUrls,
+  usePostApiV1SitesSiteIdUrls,
+  usePatchApiV1SitesSiteIdUrlsUrlId,
+  usePostApiV1SitesSiteIdUrlsUrlIdCrawl,
+  useDeleteApiV1SitesSiteIdUrlsUrlId,
+  useGetApiV1SitesSiteIdUrlsUrlId,
+  usePutApiV1SitesSiteIdUrlsUrlIdContent,
+  getGetApiV1SitesSiteIdUrlsQueryKey,
+  getGetApiV1SitesSiteIdUrlsUrlIdQueryKey,
+} from "@/lib/api/generated/queries/urls/urls";
+import {
+  type GetApiV1SitesSiteId200,
+  type GetApiV1SitesSiteIdUrls200Item,
 } from "@/lib/api/generated/models";
 
+// Validation schemas
+const addSingleUrlSchema = z.object({
+  url: z
+    .string()
+    .min(1, "URL is required")
+    .url("Please enter a valid URL")
+    .refine((url) => url.startsWith("http://") || url.startsWith("https://"), {
+      message: "URL must start with http:// or https://",
+    }),
+});
+
+const addBulkUrlsSchema = z.object({
+  urls: z
+    .string()
+    .min(1, "Please enter at least one URL")
+    .transform((val) =>
+      val
+        .split("\n")
+        .map((u) => u.trim())
+        .filter(Boolean)
+    )
+    .refine((urls) => urls.length > 0, {
+      message: "Please enter at least one URL",
+    })
+    .refine(
+      (urls) =>
+        urls.every((url) => {
+          try {
+            new URL(url);
+            return url.startsWith("http://") || url.startsWith("https://");
+          } catch {
+            return false;
+          }
+        }),
+      {
+        message: "All URLs must be valid and start with http:// or https://",
+      }
+    ),
+});
+
+const editContentSchema = z.object({
+  content: z
+    .string()
+    .min(1, "Content cannot be empty")
+    .max(100000, "Content is too large"),
+});
+
+type AddSingleUrlFormData = z.infer<typeof addSingleUrlSchema>;
+type AddBulkUrlsFormData = z.output<typeof addBulkUrlsSchema>;
+type AddBulkUrlsInput = z.input<typeof addBulkUrlsSchema>;
+type EditContentFormData = z.infer<typeof editContentSchema>;
+
 interface SitemapTabProps {
-  site: GetApiSitesSiteId200;
+  site: GetApiV1SitesSiteId200;
 }
 
 export function SitemapTab({ site }: SitemapTabProps) {
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<"all" | "active" | "excluded">("all");
+  const [statusFilter, setStatusFilter] = useState<
+    "all" | "active" | "excluded"
+  >("all");
   const [showAddModal, setShowAddModal] = useState(false);
-  const [newUrls, setNewUrls] = useState("");
   const [isBulkMode, setIsBulkMode] = useState(false);
 
   // Preview/Edit modal state
   const [selectedUrlId, setSelectedUrlId] = useState<string | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
-  const [editedContent, setEditedContent] = useState("");
   const [viewMode, setViewMode] = useState<"rich" | "text">("rich");
 
   // Delete confirmation state
-  const [urlToDelete, setUrlToDelete] = useState<GetApiSitesSiteIdUrls200Item | null>(null);
+  const [urlToDelete, setUrlToDelete] =
+    useState<GetApiV1SitesSiteIdUrls200Item | null>(null);
+
+  // Forms
+  const singleUrlForm = useForm<AddSingleUrlFormData>({
+    resolver: zodResolver(addSingleUrlSchema),
+    defaultValues: { url: "" },
+  });
+
+  const bulkUrlsForm = useForm({
+    resolver: zodResolver(addBulkUrlsSchema),
+    defaultValues: { urls: "" },
+  });
+
+  const editContentForm = useForm<EditContentFormData>({
+    resolver: zodResolver(editContentSchema),
+    defaultValues: { content: "" },
+  });
 
   // Get URLs
-  const { data: urls = [], isLoading } = useGetApiSitesSiteIdUrls(site.id, {
+  const { data: urls = [], isLoading } = useGetApiV1SitesSiteIdUrls(site.id, {
     search: searchTerm || undefined,
     status: statusFilter === "all" ? undefined : statusFilter,
   });
 
+  // Query for fetching single URL with content
+  const { data: selectedUrlData, isLoading: isLoadingContent } =
+    useGetApiV1SitesSiteIdUrlsUrlId(site.id, selectedUrlId || "", {
+      query: { enabled: !!selectedUrlId },
+    });
+
+  // Reset forms when modal opens/closes
+  useEffect(() => {
+    if (!showAddModal) {
+      singleUrlForm.reset();
+      bulkUrlsForm.reset();
+    }
+  }, [showAddModal, singleUrlForm, bulkUrlsForm]);
+
+  // Set content when entering edit mode
+  useEffect(() => {
+    if (isEditMode && selectedUrlData) {
+      // Use htmlContent if available, otherwise use plain content
+      const initialContent =
+        selectedUrlData.htmlContent || selectedUrlData.content || "";
+      editContentForm.reset({ content: initialContent });
+    }
+  }, [isEditMode, selectedUrlData, editContentForm]);
+
   // Add URLs mutation
-  const addUrlsMutation = usePostApiSitesSiteIdUrls({
+  const addUrlsMutation = usePostApiV1SitesSiteIdUrls({
     mutation: {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: getGetApiSitesSiteIdUrlsQueryKey(site.id) });
+        queryClient.invalidateQueries({
+          queryKey: getGetApiV1SitesSiteIdUrlsQueryKey(site.id),
+        });
         setShowAddModal(false);
-        setNewUrls("");
+        singleUrlForm.reset();
+        bulkUrlsForm.reset();
         setIsBulkMode(false);
       },
     },
   });
 
   // Update URL mutation
-  const updateUrlMutation = usePatchApiSitesSiteIdUrlsUrlId({
+  const updateUrlMutation = usePatchApiV1SitesSiteIdUrlsUrlId({
     mutation: {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: getGetApiSitesSiteIdUrlsQueryKey(site.id) });
+        queryClient.invalidateQueries({
+          queryKey: getGetApiV1SitesSiteIdUrlsQueryKey(site.id),
+        });
       },
     },
   });
 
   // Crawl URL mutation
-  const crawlUrlMutation = usePostApiSitesSiteIdUrlsUrlIdCrawl({
+  const crawlUrlMutation = usePostApiV1SitesSiteIdUrlsUrlIdCrawl({
     mutation: {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: getGetApiSitesSiteIdUrlsQueryKey(site.id) });
+        queryClient.invalidateQueries({
+          queryKey: getGetApiV1SitesSiteIdUrlsQueryKey(site.id),
+        });
       },
     },
   });
 
   // Delete URL mutation
-  const deleteUrlMutation = useDeleteApiSitesSiteIdUrlsUrlId({
+  const deleteUrlMutation = useDeleteApiV1SitesSiteIdUrlsUrlId({
     mutation: {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: getGetApiSitesSiteIdUrlsQueryKey(site.id) });
+        queryClient.invalidateQueries({
+          queryKey: getGetApiV1SitesSiteIdUrlsQueryKey(site.id),
+        });
         setUrlToDelete(null);
       },
     },
   });
 
-  // Query for fetching single URL with content
-  const { data: selectedUrlData, isLoading: isLoadingContent } = useGetApiSitesSiteIdUrlsUrlId(
-    site.id,
-    selectedUrlId || "",
-    { query: { enabled: !!selectedUrlId } }
-  );
-
   // Mutation for updating content
-  const updateContentMutation = usePutApiSitesSiteIdUrlsUrlIdContent({
+  const updateContentMutation = usePutApiV1SitesSiteIdUrlsUrlIdContent({
     mutation: {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: getGetApiSitesSiteIdUrlsQueryKey(site.id) });
+        queryClient.invalidateQueries({
+          queryKey: getGetApiV1SitesSiteIdUrlsQueryKey(site.id),
+        });
         if (selectedUrlId) {
-          queryClient.invalidateQueries({ queryKey: getGetApiSitesSiteIdUrlsUrlIdQueryKey(site.id, selectedUrlId) });
+          queryClient.invalidateQueries({
+            queryKey: getGetApiV1SitesSiteIdUrlsUrlIdQueryKey(
+              site.id,
+              selectedUrlId
+            ),
+          });
         }
         setIsEditMode(false);
+        editContentForm.reset();
       },
     },
   });
 
-  const handleAddUrls = () => {
-    const urlList = newUrls
-      .split("\n")
-      .map(url => url.trim())
-      .filter(url => url.length > 0);
+  const onAddSingleUrl = (data: AddSingleUrlFormData) => {
+    addUrlsMutation.mutate({ siteId: site.id, data: { urls: [data.url] } });
+  };
 
-    if (urlList.length > 0) {
-      addUrlsMutation.mutate({ siteId: site.id, data: { urls: urlList } });
+  const onAddBulkUrls = (data: any) => {
+    // URLs are already validated and transformed by Zod schema (string -> string[])
+    addUrlsMutation.mutate({ siteId: site.id, data: { urls: data.urls as string[] } });
+  };
+
+  const onSaveContent = (data: EditContentFormData) => {
+    if (selectedUrlId) {
+      updateContentMutation.mutate({
+        siteId: site.id,
+        urlId: selectedUrlId,
+        data: { content: data.content },
+      });
     }
   };
 
-  const toggleUrlStatus = (url: GetApiSitesSiteIdUrls200Item, field: 'isActive' | 'isExcluded') => {
+  const toggleUrlStatus = (
+    url: GetApiV1SitesSiteIdUrls200Item,
+    field: "isActive" | "isExcluded"
+  ) => {
     if (!url.id) return;
     updateUrlMutation.mutate({
       siteId: site.id,
       urlId: url.id,
-      data: { [field]: !url[field] }
+      data: { [field]: !url[field] },
     });
   };
 
   const openPreviewModal = (urlId: string) => {
     setSelectedUrlId(urlId);
     setIsEditMode(false);
-    setEditedContent("");
   };
 
   const closePreviewModal = () => {
     setSelectedUrlId(null);
     setIsEditMode(false);
-    setEditedContent("");
+    editContentForm.reset();
     setViewMode("rich");
   };
 
   const startEditing = () => {
-    if (selectedUrlData?.content) {
-      setEditedContent(selectedUrlData.content);
-    }
     setIsEditMode(true);
   };
 
   const cancelEditing = () => {
     setIsEditMode(false);
-    setEditedContent("");
+    editContentForm.reset();
   };
 
-  const saveContent = () => {
-    if (selectedUrlId && editedContent) {
-      updateContentMutation.mutate({
-        siteId: site.id,
-        urlId: selectedUrlId,
-        data: { content: editedContent },
-      });
-    }
-  };
-
-  const filteredUrls = urls.filter(url => {
-    const matchesSearch = !searchTerm ||
+  const filteredUrls = urls.filter((url) => {
+    const matchesSearch =
+      !searchTerm ||
       (url.url && url.url.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (url.title && url.title.toLowerCase().includes(searchTerm.toLowerCase()));
 
-    const matchesStatus = statusFilter === "all" ||
+    const matchesStatus =
+      statusFilter === "all" ||
       (statusFilter === "active" && url.isActive && !url.isExcluded) ||
       (statusFilter === "excluded" && url.isExcluded);
 
@@ -177,17 +326,26 @@ export function SitemapTab({ site }: SitemapTabProps) {
   });
 
   const totalCount = urls.length;
-  const activeCount = urls.filter(url => url.isActive && !url.isExcluded).length;
-  const excludedCount = urls.filter(url => url.isExcluded).length;
+  const activeCount = urls.filter(
+    (url) => url.isActive && !url.isExcluded
+  ).length;
+  const excludedCount = urls.filter((url) => url.isExcluded).length;
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-gray-900">Sitemap & URLs</h2>
-          <p className="text-gray-600">Manage the URLs that Intelligentconvo knows about</p>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            Sitemap & URLs
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400">
+            Manage the URLs that Intelligentconvo knows about
+          </p>
         </div>
-        <Button onClick={() => setShowAddModal(true)} className="bg-indigo-600 hover:bg-indigo-700">
+        <Button
+          onClick={() => setShowAddModal(true)}
+          className="bg-indigo-600 hover:bg-indigo-700"
+        >
           <Plus className="h-4 w-4 mr-2" />
           New URL
         </Button>
@@ -197,25 +355,27 @@ export function SitemapTab({ site }: SitemapTabProps) {
       <Card>
         <CardContent className="pt-6">
           <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-              <Input
-                placeholder="Search URLs..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
+            <SearchBar
+              value={searchTerm}
+              onChange={setSearchTerm}
+              placeholder="Search URLs..."
+            />
             <div className="flex items-center space-x-4">
-              <select
+              <Select
                 value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value as any)}
-                className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                onValueChange={(value) => setStatusFilter(value as any)}
               >
-                <option value="all">Show All ({totalCount})</option>
-                <option value="active">Active ({activeCount})</option>
-                <option value="excluded">Excluded ({excludedCount})</option>
-              </select>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Filter by status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Show All ({totalCount})</SelectItem>
+                  <SelectItem value="active">Active ({activeCount})</SelectItem>
+                  <SelectItem value="excluded">
+                    Excluded ({excludedCount})
+                  </SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </CardContent>
@@ -229,390 +389,345 @@ export function SitemapTab({ site }: SitemapTabProps) {
         <CardContent>
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
-              <div className="h-6 w-6 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+              <Loader2 className="h-6 w-6 animate-spin text-indigo-600" />
+              <span className="ml-3 text-gray-600 dark:text-gray-400">Loading URLs...</span>
             </div>
           ) : filteredUrls.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-gray-600">No URLs found</p>
+              <p className="text-gray-600 dark:text-gray-400">No URLs found</p>
             </div>
           ) : (
-            <div className="space-y-2">
-              {filteredUrls.map((url) => (
-                <div
-                  key={url.id}
-                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 group"
-                >
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center space-x-3">
-                      <div className={`h-2 w-2 rounded-full ${
-                        url.isExcluded ? 'bg-red-500' : url.isActive ? 'bg-green-500' : 'bg-gray-400'
-                      }`}></div>
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm font-medium text-gray-900 truncate">
-                          {url.title || (url.url ? url.url.split('/').pop() : '') || url.url || 'Unknown URL'}
-                        </p>
-                        <p className="text-sm text-gray-600 truncate">{url.url || ''}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center space-x-2 text-sm text-gray-500">
-                    <span>
-                      {url.lastCrawledAt ? new Date(url.lastCrawledAt).toLocaleDateString() : 'Not crawled'}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => url.id && openPreviewModal(url.id)}
-                      title="Preview & Edit content"
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => url.url && window.open(url.url, '_blank')}
-                      title="Open URL"
-                    >
-                      <ExternalLink className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => url.id && crawlUrlMutation.mutate({ siteId: site.id, urlId: url.id })}
-                      title="Recrawl this URL"
-                      disabled={crawlUrlMutation.isPending}
-                    >
-                      <RefreshCw className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => toggleUrlStatus(url, 'isExcluded')}
-                      title={url.isExcluded ? "Include in knowledge base" : "Exclude from knowledge base"}
-                    >
-                      {url.isExcluded ? <Check className="h-4 w-4" /> : <X className="h-4 w-4" />}
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => setUrlToDelete(url)}
-                      title="Delete URL permanently"
-                      className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Status</TableHead>
+                  <TableHead>URL</TableHead>
+                  <TableHead>Last Crawled</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredUrls.map((url) => (
+                  <UrlTableRow
+                    key={url.id}
+                    url={url}
+                    onPreview={openPreviewModal}
+                    onRecrawl={(urlId) =>
+                      crawlUrlMutation.mutate({
+                        siteId: site.id,
+                        urlId,
+                      })
+                    }
+                    onToggleStatus={toggleUrlStatus}
+                    onDelete={setUrlToDelete}
+                    isRecrawling={crawlUrlMutation.isPending}
+                  />
+                ))}
+              </TableBody>
+            </Table>
           )}
         </CardContent>
       </Card>
 
       {/* Add URL Modal */}
-      {showAddModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-md w-full">
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold">Add URLs</h3>
-                <button
-                  onClick={() => setShowAddModal(false)}
-                  className="text-gray-400 hover:text-gray-600"
+      <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Add URLs</DialogTitle>
+            <DialogDescription>
+              Add new URLs to crawl and include in your knowledge base
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="flex space-x-2 border-b dark:border-gray-600">
+              <Button
+                variant="ghost"
+                onClick={() => setIsBulkMode(false)}
+                className={`pb-2 px-1 text-sm font-medium border-b-2 rounded-none ${
+                  !isBulkMode
+                    ? "border-indigo-600 text-indigo-600"
+                    : "border-transparent text-gray-500 dark:text-gray-400"
+                }`}
+              >
+                Add One URL
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => setIsBulkMode(true)}
+                className={`pb-2 px-1 text-sm font-medium border-b-2 rounded-none ${
+                  isBulkMode
+                    ? "border-indigo-600 text-indigo-600"
+                    : "border-transparent text-gray-500 dark:text-gray-400"
+                }`}
+              >
+                Bulk Add URLs
+              </Button>
+            </div>
+
+            {!isBulkMode ? (
+              <Form {...singleUrlForm}>
+                <form
+                  onSubmit={singleUrlForm.handleSubmit(onAddSingleUrl)}
+                  className="space-y-4"
                 >
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
+                  <FormField
+                    control={singleUrlForm.control}
+                    name="url"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>URL</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="https://example.com/page"
+                            type="url"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Enter a single URL to crawl and add to your knowledge
+                          base
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-              <div className="space-y-4">
-                <div className="flex space-x-2 border-b">
-                  <button
-                    onClick={() => setIsBulkMode(false)}
-                    className={`pb-2 px-1 text-sm font-medium border-b-2 ${
-                      !isBulkMode ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-500'
-                    }`}
-                  >
-                    Add One URL
-                  </button>
-                  <button
-                    onClick={() => setIsBulkMode(true)}
-                    className={`pb-2 px-1 text-sm font-medium border-b-2 ${
-                      isBulkMode ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-500'
-                    }`}
-                  >
-                    Bulk Add URLs
-                  </button>
-                </div>
+                  <ActionButtons
+                    onCancel={() => setShowAddModal(false)}
+                    confirmText="Add URL"
+                    loadingText="Adding..."
+                    isLoading={addUrlsMutation.isPending}
+                  />
+                </form>
+              </Form>
+            ) : (
+              <Form {...bulkUrlsForm}>
+                <form
+                  onSubmit={bulkUrlsForm.handleSubmit(onAddBulkUrls)}
+                  className="space-y-4"
+                >
+                  <FormField
+                    control={bulkUrlsForm.control}
+                    name="urls"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>URLs (one per line)</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="https://example.com/page1&#10;https://example.com/page2&#10;https://example.com/page3"
+                            rows={6}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Enter multiple URLs, one per line, to add them all at
+                          once
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                <div>
-                  {isBulkMode ? (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        URLs (one per line)
-                      </label>
-                      <textarea
-                        value={newUrls}
-                        onChange={(e) => setNewUrls(e.target.value)}
-                        placeholder="https://example.com/page1&#10;https://example.com/page2"
-                        rows={6}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                      />
-                    </div>
-                  ) : (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        URL
-                      </label>
-                      <Input
-                        value={newUrls}
-                        onChange={(e) => setNewUrls(e.target.value)}
-                        placeholder="https://example.com"
-                        type="url"
-                      />
-                    </div>
-                  )}
-                </div>
+                  <div className="flex space-x-3 pt-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setShowAddModal(false)}
+                      className="flex-1"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      disabled={addUrlsMutation.isPending}
+                      className="flex-1 bg-indigo-600 hover:bg-indigo-700"
+                    >
+                      {addUrlsMutation.isPending ? "Adding..." : "Add URLs"}
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
 
-                <div className="flex space-x-3 pt-4">
-                  <Button
-                    variant="outline"
-                    onClick={() => setShowAddModal(false)}
-                    className="flex-1"
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    onClick={handleAddUrls}
-                    disabled={!newUrls.trim() || addUrlsMutation.isPending}
-                    className="flex-1 bg-indigo-600 hover:bg-indigo-700"
-                  >
-                    {addUrlsMutation.isPending ? 'Adding...' : 'Add'}
-                  </Button>
-                </div>
+      {/* Preview/Edit Content Dialog */}
+      <Dialog
+        open={!!selectedUrlId}
+        onOpenChange={(open) => !open && closePreviewModal()}
+      >
+        <DialogContent className="max-w-4xl max-h-[90vh] min-h-[600px] flex flex-col p-0">
+          <div className="p-6 border-b dark:border-gray-600">
+            <div className="flex items-center gap-4">
+              <div className="flex-1 min-w-0">
+                <h3 className="text-lg font-semibold truncate text-gray-900 dark:text-white">
+                  {selectedUrlData?.title || "Loading..."}
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
+                  {selectedUrlData?.url}
+                </p>
               </div>
             </div>
           </div>
-        </div>
-      )}
 
-      {/* Preview/Edit Content Modal */}
-      {selectedUrlId && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] flex flex-col">
-            <div className="p-6 border-b">
-              <div className="flex items-center justify-between">
-                <div className="flex-1 min-w-0 pr-4">
-                  <h3 className="text-lg font-semibold truncate">
-                    {selectedUrlData?.title || 'Loading...'}
-                  </h3>
-                  <p className="text-sm text-gray-600 truncate">
-                    {selectedUrlData?.url}
-                  </p>
+          <div className="flex-1 overflow-hidden flex flex-col min-h-0">
+            {/* Action Buttons Header */}
+            <div className="flex justify-between px-6 py-3 border-b dark:border-gray-600 bg-gray-50 dark:bg-slate-800/50">
+              <div className="flex items-center justify-end">
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                  {selectedUrlData?.content?.length.toLocaleString()} characters |{" "}
+                  {selectedUrlData?.embeddingsCount} chunks
                 </div>
-                <div className="flex items-center space-x-2">
-                  {!isEditMode ? (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={startEditing}
-                      disabled={isLoadingContent || !selectedUrlData?.content}
-                    >
-                      <Edit2 className="h-4 w-4 mr-2" />
-                      Edit
-                    </Button>
-                  ) : (
-                    <>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={cancelEditing}
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        size="sm"
-                        onClick={saveContent}
-                        disabled={updateContentMutation.isPending}
-                        className="bg-indigo-600 hover:bg-indigo-700"
-                      >
-                        {updateContentMutation.isPending ? (
-                          <>
-                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                            Saving...
-                          </>
-                        ) : (
-                          <>
-                            <Save className="h-4 w-4 mr-2" />
-                            Save
-                          </>
-                        )}
-                      </Button>
-                    </>
-                  )}
-                  <button
-                    onClick={closePreviewModal}
-                    className="text-gray-400 hover:text-gray-600"
+              </div>
+
+              <div className="flex items-center justify-end space-x-2">
+                {!isEditMode ? (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={startEditing}
+                    disabled={isLoadingContent || !selectedUrlData?.content}
                   >
-                    <X className="h-5 w-5" />
-                  </button>
-                </div>
+                    <Edit2 className="h-4 w-4 mr-2" />
+                    Edit
+                  </Button>
+                ) : (
+                  <>
+                    <Button variant="outline" size="sm" onClick={cancelEditing}>
+                      Cancel
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={editContentForm.handleSubmit(onSaveContent)}
+                      disabled={
+                        updateContentMutation.isPending ||
+                        !editContentForm.formState.isDirty
+                      }
+                      className="bg-indigo-600 hover:bg-indigo-700"
+                    >
+                      {updateContentMutation.isPending ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Saving...
+                        </>
+                      ) : (
+                        <>
+                          <Save className="h-4 w-4 mr-2" />
+                          Save
+                        </>
+                      )}
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
 
-            <div className="flex-1 overflow-hidden flex flex-col">
+            {/* Content Body */}
+            <div className="flex-1 overflow-hidden flex flex-col min-h-0">
               {isLoadingContent ? (
                 <div className="flex items-center justify-center h-full p-6">
-                  <div className="h-6 w-6 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+                  <Loader2 className="h-6 w-6 animate-spin text-indigo-600" />
                 </div>
               ) : !selectedUrlData?.content ? (
-                <div className="flex items-center justify-center h-full text-gray-500 p-6">
-                  <p>No content available. This URL may not have been crawled yet.</p>
+                <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400 p-6">
+                  <p>
+                    No content available. This URL may not have been crawled
+                    yet.
+                  </p>
                 </div>
               ) : isEditMode ? (
-                <div className="flex-1 flex flex-col p-6">
-                  <textarea
-                    value={editedContent}
-                    onChange={(e) => setEditedContent(e.target.value)}
-                    className="flex-1 w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono text-sm resize-none"
-                    placeholder="Edit the scraped content..."
-                  />
-                  <div className="mt-2 text-sm text-gray-500 flex justify-between">
-                    <span>{editedContent.length.toLocaleString()} characters</span>
-                    <span>Changes will regenerate embeddings</span>
-                  </div>
+                <div className="flex-1 flex flex-col p-6 min-h-0">
+                  <Form {...editContentForm}>
+                    <form className="flex-1 flex flex-col min-h-0">
+                      <FormField
+                        control={editContentForm.control}
+                        name="content"
+                        render={({ field }) => (
+                          <FormItem className="flex-1 flex flex-col min-h-0">
+                            <FormControl className="flex-1 min-h-0">
+                              <RichTextEditor
+                                value={field.value}
+                                onChange={field.onChange}
+                                placeholder="Edit the content with rich formatting..."
+                                className="flex-1 h-full"
+                              />
+                            </FormControl>
+                            <div className="text-sm text-gray-500 dark:text-gray-400 flex justify-between pt-2 flex-shrink-0">
+                              <div className="flex items-center gap-4">
+                                <span>
+                                  {field.value?.length.toLocaleString() || 0}{" "}
+                                  characters
+                                </span>
+                                <FormMessage />
+                              </div>
+                              <span>Changes will regenerate embeddings</span>
+                            </div>
+                          </FormItem>
+                        )}
+                      />
+                    </form>
+                  </Form>
                 </div>
               ) : (
-                <>
-                  {/* View Mode Toggle */}
-                  <div className="px-6 pt-4 pb-2 border-b bg-gray-50">
-                    <div className="flex items-center justify-between">
-                      <div className="flex space-x-1 bg-gray-200 rounded-lg p-1">
-                        <button
-                          onClick={() => setViewMode("rich")}
-                          className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${
-                            viewMode === "rich"
-                              ? "bg-white text-gray-900 shadow-sm"
-                              : "text-gray-600 hover:text-gray-900"
-                          }`}
-                        >
-                          Rich Preview
-                        </button>
-                        <button
-                          onClick={() => setViewMode("text")}
-                          className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${
-                            viewMode === "text"
-                              ? "bg-white text-gray-900 shadow-sm"
-                              : "text-gray-600 hover:text-gray-900"
-                          }`}
-                        >
-                          Plain Text
-                        </button>
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {selectedUrlData.content.length.toLocaleString()} characters | {selectedUrlData.embeddingsCount} chunks
-                      </div>
+                <div className="flex-1 flex flex-col p-6 overflow-hidden">
+                  {selectedUrlData.htmlContent ? (
+                    <div className="flex-1 bg-white dark:bg-slate-700 border dark:border-gray-600 rounded-lg shadow-sm overflow-auto">
+                      <div
+                        className="prose prose-sm max-w-none p-6
+                          prose-headings:text-gray-900 dark:prose-headings:text-white
+                          prose-p:text-gray-700 dark:prose-p:text-gray-300
+                          prose-a:text-indigo-600
+                          prose-strong:text-gray-900 dark:prose-strong:text-white
+                          prose-ul:text-gray-700 dark:prose-ul:text-gray-300
+                          prose-ol:text-gray-700 dark:prose-ol:text-gray-300
+                          prose-li:text-gray-700 dark:prose-li:text-gray-300
+                          prose-blockquote:text-gray-600 dark:prose-blockquote:text-gray-400
+                          prose-code:text-gray-800 dark:prose-code:text-gray-200
+                          prose-pre:bg-gray-100 dark:prose-pre:bg-slate-800"
+                        dangerouslySetInnerHTML={{
+                          __html: selectedUrlData.htmlContent,
+                        }}
+                      />
                     </div>
-                  </div>
-
-                  {/* Content Area */}
-                  <div className="flex-1 overflow-auto p-6">
-                    {viewMode === "rich" && selectedUrlData.htmlContent ? (
-                      <div className="bg-white border rounded-lg shadow-sm">
-                        <div
-                          className="prose prose-sm max-w-none p-6
-                            prose-headings:text-gray-900
-                            prose-p:text-gray-700
-                            prose-a:text-indigo-600
-                            prose-strong:text-gray-900
-                            prose-ul:text-gray-700
-                            prose-ol:text-gray-700
-                            prose-li:text-gray-700
-                            prose-blockquote:text-gray-600
-                            prose-code:text-gray-800
-                            prose-pre:bg-gray-100"
-                          dangerouslySetInnerHTML={{ __html: selectedUrlData.htmlContent }}
-                        />
-                      </div>
-                    ) : (
-                      <div className="bg-gray-50 rounded-lg p-4">
-                        <pre className="whitespace-pre-wrap font-sans text-sm text-gray-700">
-                          {selectedUrlData.content}
-                        </pre>
-                      </div>
-                    )}
-                  </div>
-                </>
+                  ) : (
+                    <div className="flex-1 bg-gray-50 dark:bg-slate-700 rounded-lg p-4 overflow-auto">
+                      <pre className="whitespace-pre-wrap font-sans text-sm text-gray-700 dark:text-gray-300">
+                        {selectedUrlData.content}
+                      </pre>
+                    </div>
+                  )}
+                </div>
               )}
             </div>
           </div>
-        </div>
-      )}
+        </DialogContent>
+      </Dialog>
 
-      {/* Delete Confirmation Modal */}
-      {urlToDelete && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-md w-full">
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-red-600">Delete URL</h3>
-                <button
-                  onClick={() => setUrlToDelete(null)}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
-
-              <div className="mb-6">
-                <p className="text-gray-600 mb-4">
-                  Are you sure you want to permanently delete this URL? This action cannot be undone.
-                </p>
-                <div className="bg-gray-50 rounded-lg p-3">
-                  <p className="text-sm font-medium text-gray-900 truncate">
-                    {urlToDelete.title || (urlToDelete.url ? urlToDelete.url.split('/').pop() : '') || urlToDelete.url || 'Unknown URL'}
-                  </p>
-                  <p className="text-sm text-gray-600 truncate">{urlToDelete.url || ''}</p>
-                </div>
-                <p className="text-sm text-gray-500 mt-3">
-                  This will also delete all associated embeddings and remove the content from your knowledge base.
-                </p>
-              </div>
-
-              <div className="flex space-x-3">
-                <Button
-                  variant="outline"
-                  onClick={() => setUrlToDelete(null)}
-                  className="flex-1"
-                  disabled={deleteUrlMutation.isPending}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  onClick={() => urlToDelete.id && deleteUrlMutation.mutate({ siteId: site.id, urlId: urlToDelete.id })}
-                  disabled={deleteUrlMutation.isPending || !urlToDelete.id}
-                  className="flex-1 bg-red-600 hover:bg-red-700 text-white"
-                >
-                  {deleteUrlMutation.isPending ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Deleting...
-                    </>
-                  ) : (
-                    <>
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Delete
-                    </>
-                  )}
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Delete Confirmation Dialog */}
+      <DeleteConfirmationDialog
+        open={!!urlToDelete}
+        onOpenChange={(open) => !open && setUrlToDelete(null)}
+        onConfirm={() =>
+          urlToDelete?.id &&
+          deleteUrlMutation.mutate({
+            siteId: site.id,
+            urlId: urlToDelete.id,
+          })
+        }
+        title="Delete URL"
+        description="Are you sure you want to permanently delete this URL? This action cannot be undone."
+        itemName={
+          urlToDelete?.title ||
+          (urlToDelete?.url ? urlToDelete.url.split("/").pop() : "") ||
+          urlToDelete?.url ||
+          "Unknown URL"
+        }
+        itemDetails={urlToDelete?.url || ""}
+        warningMessage="This will also delete all associated embeddings and remove the content from your knowledge base."
+        isDeleting={deleteUrlMutation.isPending}
+      />
     </div>
   );
 }

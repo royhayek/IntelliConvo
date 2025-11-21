@@ -2,5 +2,6 @@
 // Do not edit manually
 
 export type SiteConfigResponseConversationStartersItem = {
-  starterText?: string;
+  /** Starter text */
+  starterText: string;
 };

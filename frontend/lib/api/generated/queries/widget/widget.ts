@@ -21,11 +21,11 @@ import type {
 
 import type {
   Error,
-  GetApiWidgetSiteIdSettingsCategoryCategory200,
+  GetApiV1WidgetSiteIdSettingsCategoryCategory200,
   InternalServerErrorResponse,
   NotFoundErrorResponse,
-  PatchApiWidgetSiteIdSettingsBody,
-  PutApiWidgetSiteIdSettingsBody,
+  PatchApiV1WidgetSiteIdSettingsBody,
+  PutApiV1WidgetSiteIdSettingsBody,
   SiteConfigResponse,
   StartersResponse,
   UnauthorizedErrorResponse,
@@ -46,14 +46,14 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
  * Retrieve conversation starters for a site's widget (no authentication required)
  * @summary Get conversation starters (public)
  */
-export const getApiWidgetSiteIdStarters = (
+export const getApiV1WidgetSiteIdStarters = (
     siteId: string,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<StartersResponse>(
-      {url: `/api/widget/${siteId}/starters`, method: 'GET', signal
+      {url: `/api/v1/widget/${siteId}/starters`, method: 'GET', signal
     },
       options);
     }
@@ -61,69 +61,69 @@ export const getApiWidgetSiteIdStarters = (
 
 
 
-export const getGetApiWidgetSiteIdStartersQueryKey = (siteId?: string,) => {
+export const getGetApiV1WidgetSiteIdStartersQueryKey = (siteId?: string,) => {
     return [
-    `/api/widget/${siteId}/starters`
+    `/api/v1/widget/${siteId}/starters`
     ] as const;
     }
 
     
-export const getGetApiWidgetSiteIdStartersQueryOptions = <TData = Awaited<ReturnType<typeof getApiWidgetSiteIdStarters>>, TError = ErrorType<NotFoundErrorResponse | InternalServerErrorResponse>>(siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiWidgetSiteIdStarters>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetApiV1WidgetSiteIdStartersQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1WidgetSiteIdStarters>>, TError = ErrorType<NotFoundErrorResponse | InternalServerErrorResponse>>(siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1WidgetSiteIdStarters>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiWidgetSiteIdStartersQueryKey(siteId);
+  const queryKey =  queryOptions?.queryKey ?? getGetApiV1WidgetSiteIdStartersQueryKey(siteId);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiWidgetSiteIdStarters>>> = ({ signal }) => getApiWidgetSiteIdStarters(siteId, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1WidgetSiteIdStarters>>> = ({ signal }) => getApiV1WidgetSiteIdStarters(siteId, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(siteId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiWidgetSiteIdStarters>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: !!(siteId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1WidgetSiteIdStarters>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiWidgetSiteIdStartersQueryResult = NonNullable<Awaited<ReturnType<typeof getApiWidgetSiteIdStarters>>>
-export type GetApiWidgetSiteIdStartersQueryError = ErrorType<NotFoundErrorResponse | InternalServerErrorResponse>
+export type GetApiV1WidgetSiteIdStartersQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1WidgetSiteIdStarters>>>
+export type GetApiV1WidgetSiteIdStartersQueryError = ErrorType<NotFoundErrorResponse | InternalServerErrorResponse>
 
 
-export function useGetApiWidgetSiteIdStarters<TData = Awaited<ReturnType<typeof getApiWidgetSiteIdStarters>>, TError = ErrorType<NotFoundErrorResponse | InternalServerErrorResponse>>(
- siteId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiWidgetSiteIdStarters>>, TError, TData>> & Pick<
+export function useGetApiV1WidgetSiteIdStarters<TData = Awaited<ReturnType<typeof getApiV1WidgetSiteIdStarters>>, TError = ErrorType<NotFoundErrorResponse | InternalServerErrorResponse>>(
+ siteId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1WidgetSiteIdStarters>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiWidgetSiteIdStarters>>,
+          Awaited<ReturnType<typeof getApiV1WidgetSiteIdStarters>>,
           TError,
-          Awaited<ReturnType<typeof getApiWidgetSiteIdStarters>>
+          Awaited<ReturnType<typeof getApiV1WidgetSiteIdStarters>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiWidgetSiteIdStarters<TData = Awaited<ReturnType<typeof getApiWidgetSiteIdStarters>>, TError = ErrorType<NotFoundErrorResponse | InternalServerErrorResponse>>(
- siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiWidgetSiteIdStarters>>, TError, TData>> & Pick<
+export function useGetApiV1WidgetSiteIdStarters<TData = Awaited<ReturnType<typeof getApiV1WidgetSiteIdStarters>>, TError = ErrorType<NotFoundErrorResponse | InternalServerErrorResponse>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1WidgetSiteIdStarters>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiWidgetSiteIdStarters>>,
+          Awaited<ReturnType<typeof getApiV1WidgetSiteIdStarters>>,
           TError,
-          Awaited<ReturnType<typeof getApiWidgetSiteIdStarters>>
+          Awaited<ReturnType<typeof getApiV1WidgetSiteIdStarters>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiWidgetSiteIdStarters<TData = Awaited<ReturnType<typeof getApiWidgetSiteIdStarters>>, TError = ErrorType<NotFoundErrorResponse | InternalServerErrorResponse>>(
- siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiWidgetSiteIdStarters>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetApiV1WidgetSiteIdStarters<TData = Awaited<ReturnType<typeof getApiV1WidgetSiteIdStarters>>, TError = ErrorType<NotFoundErrorResponse | InternalServerErrorResponse>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1WidgetSiteIdStarters>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get conversation starters (public)
  */
 
-export function useGetApiWidgetSiteIdStarters<TData = Awaited<ReturnType<typeof getApiWidgetSiteIdStarters>>, TError = ErrorType<NotFoundErrorResponse | InternalServerErrorResponse>>(
- siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiWidgetSiteIdStarters>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetApiV1WidgetSiteIdStarters<TData = Awaited<ReturnType<typeof getApiV1WidgetSiteIdStarters>>, TError = ErrorType<NotFoundErrorResponse | InternalServerErrorResponse>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1WidgetSiteIdStarters>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiWidgetSiteIdStartersQueryOptions(siteId,options)
+  const queryOptions = getGetApiV1WidgetSiteIdStartersQueryOptions(siteId,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -139,14 +139,14 @@ export function useGetApiWidgetSiteIdStarters<TData = Awaited<ReturnType<typeof 
  * Retrieve site configuration for widget initialization (no authentication required)
  * @summary Get site configuration (public)
  */
-export const getApiWidgetSiteIdConfig = (
+export const getApiV1WidgetSiteIdConfig = (
     siteId: string,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<SiteConfigResponse>(
-      {url: `/api/widget/${siteId}/config`, method: 'GET', signal
+      {url: `/api/v1/widget/${siteId}/config`, method: 'GET', signal
     },
       options);
     }
@@ -154,69 +154,69 @@ export const getApiWidgetSiteIdConfig = (
 
 
 
-export const getGetApiWidgetSiteIdConfigQueryKey = (siteId?: string,) => {
+export const getGetApiV1WidgetSiteIdConfigQueryKey = (siteId?: string,) => {
     return [
-    `/api/widget/${siteId}/config`
+    `/api/v1/widget/${siteId}/config`
     ] as const;
     }
 
     
-export const getGetApiWidgetSiteIdConfigQueryOptions = <TData = Awaited<ReturnType<typeof getApiWidgetSiteIdConfig>>, TError = ErrorType<NotFoundErrorResponse | InternalServerErrorResponse>>(siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiWidgetSiteIdConfig>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetApiV1WidgetSiteIdConfigQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1WidgetSiteIdConfig>>, TError = ErrorType<NotFoundErrorResponse | InternalServerErrorResponse>>(siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1WidgetSiteIdConfig>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiWidgetSiteIdConfigQueryKey(siteId);
+  const queryKey =  queryOptions?.queryKey ?? getGetApiV1WidgetSiteIdConfigQueryKey(siteId);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiWidgetSiteIdConfig>>> = ({ signal }) => getApiWidgetSiteIdConfig(siteId, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1WidgetSiteIdConfig>>> = ({ signal }) => getApiV1WidgetSiteIdConfig(siteId, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(siteId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiWidgetSiteIdConfig>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: !!(siteId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1WidgetSiteIdConfig>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiWidgetSiteIdConfigQueryResult = NonNullable<Awaited<ReturnType<typeof getApiWidgetSiteIdConfig>>>
-export type GetApiWidgetSiteIdConfigQueryError = ErrorType<NotFoundErrorResponse | InternalServerErrorResponse>
+export type GetApiV1WidgetSiteIdConfigQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1WidgetSiteIdConfig>>>
+export type GetApiV1WidgetSiteIdConfigQueryError = ErrorType<NotFoundErrorResponse | InternalServerErrorResponse>
 
 
-export function useGetApiWidgetSiteIdConfig<TData = Awaited<ReturnType<typeof getApiWidgetSiteIdConfig>>, TError = ErrorType<NotFoundErrorResponse | InternalServerErrorResponse>>(
- siteId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiWidgetSiteIdConfig>>, TError, TData>> & Pick<
+export function useGetApiV1WidgetSiteIdConfig<TData = Awaited<ReturnType<typeof getApiV1WidgetSiteIdConfig>>, TError = ErrorType<NotFoundErrorResponse | InternalServerErrorResponse>>(
+ siteId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1WidgetSiteIdConfig>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiWidgetSiteIdConfig>>,
+          Awaited<ReturnType<typeof getApiV1WidgetSiteIdConfig>>,
           TError,
-          Awaited<ReturnType<typeof getApiWidgetSiteIdConfig>>
+          Awaited<ReturnType<typeof getApiV1WidgetSiteIdConfig>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiWidgetSiteIdConfig<TData = Awaited<ReturnType<typeof getApiWidgetSiteIdConfig>>, TError = ErrorType<NotFoundErrorResponse | InternalServerErrorResponse>>(
- siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiWidgetSiteIdConfig>>, TError, TData>> & Pick<
+export function useGetApiV1WidgetSiteIdConfig<TData = Awaited<ReturnType<typeof getApiV1WidgetSiteIdConfig>>, TError = ErrorType<NotFoundErrorResponse | InternalServerErrorResponse>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1WidgetSiteIdConfig>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiWidgetSiteIdConfig>>,
+          Awaited<ReturnType<typeof getApiV1WidgetSiteIdConfig>>,
           TError,
-          Awaited<ReturnType<typeof getApiWidgetSiteIdConfig>>
+          Awaited<ReturnType<typeof getApiV1WidgetSiteIdConfig>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiWidgetSiteIdConfig<TData = Awaited<ReturnType<typeof getApiWidgetSiteIdConfig>>, TError = ErrorType<NotFoundErrorResponse | InternalServerErrorResponse>>(
- siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiWidgetSiteIdConfig>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetApiV1WidgetSiteIdConfig<TData = Awaited<ReturnType<typeof getApiV1WidgetSiteIdConfig>>, TError = ErrorType<NotFoundErrorResponse | InternalServerErrorResponse>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1WidgetSiteIdConfig>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get site configuration (public)
  */
 
-export function useGetApiWidgetSiteIdConfig<TData = Awaited<ReturnType<typeof getApiWidgetSiteIdConfig>>, TError = ErrorType<NotFoundErrorResponse | InternalServerErrorResponse>>(
- siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiWidgetSiteIdConfig>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetApiV1WidgetSiteIdConfig<TData = Awaited<ReturnType<typeof getApiV1WidgetSiteIdConfig>>, TError = ErrorType<NotFoundErrorResponse | InternalServerErrorResponse>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1WidgetSiteIdConfig>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiWidgetSiteIdConfigQueryOptions(siteId,options)
+  const queryOptions = getGetApiV1WidgetSiteIdConfigQueryOptions(siteId,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -232,14 +232,14 @@ export function useGetApiWidgetSiteIdConfig<TData = Awaited<ReturnType<typeof ge
  * Validate site ID, check subscription status, and verify origin is allowed
  * @summary Validate site for widget (public)
  */
-export const getApiWidgetSiteIdValidate = (
+export const getApiV1WidgetSiteIdValidate = (
     siteId: string,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<ValidateSiteResponse>(
-      {url: `/api/widget/${siteId}/validate`, method: 'GET', signal
+      {url: `/api/v1/widget/${siteId}/validate`, method: 'GET', signal
     },
       options);
     }
@@ -247,69 +247,69 @@ export const getApiWidgetSiteIdValidate = (
 
 
 
-export const getGetApiWidgetSiteIdValidateQueryKey = (siteId?: string,) => {
+export const getGetApiV1WidgetSiteIdValidateQueryKey = (siteId?: string,) => {
     return [
-    `/api/widget/${siteId}/validate`
+    `/api/v1/widget/${siteId}/validate`
     ] as const;
     }
 
     
-export const getGetApiWidgetSiteIdValidateQueryOptions = <TData = Awaited<ReturnType<typeof getApiWidgetSiteIdValidate>>, TError = ErrorType<Error | NotFoundErrorResponse | InternalServerErrorResponse>>(siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiWidgetSiteIdValidate>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetApiV1WidgetSiteIdValidateQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1WidgetSiteIdValidate>>, TError = ErrorType<Error | NotFoundErrorResponse | InternalServerErrorResponse>>(siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1WidgetSiteIdValidate>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiWidgetSiteIdValidateQueryKey(siteId);
+  const queryKey =  queryOptions?.queryKey ?? getGetApiV1WidgetSiteIdValidateQueryKey(siteId);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiWidgetSiteIdValidate>>> = ({ signal }) => getApiWidgetSiteIdValidate(siteId, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1WidgetSiteIdValidate>>> = ({ signal }) => getApiV1WidgetSiteIdValidate(siteId, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(siteId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiWidgetSiteIdValidate>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: !!(siteId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1WidgetSiteIdValidate>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiWidgetSiteIdValidateQueryResult = NonNullable<Awaited<ReturnType<typeof getApiWidgetSiteIdValidate>>>
-export type GetApiWidgetSiteIdValidateQueryError = ErrorType<Error | NotFoundErrorResponse | InternalServerErrorResponse>
+export type GetApiV1WidgetSiteIdValidateQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1WidgetSiteIdValidate>>>
+export type GetApiV1WidgetSiteIdValidateQueryError = ErrorType<Error | NotFoundErrorResponse | InternalServerErrorResponse>
 
 
-export function useGetApiWidgetSiteIdValidate<TData = Awaited<ReturnType<typeof getApiWidgetSiteIdValidate>>, TError = ErrorType<Error | NotFoundErrorResponse | InternalServerErrorResponse>>(
- siteId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiWidgetSiteIdValidate>>, TError, TData>> & Pick<
+export function useGetApiV1WidgetSiteIdValidate<TData = Awaited<ReturnType<typeof getApiV1WidgetSiteIdValidate>>, TError = ErrorType<Error | NotFoundErrorResponse | InternalServerErrorResponse>>(
+ siteId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1WidgetSiteIdValidate>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiWidgetSiteIdValidate>>,
+          Awaited<ReturnType<typeof getApiV1WidgetSiteIdValidate>>,
           TError,
-          Awaited<ReturnType<typeof getApiWidgetSiteIdValidate>>
+          Awaited<ReturnType<typeof getApiV1WidgetSiteIdValidate>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiWidgetSiteIdValidate<TData = Awaited<ReturnType<typeof getApiWidgetSiteIdValidate>>, TError = ErrorType<Error | NotFoundErrorResponse | InternalServerErrorResponse>>(
- siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiWidgetSiteIdValidate>>, TError, TData>> & Pick<
+export function useGetApiV1WidgetSiteIdValidate<TData = Awaited<ReturnType<typeof getApiV1WidgetSiteIdValidate>>, TError = ErrorType<Error | NotFoundErrorResponse | InternalServerErrorResponse>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1WidgetSiteIdValidate>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiWidgetSiteIdValidate>>,
+          Awaited<ReturnType<typeof getApiV1WidgetSiteIdValidate>>,
           TError,
-          Awaited<ReturnType<typeof getApiWidgetSiteIdValidate>>
+          Awaited<ReturnType<typeof getApiV1WidgetSiteIdValidate>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiWidgetSiteIdValidate<TData = Awaited<ReturnType<typeof getApiWidgetSiteIdValidate>>, TError = ErrorType<Error | NotFoundErrorResponse | InternalServerErrorResponse>>(
- siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiWidgetSiteIdValidate>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetApiV1WidgetSiteIdValidate<TData = Awaited<ReturnType<typeof getApiV1WidgetSiteIdValidate>>, TError = ErrorType<Error | NotFoundErrorResponse | InternalServerErrorResponse>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1WidgetSiteIdValidate>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Validate site for widget (public)
  */
 
-export function useGetApiWidgetSiteIdValidate<TData = Awaited<ReturnType<typeof getApiWidgetSiteIdValidate>>, TError = ErrorType<Error | NotFoundErrorResponse | InternalServerErrorResponse>>(
- siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiWidgetSiteIdValidate>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetApiV1WidgetSiteIdValidate<TData = Awaited<ReturnType<typeof getApiV1WidgetSiteIdValidate>>, TError = ErrorType<Error | NotFoundErrorResponse | InternalServerErrorResponse>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1WidgetSiteIdValidate>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiWidgetSiteIdValidateQueryOptions(siteId,options)
+  const queryOptions = getGetApiV1WidgetSiteIdValidateQueryOptions(siteId,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -325,14 +325,14 @@ export function useGetApiWidgetSiteIdValidate<TData = Awaited<ReturnType<typeof 
  * Retrieve widget settings for the embedded widget (no authentication required)
  * @summary Get public widget settings (public)
  */
-export const getApiWidgetSiteIdSettings = (
+export const getApiV1WidgetSiteIdSettings = (
     siteId: string,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<WidgetSettings>(
-      {url: `/api/widget/${siteId}/settings`, method: 'GET', signal
+      {url: `/api/v1/widget/${siteId}/settings`, method: 'GET', signal
     },
       options);
     }
@@ -340,69 +340,69 @@ export const getApiWidgetSiteIdSettings = (
 
 
 
-export const getGetApiWidgetSiteIdSettingsQueryKey = (siteId?: string,) => {
+export const getGetApiV1WidgetSiteIdSettingsQueryKey = (siteId?: string,) => {
     return [
-    `/api/widget/${siteId}/settings`
+    `/api/v1/widget/${siteId}/settings`
     ] as const;
     }
 
     
-export const getGetApiWidgetSiteIdSettingsQueryOptions = <TData = Awaited<ReturnType<typeof getApiWidgetSiteIdSettings>>, TError = ErrorType<NotFoundErrorResponse | InternalServerErrorResponse>>(siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiWidgetSiteIdSettings>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetApiV1WidgetSiteIdSettingsQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettings>>, TError = ErrorType<NotFoundErrorResponse | InternalServerErrorResponse>>(siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettings>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiWidgetSiteIdSettingsQueryKey(siteId);
+  const queryKey =  queryOptions?.queryKey ?? getGetApiV1WidgetSiteIdSettingsQueryKey(siteId);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiWidgetSiteIdSettings>>> = ({ signal }) => getApiWidgetSiteIdSettings(siteId, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettings>>> = ({ signal }) => getApiV1WidgetSiteIdSettings(siteId, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(siteId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiWidgetSiteIdSettings>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: !!(siteId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettings>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiWidgetSiteIdSettingsQueryResult = NonNullable<Awaited<ReturnType<typeof getApiWidgetSiteIdSettings>>>
-export type GetApiWidgetSiteIdSettingsQueryError = ErrorType<NotFoundErrorResponse | InternalServerErrorResponse>
+export type GetApiV1WidgetSiteIdSettingsQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettings>>>
+export type GetApiV1WidgetSiteIdSettingsQueryError = ErrorType<NotFoundErrorResponse | InternalServerErrorResponse>
 
 
-export function useGetApiWidgetSiteIdSettings<TData = Awaited<ReturnType<typeof getApiWidgetSiteIdSettings>>, TError = ErrorType<NotFoundErrorResponse | InternalServerErrorResponse>>(
- siteId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiWidgetSiteIdSettings>>, TError, TData>> & Pick<
+export function useGetApiV1WidgetSiteIdSettings<TData = Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettings>>, TError = ErrorType<NotFoundErrorResponse | InternalServerErrorResponse>>(
+ siteId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettings>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiWidgetSiteIdSettings>>,
+          Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettings>>,
           TError,
-          Awaited<ReturnType<typeof getApiWidgetSiteIdSettings>>
+          Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettings>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiWidgetSiteIdSettings<TData = Awaited<ReturnType<typeof getApiWidgetSiteIdSettings>>, TError = ErrorType<NotFoundErrorResponse | InternalServerErrorResponse>>(
- siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiWidgetSiteIdSettings>>, TError, TData>> & Pick<
+export function useGetApiV1WidgetSiteIdSettings<TData = Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettings>>, TError = ErrorType<NotFoundErrorResponse | InternalServerErrorResponse>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettings>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiWidgetSiteIdSettings>>,
+          Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettings>>,
           TError,
-          Awaited<ReturnType<typeof getApiWidgetSiteIdSettings>>
+          Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettings>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiWidgetSiteIdSettings<TData = Awaited<ReturnType<typeof getApiWidgetSiteIdSettings>>, TError = ErrorType<NotFoundErrorResponse | InternalServerErrorResponse>>(
- siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiWidgetSiteIdSettings>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetApiV1WidgetSiteIdSettings<TData = Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettings>>, TError = ErrorType<NotFoundErrorResponse | InternalServerErrorResponse>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettings>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get public widget settings (public)
  */
 
-export function useGetApiWidgetSiteIdSettings<TData = Awaited<ReturnType<typeof getApiWidgetSiteIdSettings>>, TError = ErrorType<NotFoundErrorResponse | InternalServerErrorResponse>>(
- siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiWidgetSiteIdSettings>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetApiV1WidgetSiteIdSettings<TData = Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettings>>, TError = ErrorType<NotFoundErrorResponse | InternalServerErrorResponse>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettings>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiWidgetSiteIdSettingsQueryOptions(siteId,options)
+  const queryOptions = getGetApiV1WidgetSiteIdSettingsQueryOptions(siteId,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -418,27 +418,27 @@ export function useGetApiWidgetSiteIdSettings<TData = Awaited<ReturnType<typeof 
  * Partially update widget settings for a site
  * @summary Update widget settings (partial)
  */
-export const patchApiWidgetSiteIdSettings = (
+export const patchApiV1WidgetSiteIdSettings = (
     siteId: string,
-    patchApiWidgetSiteIdSettingsBody: BodyType<PatchApiWidgetSiteIdSettingsBody>,
+    patchApiV1WidgetSiteIdSettingsBody: BodyType<PatchApiV1WidgetSiteIdSettingsBody>,
  options?: SecondParameter<typeof customInstance>,) => {
       
       
       return customInstance<WidgetSettings>(
-      {url: `/api/widget/${siteId}/settings`, method: 'PATCH',
+      {url: `/api/v1/widget/${siteId}/settings`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
-      data: patchApiWidgetSiteIdSettingsBody
+      data: patchApiV1WidgetSiteIdSettingsBody
     },
       options);
     }
   
 
 
-export const getPatchApiWidgetSiteIdSettingsMutationOptions = <TError = ErrorType<ValidationErrorResponse | UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchApiWidgetSiteIdSettings>>, TError,{siteId: string;data: BodyType<PatchApiWidgetSiteIdSettingsBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof patchApiWidgetSiteIdSettings>>, TError,{siteId: string;data: BodyType<PatchApiWidgetSiteIdSettingsBody>}, TContext> => {
+export const getPatchApiV1WidgetSiteIdSettingsMutationOptions = <TError = ErrorType<ValidationErrorResponse | UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchApiV1WidgetSiteIdSettings>>, TError,{siteId: string;data: BodyType<PatchApiV1WidgetSiteIdSettingsBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof patchApiV1WidgetSiteIdSettings>>, TError,{siteId: string;data: BodyType<PatchApiV1WidgetSiteIdSettingsBody>}, TContext> => {
 
-const mutationKey = ['patchApiWidgetSiteIdSettings'];
+const mutationKey = ['patchApiV1WidgetSiteIdSettings'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -448,10 +448,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchApiWidgetSiteIdSettings>>, {siteId: string;data: BodyType<PatchApiWidgetSiteIdSettingsBody>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchApiV1WidgetSiteIdSettings>>, {siteId: string;data: BodyType<PatchApiV1WidgetSiteIdSettingsBody>}> = (props) => {
           const {siteId,data} = props ?? {};
 
-          return  patchApiWidgetSiteIdSettings(siteId,data,requestOptions)
+          return  patchApiV1WidgetSiteIdSettings(siteId,data,requestOptions)
         }
 
         
@@ -459,23 +459,23 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PatchApiWidgetSiteIdSettingsMutationResult = NonNullable<Awaited<ReturnType<typeof patchApiWidgetSiteIdSettings>>>
-    export type PatchApiWidgetSiteIdSettingsMutationBody = BodyType<PatchApiWidgetSiteIdSettingsBody>
-    export type PatchApiWidgetSiteIdSettingsMutationError = ErrorType<ValidationErrorResponse | UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>
+    export type PatchApiV1WidgetSiteIdSettingsMutationResult = NonNullable<Awaited<ReturnType<typeof patchApiV1WidgetSiteIdSettings>>>
+    export type PatchApiV1WidgetSiteIdSettingsMutationBody = BodyType<PatchApiV1WidgetSiteIdSettingsBody>
+    export type PatchApiV1WidgetSiteIdSettingsMutationError = ErrorType<ValidationErrorResponse | UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>
 
     /**
  * @summary Update widget settings (partial)
  */
-export const usePatchApiWidgetSiteIdSettings = <TError = ErrorType<ValidationErrorResponse | UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchApiWidgetSiteIdSettings>>, TError,{siteId: string;data: BodyType<PatchApiWidgetSiteIdSettingsBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePatchApiV1WidgetSiteIdSettings = <TError = ErrorType<ValidationErrorResponse | UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchApiV1WidgetSiteIdSettings>>, TError,{siteId: string;data: BodyType<PatchApiV1WidgetSiteIdSettingsBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof patchApiWidgetSiteIdSettings>>,
+        Awaited<ReturnType<typeof patchApiV1WidgetSiteIdSettings>>,
         TError,
-        {siteId: string;data: BodyType<PatchApiWidgetSiteIdSettingsBody>},
+        {siteId: string;data: BodyType<PatchApiV1WidgetSiteIdSettingsBody>},
         TContext
       > => {
 
-      const mutationOptions = getPatchApiWidgetSiteIdSettingsMutationOptions(options);
+      const mutationOptions = getPatchApiV1WidgetSiteIdSettingsMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
@@ -483,27 +483,27 @@ export const usePatchApiWidgetSiteIdSettings = <TError = ErrorType<ValidationErr
  * Replace all widget settings with new values (bulk update)
  * @summary Replace all widget settings
  */
-export const putApiWidgetSiteIdSettings = (
+export const putApiV1WidgetSiteIdSettings = (
     siteId: string,
-    putApiWidgetSiteIdSettingsBody: BodyType<PutApiWidgetSiteIdSettingsBody>,
+    putApiV1WidgetSiteIdSettingsBody: BodyType<PutApiV1WidgetSiteIdSettingsBody>,
  options?: SecondParameter<typeof customInstance>,) => {
       
       
       return customInstance<WidgetSettings>(
-      {url: `/api/widget/${siteId}/settings`, method: 'PUT',
+      {url: `/api/v1/widget/${siteId}/settings`, method: 'PUT',
       headers: {'Content-Type': 'application/json', },
-      data: putApiWidgetSiteIdSettingsBody
+      data: putApiV1WidgetSiteIdSettingsBody
     },
       options);
     }
   
 
 
-export const getPutApiWidgetSiteIdSettingsMutationOptions = <TError = ErrorType<ValidationErrorResponse | UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiWidgetSiteIdSettings>>, TError,{siteId: string;data: BodyType<PutApiWidgetSiteIdSettingsBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof putApiWidgetSiteIdSettings>>, TError,{siteId: string;data: BodyType<PutApiWidgetSiteIdSettingsBody>}, TContext> => {
+export const getPutApiV1WidgetSiteIdSettingsMutationOptions = <TError = ErrorType<ValidationErrorResponse | UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiV1WidgetSiteIdSettings>>, TError,{siteId: string;data: BodyType<PutApiV1WidgetSiteIdSettingsBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof putApiV1WidgetSiteIdSettings>>, TError,{siteId: string;data: BodyType<PutApiV1WidgetSiteIdSettingsBody>}, TContext> => {
 
-const mutationKey = ['putApiWidgetSiteIdSettings'];
+const mutationKey = ['putApiV1WidgetSiteIdSettings'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -513,10 +513,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putApiWidgetSiteIdSettings>>, {siteId: string;data: BodyType<PutApiWidgetSiteIdSettingsBody>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putApiV1WidgetSiteIdSettings>>, {siteId: string;data: BodyType<PutApiV1WidgetSiteIdSettingsBody>}> = (props) => {
           const {siteId,data} = props ?? {};
 
-          return  putApiWidgetSiteIdSettings(siteId,data,requestOptions)
+          return  putApiV1WidgetSiteIdSettings(siteId,data,requestOptions)
         }
 
         
@@ -524,23 +524,23 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PutApiWidgetSiteIdSettingsMutationResult = NonNullable<Awaited<ReturnType<typeof putApiWidgetSiteIdSettings>>>
-    export type PutApiWidgetSiteIdSettingsMutationBody = BodyType<PutApiWidgetSiteIdSettingsBody>
-    export type PutApiWidgetSiteIdSettingsMutationError = ErrorType<ValidationErrorResponse | UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>
+    export type PutApiV1WidgetSiteIdSettingsMutationResult = NonNullable<Awaited<ReturnType<typeof putApiV1WidgetSiteIdSettings>>>
+    export type PutApiV1WidgetSiteIdSettingsMutationBody = BodyType<PutApiV1WidgetSiteIdSettingsBody>
+    export type PutApiV1WidgetSiteIdSettingsMutationError = ErrorType<ValidationErrorResponse | UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>
 
     /**
  * @summary Replace all widget settings
  */
-export const usePutApiWidgetSiteIdSettings = <TError = ErrorType<ValidationErrorResponse | UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiWidgetSiteIdSettings>>, TError,{siteId: string;data: BodyType<PutApiWidgetSiteIdSettingsBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePutApiV1WidgetSiteIdSettings = <TError = ErrorType<ValidationErrorResponse | UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiV1WidgetSiteIdSettings>>, TError,{siteId: string;data: BodyType<PutApiV1WidgetSiteIdSettingsBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof putApiWidgetSiteIdSettings>>,
+        Awaited<ReturnType<typeof putApiV1WidgetSiteIdSettings>>,
         TError,
-        {siteId: string;data: BodyType<PutApiWidgetSiteIdSettingsBody>},
+        {siteId: string;data: BodyType<PutApiV1WidgetSiteIdSettingsBody>},
         TContext
       > => {
 
-      const mutationOptions = getPutApiWidgetSiteIdSettingsMutationOptions(options);
+      const mutationOptions = getPutApiV1WidgetSiteIdSettingsMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
@@ -548,14 +548,14 @@ export const usePutApiWidgetSiteIdSettings = <TError = ErrorType<ValidationError
  * Retrieve complete widget settings for authenticated user's site
  * @summary Get widget settings (admin)
  */
-export const getApiWidgetSiteIdSettingsAdmin = (
+export const getApiV1WidgetSiteIdSettingsAdmin = (
     siteId: string,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<WidgetSettings>(
-      {url: `/api/widget/${siteId}/settings/admin`, method: 'GET', signal
+      {url: `/api/v1/widget/${siteId}/settings/admin`, method: 'GET', signal
     },
       options);
     }
@@ -563,69 +563,169 @@ export const getApiWidgetSiteIdSettingsAdmin = (
 
 
 
-export const getGetApiWidgetSiteIdSettingsAdminQueryKey = (siteId?: string,) => {
+export const getGetApiV1WidgetSiteIdSettingsAdminQueryKey = (siteId?: string,) => {
     return [
-    `/api/widget/${siteId}/settings/admin`
+    `/api/v1/widget/${siteId}/settings/admin`
     ] as const;
     }
 
     
-export const getGetApiWidgetSiteIdSettingsAdminQueryOptions = <TData = Awaited<ReturnType<typeof getApiWidgetSiteIdSettingsAdmin>>, TError = ErrorType<UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>>(siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiWidgetSiteIdSettingsAdmin>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetApiV1WidgetSiteIdSettingsAdminQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettingsAdmin>>, TError = ErrorType<UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>>(siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettingsAdmin>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiWidgetSiteIdSettingsAdminQueryKey(siteId);
+  const queryKey =  queryOptions?.queryKey ?? getGetApiV1WidgetSiteIdSettingsAdminQueryKey(siteId);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiWidgetSiteIdSettingsAdmin>>> = ({ signal }) => getApiWidgetSiteIdSettingsAdmin(siteId, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettingsAdmin>>> = ({ signal }) => getApiV1WidgetSiteIdSettingsAdmin(siteId, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(siteId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiWidgetSiteIdSettingsAdmin>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: !!(siteId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettingsAdmin>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiWidgetSiteIdSettingsAdminQueryResult = NonNullable<Awaited<ReturnType<typeof getApiWidgetSiteIdSettingsAdmin>>>
-export type GetApiWidgetSiteIdSettingsAdminQueryError = ErrorType<UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>
+export type GetApiV1WidgetSiteIdSettingsAdminQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettingsAdmin>>>
+export type GetApiV1WidgetSiteIdSettingsAdminQueryError = ErrorType<UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>
 
 
-export function useGetApiWidgetSiteIdSettingsAdmin<TData = Awaited<ReturnType<typeof getApiWidgetSiteIdSettingsAdmin>>, TError = ErrorType<UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>>(
- siteId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiWidgetSiteIdSettingsAdmin>>, TError, TData>> & Pick<
+export function useGetApiV1WidgetSiteIdSettingsAdmin<TData = Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettingsAdmin>>, TError = ErrorType<UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>>(
+ siteId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettingsAdmin>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiWidgetSiteIdSettingsAdmin>>,
+          Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettingsAdmin>>,
           TError,
-          Awaited<ReturnType<typeof getApiWidgetSiteIdSettingsAdmin>>
+          Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettingsAdmin>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiWidgetSiteIdSettingsAdmin<TData = Awaited<ReturnType<typeof getApiWidgetSiteIdSettingsAdmin>>, TError = ErrorType<UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>>(
- siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiWidgetSiteIdSettingsAdmin>>, TError, TData>> & Pick<
+export function useGetApiV1WidgetSiteIdSettingsAdmin<TData = Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettingsAdmin>>, TError = ErrorType<UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettingsAdmin>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiWidgetSiteIdSettingsAdmin>>,
+          Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettingsAdmin>>,
           TError,
-          Awaited<ReturnType<typeof getApiWidgetSiteIdSettingsAdmin>>
+          Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettingsAdmin>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiWidgetSiteIdSettingsAdmin<TData = Awaited<ReturnType<typeof getApiWidgetSiteIdSettingsAdmin>>, TError = ErrorType<UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>>(
- siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiWidgetSiteIdSettingsAdmin>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetApiV1WidgetSiteIdSettingsAdmin<TData = Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettingsAdmin>>, TError = ErrorType<UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettingsAdmin>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get widget settings (admin)
  */
 
-export function useGetApiWidgetSiteIdSettingsAdmin<TData = Awaited<ReturnType<typeof getApiWidgetSiteIdSettingsAdmin>>, TError = ErrorType<UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>>(
- siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiWidgetSiteIdSettingsAdmin>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetApiV1WidgetSiteIdSettingsAdmin<TData = Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettingsAdmin>>, TError = ErrorType<UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettingsAdmin>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiWidgetSiteIdSettingsAdminQueryOptions(siteId,options)
+  const queryOptions = getGetApiV1WidgetSiteIdSettingsAdminQueryOptions(siteId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * Retrieve specific category of widget settings for partial loading
+ * @summary Get widget settings by category
+ */
+export const getApiV1WidgetSiteIdSettingsCategoryCategory = (
+    siteId: string,
+    category: 'appearance' | 'launcher' | 'chatWindow' | 'behavior' | 'content' | 'responsive' | 'advanced',
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<GetApiV1WidgetSiteIdSettingsCategoryCategory200>(
+      {url: `/api/v1/widget/${siteId}/settings/category/${category}`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+
+
+export const getGetApiV1WidgetSiteIdSettingsCategoryCategoryQueryKey = (siteId?: string,
+    category?: 'appearance' | 'launcher' | 'chatWindow' | 'behavior' | 'content' | 'responsive' | 'advanced',) => {
+    return [
+    `/api/v1/widget/${siteId}/settings/category/${category}`
+    ] as const;
+    }
+
+    
+export const getGetApiV1WidgetSiteIdSettingsCategoryCategoryQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettingsCategoryCategory>>, TError = ErrorType<Error | UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>>(siteId: string,
+    category: 'appearance' | 'launcher' | 'chatWindow' | 'behavior' | 'content' | 'responsive' | 'advanced', options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettingsCategoryCategory>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetApiV1WidgetSiteIdSettingsCategoryCategoryQueryKey(siteId,category);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettingsCategoryCategory>>> = ({ signal }) => getApiV1WidgetSiteIdSettingsCategoryCategory(siteId,category, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(siteId && category), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettingsCategoryCategory>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetApiV1WidgetSiteIdSettingsCategoryCategoryQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettingsCategoryCategory>>>
+export type GetApiV1WidgetSiteIdSettingsCategoryCategoryQueryError = ErrorType<Error | UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>
+
+
+export function useGetApiV1WidgetSiteIdSettingsCategoryCategory<TData = Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettingsCategoryCategory>>, TError = ErrorType<Error | UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>>(
+ siteId: string,
+    category: 'appearance' | 'launcher' | 'chatWindow' | 'behavior' | 'content' | 'responsive' | 'advanced', options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettingsCategoryCategory>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettingsCategoryCategory>>,
+          TError,
+          Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettingsCategoryCategory>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiV1WidgetSiteIdSettingsCategoryCategory<TData = Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettingsCategoryCategory>>, TError = ErrorType<Error | UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>>(
+ siteId: string,
+    category: 'appearance' | 'launcher' | 'chatWindow' | 'behavior' | 'content' | 'responsive' | 'advanced', options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettingsCategoryCategory>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettingsCategoryCategory>>,
+          TError,
+          Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettingsCategoryCategory>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiV1WidgetSiteIdSettingsCategoryCategory<TData = Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettingsCategoryCategory>>, TError = ErrorType<Error | UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>>(
+ siteId: string,
+    category: 'appearance' | 'launcher' | 'chatWindow' | 'behavior' | 'content' | 'responsive' | 'advanced', options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettingsCategoryCategory>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get widget settings by category
+ */
+
+export function useGetApiV1WidgetSiteIdSettingsCategoryCategory<TData = Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettingsCategoryCategory>>, TError = ErrorType<Error | UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>>(
+ siteId: string,
+    category: 'appearance' | 'launcher' | 'chatWindow' | 'behavior' | 'content' | 'responsive' | 'advanced', options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1WidgetSiteIdSettingsCategoryCategory>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetApiV1WidgetSiteIdSettingsCategoryCategoryQueryOptions(siteId,category,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -641,24 +741,24 @@ export function useGetApiWidgetSiteIdSettingsAdmin<TData = Awaited<ReturnType<ty
  * Reset all widget settings to their default values
  * @summary Reset widget settings to defaults
  */
-export const putApiWidgetSiteIdSettingsReset = (
+export const putApiV1WidgetSiteIdSettingsReset = (
     siteId: string,
  options?: SecondParameter<typeof customInstance>,) => {
       
       
       return customInstance<WidgetSettings>(
-      {url: `/api/widget/${siteId}/settings/reset`, method: 'PUT'
+      {url: `/api/v1/widget/${siteId}/settings/reset`, method: 'PUT'
     },
       options);
     }
   
 
 
-export const getPutApiWidgetSiteIdSettingsResetMutationOptions = <TError = ErrorType<UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiWidgetSiteIdSettingsReset>>, TError,{siteId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof putApiWidgetSiteIdSettingsReset>>, TError,{siteId: string}, TContext> => {
+export const getPutApiV1WidgetSiteIdSettingsResetMutationOptions = <TError = ErrorType<UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiV1WidgetSiteIdSettingsReset>>, TError,{siteId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof putApiV1WidgetSiteIdSettingsReset>>, TError,{siteId: string}, TContext> => {
 
-const mutationKey = ['putApiWidgetSiteIdSettingsReset'];
+const mutationKey = ['putApiV1WidgetSiteIdSettingsReset'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -668,10 +768,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putApiWidgetSiteIdSettingsReset>>, {siteId: string}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putApiV1WidgetSiteIdSettingsReset>>, {siteId: string}> = (props) => {
           const {siteId} = props ?? {};
 
-          return  putApiWidgetSiteIdSettingsReset(siteId,requestOptions)
+          return  putApiV1WidgetSiteIdSettingsReset(siteId,requestOptions)
         }
 
         
@@ -679,123 +779,24 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PutApiWidgetSiteIdSettingsResetMutationResult = NonNullable<Awaited<ReturnType<typeof putApiWidgetSiteIdSettingsReset>>>
+    export type PutApiV1WidgetSiteIdSettingsResetMutationResult = NonNullable<Awaited<ReturnType<typeof putApiV1WidgetSiteIdSettingsReset>>>
     
-    export type PutApiWidgetSiteIdSettingsResetMutationError = ErrorType<UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>
+    export type PutApiV1WidgetSiteIdSettingsResetMutationError = ErrorType<UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>
 
     /**
  * @summary Reset widget settings to defaults
  */
-export const usePutApiWidgetSiteIdSettingsReset = <TError = ErrorType<UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiWidgetSiteIdSettingsReset>>, TError,{siteId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePutApiV1WidgetSiteIdSettingsReset = <TError = ErrorType<UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiV1WidgetSiteIdSettingsReset>>, TError,{siteId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof putApiWidgetSiteIdSettingsReset>>,
+        Awaited<ReturnType<typeof putApiV1WidgetSiteIdSettingsReset>>,
         TError,
         {siteId: string},
         TContext
       > => {
 
-      const mutationOptions = getPutApiWidgetSiteIdSettingsResetMutationOptions(options);
+      const mutationOptions = getPutApiV1WidgetSiteIdSettingsResetMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
-    /**
- * Retrieve specific category of widget settings for partial loading
- * @summary Get widget settings by category
- */
-export const getApiWidgetSiteIdSettingsCategoryCategory = (
-    siteId: string,
-    category: 'appearance' | 'launcher' | 'chatWindow' | 'behavior' | 'content' | 'responsive' | 'advanced',
- options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
-) => {
-      
-      
-      return customInstance<GetApiWidgetSiteIdSettingsCategoryCategory200>(
-      {url: `/api/widget/${siteId}/settings/category/${category}`, method: 'GET', signal
-    },
-      options);
-    }
-  
-
-
-
-export const getGetApiWidgetSiteIdSettingsCategoryCategoryQueryKey = (siteId?: string,
-    category?: 'appearance' | 'launcher' | 'chatWindow' | 'behavior' | 'content' | 'responsive' | 'advanced',) => {
-    return [
-    `/api/widget/${siteId}/settings/category/${category}`
-    ] as const;
-    }
-
     
-export const getGetApiWidgetSiteIdSettingsCategoryCategoryQueryOptions = <TData = Awaited<ReturnType<typeof getApiWidgetSiteIdSettingsCategoryCategory>>, TError = ErrorType<Error | UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>>(siteId: string,
-    category: 'appearance' | 'launcher' | 'chatWindow' | 'behavior' | 'content' | 'responsive' | 'advanced', options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiWidgetSiteIdSettingsCategoryCategory>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getGetApiWidgetSiteIdSettingsCategoryCategoryQueryKey(siteId,category);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiWidgetSiteIdSettingsCategoryCategory>>> = ({ signal }) => getApiWidgetSiteIdSettingsCategoryCategory(siteId,category, requestOptions, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(siteId && category), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiWidgetSiteIdSettingsCategoryCategory>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetApiWidgetSiteIdSettingsCategoryCategoryQueryResult = NonNullable<Awaited<ReturnType<typeof getApiWidgetSiteIdSettingsCategoryCategory>>>
-export type GetApiWidgetSiteIdSettingsCategoryCategoryQueryError = ErrorType<Error | UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>
-
-
-export function useGetApiWidgetSiteIdSettingsCategoryCategory<TData = Awaited<ReturnType<typeof getApiWidgetSiteIdSettingsCategoryCategory>>, TError = ErrorType<Error | UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>>(
- siteId: string,
-    category: 'appearance' | 'launcher' | 'chatWindow' | 'behavior' | 'content' | 'responsive' | 'advanced', options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiWidgetSiteIdSettingsCategoryCategory>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiWidgetSiteIdSettingsCategoryCategory>>,
-          TError,
-          Awaited<ReturnType<typeof getApiWidgetSiteIdSettingsCategoryCategory>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customInstance>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiWidgetSiteIdSettingsCategoryCategory<TData = Awaited<ReturnType<typeof getApiWidgetSiteIdSettingsCategoryCategory>>, TError = ErrorType<Error | UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>>(
- siteId: string,
-    category: 'appearance' | 'launcher' | 'chatWindow' | 'behavior' | 'content' | 'responsive' | 'advanced', options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiWidgetSiteIdSettingsCategoryCategory>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiWidgetSiteIdSettingsCategoryCategory>>,
-          TError,
-          Awaited<ReturnType<typeof getApiWidgetSiteIdSettingsCategoryCategory>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customInstance>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiWidgetSiteIdSettingsCategoryCategory<TData = Awaited<ReturnType<typeof getApiWidgetSiteIdSettingsCategoryCategory>>, TError = ErrorType<Error | UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>>(
- siteId: string,
-    category: 'appearance' | 'launcher' | 'chatWindow' | 'behavior' | 'content' | 'responsive' | 'advanced', options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiWidgetSiteIdSettingsCategoryCategory>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-/**
- * @summary Get widget settings by category
- */
-
-export function useGetApiWidgetSiteIdSettingsCategoryCategory<TData = Awaited<ReturnType<typeof getApiWidgetSiteIdSettingsCategoryCategory>>, TError = ErrorType<Error | UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>>(
- siteId: string,
-    category: 'appearance' | 'launcher' | 'chatWindow' | 'behavior' | 'content' | 'responsive' | 'advanced', options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiWidgetSiteIdSettingsCategoryCategory>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-
-  const queryOptions = getGetApiWidgetSiteIdSettingsCategoryCategoryQueryOptions(siteId,category,options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
-}
-
-
-
-

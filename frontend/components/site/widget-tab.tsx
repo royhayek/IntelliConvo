@@ -1,26 +1,38 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { Copy, Check, ExternalLink, Settings, Palette, MessageSquare, Layout, Zap, FileText, Smartphone, Sliders, Save, RotateCcw, ChevronDown, ChevronRight } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Copy, Check, Palette, MessageSquare, Layout, Zap, FileText, Smartphone, Sliders, Save, RotateCcw, ChevronDown, ChevronRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
+import { Form } from "@/components/ui/form";
+import { CodeBlock } from "@/components/ui/code-block";
+import { WidgetPreview } from "@/components/ui/widget-preview";
+import {
+  FormColorPicker,
+  FormSelectField,
+  FormNumberField,
+  FormToggleField,
+  FormInput,
+  FormTextarea,
+} from "@/components/form";
 import { useQueryClient } from "@tanstack/react-query";
 import {
-  useGetApiWidgetSiteIdSettingsAdmin,
-  usePatchApiWidgetSiteIdSettings,
-  usePutApiWidgetSiteIdSettingsReset,
-  getGetApiWidgetSiteIdSettingsAdminQueryKey,
+  useGetApiV1WidgetSiteIdSettingsAdmin,
+  usePatchApiV1WidgetSiteIdSettings,
+  usePutApiV1WidgetSiteIdSettingsReset,
+  getGetApiV1WidgetSiteIdSettingsAdminQueryKey,
 } from "@/lib/api/generated/queries/widget/widget";
-import { type GetApiSitesSiteId200 } from "@/lib/api/generated/models";
+import { type GetApiV1SitesSiteId200 } from "@/lib/api/generated/models";
 import { useToast } from "@/hooks/use-toast";
+import { Input } from "../ui/input";
 
 interface WidgetTabProps {
-  site: GetApiSitesSiteId200;
+  site: GetApiV1SitesSiteId200;
 }
 
 interface WidgetSettings {
@@ -34,20 +46,20 @@ interface WidgetSettings {
   fontFamily: string;
   fontSize: number;
   borderRadius: number;
-  shadowSize: string;
+  shadowSize: "none" | "small" | "medium" | "large";
 
   // Launcher
-  launcherIcon: string;
-  launcherSize: string;
-  launcherPosition: string;
+  launcherIcon: "chat" | "message" | "help" | "support";
+  launcherSize: "small" | "medium" | "large";
+  launcherPosition: "bottom-right" | "bottom-left" | "top-right" | "top-left";
   launcherOffsetX: number;
   launcherOffsetY: number;
-  launcherShape: string;
+  launcherShape: "circle" | "rounded-square" | "square";
   launcherBackgroundColor: string;
   launcherIconColor: string;
   launcherTooltip: string;
   launcherShowTooltip: boolean;
-  launcherAnimation: string;
+  launcherAnimation: "none" | "pulse" | "bounce" | "shake";
   launcherShowBadge: boolean;
   launcherBadgeColor: string;
 
@@ -97,18 +109,27 @@ interface WidgetSettings {
   tabletBreakpoint: number;
   mobileFullScreen: boolean;
   mobileFontSize: number;
-  mobileLauncherSize: string;
+  mobileLauncherSize: "small" | "medium" | "large";
   enableTouchOptimizations: boolean;
 
   // Advanced
   enableAnimations: boolean;
   animationDuration: number;
-  theme: string;
+  theme: "light" | "dark" | "auto";
   enableHighContrast: boolean;
   respectReducedMotion: boolean;
   enableKeyboardNavigation: boolean;
   customCss: string;
   enableAnalytics: boolean;
+
+  // Dark Mode Colors
+  darkModePrimaryColor: string;
+  darkModeSecondaryColor: string;
+  darkModeBackgroundColor: string;
+  darkModeSecondaryBackgroundColor: string;
+  darkModeTextColor: string;
+  darkModeTextSecondaryColor: string;
+  darkModeBorderColor: string;
 }
 
 const defaultSettings: WidgetSettings = {
@@ -197,120 +218,132 @@ const defaultSettings: WidgetSettings = {
   enableKeyboardNavigation: true,
   customCss: "",
   enableAnalytics: true,
+
+  // Dark Mode Colors
+  darkModePrimaryColor: "#6366f1",
+  darkModeSecondaryColor: "#818cf8",
+  darkModeBackgroundColor: "#1e293b",
+  darkModeSecondaryBackgroundColor: "#374151",
+  darkModeTextColor: "#f1f5f9",
+  darkModeTextSecondaryColor: "#94a3b8",
+  darkModeBorderColor: "#475569",
 };
+
+// Zod Validation Schema
+const widgetSettingsSchema = z.object({
+  // Appearance
+  primaryColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
+  secondaryColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
+  backgroundColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
+  textColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
+  textSecondaryColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
+  borderColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
+  fontFamily: z.string().min(1),
+  fontSize: z.number().min(10).max(24),
+  borderRadius: z.number().min(0).max(32),
+  shadowSize: z.enum(["none", "small", "medium", "large"]),
+
+  // Launcher
+  launcherIcon: z.enum(["chat", "message", "help", "support"]),
+  launcherSize: z.enum(["small", "medium", "large"]),
+  launcherPosition: z.enum(["bottom-right", "bottom-left", "top-right", "top-left"]),
+  launcherOffsetX: z.number().min(0).max(100),
+  launcherOffsetY: z.number().min(0).max(100),
+  launcherShape: z.enum(["circle", "rounded-square", "square"]),
+  launcherBackgroundColor: z.string(),
+  launcherIconColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
+  launcherTooltip: z.string().max(50),
+  launcherShowTooltip: z.boolean(),
+  launcherAnimation: z.enum(["none", "pulse", "bounce", "shake"]),
+  launcherShowBadge: z.boolean(),
+  launcherBadgeColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
+
+  // Chat Window
+  chatWindowWidth: z.number().min(300).max(800),
+  chatWindowHeight: z.number().min(400).max(1000),
+  headerTitle: z.string().min(1).max(50),
+  headerSubtitle: z.string().max(100),
+  headerShowAvatar: z.boolean(),
+  headerAvatarUrl: z.string().url().or(z.literal("")),
+  headerShowStatus: z.boolean(),
+  headerShowCloseButton: z.boolean(),
+  headerShowMinimizeButton: z.boolean(),
+  userBubbleBackgroundColor: z.string(),
+  userBubbleTextColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
+  assistantBubbleBackgroundColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
+  assistantBubbleTextColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
+  inputPlaceholder: z.string().max(100),
+  inputBorderRadius: z.number().min(0).max(50),
+
+  // Behavior
+  autoOpenEnabled: z.boolean(),
+  autoOpenDelay: z.number().min(0).max(60000),
+  autoOpenOnlyOnce: z.boolean(),
+  autoOpenOnMobile: z.boolean(),
+  showTypingIndicator: z.boolean(),
+  typingIndicatorText: z.string().max(50),
+  enableSoundNotifications: z.boolean(),
+  enableVoiceInput: z.boolean(),
+  enableFileAttachments: z.boolean(),
+  enableEmojiPicker: z.boolean(),
+  persistConversation: z.boolean(),
+  showQuickReplies: z.boolean(),
+
+  // Content
+  botName: z.string().min(1).max(50),
+  welcomeMessage: z.string().max(200),
+  offlineMessage: z.string().max(200),
+  errorMessage: z.string().max(200),
+  showConversationStarters: z.boolean(),
+  startersTitle: z.string().max(50),
+  showPoweredBy: z.boolean(),
+  poweredByText: z.string().max(100),
+
+  // Responsive
+  mobileBreakpoint: z.number().min(320).max(1024),
+  tabletBreakpoint: z.number().min(768).max(1440),
+  mobileFullScreen: z.boolean(),
+  mobileFontSize: z.number().min(12).max(20),
+  mobileLauncherSize: z.enum(["small", "medium", "large"]),
+  enableTouchOptimizations: z.boolean(),
+
+  // Advanced
+  enableAnimations: z.boolean(),
+  animationDuration: z.number().min(0).max(1000),
+  theme: z.enum(["light", "dark", "auto"]),
+  enableHighContrast: z.boolean(),
+  respectReducedMotion: z.boolean(),
+  enableKeyboardNavigation: z.boolean(),
+  customCss: z.string().max(10000),
+  enableAnalytics: z.boolean(),
+
+  // Dark Mode Colors
+  darkModePrimaryColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
+  darkModeSecondaryColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
+  darkModeBackgroundColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
+  darkModeSecondaryBackgroundColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
+  darkModeTextColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
+  darkModeTextSecondaryColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
+  darkModeBorderColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
+});
+
+type WidgetSettingsFormData = z.infer<typeof widgetSettingsSchema>;
 
 // Collapsible Section Component
 function CollapsibleSection({ title, children, defaultOpen = false }: { title: string; children: React.ReactNode; defaultOpen?: boolean }) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <div className="border rounded-lg">
-      <button
+    <div className="border dark:border-gray-600 rounded-lg">
+      <Button
+        variant="ghost"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-between w-full p-3 text-left font-medium text-sm hover:bg-gray-50"
+        className="flex items-center w-full p-3 text-left font-medium text-sm hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-900 dark:text-white h-auto justify-start"
       >
         {title}
-        {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-      </button>
+        {isOpen ? <ChevronDown className="h-4 w-4 ml-auto" /> : <ChevronRight className="h-4 w-4 ml-auto" />}
+      </Button>
       {isOpen && <div className="p-4 pt-0 space-y-4">{children}</div>}
-    </div>
-  );
-}
-
-// Color Picker Component
-function ColorPicker({ label, value, onChange, description }: { label: string; value: string; onChange: (value: string) => void; description?: string }) {
-  return (
-    <div>
-      <Label className="text-sm">{label}</Label>
-      {description && <p className="text-xs text-gray-500 mb-1">{description}</p>}
-      <div className="flex items-center gap-2 mt-1">
-        <input
-          type="color"
-          value={value || "#000000"}
-          onChange={(e) => onChange(e.target.value)}
-          className="w-10 h-10 rounded border cursor-pointer"
-        />
-        <Input
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder="#000000"
-          className="flex-1 font-mono text-sm"
-        />
-      </div>
-    </div>
-  );
-}
-
-// Select Component
-function SelectField({ label, value, onChange, options, description }: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  options: { value: string; label: string }[];
-  description?: string;
-}) {
-  return (
-    <div>
-      <Label className="text-sm">{label}</Label>
-      {description && <p className="text-xs text-gray-500 mb-1">{description}</p>}
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-      >
-        {options.map((opt) => (
-          <option key={opt.value} value={opt.value}>{opt.label}</option>
-        ))}
-      </select>
-    </div>
-  );
-}
-
-// Number Input Component
-function NumberField({ label, value, onChange, min, max, step = 1, description, suffix }: {
-  label: string;
-  value: number;
-  onChange: (value: number) => void;
-  min?: number;
-  max?: number;
-  step?: number;
-  description?: string;
-  suffix?: string;
-}) {
-  return (
-    <div>
-      <Label className="text-sm">{label}</Label>
-      {description && <p className="text-xs text-gray-500 mb-1">{description}</p>}
-      <div className="flex items-center gap-2 mt-1">
-        <Input
-          type="number"
-          value={value}
-          onChange={(e) => onChange(Number(e.target.value))}
-          min={min}
-          max={max}
-          step={step}
-          className="flex-1"
-        />
-        {suffix && <span className="text-sm text-gray-500">{suffix}</span>}
-      </div>
-    </div>
-  );
-}
-
-// Toggle Component
-function ToggleField({ label, checked, onChange, description }: {
-  label: string;
-  checked: boolean;
-  onChange: (checked: boolean) => void;
-  description?: string;
-}) {
-  return (
-    <div className="flex items-center justify-between">
-      <div>
-        <Label className="text-sm">{label}</Label>
-        {description && <p className="text-xs text-gray-500">{description}</p>}
-      </div>
-      <Switch checked={checked} onCheckedChange={onChange} />
     </div>
   );
 }
@@ -318,30 +351,35 @@ function ToggleField({ label, checked, onChange, description }: {
 export function WidgetTab({ site }: WidgetTabProps) {
   const queryClient = useQueryClient();
   const [copied, setCopied] = useState<string | null>(null);
-  const [settings, setSettings] = useState<WidgetSettings>(defaultSettings);
-  const [hasChanges, setHasChanges] = useState(false);
   const { toast } = useToast();
 
-  // Load settings from API
-  const { data: loadedSettings, isLoading } = useGetApiWidgetSiteIdSettingsAdmin(site.id);
+  // React Hook Form
+  const form = useForm<WidgetSettingsFormData>({
+    resolver: zodResolver(widgetSettingsSchema),
+    defaultValues: defaultSettings,
+    mode: "onChange",
+  });
 
-  // Update local state when settings are loaded
+  // Load settings from API
+  const { data: loadedSettings, isLoading } = useGetApiV1WidgetSiteIdSettingsAdmin(site.id);
+
+  // Update form when settings are loaded
   useEffect(() => {
     if (loadedSettings) {
-      setSettings({ ...defaultSettings, ...loadedSettings as unknown as WidgetSettings });
+      form.reset({ ...defaultSettings, ...loadedSettings as unknown as WidgetSettings });
     }
-  }, [loadedSettings]);
+  }, [loadedSettings, form]);
 
   // Save settings mutation
-  const saveMutation = usePatchApiWidgetSiteIdSettings({
+  const saveMutation = usePatchApiV1WidgetSiteIdSettings({
     mutation: {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: getGetApiWidgetSiteIdSettingsAdminQueryKey(site.id) });
+        queryClient.invalidateQueries({ queryKey: getGetApiV1WidgetSiteIdSettingsAdminQueryKey(site.id) });
         toast({
           title: "Settings saved",
           description: "Your widget settings have been updated successfully.",
         });
-        setHasChanges(false);
+        form.reset(form.getValues()); // Reset dirty state
       },
       onError: () => {
         toast({
@@ -354,12 +392,11 @@ export function WidgetTab({ site }: WidgetTabProps) {
   });
 
   // Reset settings mutation
-  const resetMutation = usePutApiWidgetSiteIdSettingsReset({
+  const resetMutation = usePutApiV1WidgetSiteIdSettingsReset({
     mutation: {
       onSuccess: (data) => {
-        setSettings({ ...defaultSettings, ...data as unknown as WidgetSettings });
-        setHasChanges(false);
-        queryClient.invalidateQueries({ queryKey: getGetApiWidgetSiteIdSettingsAdminQueryKey(site.id) });
+        form.reset({ ...defaultSettings, ...data as unknown as WidgetSettings });
+        queryClient.invalidateQueries({ queryKey: getGetApiV1WidgetSiteIdSettingsAdminQueryKey(site.id) });
         toast({
           title: "Settings reset",
           description: "Widget settings have been reset to defaults.",
@@ -375,15 +412,9 @@ export function WidgetTab({ site }: WidgetTabProps) {
     },
   });
 
-  // Update settings
-  const updateSettings = useCallback((updates: Partial<WidgetSettings>) => {
-    setSettings(prev => ({ ...prev, ...updates }));
-    setHasChanges(true);
-  }, []);
-
   // Save settings
-  const saveSettings = () => {
-    saveMutation.mutate({ siteId: site.id, data: settings as any });
+  const onSaveSettings = (data: WidgetSettingsFormData) => {
+    saveMutation.mutate({ siteId: site.id, data: data as any });
   };
 
   // Reset to defaults
@@ -392,6 +423,8 @@ export function WidgetTab({ site }: WidgetTabProps) {
   };
 
   const isSaving = saveMutation.isPending;
+  const hasChanges = form.formState.isDirty;
+  const settings = form.watch(); // Get current form values for preview
 
   const copyToClipboard = async (text: string, type: string) => {
     try {
@@ -412,7 +445,7 @@ export function WidgetTab({ site }: WidgetTabProps) {
     script.onload = function() {
       window.intelligentconvo('init', {
         siteId: '${site.id}',
-        apiUrl: '${process.env.NEXT_PUBLIC_API_URL || 'https://api.intelligentconvo.com'}'
+        apiUrl: '${process.env.NEXT_PUBLIC_API_URL || 'https://api.intelligentconvo.com/api/v1'}'
       });
     };
     document.head.appendChild(script);
@@ -428,269 +461,170 @@ export function WidgetTab({ site }: WidgetTabProps) {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-semibold text-gray-900">Widget Customization</h2>
-          <p className="text-gray-600">Customize every aspect of your chat widget</p>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSaveSettings)} className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Widget Customization</h2>
+            <p className="text-gray-600 dark:text-gray-400">Customize every aspect of your chat widget</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button type="button" variant="outline" size="sm" onClick={resetSettings}>
+              <RotateCcw className="h-4 w-4 mr-2" />
+              Reset
+            </Button>
+            <Button
+              type="submit"
+              size="sm"
+              disabled={!hasChanges || isSaving}
+            >
+              <Save className="h-4 w-4 mr-2" />
+              {isSaving ? "Saving..." : "Save Changes"}
+            </Button>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={resetSettings}>
-            <RotateCcw className="h-4 w-4 mr-2" />
-            Reset
-          </Button>
-          <Button
-            size="sm"
-            onClick={saveSettings}
-            disabled={!hasChanges || isSaving}
-          >
-            <Save className="h-4 w-4 mr-2" />
-            {isSaving ? "Saving..." : "Save Changes"}
-          </Button>
-        </div>
-      </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        {/* Settings Panel */}
-        <div className="xl:col-span-2">
-          <Card>
-            <CardContent className="p-0">
-              <Tabs defaultValue="appearance" className="w-full">
-                <TabsList className="w-full justify-start rounded-none border-b bg-transparent p-0">
-                  <TabsTrigger value="appearance" className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:bg-transparent">
-                    <Palette className="h-4 w-4 mr-2" />
-                    Appearance
-                  </TabsTrigger>
-                  <TabsTrigger value="launcher" className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:bg-transparent">
-                    <MessageSquare className="h-4 w-4 mr-2" />
-                    Launcher
-                  </TabsTrigger>
-                  <TabsTrigger value="window" className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:bg-transparent">
-                    <Layout className="h-4 w-4 mr-2" />
-                    Window
-                  </TabsTrigger>
-                  <TabsTrigger value="behavior" className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:bg-transparent">
-                    <Zap className="h-4 w-4 mr-2" />
-                    Behavior
-                  </TabsTrigger>
-                  <TabsTrigger value="content" className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:bg-transparent">
-                    <FileText className="h-4 w-4 mr-2" />
-                    Content
-                  </TabsTrigger>
-                  <TabsTrigger value="responsive" className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:bg-transparent">
-                    <Smartphone className="h-4 w-4 mr-2" />
-                    Mobile
-                  </TabsTrigger>
-                  <TabsTrigger value="advanced" className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:bg-transparent">
-                    <Sliders className="h-4 w-4 mr-2" />
-                    Advanced
-                  </TabsTrigger>
-                </TabsList>
+      {/* Preview Panel - Now on top */}
+      <WidgetPreview settings={settings} />
+
+      {/* Settings Panel - Now below */}
+      <Card>
+        <CardContent className="p-0">
+          <Tabs defaultValue="appearance" className="w-full">
+            <TabsList className="w-full justify-start rounded-none border-b bg-transparent p-0 flex-wrap">
+              <TabsTrigger value="appearance" className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:bg-transparent">
+                <Palette className="h-4 w-4 mr-2" />
+                Appearance
+              </TabsTrigger>
+              <TabsTrigger value="launcher" className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:bg-transparent">
+                <MessageSquare className="h-4 w-4 mr-2" />
+                Launcher
+              </TabsTrigger>
+              <TabsTrigger value="window" className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:bg-transparent">
+                <Layout className="h-4 w-4 mr-2" />
+                Window
+              </TabsTrigger>
+              <TabsTrigger value="behavior" className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:bg-transparent">
+                <Zap className="h-4 w-4 mr-2" />
+                Behavior
+              </TabsTrigger>
+              <TabsTrigger value="content" className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:bg-transparent">
+                <FileText className="h-4 w-4 mr-2" />
+                Content
+              </TabsTrigger>
+              <TabsTrigger value="responsive" className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:bg-transparent">
+                <Smartphone className="h-4 w-4 mr-2" />
+                Mobile
+              </TabsTrigger>
+              <TabsTrigger value="advanced" className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:bg-transparent">
+                <Sliders className="h-4 w-4 mr-2" />
+                Advanced
+              </TabsTrigger>
+            </TabsList>
 
                 {/* Appearance Tab */}
                 <TabsContent value="appearance" className="p-4 space-y-4">
                   <CollapsibleSection title="Colors" defaultOpen>
-                    <div className="grid grid-cols-2 gap-4">
-                      <ColorPicker
-                        label="Primary Color"
-                        value={settings.primaryColor}
-                        onChange={(v) => updateSettings({ primaryColor: v })}
-                        description="Main brand color"
-                      />
-                      <ColorPicker
-                        label="Secondary Color"
-                        value={settings.secondaryColor}
-                        onChange={(v) => updateSettings({ secondaryColor: v })}
-                        description="Accent color"
-                      />
-                      <ColorPicker
-                        label="Background"
-                        value={settings.backgroundColor}
-                        onChange={(v) => updateSettings({ backgroundColor: v })}
-                      />
-                      <ColorPicker
-                        label="Text Color"
-                        value={settings.textColor}
-                        onChange={(v) => updateSettings({ textColor: v })}
-                      />
-                      <ColorPicker
-                        label="Secondary Text"
-                        value={settings.textSecondaryColor}
-                        onChange={(v) => updateSettings({ textSecondaryColor: v })}
-                      />
-                      <ColorPicker
-                        label="Border Color"
-                        value={settings.borderColor}
-                        onChange={(v) => updateSettings({ borderColor: v })}
-                      />
+                    <div className="space-y-4">
+                      <div>
+                        <p className="text-sm font-medium mb-3">Light Theme</p>
+                        <div className="grid grid-cols-2 gap-4">
+                          <FormColorPicker name="primaryColor" label="Primary Color" control={form.control} description="Main brand color" />
+                          <FormColorPicker name="secondaryColor" label="Secondary Color" control={form.control} description="Accent color" />
+                          <FormColorPicker name="backgroundColor" label="Background" control={form.control} />
+                          <FormColorPicker name="textColor" label="Text Color" control={form.control} />
+                          <FormColorPicker name="textSecondaryColor" label="Secondary Text" control={form.control} />
+                          <FormColorPicker name="borderColor" label="Border Color" control={form.control} />
+                        </div>
+                      </div>
+
+                      <div className="border-t pt-4">
+                        <p className="text-sm font-medium mb-3">Dark Theme</p>
+                        <div className="grid grid-cols-2 gap-4">
+                          <FormColorPicker name="darkModePrimaryColor" label="Primary Color" control={form.control} description="Main brand color" />
+                          <FormColorPicker name="darkModeSecondaryColor" label="Secondary Color" control={form.control} description="Accent color" />
+                          <FormColorPicker name="darkModeBackgroundColor" label="Background" control={form.control} />
+                          <FormColorPicker name="darkModeTextColor" label="Text Color" control={form.control} />
+                          <FormColorPicker name="darkModeTextSecondaryColor" label="Secondary Text" control={form.control} />
+                          <FormColorPicker name="darkModeBorderColor" label="Border Color" control={form.control} />
+                        </div>
+                      </div>
                     </div>
                   </CollapsibleSection>
 
                   <CollapsibleSection title="Typography">
-                    <SelectField
-                      label="Font Family"
-                      value={settings.fontFamily}
-                      onChange={(v) => updateSettings({ fontFamily: v })}
-                      options={[
+                    <FormSelectField name="fontFamily" label="Font Family" control={form.control} options={[
                         { value: "system", label: "System Default" },
                         { value: "Inter, sans-serif", label: "Inter" },
                         { value: "Roboto, sans-serif", label: "Roboto" },
                         { value: "Open Sans, sans-serif", label: "Open Sans" },
                         { value: "Lato, sans-serif", label: "Lato" },
-                      ]}
-                    />
-                    <NumberField
-                      label="Font Size"
-                      value={settings.fontSize}
-                      onChange={(v) => updateSettings({ fontSize: v })}
-                      min={10}
-                      max={20}
-                      suffix="px"
-                    />
+                      ]} />
+                    <FormNumberField name="fontSize" label="Font Size" control={form.control} min={10} max={20} suffix="px" />
                   </CollapsibleSection>
 
                   <CollapsibleSection title="Shape & Shadow">
-                    <NumberField
-                      label="Border Radius"
-                      value={settings.borderRadius}
-                      onChange={(v) => updateSettings({ borderRadius: v })}
-                      min={0}
-                      max={32}
-                      suffix="px"
-                    />
-                    <SelectField
-                      label="Shadow Size"
-                      value={settings.shadowSize}
-                      onChange={(v) => updateSettings({ shadowSize: v })}
-                      options={[
+                    <FormNumberField name="borderRadius" label="Border Radius" control={form.control} min={0} max={32} suffix="px" />
+                    <FormSelectField name="shadowSize" label="Shadow Size" control={form.control} options={[
                         { value: "none", label: "None" },
                         { value: "small", label: "Small" },
                         { value: "medium", label: "Medium" },
                         { value: "large", label: "Large" },
-                      ]}
-                    />
+                      ]} />
                   </CollapsibleSection>
                 </TabsContent>
 
                 {/* Launcher Tab */}
                 <TabsContent value="launcher" className="p-4 space-y-4">
                   <CollapsibleSection title="Position & Size" defaultOpen>
-                    <SelectField
-                      label="Position"
-                      value={settings.launcherPosition}
-                      onChange={(v) => updateSettings({ launcherPosition: v })}
-                      options={[
+                    <FormSelectField name="launcherPosition" label="Position" control={form.control} options={[
                         { value: "bottom-right", label: "Bottom Right" },
                         { value: "bottom-left", label: "Bottom Left" },
                         { value: "top-right", label: "Top Right" },
                         { value: "top-left", label: "Top Left" },
-                      ]}
-                    />
-                    <SelectField
-                      label="Size"
-                      value={settings.launcherSize}
-                      onChange={(v) => updateSettings({ launcherSize: v })}
-                      options={[
+                      ]} />
+                    <FormSelectField name="launcherSize" label="Size" control={form.control} options={[
                         { value: "small", label: "Small (48px)" },
                         { value: "medium", label: "Medium (56px)" },
                         { value: "large", label: "Large (64px)" },
-                      ]}
-                    />
+                      ]} />
                     <div className="grid grid-cols-2 gap-4">
-                      <NumberField
-                        label="Offset X"
-                        value={settings.launcherOffsetX}
-                        onChange={(v) => updateSettings({ launcherOffsetX: v })}
-                        min={0}
-                        max={100}
-                        suffix="px"
-                      />
-                      <NumberField
-                        label="Offset Y"
-                        value={settings.launcherOffsetY}
-                        onChange={(v) => updateSettings({ launcherOffsetY: v })}
-                        min={0}
-                        max={100}
-                        suffix="px"
-                      />
+                      <FormNumberField name="launcherOffsetX" label="Offset X" control={form.control} min={0} max={100} suffix="px" />
+                      <FormNumberField name="launcherOffsetY" label="Offset Y" control={form.control} min={0} max={100} suffix="px" />
                     </div>
                   </CollapsibleSection>
 
                   <CollapsibleSection title="Appearance">
-                    <SelectField
-                      label="Icon"
-                      value={settings.launcherIcon}
-                      onChange={(v) => updateSettings({ launcherIcon: v })}
-                      options={[
+                    <FormSelectField name="launcherIcon" label="Icon" control={form.control} options={[
                         { value: "chat", label: "Chat Bubble" },
                         { value: "message", label: "Message" },
                         { value: "help", label: "Help" },
                         { value: "support", label: "Support" },
-                      ]}
-                    />
-                    <SelectField
-                      label="Shape"
-                      value={settings.launcherShape}
-                      onChange={(v) => updateSettings({ launcherShape: v })}
-                      options={[
+                      ]} />
+                    <FormSelectField name="launcherShape" label="Shape" control={form.control} options={[
                         { value: "circle", label: "Circle" },
                         { value: "rounded-square", label: "Rounded Square" },
                         { value: "square", label: "Square" },
-                      ]}
-                    />
-                    <ColorPicker
-                      label="Background Color"
-                      value={settings.launcherBackgroundColor || settings.primaryColor}
-                      onChange={(v) => updateSettings({ launcherBackgroundColor: v })}
-                      description="Leave empty to use primary color"
-                    />
-                    <ColorPicker
-                      label="Icon Color"
-                      value={settings.launcherIconColor}
-                      onChange={(v) => updateSettings({ launcherIconColor: v })}
-                    />
+                      ]} />
+                    <FormColorPicker name="launcherBackgroundColor" label="Background Color" control={form.control} description="Leave empty to use primary color" />
+                    <FormColorPicker name="launcherIconColor" label="Icon Color" control={form.control} />
                   </CollapsibleSection>
 
                   <CollapsibleSection title="Tooltip & Animation">
-                    <ToggleField
-                      label="Show Tooltip"
-                      checked={settings.launcherShowTooltip}
-                      onChange={(v) => updateSettings({ launcherShowTooltip: v })}
-                    />
-                    <div>
-                      <Label className="text-sm">Tooltip Text</Label>
-                      <Input
-                        value={settings.launcherTooltip}
-                        onChange={(e) => updateSettings({ launcherTooltip: e.target.value })}
-                        className="mt-1"
-                      />
-                    </div>
-                    <SelectField
-                      label="Animation"
-                      value={settings.launcherAnimation}
-                      onChange={(v) => updateSettings({ launcherAnimation: v })}
-                      options={[
+                    <FormToggleField name="launcherShowTooltip" label="Show Tooltip" control={form.control} />
+                    <FormInput name="launcherTooltip" label="Tooltip Text" control={form.control} />
+                    <FormSelectField name="launcherAnimation" label="Animation" control={form.control} options={[
                         { value: "none", label: "None" },
                         { value: "pulse", label: "Pulse" },
                         { value: "bounce", label: "Bounce" },
                         { value: "shake", label: "Shake" },
                         { value: "glow", label: "Glow" },
-                      ]}
-                    />
+                      ]} />
                   </CollapsibleSection>
 
                   <CollapsibleSection title="Badge">
-                    <ToggleField
-                      label="Show Badge"
-                      checked={settings.launcherShowBadge}
-                      onChange={(v) => updateSettings({ launcherShowBadge: v })}
-                      description="Show unread message count"
-                    />
-                    <ColorPicker
-                      label="Badge Color"
-                      value={settings.launcherBadgeColor}
-                      onChange={(v) => updateSettings({ launcherBadgeColor: v })}
-                    />
+                    <FormToggleField name="launcherShowBadge" label="Show Badge" control={form.control} description="Show unread message count" />
+                    <FormColorPicker name="launcherBadgeColor" label="Badge Color" control={form.control} />
                   </CollapsibleSection>
                 </TabsContent>
 
@@ -698,541 +632,156 @@ export function WidgetTab({ site }: WidgetTabProps) {
                 <TabsContent value="window" className="p-4 space-y-4">
                   <CollapsibleSection title="Size" defaultOpen>
                     <div className="grid grid-cols-2 gap-4">
-                      <NumberField
-                        label="Width"
-                        value={settings.chatWindowWidth}
-                        onChange={(v) => updateSettings({ chatWindowWidth: v })}
-                        min={300}
-                        max={600}
-                        suffix="px"
-                      />
-                      <NumberField
-                        label="Height"
-                        value={settings.chatWindowHeight}
-                        onChange={(v) => updateSettings({ chatWindowHeight: v })}
-                        min={400}
-                        max={800}
-                        suffix="px"
-                      />
+                      <FormNumberField name="chatWindowWidth" label="Width" control={form.control} min={300} max={600} suffix="px" />
+                      <FormNumberField name="chatWindowHeight" label="Height" control={form.control} min={400} max={800} suffix="px" />
                     </div>
                   </CollapsibleSection>
 
                   <CollapsibleSection title="Header">
-                    <div>
-                      <Label className="text-sm">Title</Label>
-                      <Input
-                        value={settings.headerTitle}
-                        onChange={(e) => updateSettings({ headerTitle: e.target.value })}
-                        className="mt-1"
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-sm">Subtitle</Label>
-                      <Input
-                        value={settings.headerSubtitle}
-                        onChange={(e) => updateSettings({ headerSubtitle: e.target.value })}
-                        placeholder="Optional"
-                        className="mt-1"
-                      />
-                    </div>
-                    <ToggleField
-                      label="Show Avatar"
-                      checked={settings.headerShowAvatar}
-                      onChange={(v) => updateSettings({ headerShowAvatar: v })}
-                    />
-                    <div>
-                      <Label className="text-sm">Avatar URL</Label>
-                      <Input
-                        value={settings.headerAvatarUrl}
-                        onChange={(e) => updateSettings({ headerAvatarUrl: e.target.value })}
-                        placeholder="https://..."
-                        className="mt-1"
-                      />
-                    </div>
-                    <ToggleField
-                      label="Show Connection Status"
-                      checked={settings.headerShowStatus}
-                      onChange={(v) => updateSettings({ headerShowStatus: v })}
-                    />
-                    <ToggleField
-                      label="Show Close Button"
-                      checked={settings.headerShowCloseButton}
-                      onChange={(v) => updateSettings({ headerShowCloseButton: v })}
-                    />
-                    <ToggleField
-                      label="Show Minimize Button"
-                      checked={settings.headerShowMinimizeButton}
-                      onChange={(v) => updateSettings({ headerShowMinimizeButton: v })}
-                    />
+                    <FormInput name="headerTitle" label="Title" control={form.control} />
+                    <FormInput name="headerSubtitle" label="Subtitle" placeholder="Optional" control={form.control} />
+                    <FormToggleField name="headerShowAvatar" label="Show Avatar" control={form.control} />
+                    <FormInput name="headerAvatarUrl" label="Avatar URL" placeholder="https://..." control={form.control} />
+                    <FormToggleField name="headerShowStatus" label="Show Connection Status" control={form.control} />
+                    <FormToggleField name="headerShowCloseButton" label="Show Close Button" control={form.control} />
+                    <FormToggleField name="headerShowMinimizeButton" label="Show Minimize Button" control={form.control} />
                   </CollapsibleSection>
 
                   <CollapsibleSection title="Message Bubbles">
                     <div className="space-y-4">
                       <p className="text-sm font-medium">User Messages</p>
                       <div className="grid grid-cols-2 gap-4">
-                        <ColorPicker
-                          label="Background"
-                          value={settings.userBubbleBackgroundColor || settings.primaryColor}
-                          onChange={(v) => updateSettings({ userBubbleBackgroundColor: v })}
-                        />
-                        <ColorPicker
-                          label="Text"
-                          value={settings.userBubbleTextColor}
-                          onChange={(v) => updateSettings({ userBubbleTextColor: v })}
-                        />
+                        <FormColorPicker name="userBubbleBackgroundColor" label="Background" control={form.control} />
+                        <FormColorPicker name="userBubbleTextColor" label="Text" control={form.control} />
                       </div>
                       <p className="text-sm font-medium">Assistant Messages</p>
                       <div className="grid grid-cols-2 gap-4">
-                        <ColorPicker
-                          label="Background"
-                          value={settings.assistantBubbleBackgroundColor}
-                          onChange={(v) => updateSettings({ assistantBubbleBackgroundColor: v })}
-                        />
-                        <ColorPicker
-                          label="Text"
-                          value={settings.assistantBubbleTextColor}
-                          onChange={(v) => updateSettings({ assistantBubbleTextColor: v })}
-                        />
+                        <FormColorPicker name="assistantBubbleBackgroundColor" label="Background" control={form.control} />
+                        <FormColorPicker name="assistantBubbleTextColor" label="Text" control={form.control} />
                       </div>
                     </div>
                   </CollapsibleSection>
 
                   <CollapsibleSection title="Input Area">
-                    <div>
-                      <Label className="text-sm">Placeholder Text</Label>
-                      <Input
-                        value={settings.inputPlaceholder}
-                        onChange={(e) => updateSettings({ inputPlaceholder: e.target.value })}
-                        className="mt-1"
-                      />
-                    </div>
-                    <NumberField
-                      label="Border Radius"
-                      value={settings.inputBorderRadius}
-                      onChange={(v) => updateSettings({ inputBorderRadius: v })}
-                      min={0}
-                      max={32}
-                      suffix="px"
-                    />
+                    <FormInput name="inputPlaceholder" label="Placeholder Text" control={form.control} />
+                    <FormNumberField name="inputBorderRadius" label="Border Radius" control={form.control} min={0} max={32} suffix="px" />
                   </CollapsibleSection>
                 </TabsContent>
 
                 {/* Behavior Tab */}
                 <TabsContent value="behavior" className="p-4 space-y-4">
                   <CollapsibleSection title="Auto-open" defaultOpen>
-                    <ToggleField
-                      label="Enable Auto-open"
-                      checked={settings.autoOpenEnabled}
-                      onChange={(v) => updateSettings({ autoOpenEnabled: v })}
-                      description="Automatically open chat after delay"
-                    />
-                    <NumberField
-                      label="Delay"
-                      value={settings.autoOpenDelay}
-                      onChange={(v) => updateSettings({ autoOpenDelay: v })}
-                      min={0}
-                      max={60000}
-                      step={1000}
-                      suffix="ms"
-                    />
-                    <ToggleField
-                      label="Only Once Per Session"
-                      checked={settings.autoOpenOnlyOnce}
-                      onChange={(v) => updateSettings({ autoOpenOnlyOnce: v })}
-                    />
-                    <ToggleField
-                      label="Auto-open on Mobile"
-                      checked={settings.autoOpenOnMobile}
-                      onChange={(v) => updateSettings({ autoOpenOnMobile: v })}
-                    />
+                    <FormToggleField name="autoOpenEnabled" label="Enable Auto-open" control={form.control} description="Automatically open chat after delay" />
+                    <FormNumberField name="autoOpenDelay" label="Delay" control={form.control} min={0} max={60000} step={1000} suffix="ms" />
+                    <FormToggleField name="autoOpenOnlyOnce" label="Only Once Per Session" control={form.control} />
+                    <FormToggleField name="autoOpenOnMobile" label="Auto-open on Mobile" control={form.control} />
                   </CollapsibleSection>
 
                   <CollapsibleSection title="Features">
-                    <ToggleField
-                      label="Voice Input"
-                      checked={settings.enableVoiceInput}
-                      onChange={(v) => updateSettings({ enableVoiceInput: v })}
-                      description="Enable microphone button"
-                    />
-                    <ToggleField
-                      label="File Attachments"
-                      checked={settings.enableFileAttachments}
-                      onChange={(v) => updateSettings({ enableFileAttachments: v })}
-                      description="Allow users to upload files"
-                    />
-                    <ToggleField
-                      label="Emoji Picker"
-                      checked={settings.enableEmojiPicker}
-                      onChange={(v) => updateSettings({ enableEmojiPicker: v })}
-                    />
-                    <ToggleField
-                      label="Quick Replies"
-                      checked={settings.showQuickReplies}
-                      onChange={(v) => updateSettings({ showQuickReplies: v })}
-                      description="Show suggested responses"
-                    />
+                    <FormToggleField name="enableVoiceInput" label="Voice Input" control={form.control} description="Enable microphone button" />
+                    <FormToggleField name="enableFileAttachments" label="File Attachments" control={form.control} description="Allow users to upload files" />
+                    <FormToggleField name="enableEmojiPicker" label="Emoji Picker" control={form.control} />
+                    <FormToggleField name="showQuickReplies" label="Quick Replies" control={form.control} description="Show suggested responses" />
                   </CollapsibleSection>
 
                   <CollapsibleSection title="Notifications">
-                    <ToggleField
-                      label="Sound Notifications"
-                      checked={settings.enableSoundNotifications}
-                      onChange={(v) => updateSettings({ enableSoundNotifications: v })}
-                      description="Play sound on new messages"
-                    />
+                    <FormToggleField name="enableSoundNotifications" label="Sound Notifications" control={form.control} description="Play sound on new messages" />
                   </CollapsibleSection>
 
                   <CollapsibleSection title="Typing Indicator">
-                    <ToggleField
-                      label="Show Typing Indicator"
-                      checked={settings.showTypingIndicator}
-                      onChange={(v) => updateSettings({ showTypingIndicator: v })}
-                    />
-                    <div>
-                      <Label className="text-sm">Typing Text</Label>
-                      <Input
-                        value={settings.typingIndicatorText}
-                        onChange={(e) => updateSettings({ typingIndicatorText: e.target.value })}
-                        className="mt-1"
-                      />
-                    </div>
+                    <FormToggleField name="showTypingIndicator" label="Show Typing Indicator" control={form.control} />
+                    <FormInput name="typingIndicatorText" label="Typing Text" control={form.control} />
                   </CollapsibleSection>
 
                   <CollapsibleSection title="Persistence">
-                    <ToggleField
-                      label="Persist Conversation"
-                      checked={settings.persistConversation}
-                      onChange={(v) => updateSettings({ persistConversation: v })}
-                      description="Remember chat history between sessions"
-                    />
+                    <FormToggleField name="persistConversation" label="Persist Conversation" control={form.control} description="Remember chat history between sessions" />
                   </CollapsibleSection>
                 </TabsContent>
 
                 {/* Content Tab */}
                 <TabsContent value="content" className="p-4 space-y-4">
                   <CollapsibleSection title="Bot Identity" defaultOpen>
-                    <div>
-                      <Label className="text-sm">Bot Name</Label>
-                      <Input
-                        value={settings.botName}
-                        onChange={(e) => updateSettings({ botName: e.target.value })}
-                        className="mt-1"
-                      />
-                    </div>
+                    <FormInput name="botName" label="Bot Name" control={form.control} />
                   </CollapsibleSection>
 
                   <CollapsibleSection title="Messages">
-                    <div>
-                      <Label className="text-sm">Welcome Message</Label>
-                      <Textarea
-                        value={settings.welcomeMessage}
-                        onChange={(e) => updateSettings({ welcomeMessage: e.target.value })}
-                        className="mt-1"
-                        rows={3}
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-sm">Offline Message</Label>
-                      <Textarea
-                        value={settings.offlineMessage}
-                        onChange={(e) => updateSettings({ offlineMessage: e.target.value })}
-                        className="mt-1"
-                        rows={2}
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-sm">Error Message</Label>
-                      <Textarea
-                        value={settings.errorMessage}
-                        onChange={(e) => updateSettings({ errorMessage: e.target.value })}
-                        className="mt-1"
-                        rows={2}
-                      />
-                    </div>
+                    <FormTextarea name="welcomeMessage" label="Welcome Message" rows={3} control={form.control} />
+                    <FormTextarea name="offlineMessage" label="Offline Message" rows={2} control={form.control} />
+                    <FormTextarea name="errorMessage" label="Error Message" rows={2} control={form.control} />
                   </CollapsibleSection>
 
                   <CollapsibleSection title="Conversation Starters">
-                    <ToggleField
-                      label="Show Conversation Starters"
-                      checked={settings.showConversationStarters}
-                      onChange={(v) => updateSettings({ showConversationStarters: v })}
-                    />
-                    <div>
-                      <Label className="text-sm">Section Title</Label>
-                      <Input
-                        value={settings.startersTitle}
-                        onChange={(e) => updateSettings({ startersTitle: e.target.value })}
-                        className="mt-1"
-                      />
-                    </div>
+                    <FormToggleField name="showConversationStarters" label="Show Conversation Starters" control={form.control} />
+                    <FormInput name="startersTitle" label="Section Title" control={form.control} />
                   </CollapsibleSection>
 
                   <CollapsibleSection title="Branding">
-                    <ToggleField
-                      label="Show Powered By"
-                      checked={settings.showPoweredBy}
-                      onChange={(v) => updateSettings({ showPoweredBy: v })}
-                    />
-                    <div>
-                      <Label className="text-sm">Powered By Text</Label>
-                      <Input
-                        value={settings.poweredByText}
-                        onChange={(e) => updateSettings({ poweredByText: e.target.value })}
-                        className="mt-1"
-                      />
-                    </div>
+                    <FormToggleField name="showPoweredBy" label="Show Powered By" control={form.control} />
+                    <FormInput name="poweredByText" label="Powered By Text" control={form.control} />
                   </CollapsibleSection>
                 </TabsContent>
 
                 {/* Responsive Tab */}
                 <TabsContent value="responsive" className="p-4 space-y-4">
                   <CollapsibleSection title="Breakpoints" defaultOpen>
-                    <NumberField
-                      label="Mobile Breakpoint"
-                      value={settings.mobileBreakpoint}
-                      onChange={(v) => updateSettings({ mobileBreakpoint: v })}
-                      min={320}
-                      max={1024}
-                      suffix="px"
-                      description="Screen width below this is mobile"
-                    />
-                    <NumberField
-                      label="Tablet Breakpoint"
-                      value={settings.tabletBreakpoint}
-                      onChange={(v) => updateSettings({ tabletBreakpoint: v })}
-                      min={768}
-                      max={1440}
-                      suffix="px"
-                      description="Screen width below this is tablet"
-                    />
+                    <FormNumberField name="mobileBreakpoint" label="Mobile Breakpoint" control={form.control} min={320} max={1024} suffix="px" description="Screen width below this is mobile" />
+                    <FormNumberField name="tabletBreakpoint" label="Tablet Breakpoint" control={form.control} min={768} max={1440} suffix="px" description="Screen width below this is tablet" />
                   </CollapsibleSection>
 
                   <CollapsibleSection title="Mobile Settings">
-                    <ToggleField
-                      label="Full Screen on Mobile"
-                      checked={settings.mobileFullScreen}
-                      onChange={(v) => updateSettings({ mobileFullScreen: v })}
-                      description="Chat window fills entire screen"
-                    />
-                    <NumberField
-                      label="Mobile Font Size"
-                      value={settings.mobileFontSize}
-                      onChange={(v) => updateSettings({ mobileFontSize: v })}
-                      min={12}
-                      max={20}
-                      suffix="px"
-                    />
-                    <SelectField
-                      label="Mobile Launcher Size"
-                      value={settings.mobileLauncherSize}
-                      onChange={(v) => updateSettings({ mobileLauncherSize: v })}
-                      options={[
+                    <FormToggleField name="mobileFullScreen" label="Full Screen on Mobile" control={form.control} description="Chat window fills entire screen" />
+                    <FormNumberField name="mobileFontSize" label="Mobile Font Size" control={form.control} min={12} max={20} suffix="px" />
+                    <FormSelectField name="mobileLauncherSize" label="Mobile Launcher Size" control={form.control} options={[
                         { value: "small", label: "Small (48px)" },
                         { value: "medium", label: "Medium (56px)" },
                         { value: "large", label: "Large (64px)" },
-                      ]}
-                    />
+                      ]} />
                   </CollapsibleSection>
 
                   <CollapsibleSection title="Touch Optimization">
-                    <ToggleField
-                      label="Enable Touch Optimizations"
-                      checked={settings.enableTouchOptimizations}
-                      onChange={(v) => updateSettings({ enableTouchOptimizations: v })}
-                      description="Larger touch targets for mobile"
-                    />
+                    <FormToggleField name="enableTouchOptimizations" label="Enable Touch Optimizations" control={form.control} description="Larger touch targets for mobile" />
                   </CollapsibleSection>
                 </TabsContent>
 
                 {/* Advanced Tab */}
                 <TabsContent value="advanced" className="p-4 space-y-4">
                   <CollapsibleSection title="Theme" defaultOpen>
-                    <SelectField
-                      label="Color Theme"
-                      value={settings.theme}
-                      onChange={(v) => updateSettings({ theme: v })}
-                      options={[
+                    <FormSelectField name="theme" label="Color Theme" control={form.control} options={[
                         { value: "light", label: "Light" },
                         { value: "dark", label: "Dark" },
                         { value: "auto", label: "Auto (System)" },
-                      ]}
-                    />
+                      ]} />
                   </CollapsibleSection>
 
                   <CollapsibleSection title="Animations">
-                    <ToggleField
-                      label="Enable Animations"
-                      checked={settings.enableAnimations}
-                      onChange={(v) => updateSettings({ enableAnimations: v })}
-                    />
-                    <NumberField
-                      label="Animation Duration"
-                      value={settings.animationDuration}
-                      onChange={(v) => updateSettings({ animationDuration: v })}
-                      min={0}
-                      max={1000}
-                      step={50}
-                      suffix="ms"
-                    />
+                    <FormToggleField name="enableAnimations" label="Enable Animations" control={form.control} />
+                    <FormNumberField name="animationDuration" label="Animation Duration" control={form.control} min={0} max={1000} step={50} suffix="ms" />
                   </CollapsibleSection>
 
                   <CollapsibleSection title="Accessibility">
-                    <ToggleField
-                      label="High Contrast Mode"
-                      checked={settings.enableHighContrast}
-                      onChange={(v) => updateSettings({ enableHighContrast: v })}
-                    />
-                    <ToggleField
-                      label="Respect Reduced Motion"
-                      checked={settings.respectReducedMotion}
-                      onChange={(v) => updateSettings({ respectReducedMotion: v })}
-                      description="Disable animations for users who prefer reduced motion"
-                    />
-                    <ToggleField
-                      label="Keyboard Navigation"
-                      checked={settings.enableKeyboardNavigation}
-                      onChange={(v) => updateSettings({ enableKeyboardNavigation: v })}
-                    />
+                    <FormToggleField name="enableHighContrast" label="High Contrast Mode" control={form.control} />
+                    <FormToggleField name="respectReducedMotion" label="Respect Reduced Motion" control={form.control} description="Disable animations for users who prefer reduced motion" />
+                    <FormToggleField name="enableKeyboardNavigation" label="Keyboard Navigation" control={form.control} />
                   </CollapsibleSection>
 
                   <CollapsibleSection title="Custom CSS">
-                    <div>
-                      <Label className="text-sm">Custom Styles</Label>
-                      <Textarea
-                        value={settings.customCss}
-                        onChange={(e) => updateSettings({ customCss: e.target.value })}
-                        placeholder=".intelligentconvo-widget { /* your styles */ }"
-                        className="mt-1 font-mono text-sm"
-                        rows={6}
-                      />
-                      <p className="text-xs text-gray-500 mt-1">Advanced: Add custom CSS to override widget styles</p>
-                    </div>
+                    <FormTextarea
+                      name="customCss"
+                      label="Custom Styles"
+                      placeholder=".intelligentconvo-widget { /* your styles */ }"
+                      rows={6}
+                      description="Advanced: Add custom CSS to override widget styles"
+                      control={form.control}
+                    />
                   </CollapsibleSection>
 
                   <CollapsibleSection title="Analytics">
-                    <ToggleField
-                      label="Enable Analytics"
-                      checked={settings.enableAnalytics}
-                      onChange={(v) => updateSettings({ enableAnalytics: v })}
-                      description="Track widget usage and interactions"
-                    />
+                    <FormToggleField name="enableAnalytics" label="Enable Analytics" control={form.control} description="Track widget usage and interactions" />
                   </CollapsibleSection>
                 </TabsContent>
               </Tabs>
             </CardContent>
           </Card>
-        </div>
-
-        {/* Preview Panel */}
-        <div className="xl:col-span-1">
-          <Card className="sticky top-4">
-            <CardHeader>
-              <CardTitle className="text-sm">Live Preview</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div
-                className="relative bg-gray-100 rounded-lg overflow-hidden"
-                style={{ height: "500px" }}
-              >
-                {/* Preview Container */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center text-gray-500 text-sm">
-                    <p className="mb-2">Widget Preview</p>
-                    <p className="text-xs">Changes reflect in real-time</p>
-                  </div>
-                </div>
-
-                {/* Simulated Chat Window */}
-                <div
-                  className="absolute shadow-lg rounded-lg overflow-hidden"
-                  style={{
-                    width: `${Math.min(settings.chatWindowWidth * 0.6, 240)}px`,
-                    height: `${Math.min(settings.chatWindowHeight * 0.6, 360)}px`,
-                    top: "20px",
-                    left: "50%",
-                    transform: "translateX(-50%)",
-                    backgroundColor: settings.backgroundColor,
-                    borderRadius: `${settings.borderRadius}px`,
-                  }}
-                >
-                  {/* Header */}
-                  <div
-                    className="p-3 text-white"
-                    style={{
-                      backgroundColor: settings.primaryColor,
-                      borderTopLeftRadius: `${settings.borderRadius}px`,
-                      borderTopRightRadius: `${settings.borderRadius}px`,
-                    }}
-                  >
-                    <div className="text-sm font-medium">{settings.headerTitle}</div>
-                    {settings.headerSubtitle && (
-                      <div className="text-xs opacity-80">{settings.headerSubtitle}</div>
-                    )}
-                  </div>
-
-                  {/* Messages */}
-                  <div className="p-3 space-y-2 flex-1" style={{ fontSize: `${settings.fontSize * 0.8}px` }}>
-                    {/* Welcome message */}
-                    <div
-                      className="p-2 rounded-lg max-w-[80%]"
-                      style={{
-                        backgroundColor: settings.assistantBubbleBackgroundColor,
-                        color: settings.assistantBubbleTextColor,
-                      }}
-                    >
-                      {settings.welcomeMessage.substring(0, 50)}...
-                    </div>
-
-                    {/* User message */}
-                    <div
-                      className="p-2 rounded-lg max-w-[80%] ml-auto"
-                      style={{
-                        backgroundColor: settings.userBubbleBackgroundColor || settings.primaryColor,
-                        color: settings.userBubbleTextColor,
-                      }}
-                    >
-                      Hello!
-                    </div>
-                  </div>
-
-                  {/* Input */}
-                  <div className="p-2 border-t" style={{ borderColor: settings.borderColor }}>
-                    <div
-                      className="px-3 py-2 text-xs bg-gray-100 rounded-full"
-                      style={{
-                        borderRadius: `${settings.inputBorderRadius}px`,
-                        color: settings.textSecondaryColor,
-                      }}
-                    >
-                      {settings.inputPlaceholder}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Launcher Button */}
-                <div
-                  className={`absolute flex items-center justify-center cursor-pointer ${
-                    settings.launcherPosition.includes('bottom') ? 'bottom-4' : 'top-4'
-                  } ${
-                    settings.launcherPosition.includes('right') ? 'right-4' : 'left-4'
-                  }`}
-                  style={{
-                    width: settings.launcherSize === 'small' ? '32px' : settings.launcherSize === 'large' ? '42px' : '36px',
-                    height: settings.launcherSize === 'small' ? '32px' : settings.launcherSize === 'large' ? '42px' : '36px',
-                    backgroundColor: settings.launcherBackgroundColor || settings.primaryColor,
-                    color: settings.launcherIconColor,
-                    borderRadius: settings.launcherShape === 'circle' ? '50%' : settings.launcherShape === 'rounded-square' ? '8px' : '0',
-                  }}
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2Z"/>
-                  </svg>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
 
       {/* Installation Instructions */}
       <Card>
@@ -1241,30 +790,19 @@ export function WidgetTab({ site }: WidgetTabProps) {
         </CardHeader>
         <CardContent>
           <div>
-            <div className="flex items-center justify-between mb-2">
-              <Label>Embed Code</Label>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => copyToClipboard(embedCode, 'html')}
-              >
-                {copied === 'html' ? (
-                  <Check className="h-4 w-4 mr-2" />
-                ) : (
-                  <Copy className="h-4 w-4 mr-2" />
-                )}
-                {copied === 'html' ? 'Copied!' : 'Copy'}
-              </Button>
-            </div>
-            <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-sm overflow-x-auto">
-              <code>{embedCode}</code>
-            </pre>
-            <p className="text-sm text-gray-600 mt-2">
+            <CodeBlock
+              code={embedCode}
+              language="html"
+              title="Embed Code"
+              showLanguageLabel={true}
+            />
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
               Add this code to your website. The widget will automatically load your saved settings.
             </p>
           </div>
         </CardContent>
       </Card>
-    </div>
+      </form>
+    </Form>
   );
 }

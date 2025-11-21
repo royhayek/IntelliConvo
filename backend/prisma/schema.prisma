@@ -38,6 +38,12 @@ enum ConversationRole {
   ASSISTANT
 }
 
+enum FileStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
 model User {
   id                String            @id @default(uuid())
   email             String            @unique
@@ -56,6 +62,7 @@ model User {
 
   @@index([email])
   @@index([authProvider, authProviderId])
+  @@index([lastLoginAt])
 }
 
 model BillingInfo {
@@ -365,10 +372,14 @@ model WidgetSettings {
   focusRingWidth            Int         @default(2)
 
   // Theme
-  theme                     String      @default("light") // light, dark, auto
-  darkModeBackgroundColor   String      @default("#1e293b")
-  darkModeTextColor         String      @default("#f8fafc")
-  darkModeBorderColor       String      @default("#334155")
+  theme                              String      @default("light") // light, dark, auto
+  darkModePrimaryColor               String      @default("#6366f1")
+  darkModeSecondaryColor             String      @default("#818cf8")
+  darkModeBackgroundColor            String      @default("#1e293b")
+  darkModeSecondaryBackgroundColor   String      @default("#374151")
+  darkModeTextColor                  String      @default("#f1f5f9")
+  darkModeTextSecondaryColor         String      @default("#94a3b8")
+  darkModeBorderColor                String      @default("#475569")
 
   // Custom CSS
   customCss                 String?     @db.Text
@@ -415,6 +426,7 @@ model SiteUrl {
   @@unique([siteId, url])
   @@index([siteId])
   @@index([isActive, isExcluded])
+  @@index([siteId, isActive, isExcluded])
 }
 
 model Embedding {
@@ -468,6 +480,7 @@ model Conversation {
   @@index([siteId])
   @@index([sessionId])
   @@index([startedAt])
+  @@index([siteId, lastMessageAt])
 }
 
 model Message {
@@ -484,6 +497,7 @@ model Message {
 
   @@index([conversationId])
   @@index([timestamp])
+  @@index([conversationId, timestamp])
 }
 
 model KnowledgeFile {
@@ -495,13 +509,15 @@ model KnowledgeFile {
   fileType        String
   fileSize        BigInt
   fileUrl         String
-  processed       Boolean     @default(false)
+  processed       Boolean     @default(false)  // Deprecated: use status instead
+  status          FileStatus  @default(PENDING)
+  errorMessage    String?     // Store error details if processing fails
 
   uploadedAt      DateTime    @default(now())
   processedAt     DateTime?
 
   @@index([siteId])
-  @@index([processed])
+  @@index([status])
 }
 
 model ActiveHost {

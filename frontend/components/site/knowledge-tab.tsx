@@ -2,37 +2,38 @@
 
 import { useState, useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Upload, FileText, Trash2, RefreshCw, AlertCircle, CheckCircle, Clock } from "lucide-react";
+import { FileText, Clock, Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
+import { ProgressBar } from "@/components/ui/progress-bar";
+import { LoadingCard } from "@/components/ui/loading-card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useDropzone } from "react-dropzone";
+import { FileUploadArea } from "@/components/ui/file-upload-area";
+import { KnowledgeFileItem } from "@/components/site/knowledge-file-item";
 import { toast } from "sonner";
 import {
-  useGetApiSitesSiteIdFiles,
-  usePostApiSitesSiteIdFiles,
-  useDeleteApiSitesSiteIdFilesFileId,
-  usePostApiSitesSiteIdFilesFileIdReprocess,
-  getGetApiSitesSiteIdFilesQueryKey,
-} from "@/lib/api/generated/queries/knowledge-files/knowledge-files";
-import { type GetApiSitesSiteId200 } from "@/lib/api/generated/models";
+  useGetApiV1SitesSiteIdFiles,
+  usePostApiV1SitesSiteIdFiles,
+  useDeleteApiV1SitesSiteIdFilesFileId,
+  usePostApiV1SitesSiteIdFilesFileIdReprocess,
+  getGetApiV1SitesSiteIdFilesQueryKey,
+} from "@/lib/api/generated/queries/files/files";
+import { type GetApiV1SitesSiteId200 } from "@/lib/api/generated/models";
 
 interface KnowledgeTabProps {
-  site: GetApiSitesSiteId200;
+  site: GetApiV1SitesSiteId200;
 }
 
 export function KnowledgeTab({ site }: KnowledgeTabProps) {
   const queryClient = useQueryClient();
   const [uploadProgress, setUploadProgress] = useState(0);
 
-  const { data: filesData, isLoading: isLoadingFiles } = useGetApiSitesSiteIdFiles(site.id);
+  const { data: filesData, isLoading: isLoadingFiles } = useGetApiV1SitesSiteIdFiles(site.id);
   const files = filesData?.files;
 
-  const uploadMutation = usePostApiSitesSiteIdFiles({
+  const uploadMutation = usePostApiV1SitesSiteIdFiles({
     mutation: {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: getGetApiSitesSiteIdFilesQueryKey(site.id) });
+        queryClient.invalidateQueries({ queryKey: getGetApiV1SitesSiteIdFilesQueryKey(site.id) });
         toast.success("File uploaded successfully!");
         setUploadProgress(0);
       },
@@ -43,10 +44,10 @@ export function KnowledgeTab({ site }: KnowledgeTabProps) {
     },
   });
 
-  const deleteMutation = useDeleteApiSitesSiteIdFilesFileId({
+  const deleteMutation = useDeleteApiV1SitesSiteIdFilesFileId({
     mutation: {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: getGetApiSitesSiteIdFilesQueryKey(site.id) });
+        queryClient.invalidateQueries({ queryKey: getGetApiV1SitesSiteIdFilesQueryKey(site.id) });
         toast.success("File deleted successfully!");
       },
       onError: (error: any) => {
@@ -55,10 +56,10 @@ export function KnowledgeTab({ site }: KnowledgeTabProps) {
     },
   });
 
-  const reprocessMutation = usePostApiSitesSiteIdFilesFileIdReprocess({
+  const reprocessMutation = usePostApiV1SitesSiteIdFilesFileIdReprocess({
     mutation: {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: getGetApiSitesSiteIdFilesQueryKey(site.id) });
+        queryClient.invalidateQueries({ queryKey: getGetApiV1SitesSiteIdFilesQueryKey(site.id) });
         toast.success("File reprocessing started!");
       },
       onError: (error: any) => {
@@ -87,98 +88,40 @@ export function KnowledgeTab({ site }: KnowledgeTabProps) {
       setUploadProgress(0);
       uploadMutation.mutate({ siteId: site.id, data: { file } });
     }
-  }, [uploadMutation]);
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: {
-      'application/pdf': ['.pdf'],
-      'text/plain': ['.txt'],
-    },
-    maxFiles: 1,
-    multiple: false,
-  });
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'COMPLETED':
-        return <CheckCircle className="h-4 w-4 text-green-600" />;
-      case 'PROCESSING':
-        return <Clock className="h-4 w-4 text-yellow-600 animate-spin" />;
-      case 'FAILED':
-        return <AlertCircle className="h-4 w-4 text-red-600" />;
-      default:
-        return <Clock className="h-4 w-4 text-gray-400" />;
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'COMPLETED':
-        return 'Processed';
-      case 'PROCESSING':
-        return 'Processing...';
-      case 'FAILED':
-        return 'Failed';
-      default:
-        return 'Pending';
-    }
-  };
-
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
+  }, [uploadMutation, site.id]);
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-gray-900">PDFs & Knowledge</h2>
-        <p className="text-gray-600">Upload additional documents to enhance your AI's knowledge</p>
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white">PDFs & Knowledge</h2>
+        <p className="text-gray-600 dark:text-gray-400">Upload additional documents to enhance your AI's knowledge</p>
       </div>
 
       {/* Upload Area */}
       <Card>
         <CardContent className="pt-6">
-          <div
-            {...getRootProps()}
-            className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
-              isDragActive ? "border-indigo-500 bg-indigo-50" : "border-gray-300 hover:border-gray-400"
-            }`}
-          >
-            <input {...getInputProps()} />
-            <div className="h-16 w-16 bg-indigo-100 rounded-2xl mx-auto mb-4 flex items-center justify-center">
-              <Upload className="h-8 w-8 text-indigo-600" />
-            </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              {files && files.length > 0 ? "Upload Another File" : "Upload Your First File"}
-            </h3>
-            <p className="text-gray-600 mb-6 max-w-sm mx-auto">
-              {isDragActive
-                ? "Drop the file here..."
-                : "Drag and drop PDF or TXT files, or click to select (max 10MB)"
-              }
-            </p>
-            <Button
-              type="button"
-              disabled={uploadMutation.isPending}
-              className="bg-indigo-600 hover:bg-indigo-700"
-            >
-              <Upload className="h-4 w-4 mr-2" />
-              {uploadMutation.isPending ? "Uploading..." : "Select File"}
-            </Button>
-          </div>
+          <FileUploadArea
+            onDrop={onDrop}
+            accept={{
+              'application/pdf': ['.pdf'],
+              'text/plain': ['.txt'],
+            }}
+            maxFiles={1}
+            maxSize={10 * 1024 * 1024}
+            isUploading={uploadMutation.isPending}
+            title={files && files.length > 0 ? "Upload Another File" : "Upload Your First File"}
+            description="Drag and drop PDF or TXT files, or click to select"
+          />
 
           {uploadMutation.isPending && (
             <div className="mt-4">
-              <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
-                <span>Uploading...</span>
-                <span>{Math.round(uploadProgress)}%</span>
-              </div>
-              <Progress value={uploadProgress} className="h-2" />
+              <ProgressBar
+                value={uploadProgress}
+                showLabel={true}
+                label="Uploading..."
+                size="md"
+                variant="default"
+              />
             </div>
           )}
         </CardContent>
@@ -186,14 +129,7 @@ export function KnowledgeTab({ site }: KnowledgeTabProps) {
 
       {/* Files List */}
       {isLoadingFiles ? (
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-center py-8">
-              <div className="h-8 w-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-              <span className="ml-3 text-gray-600">Loading files...</span>
-            </div>
-          </CardContent>
-        </Card>
+        <LoadingCard message="Loading files..." />
       ) : files && files.length > 0 ? (
         <Card>
           <CardHeader>
@@ -202,52 +138,25 @@ export function KnowledgeTab({ site }: KnowledgeTabProps) {
           <CardContent>
             <div className="space-y-4">
               {files.map((file) => (
-                <div
+                <KnowledgeFileItem
                   key={file.id}
-                  className="flex items-center justify-between p-4 border border-gray-200 rounded-lg"
-                >
-                  <div className="flex items-center space-x-4">
-                    <div className="h-10 w-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                      <FileText className="h-5 w-5 text-gray-600" />
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-gray-900">{file.originalName}</h4>
-                      <div className="flex items-center space-x-4 text-sm text-gray-500">
-                        <span>{formatFileSize(Number(file.fileSize) || 0)}</span>
-                        <span>•</span>
-                        <span>{file.fileType}</span>
-                        <span>•</span>
-                        <div className="flex items-center space-x-1">
-                          {getStatusIcon(file.embeddingStatus ?? 'PENDING')}
-                          <span>{getStatusText(file.embeddingStatus ?? 'PENDING')}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center space-x-2">
-                    {(file.embeddingStatus as string) === 'FAILED' && file.id && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => reprocessMutation.mutate({ siteId: site.id, fileId: file.id! })}
-                        disabled={reprocessMutation.isPending}
-                      >
-                        <RefreshCw className="h-4 w-4 mr-1" />
-                        Retry
-                      </Button>
-                    )}
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => file.id && deleteMutation.mutate({ siteId: site.id, fileId: file.id })}
-                      disabled={deleteMutation.isPending}
-                      className="text-red-600 hover:text-red-700"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
+                  fileName={file.originalName || "Unknown file"}
+                  fileSize={Number(file.fileSize) || 0}
+                  fileType={file.fileType || "Unknown"}
+                  embeddingStatus={(file.embeddingStatus as any) ?? "PENDING"}
+                  onRetry={
+                    file.id
+                      ? () => reprocessMutation.mutate({ siteId: site.id, fileId: file.id! })
+                      : undefined
+                  }
+                  onDelete={
+                    file.id
+                      ? () => deleteMutation.mutate({ siteId: site.id, fileId: file.id! })
+                      : undefined
+                  }
+                  isRetrying={reprocessMutation.isPending}
+                  isDeleting={deleteMutation.isPending}
+                />
               ))}
             </div>
 
@@ -265,11 +174,11 @@ export function KnowledgeTab({ site }: KnowledgeTabProps) {
         <Card>
           <CardContent className="pt-6">
             <div className="text-center py-8">
-              <div className="h-16 w-16 bg-gray-100 rounded-2xl mx-auto mb-4 flex items-center justify-center">
+              <div className="h-16 w-16 bg-gray-100 dark:bg-slate-700 rounded-2xl mx-auto mb-4 flex items-center justify-center">
                 <FileText className="h-8 w-8 text-gray-400" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Files Uploaded</h3>
-              <p className="text-gray-600">Upload your first file to get started</p>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No Files Uploaded</h3>
+              <p className="text-gray-600 dark:text-gray-400">Upload your first file to get started</p>
             </div>
           </CardContent>
         </Card>

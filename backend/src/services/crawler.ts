@@ -9,6 +9,7 @@ import { prisma } from '../lib/prisma';
 import { CrawlStatus } from '@prisma/client';
 import { generateEmbeddings } from './embeddings';
 import { logger } from '../utils/logger';
+import { htmlToText } from '../utils/textProcessor';
 
 interface CrawlResult {
   url: string;
@@ -404,153 +405,256 @@ async function crawlPage(browser: Browser, url: string, config: CrawlerConfig): 
 }
 
 /**
- * Main crawl function with parallel processing
+ * Initialize crawl: Load site and update status
  */
-export async function crawlWebsite(siteId: string, customConfig?: Partial<CrawlerConfig>): Promise<void> {
+async function initializeCrawl(siteId: string) {
+  const site = await prisma.site.findUnique({
+    where: { id: siteId },
+  });
+
+  if (!site) {
+    throw new Error(`Site ${siteId} not found`);
+  }
+
+  logger.info(`Starting optimized crawl for site ${site.siteUrl}`);
+
+  await prisma.site.update({
+    where: { id: siteId },
+    data: { crawlStatus: CrawlStatus.CRAWLING },
+  });
+
+  return site;
+}
+
+/**
+ * Setup crawl queue: Fetch sitemap or start with base URL
+ */
+async function setupCrawlQueue(baseUrl: string, siteUrl: string) {
+  const toVisit: string[] = [];
+  const visited = new Set<string>();
+
+  // Try to get URLs from sitemap first
+  const sitemapUrls = await fetchSitemapUrls(baseUrl);
+
+  if (sitemapUrls.length > 0) {
+    // Filter and normalize sitemap URLs
+    for (const url of sitemapUrls) {
+      if (isValidUrl(url, siteUrl) && !shouldSkipUrl(url)) {
+        const normalizedUrl = normalizeUrl(url);
+        if (!visited.has(normalizedUrl)) {
+          toVisit.push(normalizedUrl);
+          visited.add(normalizedUrl);
+        }
+      }
+    }
+    visited.clear();
+    logger.info(`Added ${toVisit.length} URLs from sitemap to crawl queue`);
+  } else {
+    // No sitemap, start with base URL
+    toVisit.push(normalizeUrl(baseUrl));
+    logger.info(`No sitemap found, starting crawl from base URL`);
+  }
+
+  return { toVisit, sitemapUrls };
+}
+
+/**
+ * Launch browser with optimized settings
+ */
+async function launchBrowser(): Promise<Browser> {
+  return await puppeteer.launch({
+    headless: true,
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-accelerated-2d-canvas',
+      '--no-first-run',
+      '--disable-gpu',
+    ],
+  });
+}
+
+/**
+ * Process a single URL in the crawl queue
+ */
+async function processCrawlUrl(
+  browser: Browser,
+  url: string,
+  siteId: string,
+  siteUrl: string,
+  config: CrawlerConfig,
+  usingSitemap: boolean,
+  toVisit: string[],
+  visited: Set<string>,
+  failed: string[],
+  processedCount: { count: number }
+): Promise<void> {
+  const normalizedUrl = normalizeUrl(url);
+
+  if (visited.has(normalizedUrl)) {
+    return;
+  }
+
+  visited.add(normalizedUrl);
+
+  // Rate limiting
+  await sleep(config.requestDelay);
+
+  processedCount.count++;
+  logger.debug(`Crawling page ${processedCount.count}/${config.maxPages}: ${normalizedUrl}`);
+
+  const result = await crawlPageWithRetry(browser, normalizedUrl, config);
+
+  if (result) {
+    // Save to database
+    await saveUrlToDatabase(siteId, result);
+
+    // Add discovered links to queue (only if not using sitemap)
+    if (!usingSitemap) {
+      for (const link of result.links) {
+        const normalizedLink = normalizeUrl(link);
+        if (
+          isValidUrl(link, siteUrl) &&
+          !shouldSkipUrl(link) &&
+          !visited.has(normalizedLink) &&
+          !toVisit.includes(normalizedLink)
+        ) {
+          toVisit.push(normalizedLink);
+        }
+      }
+    }
+  } else {
+    failed.push(normalizedUrl);
+  }
+}
+
+/**
+ * Process crawl batches with concurrency control
+ */
+async function processCrawlBatches(
+  browser: Browser,
+  siteId: string,
+  siteUrl: string,
+  toVisit: string[],
+  visited: Set<string>,
+  failed: string[],
+  config: CrawlerConfig,
+  usingSitemap: boolean
+): Promise<void> {
+  const limit = pLimit(config.concurrency);
+  const processedCount = { count: 0 };
+
+  while (toVisit.length > 0 && visited.size < config.maxPages) {
+    // Get batch of URLs to process
+    const batchSize = Math.min(
+      config.concurrency * 2,
+      config.maxPages - visited.size,
+      toVisit.length
+    );
+
+    const batch = toVisit.splice(0, batchSize);
+
+    // Process batch in parallel with concurrency limit
+    const promises = batch.map(url =>
+      limit(() =>
+        processCrawlUrl(
+          browser,
+          url,
+          siteId,
+          siteUrl,
+          config,
+          usingSitemap,
+          toVisit,
+          visited,
+          failed,
+          processedCount
+        )
+      )
+    );
+
+    await Promise.all(promises);
+  }
+}
+
+/**
+ * Finalize crawl: Update status and log results
+ */
+async function finalizeCrawl(
+  siteId: string,
+  siteUrl: string,
+  visited: Set<string>,
+  failed: string[]
+): Promise<void> {
+  await prisma.site.update({
+    where: { id: siteId },
+    data: {
+      crawlStatus: CrawlStatus.COMPLETED,
+      lastCrawledAt: new Date(),
+    },
+  });
+
+  logger.info(
+    `Completed crawl for site ${siteUrl}. Crawled ${visited.size} pages, ${failed.length} failed.`
+  );
+}
+
+/**
+ * Handle crawl error: Update status and log error
+ */
+async function handleCrawlError(siteId: string, error: unknown): Promise<void> {
+  logger.error(`Crawl failed for site ${siteId}:`, error);
+
+  await prisma.site.update({
+    where: { id: siteId },
+    data: { crawlStatus: CrawlStatus.FAILED },
+  });
+}
+
+/**
+ * Main crawl function - orchestrates the crawl process
+ */
+export async function crawlWebsite(
+  siteId: string,
+  customConfig?: Partial<CrawlerConfig>
+): Promise<void> {
   const config = { ...DEFAULT_CONFIG, ...customConfig };
 
   try {
-    const site = await prisma.site.findUnique({
-      where: { id: siteId },
-    });
-
-    if (!site) {
-      throw new Error(`Site ${siteId} not found`);
-    }
-
-    logger.info(`Starting optimized crawl for site ${site.siteUrl} with concurrency ${config.concurrency}`);
-
-    // Update crawl status
-    await prisma.site.update({
-      where: { id: siteId },
-      data: { crawlStatus: CrawlStatus.CRAWLING },
-    });
-
+    // Initialize crawl and load site
+    const site = await initializeCrawl(siteId);
     const baseUrl = `https://${site.siteUrl}`;
+
+    // Setup crawl queue from sitemap or base URL
+    const { toVisit, sitemapUrls } = await setupCrawlQueue(baseUrl, site.siteUrl);
+
+    // Initialize tracking sets
     const visited = new Set<string>();
-    const toVisit: string[] = [];
     const failed: string[] = [];
 
-    // Try to get URLs from sitemap first
-    const sitemapUrls = await fetchSitemapUrls(baseUrl);
-
-    if (sitemapUrls.length > 0) {
-      // Filter and normalize sitemap URLs
-      for (const url of sitemapUrls) {
-        if (isValidUrl(url, site.siteUrl) && !shouldSkipUrl(url)) {
-          const normalizedUrl = normalizeUrl(url);
-          if (!visited.has(normalizedUrl)) {
-            toVisit.push(normalizedUrl);
-            visited.add(normalizedUrl);
-          }
-        }
-      }
-      visited.clear();
-      logger.info(`Added ${toVisit.length} URLs from sitemap to crawl queue`);
-    } else {
-      // No sitemap, start with base URL
-      toVisit.push(normalizeUrl(baseUrl));
-      logger.info(`No sitemap found, starting crawl from base URL`);
-    }
-
-    // Launch browser with optimized settings
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage',
-        '--disable-accelerated-2d-canvas',
-        '--no-first-run',
-        '--disable-gpu',
-      ],
-    });
-
-    // Create concurrency limiter
-    const limit = pLimit(config.concurrency);
+    // Launch browser
+    const browser = await launchBrowser();
 
     try {
-      let processedCount = 0;
-
-      while (toVisit.length > 0 && visited.size < config.maxPages) {
-        // Get batch of URLs to process
-        const batchSize = Math.min(
-          config.concurrency * 2,
-          config.maxPages - visited.size,
-          toVisit.length
-        );
-
-        const batch = toVisit.splice(0, batchSize);
-
-        // Process batch in parallel
-        const promises = batch.map(url => {
-          const normalizedUrl = normalizeUrl(url);
-
-          if (visited.has(normalizedUrl)) {
-            return Promise.resolve(null);
-          }
-
-          visited.add(normalizedUrl);
-
-          return limit(async () => {
-            // Rate limiting
-            await sleep(config.requestDelay);
-
-            processedCount++;
-            logger.debug(`Crawling page ${processedCount}/${config.maxPages}: ${normalizedUrl}`);
-
-            const result = await crawlPageWithRetry(browser, normalizedUrl, config);
-
-            if (result) {
-              // Save to database
-              await saveUrlToDatabase(siteId, result);
-
-              // Add discovered links to queue (only if not from sitemap)
-              if (sitemapUrls.length === 0) {
-                for (const link of result.links) {
-                  const normalizedLink = normalizeUrl(link);
-                  if (
-                    isValidUrl(link, site.siteUrl) &&
-                    !shouldSkipUrl(link) &&
-                    !visited.has(normalizedLink) &&
-                    !toVisit.includes(normalizedLink)
-                  ) {
-                    toVisit.push(normalizedLink);
-                  }
-                }
-              }
-            } else {
-              failed.push(normalizedUrl);
-            }
-
-            return result;
-          });
-        });
-
-        await Promise.all(promises);
-      }
+      // Process all URLs in batches with concurrency control
+      await processCrawlBatches(
+        browser,
+        siteId,
+        site.siteUrl,
+        toVisit,
+        visited,
+        failed,
+        config,
+        sitemapUrls.length > 0
+      );
     } finally {
       await browser.close();
     }
 
-    // Update crawl status
-    await prisma.site.update({
-      where: { id: siteId },
-      data: {
-        crawlStatus: CrawlStatus.COMPLETED,
-        lastCrawledAt: new Date(),
-      },
-    });
-
-    logger.info(`Completed crawl for site ${site.siteUrl}. Crawled ${visited.size} pages, ${failed.length} failed.`);
+    // Finalize crawl and update status
+    await finalizeCrawl(siteId, site.siteUrl, visited, failed);
   } catch (error) {
-    logger.error(`Crawl failed for site ${siteId}:`, error);
-
-    await prisma.site.update({
-      where: { id: siteId },
-      data: { crawlStatus: CrawlStatus.FAILED },
-    });
-
+    await handleCrawlError(siteId, error);
     throw error;
   }
 }
@@ -587,8 +691,9 @@ async function saveUrlToDatabase(siteId: string, result: CrawlResult): Promise<v
         where: { siteUrlId: existingUrl.id },
       });
 
-      // Generate new embeddings
-      await generateEmbeddings(existingUrl.id, result.content);
+      // Generate new embeddings from htmlContent (converted to text)
+      const textContent = htmlToText(result.htmlContent);
+      await generateEmbeddings(existingUrl.id, textContent);
     } else {
       // Just update last crawled time
       await prisma.siteUrl.update({
@@ -610,8 +715,9 @@ async function saveUrlToDatabase(siteId: string, result: CrawlResult): Promise<v
       },
     });
 
-    // Generate embeddings
-    await generateEmbeddings(newUrl.id, result.content);
+    // Generate embeddings from htmlContent (converted to text)
+    const textContent = htmlToText(result.htmlContent);
+    await generateEmbeddings(newUrl.id, textContent);
   }
 }
 

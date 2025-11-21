@@ -1,0 +1,102 @@
+
+> @intelligentconvo/backend@1.0.0 build
+> tsc
+
+src/config/passport.ts(42,16): error TS6133: 'accessToken' is declared but its value is never read.
+src/config/passport.ts(42,29): error TS6133: 'refreshToken' is declared but its value is never read.
+src/config/passport.ts(108,16): error TS6133: 'accessToken' is declared but its value is never read.
+src/config/passport.ts(108,37): error TS6133: 'refreshToken' is declared but its value is never read.
+src/config/swagger.ts(1306,30): error TS6133: 'req' is declared but its value is never read.
+src/index.ts(149,21): error TS6133: 'req' is declared but its value is never read.
+src/index.ts(170,36): error TS6133: 'req' is declared but its value is never read.
+src/middleware/auth.ts(168,27): error TS2769: No overload matches this call.
+  Overload 1 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: null, options?: (SignOptions & { algorithm: "none"; }) | undefined): string', gave the following error.
+    Argument of type 'string' is not assignable to parameter of type 'null'.
+  Overload 2 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: Buffer<ArrayBufferLike> | Secret | JsonWebKeyInput | PrivateKeyInput, options?: SignOptions | undefined): string', gave the following error.
+    Type 'string' is not assignable to type 'number | StringValue | undefined'.
+  Overload 3 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: Buffer<ArrayBufferLike> | Secret | JsonWebKeyInput | PrivateKeyInput, callback: SignCallback): void', gave the following error.
+    Object literal may only specify known properties, and 'expiresIn' does not exist in type 'SignCallback'.
+src/middleware/auth.ts(172,28): error TS2769: No overload matches this call.
+  Overload 1 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: null, options?: (SignOptions & { algorithm: "none"; }) | undefined): string', gave the following error.
+    Argument of type 'string' is not assignable to parameter of type 'null'.
+  Overload 2 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: Buffer<ArrayBufferLike> | Secret | JsonWebKeyInput | PrivateKeyInput, options?: SignOptions | undefined): string', gave the following error.
+    Type 'string' is not assignable to type 'number | StringValue | undefined'.
+  Overload 3 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: Buffer<ArrayBufferLike> | Secret | JsonWebKeyInput | PrivateKeyInput, callback: SignCallback): void', gave the following error.
+    Object literal may only specify known properties, and 'expiresIn' does not exist in type 'SignCallback'.
+src/middleware/errorHandler.ts(24,3): error TS6133: 'next' is declared but its value is never read.
+src/middleware/errorHandler.ts(162,47): error TS6133: 'res' is declared but its value is never read.
+src/middleware/rateLimiter.ts(18,15): error TS6133: 'req' is declared but its value is never read.
+src/middleware/rateLimiter.ts(42,15): error TS6133: 'req' is declared but its value is never read.
+src/middleware/rateLimiter.ts(59,9): error TS6133: 'config' is declared but its value is never read.
+src/middleware/rateLimiter.ts(72,15): error TS6133: 'req' is declared but its value is never read.
+src/routes/account.ts(5,35): error TS6133: 'ErrorCode' is declared but its value is never read.
+src/routes/account.ts(220,15): error TS2554: Expected 3-5 arguments, but got 2.
+src/routes/account.ts(497,31): error TS2345: Argument of type '"Cannot delete account with active subscriptions"' is not assignable to parameter of type 'ErrorCode'.
+src/routes/account.ts(570,13): error TS2554: Expected 3-5 arguments, but got 2.
+src/routes/account.ts(578,13): error TS2554: Expected 3-5 arguments, but got 2.
+src/routes/billing.ts(5,10): error TS6133: 'AppError' is declared but its value is never read.
+src/routes/billing.ts(5,35): error TS6133: 'ValidationError' is declared but its value is never read.
+src/routes/billing.ts(5,52): error TS6133: 'AlreadyExistsError' is declared but its value is never read.
+src/routes/billing.ts(5,72): error TS6133: 'InternalError' is declared but its value is never read.
+src/routes/billing.ts(5,87): error TS6133: 'ErrorCode' is declared but its value is never read.
+src/routes/billing.ts(164,11): error TS2353: Object literal may only specify known properties, and '_count' does not exist in type 'BillingTransactionInclude<DefaultArgs>'.
+src/routes/conversations.ts(5,35): error TS6133: 'ValidationError' is declared but its value is never read.
+src/routes/conversations.ts(5,52): error TS6133: 'AlreadyExistsError' is declared but its value is never read.
+src/routes/conversations.ts(5,72): error TS6133: 'InternalError' is declared but its value is never read.
+src/routes/conversations.ts(5,87): error TS6133: 'ErrorCode' is declared but its value is never read.
+src/routes/conversations.ts(391,9): error TS7034: Variable 'topSites' implicitly has type 'any[]' in some locations where its type cannot be determined.
+src/routes/conversations.ts(440,7): error TS7005: Variable 'topSites' implicitly has an 'any[]' type.
+src/routes/conversations.ts(701,13): error TS2554: Expected 3-5 arguments, but got 2.
+src/routes/files.ts(3,1): error TS6133: 'z' is declared but its value is never read.
+src/routes/files.ts(6,35): error TS6133: 'ValidationError' is declared but its value is never read.
+src/routes/files.ts(6,52): error TS6133: 'AlreadyExistsError' is declared but its value is never read.
+src/routes/files.ts(6,72): error TS6133: 'InternalError' is declared but its value is never read.
+src/routes/files.ts(6,87): error TS6133: 'ErrorCode' is declared but its value is never read.
+src/routes/files.ts(8,1): error TS6133: 'queueCrawl' is declared but its value is never read.
+src/routes/files.ts(19,16): error TS6133: 'req' is declared but its value is never read.
+src/routes/files.ts(25,10): error TS2554: Expected 3-5 arguments, but got 2.
+src/routes/files.ts(249,13): error TS2554: Expected 3-5 arguments, but got 2.
+src/routes/files.ts(271,13): error TS2554: Expected 3-5 arguments, but got 2.
+src/routes/files.ts(555,13): error TS2554: Expected 3-5 arguments, but got 2.
+src/routes/files.ts(600,13): error TS2554: Expected 3-5 arguments, but got 2.
+src/routes/sites.ts(5,35): error TS6133: 'ValidationError' is declared but its value is never read.
+src/routes/sites.ts(5,52): error TS6133: 'AlreadyExistsError' is declared but its value is never read.
+src/routes/sites.ts(5,72): error TS6133: 'InternalError' is declared but its value is never read.
+src/routes/sites.ts(5,87): error TS6133: 'ErrorCode' is declared but its value is never read.
+src/routes/sites.ts(279,13): error TS2554: Expected 3-5 arguments, but got 2.
+src/routes/sites.ts(444,13): error TS2554: Expected 3-5 arguments, but got 2.
+src/routes/sites.ts(864,13): error TS2554: Expected 3-5 arguments, but got 2.
+src/routes/sites.ts(873,13): error TS2554: Expected 3-5 arguments, but got 2.
+src/routes/sites.ts(897,13): error TS2554: Expected 3-5 arguments, but got 2.
+src/routes/sites.ts(1019,15): error TS2554: Expected 3-5 arguments, but got 2.
+src/routes/sites.ts(1027,15): error TS2554: Expected 3-5 arguments, but got 2.
+src/routes/sites.ts(1040,15): error TS2554: Expected 3-5 arguments, but got 2.
+src/routes/sites.ts(1052,13): error TS2554: Expected 3-5 arguments, but got 2.
+src/routes/sites.ts(1150,13): error TS2554: Expected 3-5 arguments, but got 2.
+src/routes/subscriptions.ts(6,35): error TS6133: 'ValidationError' is declared but its value is never read.
+src/routes/subscriptions.ts(6,87): error TS6133: 'ErrorCode' is declared but its value is never read.
+src/routes/subscriptions.ts(16,3): error TS2322: Type '"2024-06-20"' is not assignable to type '"2023-10-16"'.
+src/routes/subscriptions.ts(177,32): error TS7030: Not all code paths return a value.
+src/routes/subscriptions.ts(179,31): error TS6133: 'paymentMethodId' is declared but its value is never read.
+src/routes/subscriptions.ts(416,29): error TS6133: 'req' is declared but its value is never read.
+src/routes/subscriptions.ts(484,54): error TS7030: Not all code paths return a value.
+src/routes/subscriptions.ts(515,13): error TS2554: Expected 3-5 arguments, but got 2.
+src/routes/urls.ts(7,35): error TS6133: 'ValidationError' is declared but its value is never read.
+src/routes/urls.ts(7,52): error TS6133: 'AlreadyExistsError' is declared but its value is never read.
+src/routes/urls.ts(7,72): error TS6133: 'InternalError' is declared but its value is never read.
+src/routes/urls.ts(7,87): error TS6133: 'ErrorCode' is declared but its value is never read.
+src/routes/urls.ts(570,13): error TS2554: Expected 3-5 arguments, but got 2.
+src/routes/webhooks.ts(9,3): error TS2322: Type '"2024-06-20"' is not assignable to type '"2023-10-16"'.
+src/routes/webhooks.ts(13,24): error TS7030: Not all code paths return a value.
+src/routes/widget.ts(3,35): error TS6133: 'ValidationError' is declared but its value is never read.
+src/routes/widget.ts(3,52): error TS6133: 'AlreadyExistsError' is declared but its value is never read.
+src/routes/widget.ts(3,72): error TS6133: 'InternalError' is declared but its value is never read.
+src/routes/widget.ts(3,87): error TS6133: 'ErrorCode' is declared but its value is never read.
+src/routes/widget.ts(175,13): error TS2554: Expected 3-5 arguments, but got 2.
+src/routes/widget.ts(192,15): error TS2554: Expected 3-5 arguments, but got 2.
+src/routes/widget.ts(376,13): error TS2554: Expected 3-5 arguments, but got 2.
+src/routes/widget.ts(508,13): error TS2554: Expected 3-5 arguments, but got 2.
+src/routes/widget.ts(657,13): error TS2554: Expected 3-5 arguments, but got 2.
+src/services/crawler.ts(1,30): error TS6133: 'Page' is declared but its value is never read.
+src/services/fileProcessor.ts(13,3): error TS6133: 'ErrorCode' is declared but its value is never read.
+src/services/fileProcessor.ts(215,18): error TS6133: 'embedding' is declared but its value is never read.

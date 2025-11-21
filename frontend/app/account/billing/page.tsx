@@ -1,37 +1,43 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Download, CreditCard, Calendar, DollarSign, FileText } from "lucide-react";
+import { ArrowLeft, Download, CreditCard, Calendar, DollarSign, FileText, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useAuthStore } from "@/lib/store";
+import { Badge } from "@/components/ui/badge";
 import {
-  useGetApiBillingHistory,
-  useGetApiBillingSummary,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { useRequireAuth } from "@/lib/hooks/useAuth";
+import { AuthLoading } from "@/components/auth/auth-loading";
+import {
+  useGetApiV1BillingHistory,
+  useGetApiV1BillingSummary,
 } from "@/lib/api/generated/queries/billing/billing";
-import { type GetApiBillingHistory200TransactionsItem } from "@/lib/api/generated/models";
+import {
+  type GetApiV1BillingHistory200TransactionsItem,
+  type GetApiV1BillingSummary200ActiveSubscriptionsItem,
+  type GetApiV1BillingSummary200UpcomingChargesItem,
+} from "@/lib/api/generated/models";
 
 export default function BillingHistoryPage() {
-  const router = useRouter();
-  const { user, isAuthenticated } = useAuthStore();
+  // Protected route - redirects to login if not authenticated
+  const { isLoading: isAuthLoading, isAuthenticated, user } = useRequireAuth();
 
-  const { data: billingData, isLoading } = useGetApiBillingHistory(
+  const { data: billingData, isLoading } = useGetApiV1BillingHistory(
     { limit: 50 },
     { query: { enabled: isAuthenticated } }
   );
 
-  const { data: billingSummary } = useGetApiBillingSummary({
+  const { data: billingSummary } = useGetApiV1BillingSummary({
     query: { enabled: isAuthenticated },
   });
-
-  useEffect(() => {
-    if (!isAuthenticated) {
-      router.push("/auth/login");
-    }
-  }, [isAuthenticated, router]);
 
   const handleDownloadInvoice = async (transactionId: string) => {
     // This would need to be implemented via backend endpoint to Stripe
@@ -45,20 +51,37 @@ export default function BillingHistoryPage() {
     }).format(amount);
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusBadge = (status: string) => {
     switch (status) {
       case "paid":
-        return "bg-green-100 text-green-800";
+        return {
+          variant: "default" as const,
+          className: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 border-green-200 dark:border-green-800"
+        };
       case "pending":
-        return "bg-yellow-100 text-yellow-800";
+        return {
+          variant: "secondary" as const,
+          className: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800"
+        };
       case "failed":
-        return "bg-red-100 text-red-800";
+        return {
+          variant: "destructive" as const,
+          className: ""
+        };
       default:
-        return "bg-gray-100 text-gray-800";
+        return {
+          variant: "outline" as const,
+          className: ""
+        };
     }
   };
 
-  if (!isAuthenticated || !user) {
+  // Show loading state while auth is hydrating
+  if (isAuthLoading) {
+    return <AuthLoading message="Loading billing information" />;
+  }
+
+  if (!user) {
     return null;
   }
 
@@ -70,27 +93,27 @@ export default function BillingHistoryPage() {
   const statusCounts = summary.statusCounts || { paid: 0, pending: 0, failed: 0 };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-950">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-white dark:bg-slate-800 shadow-sm border-b dark:border-slate-700">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
               <Link href="/dashboard">
-                <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900">
+                <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Back to Dashboard
                 </Button>
               </Link>
-              <div className="h-6 border-l border-gray-300"></div>
+              <div className="h-6 border-l border-gray-300 dark:border-gray-600"></div>
               <div className="flex items-center space-x-3">
                 <div className="h-8 w-8 rounded-lg bg-indigo-600"></div>
-                <span className="text-xl font-bold text-gray-900">Intelligentconvo</span>
+                <span className="text-xl font-bold text-gray-900 dark:text-white">Intelligentconvo</span>
               </div>
             </div>
 
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">{user.email}</span>
+              <span className="text-sm text-gray-600 dark:text-gray-400">{user.email}</span>
             </div>
           </div>
         </div>
@@ -99,8 +122,8 @@ export default function BillingHistoryPage() {
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-8">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Billing History</h1>
-            <p className="text-gray-600">View your payment history and download invoices</p>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Billing History</h1>
+            <p className="text-gray-600 dark:text-gray-400">View your payment history and download invoices</p>
           </div>
 
           {/* Billing Summary */}
@@ -110,8 +133,8 @@ export default function BillingHistoryPage() {
                 <div className="flex items-center space-x-2">
                   <DollarSign className="h-5 w-5 text-green-600" />
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Total Paid</p>
-                    <p className="text-2xl font-bold text-gray-900">{formatAmount(totalPaid)}</p>
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Paid</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">{formatAmount(totalPaid)}</p>
                   </div>
                 </div>
               </CardContent>
@@ -122,8 +145,8 @@ export default function BillingHistoryPage() {
                 <div className="flex items-center space-x-2">
                   <FileText className="h-5 w-5 text-indigo-600" />
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Total Transactions</p>
-                    <p className="text-2xl font-bold text-gray-900">{summary.totalTransactions}</p>
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Transactions</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">{summary.totalTransactions}</p>
                   </div>
                 </div>
               </CardContent>
@@ -134,9 +157,9 @@ export default function BillingHistoryPage() {
                 <div className="flex items-center space-x-2">
                   <Calendar className="h-5 w-5 text-purple-600" />
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Paid</p>
-                    <p className="text-2xl font-bold text-gray-900">{statusCounts.paid}</p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Paid</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">{statusCounts.paid}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-500">
                       {statusCounts.pending} pending, {statusCounts.failed} failed
                     </p>
                   </div>
@@ -166,27 +189,30 @@ export default function BillingHistoryPage() {
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {billingSummary.activeSubscriptions.map((subscription: any) => (
-                    <div key={subscription.id} className="flex items-center justify-between p-4 border rounded-lg">
+                  {billingSummary.activeSubscriptions.map((subscription: GetApiV1BillingSummary200ActiveSubscriptionsItem) => (
+                    <div key={subscription.id} className="flex items-center justify-between p-4 border dark:border-gray-600 rounded-lg">
                       <div className="flex items-center space-x-3">
-                        <CreditCard className="h-6 w-6 text-gray-400" />
+                        <CreditCard className="h-6 w-6 text-gray-400 dark:text-gray-500" />
                         <div>
-                          <p className="font-medium text-gray-900">
-                            {subscription.site.siteName}
+                          <p className="font-medium text-gray-900 dark:text-white">
+                            {subscription.site?.siteName ?? 'Unknown Site'}
                           </p>
-                          <p className="text-sm text-gray-600">
-                            {subscription.planType.replace('_', ' ')} • {subscription.status}
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            Next billing: {new Date(subscription.currentPeriodEnd).toLocaleDateString()}
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            {subscription.planType?.replace('_', ' ') ?? 'Unknown Plan'}
+                            <span className="mx-1">•</span>
+                            Next billing: {subscription.currentPeriodEnd ? new Date(subscription.currentPeriodEnd).toLocaleDateString() : 'N/A'}
                           </p>
                         </div>
                       </div>
-                      <span className={`px-2 py-1 rounded text-sm ${
-                        subscription.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
-                      }`}>
+                      <Badge
+                        variant={subscription.status === 'ACTIVE' ? 'default' : 'secondary'}
+                        className={subscription.status === 'ACTIVE'
+                          ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 border-green-200 dark:border-green-800'
+                          : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 border-blue-200 dark:border-blue-800'
+                        }
+                      >
                         {subscription.status}
-                      </span>
+                      </Badge>
                     </div>
                   ))}
                 </div>
@@ -197,13 +223,13 @@ export default function BillingHistoryPage() {
                 <div className="mt-6 pt-6 border-t">
                   <h4 className="font-medium text-gray-900 mb-3">Upcoming Charges</h4>
                   <div className="space-y-2">
-                    {billingSummary?.upcomingCharges?.map((charge: any, index: number) => (
+                    {billingSummary?.upcomingCharges?.map((charge: GetApiV1BillingSummary200UpcomingChargesItem, index: number) => (
                       <div key={index} className="flex justify-between items-center text-sm">
                         <span className="text-gray-600">{charge.siteName}</span>
                         <div className="text-right">
-                          <p className="font-medium">{formatAmount(charge.amount)}</p>
+                          <p className="font-medium">{formatAmount(charge.amount ?? 0)}</p>
                           <p className="text-xs text-gray-500">
-                            {new Date(charge.dueDate).toLocaleDateString()}
+                            {charge.dueDate ? new Date(charge.dueDate).toLocaleDateString() : 'N/A'}
                           </p>
                         </div>
                       </div>
@@ -222,7 +248,7 @@ export default function BillingHistoryPage() {
             <CardContent>
               {isLoading ? (
                 <div className="flex items-center justify-center py-8">
-                  <div className="h-6 w-6 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+                  <Loader2 className="h-6 w-6 animate-spin text-indigo-600" />
                 </div>
               ) : transactions.length === 0 ? (
                 <div className="text-center py-8">
@@ -233,49 +259,57 @@ export default function BillingHistoryPage() {
                   </p>
                 </div>
               ) : (
-                <div className="space-y-4">
-                  {transactions.map((transaction: GetApiBillingHistory200TransactionsItem) => (
-                    <div
-                      key={transaction.id}
-                      className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors"
-                    >
-                      <div className="flex items-center space-x-4">
-                        <FileText className="h-5 w-5 text-gray-400" />
-                        <div>
-                          <div className="flex items-center space-x-2">
-                            <p className="font-medium text-gray-900">#{transaction.invoiceId || "N/A"}</p>
-                            <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusColor(transaction.status || "pending")}`}>
-                              {(transaction.status || "pending").charAt(0).toUpperCase() + (transaction.status || "pending").slice(1)}
-                            </span>
-                          </div>
-                          {transaction.site && (
-                            <p className="text-sm text-gray-600">{transaction.site.siteName}</p>
-                          )}
-                          <p className="text-sm text-gray-500">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Invoice</TableHead>
+                      <TableHead>Site</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="text-right">Amount</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {transactions.map((transaction: GetApiV1BillingHistory200TransactionsItem) => {
+                      const statusBadge = getStatusBadge(transaction.status || "pending");
+                      return (
+                        <TableRow key={transaction.id}>
+                          <TableCell className="font-medium">
+                            #{transaction.invoiceId || "N/A"}
+                          </TableCell>
+                          <TableCell>
+                            {transaction.site?.siteName || "-"}
+                          </TableCell>
+                          <TableCell>
                             {transaction.createdAt ? new Date(transaction.createdAt).toLocaleDateString() : "N/A"}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center space-x-4">
-                        <p className="font-semibold text-gray-900">
-                          {formatAmount(transaction.amount ?? 0, transaction.currency || "USD")}
-                        </p>
-                        {transaction.status === "paid" && transaction.id && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleDownloadInvoice(transaction.id!)}
-                            disabled
-                          >
-                            <Download className="h-4 w-4 mr-2" />
-                            Download
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={statusBadge.variant} className={statusBadge.className}>
+                              {(transaction.status || "pending").charAt(0).toUpperCase() + (transaction.status || "pending").slice(1)}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-right font-semibold">
+                            {formatAmount(transaction.amount ?? 0, transaction.currency || "USD")}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {transaction.status === "paid" && transaction.id && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleDownloadInvoice(transaction.id!)}
+                                disabled
+                              >
+                                <Download className="h-4 w-4 mr-2" />
+                                Download
+                              </Button>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
               )}
 
               {/* Pagination */}

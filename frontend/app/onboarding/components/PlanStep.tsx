@@ -2,9 +2,10 @@
 
 import { memo } from "react";
 import { motion } from "framer-motion";
-import { Check, CreditCard } from "lucide-react";
+import { Check, CreditCard, AlertCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Plan, PlanType } from "./types";
 
 interface PlanStepProps {
@@ -36,9 +37,11 @@ export const PlanStep = memo(function PlanStep({
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-red-50 border border-red-200 rounded-lg p-4"
         >
-          <p className="text-sm text-red-800">{error}</p>
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
         </motion.div>
       )}
 
@@ -51,10 +54,10 @@ export const PlanStep = memo(function PlanStep({
             animate={{ opacity: 1, y: 0 }}
             whileHover={{ y: -4 }}
             transition={{ duration: 0.2 }}
-            className={`relative bg-white rounded-2xl shadow-lg border-2 p-8 cursor-pointer transition-all ${
+            className={`relative bg-white dark:bg-slate-800 rounded-2xl shadow-lg border-2 p-8 cursor-pointer transition-all ${
               selectedPlan === plan.id
-                ? "border-indigo-500 ring-4 ring-indigo-100"
-                : "border-gray-200 hover:border-indigo-200"
+                ? "border-indigo-500 ring-4 ring-indigo-100 dark:ring-indigo-900/30"
+                : "border-gray-200 dark:border-gray-600 hover:border-indigo-200 dark:hover:border-indigo-400"
             }`}
             onClick={() => onPlanSelect(plan.id as PlanType)}
           >
@@ -67,30 +70,30 @@ export const PlanStep = memo(function PlanStep({
             )}
 
             <div className="text-center">
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                 {plan.name}
               </h3>
               <div className="mb-4">
-                <span className="text-4xl font-bold text-gray-900">
+                <span className="text-4xl font-bold text-gray-900 dark:text-white">
                   {plan.price}
                 </span>
-                <span className="text-gray-600 ml-2">{plan.period}</span>
+                <span className="text-gray-600 dark:text-gray-400 ml-2">{plan.period}</span>
                 {plan.originalPrice && (
-                  <div className="text-sm text-gray-500">
+                  <div className="text-sm text-gray-500 dark:text-gray-400">
                     <span className="line-through">{plan.originalPrice}</span>
-                    <span className="ml-2 text-green-600 font-medium">
+                    <span className="ml-2 text-green-600 dark:text-green-400 font-medium">
                       {plan.savings}
                     </span>
                   </div>
                 )}
               </div>
-              <p className="text-gray-600 mb-6">{plan.description}</p>
+              <p className="text-gray-600 dark:text-gray-400 mb-6">{plan.description}</p>
 
               <div className="space-y-3 text-left">
                 {plan.features.map((feature, index) => (
                   <div key={index} className="flex items-center space-x-3">
-                    <Check className="h-5 w-5 text-green-600 flex-shrink-0" />
-                    <span className="text-sm text-gray-700">{feature}</span>
+                    <Check className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0" />
+                    <span className="text-sm text-gray-700 dark:text-gray-300">{feature}</span>
                   </div>
                 ))}
               </div>
@@ -133,7 +136,7 @@ export const PlanStep = memo(function PlanStep({
             </>
           )}
         </Button>
-        <p className="text-sm text-gray-600 mt-2">
+        <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
           No credit card required • Cancel anytime
         </p>
       </div>

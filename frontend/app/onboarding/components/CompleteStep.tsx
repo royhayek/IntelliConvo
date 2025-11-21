@@ -26,7 +26,7 @@ export const CompleteStep = memo(function CompleteStep({
       transition={{ duration: 0.3 }}
       className="text-center space-y-8"
     >
-      <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-8">
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
@@ -41,10 +41,10 @@ export const CompleteStep = memo(function CompleteStep({
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
             You're All Set!
           </h2>
-          <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto">
             Congratulations {user?.fullName || "there"}! Your AI assistant is
             now ready to help visitors on {site?.siteName}. Let's explore what
             you can do next.
@@ -56,12 +56,12 @@ export const CompleteStep = memo(function CompleteStep({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-blue-50 rounded-xl p-6"
+            className="bg-blue-50 dark:bg-blue-900/30 rounded-xl p-6"
           >
-            <h4 className="font-semibold text-blue-900 mb-2">
+            <h4 className="font-semibold text-blue-900 dark:text-blue-300 mb-2">
               Customize Widget
             </h4>
-            <p className="text-sm text-blue-700">
+            <p className="text-sm text-blue-700 dark:text-blue-400">
               Style your chat widget to match your brand
             </p>
           </motion.div>
@@ -69,12 +69,12 @@ export const CompleteStep = memo(function CompleteStep({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="bg-purple-50 rounded-xl p-6"
+            className="bg-purple-50 dark:bg-purple-900/30 rounded-xl p-6"
           >
-            <h4 className="font-semibold text-purple-900 mb-2">
+            <h4 className="font-semibold text-purple-900 dark:text-purple-300 mb-2">
               Add Integration
             </h4>
-            <p className="text-sm text-purple-700">
+            <p className="text-sm text-purple-700 dark:text-purple-400">
               Install the widget on your website
             </p>
           </motion.div>
@@ -82,12 +82,12 @@ export const CompleteStep = memo(function CompleteStep({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="bg-green-50 rounded-xl p-6"
+            className="bg-green-50 dark:bg-green-900/30 rounded-xl p-6"
           >
-            <h4 className="font-semibold text-green-900 mb-2">
+            <h4 className="font-semibold text-green-900 dark:text-green-300 mb-2">
               Monitor Analytics
             </h4>
-            <p className="text-sm text-green-700">
+            <p className="text-sm text-green-700 dark:text-green-400">
               Track conversations and performance
             </p>
           </motion.div>
