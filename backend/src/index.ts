@@ -27,6 +27,7 @@ import { initializePassport } from './config/passport';
 import { initializeSocketIO } from './services/socket';
 import { setupQueues } from './queues';
 import { setupSwagger } from './config/swagger';
+import { cacheService, CacheNamespace } from './services/cache';
 import IORedis from 'ioredis';
 import { OpenAI } from 'openai';
 import { Pinecone } from '@pinecone-database/pinecone';
@@ -42,6 +43,8 @@ import accountRoutes from './routes/account';
 import billingRoutes from './routes/billing';
 import webhookRoutes from './routes/webhooks';
 import widgetRoutes from './routes/widget';
+import adminRoutes from './routes/admin';
+import notificationRoutes from './routes/notifications';
 
 // Get validated configuration
 const config = getConfig();
@@ -147,6 +150,8 @@ app.use('/api/v1/billing/subscriptions', subscriptionsRoutes);
 app.use('/api/v1/account', accountRoutes);
 app.use('/api/v1/billing', billingRoutes);
 app.use('/api/v1/widget', widgetRoutes);
+app.use('/api/v1/admin', adminRoutes);
+app.use('/api/v1/notifications', notificationRoutes);
 
 // Backwards compatibility: redirect /api/* to /api/v1/*
 app.use('/api', (req, res, next) => {
@@ -334,13 +339,21 @@ setupQueues();
 // Start server
 const PORT = config.PORT;
 
-httpServer.listen(PORT, () => {
+httpServer.listen(PORT, async () => {
   logger.info('='.repeat(50));
   logger.info(`🚀 Server started successfully`);
   logger.info(`📍 Port: ${PORT}`);
   logger.info(`🌍 Environment: ${config.NODE_ENV}`);
   logger.info(`🔗 Allowed origins: ${allowedOrigins.length}`);
   logger.info('='.repeat(50));
+
+  // Clear stale site cache on startup (one-time cleanup)
+  try {
+    await cacheService.deleteNamespace(CacheNamespace.SITE_CONFIG);
+    logger.info('🧹 Cleared site cache on startup');
+  } catch (error) {
+    logger.warn('Failed to clear site cache on startup:', error);
+  }
 });
 
 // Graceful shutdown

@@ -56,7 +56,7 @@ export function DeleteConfirmationDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="space-y-4 mt-4">
           {(itemName || itemDetails) && (
             <div className="bg-gray-50 dark:bg-slate-800/50 rounded-lg p-3 border border-gray-200 dark:border-slate-700">
               {itemName && (
@@ -81,7 +81,7 @@ export function DeleteConfirmationDialog({
           )}
         </div>
 
-        <DialogFooter className="flex-row space-x-2 justify-end">
+        <DialogFooter className="flex-row space-x-2 justify-end mt-6">
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}

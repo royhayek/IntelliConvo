@@ -167,6 +167,213 @@ export const authTokensSchema = registry.register(
   })
 );
 
+// Message response schema
+export const authMessageResponseSchema = registry.register(
+  'AuthMessageResponse',
+  z.object({
+    message: z.string().openapi({ description: 'Response message' }),
+  }).openapi({
+    description: 'Simple message response',
+  })
+);
+
+// ============================================
+// Path Registrations
+// ============================================
+
+// POST /api/v1/auth/signup
+registry.registerPath({
+  method: 'post',
+  path: '/api/v1/auth/signup',
+  summary: 'Register a new user',
+  tags: ['Authentication'],
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: registerSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    201: {
+      description: 'User registered successfully',
+      content: {
+        'application/json': {
+          schema: authTokensSchema,
+        },
+      },
+    },
+    400: {
+      description: 'Validation error',
+    },
+    409: {
+      description: 'Email already exists',
+    },
+  },
+});
+
+// POST /api/v1/auth/login
+registry.registerPath({
+  method: 'post',
+  path: '/api/v1/auth/login',
+  summary: 'User login',
+  tags: ['Authentication'],
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: loginSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: 'Login successful',
+      content: {
+        'application/json': {
+          schema: authTokensSchema,
+        },
+      },
+    },
+    401: {
+      description: 'Invalid credentials',
+    },
+  },
+});
+
+// GET /api/v1/auth/google
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/auth/google',
+  summary: 'Initiate Google OAuth login',
+  tags: ['Authentication'],
+  responses: {
+    302: {
+      description: 'Redirect to Google OAuth',
+    },
+  },
+});
+
+// GET /api/v1/auth/google/callback
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/auth/google/callback',
+  summary: 'Google OAuth callback',
+  tags: ['Authentication'],
+  request: {
+    query: z.object({
+      code: z.string().optional().openapi({ description: 'OAuth code' }),
+      state: z.string().optional().openapi({ description: 'OAuth state' }),
+    }),
+  },
+  responses: {
+    302: {
+      description: 'Redirect to frontend with tokens',
+    },
+    401: {
+      description: 'OAuth authentication failed',
+    },
+  },
+});
+
+// GET /api/v1/auth/github
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/auth/github',
+  summary: 'Initiate GitHub OAuth login',
+  tags: ['Authentication'],
+  responses: {
+    302: {
+      description: 'Redirect to GitHub OAuth',
+    },
+  },
+});
+
+// GET /api/v1/auth/github/callback
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/auth/github/callback',
+  summary: 'GitHub OAuth callback',
+  tags: ['Authentication'],
+  request: {
+    query: z.object({
+      code: z.string().optional().openapi({ description: 'OAuth code' }),
+      state: z.string().optional().openapi({ description: 'OAuth state' }),
+    }),
+  },
+  responses: {
+    302: {
+      description: 'Redirect to frontend with tokens',
+    },
+    401: {
+      description: 'OAuth authentication failed',
+    },
+  },
+});
+
+// POST /api/v1/auth/refresh
+registry.registerPath({
+  method: 'post',
+  path: '/api/v1/auth/refresh',
+  summary: 'Refresh access token',
+  tags: ['Authentication'],
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: refreshTokenSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: 'Token refreshed successfully',
+      content: {
+        'application/json': {
+          schema: z.object({
+            accessToken: z.string().openapi({ description: 'New access token' }),
+            refreshToken: z.string().openapi({ description: 'New refresh token' }),
+          }),
+        },
+      },
+    },
+    401: {
+      description: 'Invalid refresh token',
+    },
+  },
+});
+
+// POST /api/v1/auth/logout
+registry.registerPath({
+  method: 'post',
+  path: '/api/v1/auth/logout',
+  summary: 'User logout',
+  tags: ['Authentication'],
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: logoutSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: 'Logged out successfully',
+      content: {
+        'application/json': {
+          schema: authMessageResponseSchema,
+        },
+      },
+    },
+  },
+});
+
 // Type exports for TypeScript
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;

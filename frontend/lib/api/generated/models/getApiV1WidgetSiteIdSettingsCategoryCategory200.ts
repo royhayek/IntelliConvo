@@ -2,6 +2,6 @@
 // Do not edit manually
 
 /**
- * Subset of widget settings for the specified category
+ * Category settings
  */
-export type GetApiV1WidgetSiteIdSettingsCategoryCategory200 = { [key: string]: unknown };
+export type GetApiV1WidgetSiteIdSettingsCategoryCategory200 = {[key: string]: unknown | null};

@@ -4,7 +4,7 @@ import type { GetApiV1ConversationsAnalyticsPeriod } from './getApiV1Conversatio
 
 export type GetApiV1ConversationsAnalyticsParams = {
 /**
- * Filter analytics by specific site
+ * Filter analytics by site ID
  */
 siteId?: string;
 /**

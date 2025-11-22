@@ -52,12 +52,22 @@ export default function LoginPage() {
     mutation: {
       onSuccess: (data) => {
         const { user, accessToken, refreshToken } = data;
-        login(user, { accessToken, refreshToken });
+        // Cast user to include isAdmin from backend response
+        const userWithAdmin = user as typeof user & { isAdmin?: boolean };
+        login(userWithAdmin, { accessToken, refreshToken });
 
         // Handle returnTo parameter for post-login redirect
         const params = new URLSearchParams(window.location.search);
-        const returnTo = params.get("returnTo") || "/dashboard";
-        router.push(returnTo);
+        const returnTo = params.get("returnTo");
+
+        // Redirect admin users to admin portal, regular users to dashboard
+        if (returnTo) {
+          router.push(returnTo);
+        } else if (userWithAdmin.isAdmin) {
+          router.push("/admin");
+        } else {
+          router.push("/dashboard");
+        }
       },
     },
   });
@@ -67,7 +77,7 @@ export default function LoginPage() {
   };
 
   const loading = loginMutation.isPending;
-  const error = loginMutation.error?.response?.data?.error ||
+  const error = (loginMutation.error as { response?: { data?: { error?: string } } })?.response?.data?.error ||
     (loginMutation.isError ? "Invalid credentials" : "");
 
   const handleOAuthLogin = (provider: "google" | "github") => {

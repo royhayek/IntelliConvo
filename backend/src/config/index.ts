@@ -39,11 +39,11 @@ const configSchema = z.object({
   GITHUB_CLIENT_ID: z.string().optional(),
   GITHUB_CLIENT_SECRET: z.string().optional(),
 
-  // Stripe (Optional)
+  // Stripe (Optional - uses test/live mode based on key prefix)
   STRIPE_SECRET_KEY: z.string().optional(),
   STRIPE_WEBHOOK_SECRET: z.string().optional(),
-  STRIPE_PREMIUM_MONTHLY_PRICE_ID: z.string().optional(),
-  STRIPE_PREMIUM_ANNUAL_PRICE_ID: z.string().optional(),
+  STRIPE_PRICE_MONTHLY: z.string().optional(),
+  STRIPE_PRICE_ANNUAL: z.string().optional(),
 
   // Rate Limiting
   RATE_LIMIT_WINDOW_MS: z.string().transform(Number).pipe(z.number().int().positive()).default('60000'),
@@ -90,6 +90,13 @@ export function initializeConfig(): Config {
 
     config = result.data;
 
+    // Determine Stripe mode based on API key prefix
+    const stripeMode = config.STRIPE_SECRET_KEY
+      ? config.STRIPE_SECRET_KEY.startsWith('sk_test_')
+        ? 'test'
+        : 'live'
+      : null;
+
     // Log configuration summary (excluding sensitive data)
     logger.info('✅ Configuration validated successfully', {
       nodeEnv: config.NODE_ENV,
@@ -101,6 +108,7 @@ export function initializeConfig(): Config {
       hasGoogleOAuth: !!(config.GOOGLE_CLIENT_ID && config.GOOGLE_CLIENT_SECRET),
       hasGitHubOAuth: !!(config.GITHUB_CLIENT_ID && config.GITHUB_CLIENT_SECRET),
       hasStripe: !!config.STRIPE_SECRET_KEY,
+      stripeMode,
     });
 
     return config;

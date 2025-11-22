@@ -3,11 +3,11 @@
 
 export type GetApiV1AuthGithubCallbackParams = {
 /**
- * OAuth authorization code
+ * OAuth code
  */
-code: string;
+code?: string;
 /**
- * OAuth state parameter
+ * OAuth state
  */
 state?: string;
 };

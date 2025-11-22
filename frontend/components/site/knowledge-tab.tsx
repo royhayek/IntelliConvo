@@ -17,10 +17,10 @@ import {
   usePostApiV1SitesSiteIdFilesFileIdReprocess,
   getGetApiV1SitesSiteIdFilesQueryKey,
 } from "@/lib/api/generated/queries/files/files";
-import { type GetApiV1SitesSiteId200 } from "@/lib/api/generated/models";
+import { type SiteResponse } from "@/lib/api/generated/models";
 
 interface KnowledgeTabProps {
-  site: GetApiV1SitesSiteId200;
+  site: SiteResponse;
 }
 
 export function KnowledgeTab({ site }: KnowledgeTabProps) {

@@ -6,10 +6,10 @@ import { JSDOM } from 'jsdom';
 import { Readability } from '@mozilla/readability';
 import pLimit from 'p-limit';
 import { prisma } from '../lib/prisma';
-import { CrawlStatus } from '@prisma/client';
-import { generateEmbeddings } from './embeddings';
+import { CrawlStatus, UrlEmbeddingStatus } from '@prisma/client';
 import { logger } from '../utils/logger';
-import { htmlToText } from '../utils/textProcessor';
+import { getIO } from './socket';
+import { cacheService, CacheNamespace } from './cache';
 
 interface CrawlResult {
   url: string;
@@ -423,6 +423,16 @@ async function initializeCrawl(siteId: string) {
     data: { crawlStatus: CrawlStatus.CRAWLING },
   });
 
+  // Emit socket event to notify frontend that crawl has started
+  const io = getIO();
+  if (io) {
+    io.to(`site:${siteId}`).emit('crawl-status-update', {
+      siteId,
+      crawlStatus: CrawlStatus.CRAWLING,
+    });
+    logger.debug(`Emitted crawl-status-update (CRAWLING) for site ${siteId}`);
+  }
+
   return site;
 }
 
@@ -579,6 +589,7 @@ async function processCrawlBatches(
 
 /**
  * Finalize crawl: Update status and log results
+ * Sets status to AWAITING_PAYMENT (embeddings will be generated after payment)
  */
 async function finalizeCrawl(
   siteId: string,
@@ -586,17 +597,37 @@ async function finalizeCrawl(
   visited: Set<string>,
   failed: string[]
 ): Promise<void> {
-  await prisma.site.update({
+  const updatedSite = await prisma.site.update({
     where: { id: siteId },
     data: {
-      crawlStatus: CrawlStatus.COMPLETED,
+      crawlStatus: CrawlStatus.AWAITING_PAYMENT,
       lastCrawledAt: new Date(),
+    },
+    include: {
+      _count: {
+        select: { urls: true },
+      },
     },
   });
 
   logger.info(
-    `Completed crawl for site ${siteUrl}. Crawled ${visited.size} pages, ${failed.length} failed.`
+    `Completed crawl for site ${siteUrl}. Crawled ${visited.size} pages, ${failed.length} failed. Awaiting payment for embedding generation.`
   );
+
+  // Invalidate site cache so frontend gets fresh data
+  await cacheService.deleteByPattern(CacheNamespace.SITE_CONFIG, `${siteId}:*`);
+  logger.debug(`Invalidated site cache for ${siteId}`);
+
+  // Emit socket event to notify frontend of crawl completion
+  const io = getIO();
+  if (io) {
+    io.to(`site:${siteId}`).emit('crawl-status-update', {
+      siteId,
+      crawlStatus: CrawlStatus.AWAITING_PAYMENT,
+      urlCount: updatedSite._count.urls,
+    });
+    logger.debug(`Emitted crawl-status-update for site ${siteId}`);
+  }
 }
 
 /**
@@ -609,6 +640,20 @@ async function handleCrawlError(siteId: string, error: unknown): Promise<void> {
     where: { id: siteId },
     data: { crawlStatus: CrawlStatus.FAILED },
   });
+
+  // Invalidate site cache so frontend gets fresh data
+  await cacheService.deleteByPattern(CacheNamespace.SITE_CONFIG, `${siteId}:*`);
+  logger.debug(`Invalidated site cache for ${siteId}`);
+
+  // Emit socket event to notify frontend of crawl failure
+  const io = getIO();
+  if (io) {
+    io.to(`site:${siteId}`).emit('crawl-status-update', {
+      siteId,
+      crawlStatus: CrawlStatus.FAILED,
+    });
+    logger.debug(`Emitted crawl-status-update (FAILED) for site ${siteId}`);
+  }
 }
 
 /**
@@ -660,7 +705,8 @@ export async function crawlWebsite(
 }
 
 /**
- * Save URL result to database
+ * Save URL result to database (scrape only, no embeddings)
+ * Embeddings are generated after payment is confirmed
  */
 async function saveUrlToDatabase(siteId: string, result: CrawlResult): Promise<void> {
   const contentHash = crypto
@@ -683,17 +729,14 @@ async function saveUrlToDatabase(siteId: string, result: CrawlResult): Promise<v
           htmlContent: result.htmlContent,
           contentHash,
           lastCrawledAt: new Date(),
+          embeddingStatus: UrlEmbeddingStatus.SCRAPED, // Reset to scraped, embeddings will be regenerated after payment
         },
       });
 
-      // Delete old embeddings
+      // Delete old embeddings since content changed
       await prisma.embedding.deleteMany({
         where: { siteUrlId: existingUrl.id },
       });
-
-      // Generate new embeddings from htmlContent (converted to text)
-      const textContent = htmlToText(result.htmlContent);
-      await generateEmbeddings(existingUrl.id, textContent);
     } else {
       // Just update last crawled time
       await prisma.siteUrl.update({
@@ -702,8 +745,8 @@ async function saveUrlToDatabase(siteId: string, result: CrawlResult): Promise<v
       });
     }
   } else {
-    // Create new URL
-    const newUrl = await prisma.siteUrl.create({
+    // Create new URL with SCRAPED status (no embeddings yet)
+    await prisma.siteUrl.create({
       data: {
         siteId,
         url: result.url,
@@ -712,12 +755,9 @@ async function saveUrlToDatabase(siteId: string, result: CrawlResult): Promise<v
         htmlContent: result.htmlContent,
         contentHash,
         lastCrawledAt: new Date(),
+        embeddingStatus: UrlEmbeddingStatus.SCRAPED,
       },
     });
-
-    // Generate embeddings from htmlContent (converted to text)
-    const textContent = htmlToText(result.htmlContent);
-    await generateEmbeddings(newUrl.id, textContent);
   }
 }
 

@@ -230,3 +230,133 @@ export async function deleteEmbeddings(siteUrlId: string): Promise<void> {
     throw error;
   }
 }
+
+// Delete embeddings by vector IDs (for direct embedding deletion)
+export async function deleteEmbeddingsByVectorIds(vectorIds: string[]): Promise<void> {
+  if (vectorIds.length === 0) return;
+
+  try {
+    // Delete from Pinecone (if available)
+    if (index) {
+      try {
+        await index.deleteMany(vectorIds);
+        logger.info(`Deleted ${vectorIds.length} vectors from Pinecone`);
+      } catch (error) {
+        logger.warn('Failed to delete from Pinecone:', error);
+      }
+    }
+  } catch (error) {
+    logger.error('Failed to delete embeddings by vector IDs:', error);
+    throw error;
+  }
+}
+
+// Delete all embeddings for a site (bulk operation)
+export async function deleteSiteEmbeddings(siteId: string): Promise<number> {
+  try {
+    // Get all URLs for the site
+    const urls = await prisma.siteUrl.findMany({
+      where: { siteId },
+      select: { id: true },
+    });
+
+    if (urls.length === 0) {
+      return 0;
+    }
+
+    const urlIds = urls.map(u => u.id);
+
+    // Get all embeddings for these URLs
+    const embeddings = await prisma.embedding.findMany({
+      where: { siteUrlId: { in: urlIds } },
+      select: { vectorId: true },
+    });
+
+    if (embeddings.length > 0) {
+      // Delete from Pinecone in batches (Pinecone has limits on batch size)
+      if (index) {
+        const vectorIds = embeddings.map(e => e.vectorId);
+        const batchSize = 1000; // Pinecone recommended batch size
+
+        for (let i = 0; i < vectorIds.length; i += batchSize) {
+          const batch = vectorIds.slice(i, i + batchSize);
+          try {
+            await index.deleteMany(batch);
+          } catch (error) {
+            logger.warn(`Failed to delete batch ${i / batchSize + 1} from Pinecone:`, error);
+          }
+        }
+
+        logger.info(`Deleted ${vectorIds.length} vectors from Pinecone for site ${siteId}`);
+      }
+    }
+
+    return embeddings.length;
+  } catch (error) {
+    logger.error(`Failed to delete site embeddings for ${siteId}:`, error);
+    throw error;
+  }
+}
+
+// Delete embeddings for multiple URLs (bulk operation)
+export async function deleteEmbeddingsForUrls(urlIds: string[]): Promise<number> {
+  if (urlIds.length === 0) return 0;
+
+  try {
+    // Get all embeddings for these URLs
+    const embeddings = await prisma.embedding.findMany({
+      where: { siteUrlId: { in: urlIds } },
+      select: { vectorId: true },
+    });
+
+    if (embeddings.length > 0 && index) {
+      const vectorIds = embeddings.map(e => e.vectorId);
+      const batchSize = 1000;
+
+      for (let i = 0; i < vectorIds.length; i += batchSize) {
+        const batch = vectorIds.slice(i, i + batchSize);
+        try {
+          await index.deleteMany(batch);
+        } catch (error) {
+          logger.warn(`Failed to delete batch from Pinecone:`, error);
+        }
+      }
+
+      logger.info(`Deleted ${vectorIds.length} vectors from Pinecone for ${urlIds.length} URLs`);
+    }
+
+    return embeddings.length;
+  } catch (error) {
+    logger.error('Failed to delete embeddings for URLs:', error);
+    throw error;
+  }
+}
+
+// Delete ALL vectors from Pinecone index (DANGER: This wipes the entire index)
+export async function deleteAllPineconeVectors(): Promise<{ success: boolean; message: string }> {
+  try {
+    if (!pinecone) {
+      return {
+        success: false,
+        message: 'Pinecone is not configured or initialized',
+      };
+    }
+
+    const indexName = process.env.PINECONE_INDEX_NAME || 'intelligentconvo';
+    const targetIndex = pinecone.index(indexName);
+
+    await targetIndex.namespace('').deleteAll();
+
+    const result = await prisma.embedding.deleteMany({});
+
+    logger.warn(`ADMIN ACTION: Deleted all vectors from Pinecone index "${indexName}" and ${result.count} database records`);
+
+    return {
+      success: true,
+      message: `Successfully deleted all vectors from Pinecone index "${indexName}" and ${result.count} records from database`,
+    };
+  } catch (error) {
+    logger.error('Failed to delete all Pinecone vectors:', error);
+    throw error;
+  }
+}

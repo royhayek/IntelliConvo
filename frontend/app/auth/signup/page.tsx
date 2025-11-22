@@ -71,7 +71,7 @@ export default function SignupPage() {
   };
 
   const loading = signupMutation.isPending;
-  const error = signupMutation.error?.response?.data?.error ||
+  const error = (signupMutation.error as { response?: { data?: { error?: string } } })?.response?.data?.error ||
     (signupMutation.isError ? "Failed to create account" : "");
 
   const handleOAuthLogin = (provider: "google" | "github") => {

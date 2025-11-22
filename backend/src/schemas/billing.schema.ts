@@ -115,6 +115,10 @@ export const billingTransactionSchema = registry.register(
     id: z.string().uuid().openapi({ description: 'Transaction ID' }),
     userId: z.string().uuid().openapi({ description: 'User ID' }),
     siteId: z.string().uuid().openapi({ description: 'Site ID' }),
+    site: z.object({
+      id: z.string().uuid().openapi({ description: 'Site ID' }),
+      siteName: z.string().openapi({ description: 'Site name' }),
+    }).optional().openapi({ description: 'Site info' }),
     invoiceId: z.string().openapi({ description: 'Invoice ID' }),
     amount: z.number().openapi({ description: 'Transaction amount', example: 29.99 }),
     currency: z.string().default('USD').openapi({ description: 'Currency code', example: 'USD' }),
@@ -126,6 +130,30 @@ export const billingTransactionSchema = registry.register(
   })
 );
 
+// Active subscription item schema
+const activeSubscriptionItemSchema = z.object({
+  id: z.string().uuid().openapi({ description: 'Subscription ID' }),
+  siteId: z.string().uuid().openapi({ description: 'Site ID' }),
+  siteName: z.string().openapi({ description: 'Site name' }),
+  site: z.object({
+    id: z.string().uuid().openapi({ description: 'Site ID' }),
+    siteName: z.string().openapi({ description: 'Site name' }),
+  }).optional().openapi({ description: 'Site info' }),
+  planType: z.enum(['PREMIUM_MONTHLY', 'PREMIUM_ANNUAL']).openapi({ description: 'Plan type' }),
+  status: z.enum(['TRIAL', 'ACTIVE', 'CANCELLED', 'EXPIRED']).openapi({ description: 'Status' }),
+  currentPeriodEnd: z.string().openapi({ description: 'Current period end' }),
+  amount: z.number().openapi({ description: 'Amount' }),
+});
+
+// Upcoming charge item schema
+const upcomingChargeItemSchema = z.object({
+  siteId: z.string().uuid().openapi({ description: 'Site ID' }),
+  siteName: z.string().openapi({ description: 'Site name' }),
+  amount: z.number().openapi({ description: 'Amount' }),
+  dueDate: z.string().openapi({ description: 'Due date' }),
+  planType: z.enum(['PREMIUM_MONTHLY', 'PREMIUM_ANNUAL']).openapi({ description: 'Plan type' }),
+});
+
 export const billingSummarySchema = registry.register(
   'BillingSummary',
   z.object({
@@ -133,10 +161,119 @@ export const billingSummarySchema = registry.register(
     currentMonthSpent: z.number().openapi({ description: 'Current month spending', example: 29.99 }),
     transactionCount: z.number().int().openapi({ description: 'Total number of transactions', example: 10 }),
     nextBillingDate: z.string().nullable().openapi({ description: 'Next billing date', example: '2024-01-15' }),
+    activeSubscriptions: z.array(activeSubscriptionItemSchema).optional().openapi({ description: 'Active subscriptions' }),
+    upcomingCharges: z.array(upcomingChargeItemSchema).optional().openapi({ description: 'Upcoming charges' }),
   }).openapi({
     description: 'Billing summary statistics',
   })
 );
+
+// Billing history response schema
+export const billingHistoryResponseSchema = registry.register(
+  'BillingHistoryResponse',
+  z.object({
+    transactions: z.array(billingTransactionSchema).openapi({ description: 'List of transactions' }),
+    pagination: z.object({
+      page: z.number().int().openapi({ description: 'Current page' }),
+      limit: z.number().int().openapi({ description: 'Items per page' }),
+      total: z.number().int().openapi({ description: 'Total items' }),
+      totalPages: z.number().int().openapi({ description: 'Total pages' }),
+      pages: z.number().int().optional().openapi({ description: 'Total pages (alias)' }),
+    }).openapi({ description: 'Pagination info' }),
+    summary: z.object({
+      totalAmount: z.number().openapi({ description: 'Total amount' }),
+      totalTransactions: z.number().int().optional().openapi({ description: 'Total transactions' }),
+      statusCounts: z.object({
+        paid: z.number().int().openapi({ description: 'Paid count' }),
+        pending: z.number().int().openapi({ description: 'Pending count' }),
+        failed: z.number().int().openapi({ description: 'Failed count' }),
+      }).openapi({ description: 'Status counts' }),
+    }).openapi({ description: 'Summary statistics' }),
+  }).openapi({
+    description: 'Billing history response',
+  })
+);
+
+// ============================================
+// Path Registrations
+// ============================================
+
+// GET /api/v1/billing/history
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/billing/history',
+  summary: 'Get billing transaction history',
+  tags: ['Billing'],
+  security: [{ bearerAuth: [] }],
+  request: {
+    query: billingHistoryQuerySchema,
+  },
+  responses: {
+    200: {
+      description: 'Billing history retrieved successfully',
+      content: {
+        'application/json': {
+          schema: billingHistoryResponseSchema,
+        },
+      },
+    },
+    401: {
+      description: 'Unauthorized',
+    },
+  },
+});
+
+// GET /api/v1/billing/summary
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/billing/summary',
+  summary: 'Get billing summary',
+  tags: ['Billing'],
+  security: [{ bearerAuth: [] }],
+  responses: {
+    200: {
+      description: 'Billing summary retrieved successfully',
+      content: {
+        'application/json': {
+          schema: billingSummarySchema,
+        },
+      },
+    },
+    401: {
+      description: 'Unauthorized',
+    },
+  },
+});
+
+// GET /api/v1/billing/transactions/{transactionId}
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/billing/transactions/{transactionId}',
+  summary: 'Get transaction details',
+  tags: ['Billing'],
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: transactionParamsSchema,
+  },
+  responses: {
+    200: {
+      description: 'Transaction details retrieved successfully',
+      content: {
+        'application/json': {
+          schema: z.object({
+            transaction: billingTransactionSchema,
+          }),
+        },
+      },
+    },
+    401: {
+      description: 'Unauthorized',
+    },
+    404: {
+      description: 'Transaction not found',
+    },
+  },
+});
 
 // Type exports
 export type BillingHistoryQuery = z.infer<typeof billingHistoryQuerySchema>;

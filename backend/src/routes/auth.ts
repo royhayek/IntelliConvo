@@ -20,11 +20,8 @@ import {
 
 const router = Router();
 
-// Lazy middleware wrapper for auth rate limiter
-const authLimiter = (req: any, res: any, next: any) => {
-  const limiter = createAuthRateLimiter();
-  return limiter(req, res, next);
-};
+// Create rate limiter at module initialization time (not during request handling)
+const authLimiter = createAuthRateLimiter();
 
 // ============================================
 // Email/Password Authentication

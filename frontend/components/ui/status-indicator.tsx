@@ -1,45 +1,41 @@
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import {
+  siteStatusLabels,
+  siteStatusAdminLabels,
+  isSiteProcessing,
+  type CrawlStatus,
+} from "@/lib/utils/status-labels";
 
-type StatusType = "COMPLETED" | "CRAWLING" | "PROCESSING" | "FAILED" | "PENDING" | "active" | "inactive";
+type StatusType = CrawlStatus | "active" | "inactive";
 
 interface StatusIndicatorProps {
-  status: StatusType;
+  status: StatusType | string;
   animated?: boolean;
   showLabel?: boolean;
   size?: "sm" | "md" | "lg";
+  isAdmin?: boolean;
   className?: string;
 }
 
-const statusConfig = {
-  COMPLETED: {
-    color: "bg-green-500 dark:bg-green-400",
-    label: "Completed",
-  },
-  CRAWLING: {
-    color: "bg-yellow-500 dark:bg-yellow-400",
-    label: "In Progress",
-  },
-  PROCESSING: {
-    color: "bg-blue-500 dark:bg-blue-400",
-    label: "Processing",
-  },
-  FAILED: {
-    color: "bg-red-500 dark:bg-red-400",
-    label: "Failed",
-  },
-  PENDING: {
-    color: "bg-gray-400 dark:bg-gray-500",
-    label: "Pending",
-  },
-  active: {
-    color: "bg-green-500 dark:bg-green-400",
-    label: "Active",
-  },
-  inactive: {
-    color: "bg-gray-400 dark:bg-gray-500",
-    label: "Inactive",
-  },
+// Color configuration for each status
+const statusColors: Record<StatusType, string> = {
+  PENDING: "bg-gray-400 dark:bg-gray-500",
+  CRAWLING: "bg-yellow-500 dark:bg-yellow-400",
+  COMPLETED: "bg-green-500 dark:bg-green-400",
+  FAILED: "bg-red-500 dark:bg-red-400",
+  AWAITING_PAYMENT: "bg-amber-500 dark:bg-amber-400",
+  PROCESSING: "bg-indigo-500 dark:bg-indigo-400",
+  READY: "bg-green-500 dark:bg-green-400",
+  PARTIAL: "bg-yellow-500 dark:bg-yellow-400",
+  active: "bg-green-500 dark:bg-green-400",
+  inactive: "bg-gray-400 dark:bg-gray-500",
+};
+
+// Legacy labels for active/inactive
+const legacyLabels = {
+  active: "Active",
+  inactive: "Inactive",
 };
 
 const sizeClasses = {
@@ -53,10 +49,29 @@ export function StatusIndicator({
   animated = false,
   showLabel = true,
   size = "md",
+  isAdmin = false,
   className,
 }: StatusIndicatorProps) {
-  const config = statusConfig[status] || statusConfig.PENDING;
-  const shouldAnimate = animated && (status === "CRAWLING" || status === "PROCESSING");
+  // Handle unknown statuses by falling back to PENDING
+  const knownStatus = status as StatusType;
+  const color = statusColors[knownStatus] || statusColors.PENDING;
+
+  // Get label based on status type and admin mode
+  let label: string;
+  if (status === "active" || status === "inactive") {
+    label = legacyLabels[status];
+  } else {
+    const labels = isAdmin ? siteStatusAdminLabels : siteStatusLabels;
+    label = labels[status as CrawlStatus];
+  }
+
+  // Determine if we should animate (processing states)
+  const isProcessingState =
+    status === "CRAWLING" ||
+    status === "PROCESSING" ||
+    status === "PENDING" ||
+    (typeof status === "string" && isSiteProcessing(status as CrawlStatus));
+  const shouldAnimate = animated && isProcessingState;
 
   const DotComponent = shouldAnimate ? motion.div : "div";
   const dotProps = shouldAnimate
@@ -75,12 +90,12 @@ export function StatusIndicator({
   return (
     <div className={cn("flex items-center space-x-2", className)}>
       <DotComponent
-        className={cn("rounded-full", sizeClasses[size], config.color)}
+        className={cn("rounded-full", sizeClasses[size], color)}
         {...dotProps}
       />
       {showLabel && (
         <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-          {config.label}
+          {label}
         </span>
       )}
     </div>

@@ -17,7 +17,7 @@ import { Globe, CheckCircle, Link as LinkIcon } from "lucide-react";
 import { useRequireAuth } from "@/lib/hooks/useAuth";
 import { AuthLoading } from "@/components/auth/auth-loading";
 import { useGetApiV1Sites } from "@/lib/api/generated/queries/sites/sites";
-import type { GetApiV1Sites200Item } from "@/lib/api/generated/models";
+import type { SiteResponse } from "@/lib/api/generated/models";
 
 export default function DashboardPage() {
   // Protected route - redirects to login if not authenticated

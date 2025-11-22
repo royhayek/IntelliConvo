@@ -83,7 +83,14 @@ Key models and relationships:
 ### Stripe
 - Subscription billing and payments
 - Webhook handling for subscription events
-- Configuration in `src/lib/stripe.ts`
+- **Test/Live Mode**: Automatically detected based on API key prefix
+  - `sk_test_...` = Sandbox mode (no real charges)
+  - `sk_live_...` = Production mode (real charges)
+- **Local Webhook Testing**: Use Stripe CLI
+  ```bash
+  stripe listen --forward-to localhost:5000/api/v1/webhooks/stripe
+  ```
+- **Test Cards**: Use `4242 4242 4242 4242` with any future expiry and CVC
 
 ### BullMQ + Redis
 - Background job processing for:
@@ -105,6 +112,8 @@ Critical environment variables (see `.env.example`):
 - `DATABASE_URL` - PostgreSQL connection string
 - `OPENAI_API_KEY` - Required for AI responses and embeddings
 - `PINECONE_API_KEY`, `PINECONE_INDEX_NAME` - Vector database
-- `REDIS_URL` - For queues and caching
+- `REDIS_HOST`, `REDIS_PORT` - For queues and caching
 - `JWT_SECRET` - For authentication
-- `STRIPE_SECRET_KEY` - For payments (if using billing features)
+- `STRIPE_SECRET_KEY` - For payments (use `sk_test_...` for sandbox, `sk_live_...` for production)
+- `STRIPE_WEBHOOK_SECRET` - For Stripe webhook verification
+- `STRIPE_PRICE_MONTHLY`, `STRIPE_PRICE_ANNUAL` - Stripe price IDs for subscription plans

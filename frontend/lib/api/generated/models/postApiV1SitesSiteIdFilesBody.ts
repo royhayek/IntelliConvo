@@ -2,6 +2,6 @@
 // Do not edit manually
 
 export type PostApiV1SitesSiteIdFilesBody = {
-  /** PDF or TXT file to upload (max 10MB) */
-  file: Blob;
+  /** File to upload */
+  file?: Blob;
 };

@@ -6,10 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { SiteAvatar } from "@/components/site/site-avatar";
 import { StatusIndicator } from "@/components/ui/status-indicator";
-import { type GetApiV1Sites200Item } from "@/lib/api/generated/models";
+import { type SiteResponse } from "@/lib/api/generated/models";
 
 interface SiteCardProps {
-  site: GetApiV1Sites200Item;
+  site: SiteResponse;
   index?: number;
   animated?: boolean;
 }
@@ -43,8 +43,12 @@ export function SiteCard({ site, index = 0, animated = true }: SiteCardProps) {
           </p>
 
           <StatusIndicator
-            status={site.crawlStatus || "PENDING"}
-            animated={site.crawlStatus === "CRAWLING"}
+            status={(site.crawlStatus as string) || "PENDING"}
+            animated={
+              site.crawlStatus === "CRAWLING" ||
+              site.crawlStatus === "PROCESSING" ||
+              site.crawlStatus === "PENDING"
+            }
             showLabel={true}
           />
 
@@ -80,7 +84,7 @@ export function SiteCard({ site, index = 0, animated = true }: SiteCardProps) {
 }
 
 // Helper function to get site status
-function getSiteStatus(site: GetApiV1Sites200Item) {
+function getSiteStatus(site: SiteResponse) {
   if (site.subscription) {
     if (site.subscription.status === "TRIAL") {
       const trialEnd = new Date(site.subscription.trialEndsAt!);

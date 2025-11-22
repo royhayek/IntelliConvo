@@ -4,7 +4,7 @@
  */
 
 import { Request, Response, NextFunction } from 'express';
-import { ZodSchema, ZodError } from 'zod';
+import { ZodSchema, ZodError, ZodType, ZodTypeDef } from 'zod';
 import { ValidationError } from './errors';
 
 /**
@@ -37,10 +37,12 @@ export function validateBody<T>(schema: ZodSchema<T>) {
 
 /**
  * Validate query parameters against a Zod schema
- * @param schema - Zod schema to validate against
+ * @param schema - Zod schema to validate against (supports schemas with input/output type transformations)
  * @returns Express middleware function
  */
-export function validateQuery<T>(schema: ZodSchema<T>) {
+export function validateQuery<TOutput, TDef extends ZodTypeDef = ZodTypeDef, TInput = TOutput>(
+  schema: ZodType<TOutput, TDef, TInput>
+) {
   return (req: Request, res: Response, next: NextFunction): void => {
     try {
       const result = schema.safeParse(req.query);

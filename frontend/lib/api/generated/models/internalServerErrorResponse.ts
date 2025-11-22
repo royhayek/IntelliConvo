@@ -2,6 +2,7 @@
 // Do not edit manually
 
 export type InternalServerErrorResponse = {
-  success?: boolean;
   error?: string;
+  statusCode?: number;
+  timestamp?: string;
 };

@@ -3,6 +3,40 @@ import { prisma } from '../lib/prisma';
 import { streamResponse } from './ai';
 import { logger } from '../utils/logger';
 import { ConversationRole } from '@prisma/client';
+import { adminStatsService } from './admin';
+
+// Store IO instance for broadcasting from other parts of the app
+let ioInstance: Server | null = null;
+
+/**
+ * Helper to serialize objects with BigInt values for JSON transmission
+ * Converts BigInt to number (safe for values < Number.MAX_SAFE_INTEGER)
+ */
+function serializeForJSON<T>(obj: T): T {
+  return JSON.parse(
+    JSON.stringify(obj, (_, value) =>
+      typeof value === 'bigint' ? Number(value) : value
+    )
+  );
+}
+
+export function getIO(): Server | null {
+  return ioInstance;
+}
+
+/**
+ * Broadcast admin stats update to all connected admin clients
+ */
+export async function broadcastAdminStats(): Promise<void> {
+  if (!ioInstance) return;
+
+  try {
+    const stats = await adminStatsService.getDashboardStats();
+    ioInstance.to('admin-dashboard').emit('stats-update', serializeForJSON(stats));
+  } catch (error) {
+    logger.error('Error broadcasting admin stats:', error);
+  }
+}
 
 interface ChatMessage {
   sessionId: string;
@@ -11,13 +45,48 @@ interface ChatMessage {
 }
 
 export function initializeSocketIO(io: Server): void {
+  // Store IO instance for external broadcasts
+  ioInstance = io;
+
   io.on('connection', (socket: Socket) => {
     logger.info(`Socket connected: ${socket.id}`);
+
+    // Admin dashboard room - join when admin connects
+    socket.on('join-admin-dashboard', async () => {
+      socket.join('admin-dashboard');
+      logger.info(`Socket ${socket.id} joined admin dashboard`);
+
+      // Send initial stats
+      try {
+        const stats = await adminStatsService.getDashboardStats();
+        socket.emit('stats-update', serializeForJSON(stats));
+      } catch (error) {
+        logger.error('Error sending initial admin stats:', error);
+      }
+    });
+
+    // Leave admin dashboard room
+    socket.on('leave-admin-dashboard', () => {
+      socket.leave('admin-dashboard');
+      logger.info(`Socket ${socket.id} left admin dashboard`);
+    });
 
     // Join site room
     socket.on('join-site', async (siteId: string) => {
       socket.join(`site:${siteId}`);
       logger.info(`Socket ${socket.id} joined site ${siteId}`);
+    });
+
+    // Join user room for notifications
+    socket.on('join-user', async (userId: string) => {
+      socket.join(`user:${userId}`);
+      logger.info(`Socket ${socket.id} joined user room ${userId}`);
+    });
+
+    // Leave user room
+    socket.on('leave-user', (userId: string) => {
+      socket.leave(`user:${userId}`);
+      logger.info(`Socket ${socket.id} left user room ${userId}`);
     });
 
     // Handle chat messages

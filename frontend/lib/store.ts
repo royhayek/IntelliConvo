@@ -2,8 +2,12 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { SiteResponse, AuthTokensResponseUser } from "./api/generated/models";
 
-// Alias types for easier use
-type User = AuthTokensResponseUser;
+// Extended User type that includes isAdmin (from backend UserDTO)
+// The generated type may not include isAdmin, so we extend it
+export type User = AuthTokensResponseUser & {
+  isAdmin?: boolean;
+};
+
 type Site = SiteResponse;
 
 interface AuthState {

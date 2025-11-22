@@ -3,28 +3,27 @@
 
 export type GetApiV1ConversationsParams = {
 /**
- * Page number
+ * Page number for pagination
  */
-page?: number;
+page?: string;
 /**
- * Items per page
- * @maximum 100
+ * Number of items per page (max 100)
  */
-limit?: number;
+limit?: string;
 /**
- * Search in conversation messages
+ * Search query for conversations
  */
 search?: string;
 /**
- * Filter conversations from this date
+ * Start date filter (ISO 8601 or YYYY-MM-DD)
  */
-startDate?: string;
+startDate?: string | string;
 /**
- * Filter conversations until this date
+ * End date filter (ISO 8601 or YYYY-MM-DD)
  */
-endDate?: string;
+endDate?: string | string;
 /**
- * Filter by specific site
+ * Filter by site ID
  */
 siteId?: string;
 };

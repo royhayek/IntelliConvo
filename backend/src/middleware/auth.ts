@@ -6,6 +6,7 @@ import {
   TokenExpiredError,
   InvalidTokenError,
   NotFoundError,
+  ForbiddenError,
 } from './errors';
 import { getConfig } from '../config';
 import { tokenBlacklist } from '../services/tokenBlacklist';
@@ -24,6 +25,7 @@ declare module 'express-serve-static-core' {
       id: string;
       email: string;
       fullName?: string | null;
+      isAdmin?: boolean;
     };
   }
 }
@@ -79,6 +81,8 @@ export const authenticate = async (
       select: {
         id: true,
         email: true,
+        fullName: true,
+        isAdmin: true,
       },
     });
 
@@ -90,6 +94,8 @@ export const authenticate = async (
     req.user = {
       id: user.id,
       email: user.email,
+      fullName: user.fullName,
+      isAdmin: user.isAdmin,
     };
 
     next();
@@ -196,5 +202,32 @@ export const verifyToken = (token: string): JWTPayload => {
       throw new InvalidTokenError();
     }
     throw new InvalidTokenError('Token verification failed');
+  }
+};
+
+/**
+ * Admin authorization middleware
+ * Requires the user to be authenticated AND have admin privileges
+ * Must be used after the authenticate middleware
+ */
+export const requireAdmin = async (
+  req: Request,
+  _res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    // First ensure user is authenticated
+    if (!req.user) {
+      throw new UnauthorizedError('Authentication required');
+    }
+
+    // Check if user has admin privileges
+    if (!req.user.isAdmin) {
+      throw new ForbiddenError('Admin access required');
+    }
+
+    next();
+  } catch (error) {
+    next(error);
   }
 };

@@ -16,17 +16,40 @@ import {
   SubscriptionPlanDTO,
   CustomerPortalResponse,
 } from '../../dto/subscription.dto';
+import { queueEmbeddingGeneration } from '../../queues';
+import { cacheService, CacheNamespace, CacheTTL } from '../cache';
 
-// Test payment mode configuration
-const TEST_PAYMENT_MODE = process.env.TEST_PAYMENT_MODE === 'true';
+// Plan features mapping - kept locally since Stripe doesn't store rich feature lists
+const PLAN_FEATURES: Record<string, string[]> = {
+  PREMIUM_MONTHLY: [
+    'Unlimited conversations',
+    'Advanced analytics',
+    'Custom branding',
+    'Priority support',
+    'API access',
+  ],
+  PREMIUM_ANNUAL: [
+    'Unlimited conversations',
+    'Advanced analytics',
+    'Custom branding',
+    'Priority support',
+    'API access',
+    '2 months free',
+  ],
+};
 
-// Initialize Stripe only if not in test mode
-const stripe = TEST_PAYMENT_MODE ? null : new Stripe(process.env.STRIPE_SECRET_KEY!, {
+// Initialize Stripe - use test keys (sk_test_...) for sandbox environment
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2023-10-16',
 });
 
-if (TEST_PAYMENT_MODE) {
-  logger.info('⚠️  TEST PAYMENT MODE ENABLED - Stripe payments are bypassed');
+// Detect if running in Stripe test mode based on the API key
+const isStripeTestMode = process.env.STRIPE_SECRET_KEY?.startsWith('sk_test_') ?? false;
+
+if (isStripeTestMode) {
+  logger.info('🧪 Stripe running in TEST MODE - using sandbox environment');
+} else {
+  logger.info('💳 Stripe running in LIVE MODE');
 }
 
 /**
@@ -105,12 +128,7 @@ export class SubscriptionService {
       throw new AlreadyExistsError('Subscription', 'site');
     }
 
-    // TEST PAYMENT MODE: Bypass Stripe and create subscription directly
-    if (TEST_PAYMENT_MODE) {
-      return this.createTestSubscription(userId, siteId, planType);
-    }
-
-    // PRODUCTION MODE: Use Stripe
+    // Create subscription via Stripe (uses test or live mode based on API key)
     return this.createStripeSubscription(userId, siteId, planType);
   }
 
@@ -133,17 +151,13 @@ export class SubscriptionService {
       throw new NotFoundError('Subscription', subscriptionId);
     }
 
-    // Cancel in Stripe (skip if test mode or no Stripe subscription ID)
-    if (
-      !TEST_PAYMENT_MODE &&
-      stripe &&
-      subscription.stripeSubscriptionId &&
-      !subscription.stripeSubscriptionId.startsWith('test_')
-    ) {
+    // Cancel in Stripe if we have a valid Stripe subscription ID
+    if (subscription.stripeSubscriptionId) {
       try {
         await stripe.subscriptions.update(subscription.stripeSubscriptionId, {
           cancel_at_period_end: true,
         });
+        logger.info(`Cancelled Stripe subscription: ${subscription.stripeSubscriptionId}`);
       } catch (error) {
         logger.error('Failed to cancel Stripe subscription:', error);
         // Continue with database update even if Stripe fails
@@ -163,41 +177,130 @@ export class SubscriptionService {
   }
 
   /**
-   * Get available subscription plans
+   * Get available subscription plans from Stripe
+   * Fetches prices from Stripe API and caches them for performance
    * @returns List of available plans
    */
-  getAvailablePlans(): SubscriptionPlanDTO[] {
+  async getAvailablePlans(): Promise<SubscriptionPlanDTO[]> {
+    const cacheKey = 'available';
+
+    // Try to get from cache first using getOrSet pattern
+    const plans = await cacheService.getOrSet<SubscriptionPlanDTO[]>(
+      CacheNamespace.SUBSCRIPTION_PLANS,
+      cacheKey,
+      async () => {
+        return this.fetchPlansFromStripe();
+      },
+      CacheTTL.LONG // Cache for 1 hour
+    );
+
+    return plans || this.getFallbackPlans();
+  }
+
+  /**
+   * Fetch plans directly from Stripe API
+   * @returns List of plans from Stripe
+   */
+  private async fetchPlansFromStripe(): Promise<SubscriptionPlanDTO[]> {
+    const priceIds = [
+      process.env.STRIPE_PRICE_MONTHLY,
+      process.env.STRIPE_PRICE_ANNUAL,
+    ].filter(Boolean) as string[];
+
+    if (priceIds.length === 0) {
+      logger.warn('No Stripe price IDs configured, using fallback plans');
+      return this.getFallbackPlans();
+    }
+
+    try {
+      // Fetch prices with their associated products
+      const prices = await Promise.all(
+        priceIds.map((priceId) =>
+          stripe.prices.retrieve(priceId, { expand: ['product'] })
+        )
+      );
+
+      const plans: SubscriptionPlanDTO[] = prices
+        .filter((price) => price.active)
+        .map((price) => {
+          const product = price.product as Stripe.Product;
+          const planType = this.getPlanTypeFromPrice(price);
+          // Convert Stripe's 'month'/'year' to 'monthly'/'annual'
+          const interval: 'monthly' | 'annual' = price.recurring?.interval === 'year' ? 'annual' : 'monthly';
+
+          return {
+            id: planType,
+            name: product.name,
+            description: product.description || this.getDefaultDescription(planType),
+            price: (price.unit_amount || 0) / 100, // Convert cents to dollars
+            interval,
+            features: PLAN_FEATURES[planType] || [],
+          };
+        });
+
+      logger.info(`Fetched ${plans.length} plans from Stripe`);
+      return plans;
+    } catch (error) {
+      logger.error('Failed to fetch plans from Stripe:', error);
+      return this.getFallbackPlans();
+    }
+  }
+
+  /**
+   * Determine plan type from Stripe price
+   */
+  private getPlanTypeFromPrice(price: Stripe.Price): string {
+    if (price.id === process.env.STRIPE_PRICE_MONTHLY) {
+      return 'PREMIUM_MONTHLY';
+    }
+    if (price.id === process.env.STRIPE_PRICE_ANNUAL) {
+      return 'PREMIUM_ANNUAL';
+    }
+    // Fallback based on interval
+    return price.recurring?.interval === 'year' ? 'PREMIUM_ANNUAL' : 'PREMIUM_MONTHLY';
+  }
+
+  /**
+   * Get default description for a plan type
+   */
+  private getDefaultDescription(planType: string): string {
+    if (planType === 'PREMIUM_ANNUAL') {
+      return 'Full access to all features, billed annually (save 20%)';
+    }
+    return 'Full access to all features, billed monthly';
+  }
+
+  /**
+   * Fallback plans if Stripe fetch fails
+   * Ensures the API never fails completely
+   */
+  private getFallbackPlans(): SubscriptionPlanDTO[] {
     return [
       {
         id: 'PREMIUM_MONTHLY',
         name: 'Premium Monthly',
         description: 'Full access to all features, billed monthly',
         price: 29,
-        interval: 'month',
-        features: [
-          'Unlimited conversations',
-          'Advanced analytics',
-          'Custom branding',
-          'Priority support',
-          'API access',
-        ],
+        interval: 'monthly',
+        features: PLAN_FEATURES['PREMIUM_MONTHLY'],
       },
       {
         id: 'PREMIUM_ANNUAL',
         name: 'Premium Annual',
         description: 'Full access to all features, billed annually (save 20%)',
         price: 279,
-        interval: 'year',
-        features: [
-          'Unlimited conversations',
-          'Advanced analytics',
-          'Custom branding',
-          'Priority support',
-          'API access',
-          '2 months free',
-        ],
+        interval: 'annual',
+        features: PLAN_FEATURES['PREMIUM_ANNUAL'],
       },
     ];
+  }
+
+  /**
+   * Invalidate plans cache (call when plans are updated in Stripe)
+   */
+  async invalidatePlansCache(): Promise<void> {
+    await cacheService.delete(CacheNamespace.SUBSCRIPTION_PLANS, 'available');
+    logger.info('Subscription plans cache invalidated');
   }
 
   /**
@@ -217,17 +320,6 @@ export class SubscriptionService {
 
     if (!subscription || subscription.userId !== userId) {
       throw new NotFoundError('Subscription', subscriptionId);
-    }
-
-    // In test mode, return a mock portal URL
-    if (TEST_PAYMENT_MODE) {
-      return {
-        url: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/account/subscriptions?testPortal=true`,
-      };
-    }
-
-    if (!stripe) {
-      throw new InternalError('Stripe is not configured');
     }
 
     // Get user's billing info for Stripe customer ID
@@ -254,47 +346,14 @@ export class SubscriptionService {
   // ============================================
 
   /**
-   * Create a test subscription (bypassing Stripe)
-   */
-  private async createTestSubscription(
-    userId: string,
-    siteId: string,
-    planType: string
-  ): Promise<CreateSubscriptionResponse> {
-    logger.info(`[TEST MODE] Creating subscription for site ${siteId} without Stripe`);
-
-    const subscription = await prisma.subscription.create({
-      data: {
-        userId,
-        siteId,
-        planType: planType as any,
-        status: 'ACTIVE', // Directly active in test mode
-        trialEndsAt: null,
-        currentPeriodStart: new Date(),
-        currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
-        stripeSubscriptionId: `test_sub_${Date.now()}`,
-        stripePriceId: `test_price_${planType.toLowerCase()}`,
-      },
-    });
-
-    return {
-      subscription: this.mapSubscriptionToDTO(subscription),
-      clientSecret: null,
-      testMode: true,
-    };
-  }
-
-  /**
-   * Create a Stripe subscription
+   * Create a Stripe Checkout Session for subscription
+   * Uses Stripe's hosted checkout page for payment collection
    */
   private async createStripeSubscription(
     userId: string,
     siteId: string,
     planType: string
   ): Promise<CreateSubscriptionResponse> {
-    if (!stripe) {
-      throw new InternalError('Stripe is not configured');
-    }
 
     // Get or create Stripe customer
     const customer = await this.getOrCreateStripeCustomer(userId);
@@ -309,34 +368,42 @@ export class SubscriptionService {
       throw new InternalError('Stripe price ID not configured');
     }
 
-    // Create Stripe subscription
-    const stripeSubscription = await stripe.subscriptions.create({
-      customer: customer.id,
-      items: [{ price: priceId }],
-      payment_behavior: 'default_incomplete',
-      payment_settings: { save_default_payment_method: 'on_subscription' },
-      trial_period_days: 14,
-      expand: ['latest_invoice.payment_intent'],
-    });
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
 
-    // Create subscription in database
-    const subscription = await prisma.subscription.create({
-      data: {
+    // Create Stripe Checkout Session
+    const session = await stripe.checkout.sessions.create({
+      customer: customer.id,
+      mode: 'subscription',
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price: priceId,
+          quantity: 1,
+        },
+      ],
+      success_url: `${frontendUrl}/onboarding?step=complete&siteId=${siteId}&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${frontendUrl}/onboarding?step=plan&siteId=${siteId}&canceled=true`,
+      metadata: {
         userId,
         siteId,
-        planType: planType as any,
-        status: 'TRIAL',
-        trialEndsAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 days
-        currentPeriodStart: new Date(),
-        currentPeriodEnd: new Date(stripeSubscription.current_period_end * 1000),
-        stripeSubscriptionId: stripeSubscription.id,
-        stripePriceId: priceId,
+        planType,
+      },
+      subscription_data: {
+        metadata: {
+          userId,
+          siteId,
+          planType,
+        },
       },
     });
 
+    logger.info(`Created Stripe Checkout Session ${session.id} for user ${userId}, site ${siteId}`);
+
+    // Return checkout URL - subscription will be created by webhook after payment
     return {
-      subscription: this.mapSubscriptionToDTO(subscription),
-      clientSecret: (stripeSubscription.latest_invoice as any)?.payment_intent?.client_secret,
+      subscription: null as any, // Will be created after payment via webhook
+      checkoutUrl: session.url,
+      testMode: isStripeTestMode,
     };
   }
 
@@ -344,10 +411,6 @@ export class SubscriptionService {
    * Get or create Stripe customer
    */
   private async getOrCreateStripeCustomer(userId: string): Promise<Stripe.Customer> {
-    if (!stripe) {
-      throw new InternalError('Stripe is not configured');
-    }
-
     const user = await prisma.user.findUnique({
       where: { id: userId },
       include: { billingInfo: true },

@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { RotateCcw } from "lucide-react";
+import { io, Socket } from "socket.io-client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { SectionHeader } from "@/components/ui/section-header";
@@ -9,10 +10,15 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { ChatInterface, type ChatMessage } from "@/components/ui/chat-interface";
 import { SuggestedQuestions } from "@/components/playground/suggested-questions";
 import { AssistantInfoCard } from "@/components/playground/assistant-info-card";
-import { type GetApiV1SitesSiteId200 } from "@/lib/api/generated/models";
+import { type SiteResponse } from "@/lib/api/generated/models";
 
 interface PlaygroundTabProps {
-  site: GetApiV1SitesSiteId200;
+  site: SiteResponse;
+}
+
+// Generate a unique session ID for the playground
+function generateSessionId(): string {
+  return `playground-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 }
 
 export function PlaygroundTab({ site }: PlaygroundTabProps) {
@@ -26,8 +32,125 @@ export function PlaygroundTab({ site }: PlaygroundTabProps) {
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const [showResetDialog, setShowResetDialog] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
 
-  const handleSendMessage = async (content: string) => {
+  const socketRef = useRef<Socket | null>(null);
+  const sessionIdRef = useRef<string>(generateSessionId());
+  const streamingMessageRef = useRef<string>('');
+
+  // Initialize socket connection
+  useEffect(() => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    const token = localStorage.getItem("accessToken");
+
+    socketRef.current = io(apiUrl, {
+      auth: { token },
+      transports: ["websocket", "polling"],
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+    });
+
+    socketRef.current.on("connect", () => {
+      setIsConnected(true);
+      // Join the site room
+      socketRef.current?.emit("join-site", site.id);
+    });
+
+    socketRef.current.on("disconnect", () => {
+      setIsConnected(false);
+    });
+
+    // Handle streaming response chunks
+    socketRef.current.on("stream", (data: { chunk: string }) => {
+      streamingMessageRef.current += data.chunk;
+
+      // Update the last message with streaming content
+      setMessages(prev => {
+        const lastMessage = prev[prev.length - 1];
+        if (lastMessage && lastMessage.role === 'assistant' && lastMessage.id.startsWith('streaming-')) {
+          return [
+            ...prev.slice(0, -1),
+            { ...lastMessage, content: streamingMessageRef.current }
+          ];
+        }
+        return prev;
+      });
+    });
+
+    // Handle complete response
+    socketRef.current.on("response", (data: { content: string; tokensUsed?: number }) => {
+      setIsLoading(false);
+      streamingMessageRef.current = '';
+
+      // Finalize the streaming message
+      setMessages(prev => {
+        const lastMessage = prev[prev.length - 1];
+        if (lastMessage && lastMessage.role === 'assistant' && lastMessage.id.startsWith('streaming-')) {
+          return [
+            ...prev.slice(0, -1),
+            {
+              ...lastMessage,
+              id: Date.now().toString(), // Replace streaming ID with permanent ID
+              content: data.content
+            }
+          ];
+        }
+        return prev;
+      });
+    });
+
+    // Handle typing indicator
+    socketRef.current.on("typing", (data: { isTyping: boolean }) => {
+      if (data.isTyping) {
+        setIsLoading(true);
+      }
+    });
+
+    // Handle errors
+    socketRef.current.on("error", (data: { message: string }) => {
+      setIsLoading(false);
+      streamingMessageRef.current = '';
+
+      const errorMessage: ChatMessage = {
+        id: Date.now().toString(),
+        content: data.message || "Sorry, an error occurred. Please try again.",
+        role: 'assistant',
+        timestamp: new Date()
+      };
+
+      setMessages(prev => {
+        // Remove any streaming message and add error
+        const filtered = prev.filter(m => !m.id.startsWith('streaming-'));
+        return [...filtered, errorMessage];
+      });
+    });
+
+    socketRef.current.on("connect_error", (error) => {
+      console.error("Socket connection error:", error);
+    });
+
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
+    };
+  }, [site.id]);
+
+  const handleSendMessage = useCallback(async (content: string) => {
+    if (!socketRef.current || !isConnected) {
+      // Fallback message if not connected
+      const errorMessage: ChatMessage = {
+        id: Date.now().toString(),
+        content: "Unable to connect to the chat server. Please refresh the page and try again.",
+        role: 'assistant',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, errorMessage]);
+      return;
+    }
+
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
       content,
@@ -35,55 +158,33 @@ export function PlaygroundTab({ site }: PlaygroundTabProps) {
       timestamp: new Date()
     };
 
+    // Add user message
     setMessages(prev => [...prev, userMessage]);
     setIsLoading(true);
+    streamingMessageRef.current = '';
 
-    try {
-      // TODO: Replace with actual API call to conversation endpoint
-      const response = await fetch(`/api/sites/${site.id}/chat`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-        },
-        body: JSON.stringify({
-          message: content,
-          conversationId: null // New conversation for playground
-        })
-      });
+    // Add placeholder for streaming response
+    const streamingMessage: ChatMessage = {
+      id: `streaming-${Date.now()}`,
+      content: '',
+      role: 'assistant',
+      timestamp: new Date()
+    };
+    setMessages(prev => [...prev, streamingMessage]);
 
-      if (!response.ok) {
-        throw new Error('Failed to send message');
-      }
+    // Send message via socket
+    socketRef.current.emit('message', {
+      sessionId: sessionIdRef.current,
+      siteId: site.id,
+      content
+    });
+  }, [isConnected, site.id]);
 
-      const data = await response.json();
+  const resetConversation = useCallback(() => {
+    // Generate new session ID for fresh conversation
+    sessionIdRef.current = generateSessionId();
+    streamingMessageRef.current = '';
 
-      const assistantMessage: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        content: data.response || "I'm sorry, I couldn't process your request right now.",
-        role: 'assistant',
-        timestamp: new Date()
-      };
-
-      setMessages(prev => [...prev, assistantMessage]);
-    } catch (error) {
-      console.error('Error sending message:', error);
-
-      // Fallback response for demonstration
-      const errorMessage: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        content: "I'm currently in demo mode. In a real implementation, I would search through your website's content and provide relevant answers based on what you've taught me.",
-        role: 'assistant',
-        timestamp: new Date()
-      };
-
-      setMessages(prev => [...prev, errorMessage]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const resetConversation = () => {
     setMessages([
       {
         id: '1',
@@ -92,7 +193,7 @@ export function PlaygroundTab({ site }: PlaygroundTabProps) {
         timestamp: new Date()
       }
     ]);
-  };
+  }, []);
 
   const suggestedQuestions = [
     "What services do you offer?",
@@ -122,7 +223,7 @@ export function PlaygroundTab({ site }: PlaygroundTabProps) {
             messages={messages}
             onSendMessage={handleSendMessage}
             isLoading={isLoading}
-            subtitle="Testing mode"
+            subtitle={isConnected ? "Connected" : "Connecting..."}
           />
         </div>
 
@@ -136,7 +237,7 @@ export function PlaygroundTab({ site }: PlaygroundTabProps) {
 
           <AssistantInfoCard
             siteName={site.siteName}
-            urlsCount={site._count?.urls || 0}
+            urlsCount={site._count?.siteUrls || 0}
             knowledgeFilesCount={site._count?.knowledgeFiles || 0}
             lastUpdated={site.lastCrawledAt}
           />

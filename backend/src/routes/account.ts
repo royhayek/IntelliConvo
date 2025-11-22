@@ -12,6 +12,7 @@ import { asyncHandler } from '../middleware/errorHandler';
 import { validateBody } from '../middleware/validate';
 import { messageResponse } from '../utils/response';
 import { AppError, NotFoundError, ErrorCode } from '../middleware/errors';
+import { deleteSiteEmbeddings } from '../services/embeddings';
 
 const router = Router();
 
@@ -190,7 +191,18 @@ router.delete(
       );
     }
 
-    // Delete user and all related data (cascading will handle most relationships)
+    // Get all sites for this user to delete Pinecone embeddings
+    const userSites = await prisma.site.findMany({
+      where: { userId: req.user!.id },
+      select: { id: true },
+    });
+
+    // Delete Pinecone embeddings for each site BEFORE database cascade delete
+    for (const site of userSites) {
+      await deleteSiteEmbeddings(site.id);
+    }
+
+    // Delete user and all related data (cascading will handle database relationships)
     await prisma.user.delete({
       where: { id: req.user!.id },
     });

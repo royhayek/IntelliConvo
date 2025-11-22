@@ -1,18 +1,16 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo, useRef, memo, Suspense } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { AnimatePresence } from "framer-motion";
-import { ArrowRight, Loader2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Stepper, type StepperStep } from "@/components/ui/stepper";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { useRequireAuth } from "@/lib/hooks/useAuth";
 import { AuthLoading } from "@/components/auth/auth-loading";
 import {
@@ -26,61 +24,9 @@ import {
 } from "@/lib/api/generated/queries/urls/urls";
 import {
   usePostApiV1BillingSubscriptions,
+  useGetApiV1BillingPlans,
 } from "@/lib/api/generated/queries/subscriptions/subscriptions";
-
-// Memoized header component to prevent re-renders on form changes
-const OnboardingHeader = memo(function OnboardingHeader({
-  stepperSteps,
-  currentStep,
-  title,
-  description,
-  onBack,
-}: {
-  stepperSteps: StepperStep[];
-  currentStep: string;
-  title: string;
-  description: string;
-  onBack: () => void;
-}) {
-  return (
-    <div className="glass-effect border-b border-white/10 shadow-soft">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* Back Button */}
-        <div className="mb-6">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onBack}
-            className="text-gray-600 hover:text-gray-900 hover:bg-white/60"
-          >
-            <ArrowRight className="h-4 w-4 mr-2 rotate-180" />
-            Back
-          </Button>
-        </div>
-
-        {/* Stepper */}
-        <div>
-          <Stepper
-            steps={stepperSteps}
-            currentStepId={currentStep}
-            orientation="horizontal"
-            className="mb-8"
-          />
-        </div>
-
-        {/* Step Title & Description */}
-        <div className="text-center">
-          <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent mb-3">
-            {title}
-          </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            {description}
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-});
+import { useSiteSocket } from "@/lib/hooks/useSiteSocket";
 
 import {
   SiteUrlStep,
@@ -88,12 +34,11 @@ import {
   SitemapStep,
   PlanStep,
   CompleteStep,
+  CompactStepper,
   ONBOARDING_STEPS,
-  PLANS,
   OnboardingStepId,
-  Site,
-  SiteUrl,
   PlanType,
+  Plan,
 } from "./components";
 
 // Form schema
@@ -159,15 +104,10 @@ function OnboardingContent() {
     }
   }, [searchParams]);
 
-  // Show loading state while auth is hydrating
-  if (isAuthLoading) {
-    return <AuthLoading message="Verifying authentication" />;
-  }
-
-  // Fetch site data
+  // Fetch site data - ALL HOOKS MUST BE CALLED BEFORE ANY EARLY RETURNS
   const { data: site } = useGetApiV1SitesSiteId(siteId!, {
     query: {
-      enabled: isAuthenticated && !!siteId,
+      enabled: !isAuthLoading && isAuthenticated && !!siteId,
       refetchInterval: (query) => {
         const siteData = query.state.data;
         // Only poll during crawling
@@ -180,13 +120,14 @@ function OnboardingContent() {
     },
   });
 
-  // Fetch URLs when needed
+  // Fetch URLs when needed (AWAITING_PAYMENT means crawl is done, waiting for payment)
+  const crawlStatus = site?.crawlStatus as string | undefined;
   const { data: urls = [] } = useGetApiV1SitesSiteIdUrls(
     siteId!,
     {},
     {
       query: {
-        enabled: isAuthenticated && !!siteId && (currentStep === "sitemap" || site?.crawlStatus === "COMPLETED"),
+        enabled: !isAuthLoading && isAuthenticated && !!siteId && (currentStep === "sitemap" || crawlStatus === "AWAITING_PAYMENT"),
       },
     }
   );
@@ -196,17 +137,53 @@ function OnboardingContent() {
   const crawlMutation = usePostApiV1SitesSiteIdCrawl();
   const subscriptionMutation = usePostApiV1BillingSubscriptions();
 
-  // Handle crawl completion - auto-advance to next step
-  useEffect(() => {
-    if (site && currentStep === "analyzing" && site.crawlStatus === "COMPLETED") {
-      // Small delay for better UX
-      const timer = setTimeout(() => {
-        setCurrentStep("sitemap");
-        updateUrl("sitemap");
-      }, 1500);
-      return () => clearTimeout(timer);
+  // Fetch plans from Stripe via API
+  const { data: apiPlans = [] } = useGetApiV1BillingPlans({
+    query: {
+      enabled: !isAuthLoading && isAuthenticated,
+      staleTime: 1000 * 60 * 60,
+    },
+  });
+
+  // Transform API plans to match PlanStep component format
+  const plans: Plan[] = useMemo(() => {
+    if (apiPlans.length === 0) {
+      return [];
     }
-  }, [site?.crawlStatus, currentStep]);
+
+    return apiPlans.map((plan) => {
+      const isAnnual = plan.interval === "annual";
+      return {
+        id: plan.id,
+        name: plan.name,
+        price: `$${plan.price}`,
+        period: isAnnual ? "per year" : "per month",
+        description: plan.description,
+        features: plan.features,
+        ...(isAnnual && {
+          originalPrice: `$${Math.round(((plan.price / 10) * 12))}`,
+          savings: `Save $${Math.round(((plan.price / 10) * 12) - plan.price)}`,
+          popular: true,
+        }),
+      };
+    });
+  }, [apiPlans]);
+
+  // Socket connection for real-time crawl status updates
+  const handleCrawlStatusUpdate = useCallback(
+    (update: { siteId: string; crawlStatus: string; urlCount?: number }) => {
+      if (update.siteId === siteId) {
+        queryClient.invalidateQueries({ queryKey: getGetApiV1SitesSiteIdQueryKey(siteId) });
+      }
+    },
+    [siteId, queryClient]
+  );
+
+  useSiteSocket({
+    siteId: currentStep === "analyzing" ? siteId : null,
+    onCrawlStatusUpdate: handleCrawlStatusUpdate,
+    autoConnect: true,
+  });
 
   // URL update helper
   const updateUrl = useCallback(
@@ -221,6 +198,14 @@ function OnboardingContent() {
     },
     []
   );
+
+  // Handle crawl completion - auto-advance to next step immediately
+  useEffect(() => {
+    if (site && currentStep === "analyzing" && crawlStatus === "AWAITING_PAYMENT") {
+      setCurrentStep("sitemap");
+      updateUrl("sitemap");
+    }
+  }, [site, crawlStatus, currentStep, updateUrl]);
 
   // Step handlers
   const handleSiteUrlSubmit = useCallback(
@@ -270,7 +255,6 @@ function OnboardingContent() {
     try {
       setError("");
       await crawlMutation.mutateAsync({ siteId });
-      // Invalidate and refetch site data
       queryClient.invalidateQueries({ queryKey: getGetApiV1SitesSiteIdQueryKey(siteId) });
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };
@@ -281,7 +265,6 @@ function OnboardingContent() {
   const handleAnalyzingBack = useCallback(() => {
     setCurrentStep("site-url");
     updateUrl("site-url");
-    // Reset state for new attempt
     setSiteId(null);
     setError("");
   }, [updateUrl]);
@@ -302,15 +285,21 @@ function OnboardingContent() {
       setIsLoading(true);
       setError("");
 
-      await subscriptionMutation.mutateAsync({
+      const result = await subscriptionMutation.mutateAsync({
         data: {
           siteId: siteId,
           planType: selectedPlan,
         },
       });
 
-      setCurrentStep("complete");
-      updateUrl("complete");
+      // Type assertion for checkoutUrl which is returned by backend but not in generated types
+      const checkoutUrl = (result as { checkoutUrl?: string }).checkoutUrl;
+      if (checkoutUrl) {
+        window.location.href = checkoutUrl;
+      } else {
+        setCurrentStep("complete");
+        updateUrl("complete");
+      }
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };
       console.error("Error creating subscription:", error);
@@ -318,7 +307,6 @@ function OnboardingContent() {
         error.response?.data?.message ||
           "Failed to create subscription. Please try again."
       );
-    } finally {
       setIsLoading(false);
     }
   }, [isLoading, siteId, selectedPlan, subscriptionMutation, updateUrl]);
@@ -339,21 +327,8 @@ function OnboardingContent() {
   }, [currentStep, router, updateUrl]);
 
   // Computed values
-  const stepperSteps = useMemo((): StepperStep[] => {
-    const currentIndex = ONBOARDING_STEPS.findIndex((s) => s.id === currentStep);
-
-    return ONBOARDING_STEPS.map((step, stepIndex) => {
-      let status: "complete" | "current" | "waiting";
-      if (stepIndex < currentIndex) {
-        status = "complete";
-      } else if (stepIndex === currentIndex) {
-        status = "current";
-      } else {
-        status = "waiting";
-      }
-
-      return { ...step, status };
-    });
+  const currentStepIndex = useMemo(() => {
+    return ONBOARDING_STEPS.findIndex((s) => s.id === currentStep);
   }, [currentStep]);
 
   const { title, description } = useMemo(() => {
@@ -361,142 +336,146 @@ function OnboardingContent() {
       case "site-url":
         return {
           title: "Connect Your Website",
-          description:
-            "Enter your website URL to start building your AI-powered chat assistant",
+          description: "Enter your website URL to get started",
         };
       case "analyzing":
-        if (site?.crawlStatus === "FAILED") {
+        if (crawlStatus === "FAILED") {
           return {
             title: "Analysis Failed",
-            description:
-              "We encountered an issue while analyzing your website. Please try again.",
+            description: "We encountered an issue analyzing your website",
           };
         }
-        if (site?.crawlStatus === "COMPLETED") {
+        if (crawlStatus === "AWAITING_PAYMENT") {
           return {
             title: "Analysis Complete!",
-            description: `We've successfully analyzed your website and discovered ${urls.length} pages.`,
+            description: `Found ${urls.length} pages on your website`,
           };
         }
         return {
-          title: "Analyzing Your Website",
-          description:
-            "We're discovering and analyzing all the pages on your website. This usually takes 1-2 minutes.",
+          title: "Analyzing Website",
+          description: "Discovering pages on your website...",
         };
       case "sitemap":
         return {
-          title: "Review Your Content",
-          description:
-            "Review the pages we found and customize what your AI assistant will know about",
+          title: "Select Pages",
+          description: "Preview and choose which pages to include",
         };
       case "plan":
         return {
           title: "Choose Your Plan",
-          description:
-            "Select a subscription plan to activate your AI assistant and start helping your visitors",
+          description: "Select a subscription to activate your AI assistant",
         };
       case "complete":
         return {
-          title: "Welcome to Intelligentconvo!",
-          description:
-            "Your AI assistant is ready to help your website visitors. Let's get you started!",
+          title: "You're All Set!",
+          description: "Your AI assistant is ready",
         };
       default:
         return {
-          title: "Setup Your AI Assistant",
+          title: "Setup",
           description: "",
         };
     }
-  }, [currentStep, site?.crawlStatus, urls.length]);
+  }, [currentStep, crawlStatus, urls.length]);
 
-  // Don't render anything if not authenticated
+  // Show loading state while auth is hydrating
+  if (isAuthLoading) {
+    return <AuthLoading message="Verifying authentication" />;
+  }
+
   if (!isAuthenticated) {
     return null;
   }
 
   return (
-    <div className="min-h-screen gradient-surface">
-      <DashboardHeader
-        variant="site"
-        showBackButton={false}
-        showNavigation={false}
-        showQuickActions={false}
-      />
-
-      {/* Progress Header - Memoized to prevent re-renders */}
-      <OnboardingHeader
-        stepperSteps={stepperSteps}
-        currentStep={currentStep}
-        title={title}
-        description={description}
-        onBack={handleBack}
-      />
-
-      {/* Main Content */}
-      <main className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        <div className="space-y-8">
-          <AnimatePresence mode="wait">
-            {currentStep === "site-url" && (
-              <SiteUrlStep
-                key="site-url"
-                onSubmit={handleSubmit(handleSiteUrlSubmit)}
-                isLoading={isLoading}
-                error={error}
-                register={register}
-                errors={errors}
-                setValue={setValue}
-              />
-            )}
-
-            {currentStep === "analyzing" && (
-              <AnalyzingStep
-                key="analyzing"
-                site={site}
-                onContinue={handleAnalyzingContinue}
-                onRetry={handleAnalyzingRetry}
-                onBack={handleAnalyzingBack}
-              />
-            )}
-
-            {currentStep === "sitemap" && (
-              <SitemapStep
-                key="sitemap"
-                site={site}
-                urls={urls}
-                showAll={showAllUrls}
-                onToggleShowAll={() => setShowAllUrls(!showAllUrls)}
-                onContinue={handleSitemapContinue}
-              />
-            )}
-
-            {currentStep === "plan" && (
-              <PlanStep
-                key="plan"
-                plans={PLANS}
-                selectedPlan={selectedPlan}
-                onPlanSelect={handlePlanSelect}
-                onSubmit={handlePlanSubmit}
-                isLoading={isLoading}
-                error={error}
-              />
-            )}
-
-            {currentStep === "complete" && (
-              <CompleteStep
-                key="complete"
-                site={site}
-                user={user}
-                onContinue={handleComplete}
-              />
-            )}
-          </AnimatePresence>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center p-4">
+      <div className="w-full max-w-lg">
+        {/* Back Button */}
+        <div className="mb-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleBack}
+            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 -ml-2"
+          >
+            <ArrowLeft className="h-4 w-4 mr-1" />
+            Back
+          </Button>
         </div>
-      </main>
 
-      {/* Background Decorations */}
-      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 -left-16 w-64 h-64 bg-gradient-to-br from-indigo-200/20 to-purple-200/20 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 -right-16 w-64 h-64 bg-gradient-to-br from-blue-200/20 to-indigo-200/20 rounded-full blur-3xl" />
+        {/* Compact Stepper */}
+        <CompactStepper
+          steps={ONBOARDING_STEPS}
+          currentStepIndex={currentStepIndex}
+          className="mb-6"
+        />
+
+        {/* Title & Description */}
+        <div className="text-center mb-6">
+          <h1 className="text-xl font-semibold text-gray-900 dark:text-white mb-1">
+            {title}
+          </h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            {description}
+          </p>
+        </div>
+
+        {/* Step Content */}
+        <AnimatePresence mode="wait">
+          {currentStep === "site-url" && (
+            <SiteUrlStep
+              key="site-url"
+              onSubmit={handleSubmit(handleSiteUrlSubmit)}
+              isLoading={isLoading}
+              error={error}
+              register={register}
+              errors={errors}
+              setValue={setValue}
+            />
+          )}
+
+          {currentStep === "analyzing" && (
+            <AnalyzingStep
+              key="analyzing"
+              site={site}
+              onContinue={handleAnalyzingContinue}
+              onRetry={handleAnalyzingRetry}
+              onBack={handleAnalyzingBack}
+            />
+          )}
+
+          {currentStep === "sitemap" && (
+            <SitemapStep
+              key="sitemap"
+              site={site}
+              urls={urls}
+              showAll={showAllUrls}
+              onToggleShowAll={() => setShowAllUrls(!showAllUrls)}
+              onContinue={handleSitemapContinue}
+            />
+          )}
+
+          {currentStep === "plan" && (
+            <PlanStep
+              key="plan"
+              plans={plans}
+              selectedPlan={selectedPlan}
+              onPlanSelect={handlePlanSelect}
+              onSubmit={handlePlanSubmit}
+              isLoading={isLoading || plans.length === 0}
+              error={error}
+            />
+          )}
+
+          {currentStep === "complete" && (
+            <CompleteStep
+              key="complete"
+              site={site}
+              user={user}
+              onContinue={handleComplete}
+            />
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
@@ -505,7 +484,7 @@ function OnboardingContent() {
 export default function OnboardingPage() {
   return (
     <Suspense
-      fallback={<LoadingSpinner size="lg" text="Loading onboarding..." centered />}
+      fallback={<LoadingSpinner size="lg" text="Loading..." centered />}
     >
       <OnboardingContent />
     </Suspense>

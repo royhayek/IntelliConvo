@@ -6,7 +6,7 @@ export interface Site {
   id: string;
   siteUrl: string;
   siteName: string;
-  crawlStatus: "PENDING" | "CRAWLING" | "COMPLETED" | "FAILED";
+  crawlStatus: "PENDING" | "CRAWLING" | "COMPLETED" | "FAILED" | "AWAITING_PAYMENT" | "PROCESSING" | "READY" | "PARTIAL";
   urlCount?: number;
 }
 
@@ -14,6 +14,10 @@ export interface SiteUrl {
   id?: string;
   url?: string;
   title?: string | null;
+  content?: string | null;
+  htmlContent?: string | null;
+  isExcluded?: boolean;
+  isActive?: boolean;
 }
 
 export interface User {

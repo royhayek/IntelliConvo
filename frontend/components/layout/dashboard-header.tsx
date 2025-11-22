@@ -7,12 +7,12 @@ import {
   Sparkles,
   Settings,
   Home,
-  Bell,
   Search,
   ArrowLeft,
   CreditCard,
   LogOut,
   User,
+  Shield,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { BrandLogo } from "@/components/ui/brand-logo";
-import { NotificationBadge } from "@/components/ui/notification-badge";
+import { NotificationBell } from "@/components/notifications/notification-bell";
 import { NavigationSettingsDrawer } from "@/components/layout/navigation-settings-drawer";
 import { useAuthStore } from "@/lib/store";
 
@@ -131,16 +131,7 @@ export function DashboardHeader({
                 >
                   <Search className="w-4 h-4" />
                 </motion.button>
-                <NotificationBadge count={3} position="top-right">
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="p-2 rounded-lg bg-white/80 hover:bg-white dark:bg-gray-800/80 dark:hover:bg-gray-800 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 transition-all"
-                    title="Notifications"
-                  >
-                    <Bell className="w-4 h-4" />
-                  </motion.button>
-                </NotificationBadge>
+                <NotificationBell />
                 <ThemeToggle />
               </motion.div>
             )}
@@ -153,6 +144,7 @@ export function DashboardHeader({
                 transition={{ delay: 0.3 }}
                 className="hidden sm:flex items-center space-x-2"
               >
+                <NotificationBell />
                 <NavigationSettingsDrawer variant="icon" />
                 <ThemeToggle />
               </motion.div>
@@ -185,6 +177,17 @@ export function DashboardHeader({
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                {user?.isAdmin && (
+                  <>
+                    <DropdownMenuItem asChild>
+                      <Link href="/admin" className="cursor-pointer">
+                        <Shield className="mr-2 h-4 w-4" />
+                        Admin Portal
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                  </>
+                )}
                 <DropdownMenuItem asChild>
                   <Link href="/account/subscriptions" className="cursor-pointer">
                     <User className="mr-2 h-4 w-4" />

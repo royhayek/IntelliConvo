@@ -6,18 +6,17 @@ export type GetApiV1BillingHistoryParams = {
 /**
  * Page number for pagination
  */
-page?: number;
+page?: string;
 /**
- * Number of items per page
- * @maximum 100
+ * Number of items per page (max 100)
  */
-limit?: number;
+limit?: string;
 /**
  * Filter by transaction status
  */
 status?: GetApiV1BillingHistoryStatus;
 /**
- * Filter by specific site
+ * Filter by site ID
  */
 siteId?: string;
 };

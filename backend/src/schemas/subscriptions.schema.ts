@@ -111,11 +111,183 @@ export const planSchema = registry.register(
     description: z.string().openapi({ description: 'Plan description' }),
     price: z.number().openapi({ description: 'Price in dollars' }),
     billingPeriod: z.enum(['monthly', 'annual']).openapi({ description: 'Billing period' }),
+    interval: z.enum(['monthly', 'annual']).optional().openapi({ description: 'Billing interval (alias)' }),
     features: z.array(z.string()).openapi({ description: 'Plan features' }),
   }).openapi({
     description: 'Available subscription plan',
   })
 );
+
+// Subscriptions list response schema
+export const subscriptionsListResponseSchema = registry.register(
+  'SubscriptionsListResponse',
+  z.array(subscriptionSchema).openapi({
+    description: 'List of subscriptions',
+  })
+);
+
+// Plans list response schema
+export const plansListResponseSchema = registry.register(
+  'PlansListResponse',
+  z.array(planSchema).openapi({
+    description: 'List of available plans',
+  })
+);
+
+// Create subscription response schema
+export const createSubscriptionResponseSchema = registry.register(
+  'CreateSubscriptionResponse',
+  z.object({
+    subscription: subscriptionSchema,
+    clientSecret: z.string().nullable().openapi({ description: 'Stripe client secret for payment' }),
+  }).openapi({
+    description: 'Create subscription response',
+  })
+);
+
+// Portal URL response schema
+export const portalUrlResponseSchema = registry.register(
+  'PortalUrlResponse',
+  z.object({
+    url: z.string().url().openapi({ description: 'Stripe customer portal URL' }),
+  }).openapi({
+    description: 'Customer portal URL response',
+  })
+);
+
+// ============================================
+// Path Registrations
+// ============================================
+
+// GET /api/v1/billing/subscriptions
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/billing/subscriptions',
+  summary: 'Get user subscriptions',
+  tags: ['Subscriptions'],
+  security: [{ bearerAuth: [] }],
+  responses: {
+    200: {
+      description: 'Subscriptions retrieved successfully',
+      content: {
+        'application/json': {
+          schema: subscriptionsListResponseSchema,
+        },
+      },
+    },
+    401: {
+      description: 'Unauthorized',
+    },
+  },
+});
+
+// POST /api/v1/billing/subscriptions
+registry.registerPath({
+  method: 'post',
+  path: '/api/v1/billing/subscriptions',
+  summary: 'Create subscription',
+  tags: ['Subscriptions'],
+  security: [{ bearerAuth: [] }],
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: createSubscriptionSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    201: {
+      description: 'Subscription created successfully',
+      content: {
+        'application/json': {
+          schema: createSubscriptionResponseSchema,
+        },
+      },
+    },
+    400: {
+      description: 'Validation error',
+    },
+    401: {
+      description: 'Unauthorized',
+    },
+  },
+});
+
+// POST /api/v1/billing/subscriptions/{subscriptionId}/cancel
+registry.registerPath({
+  method: 'post',
+  path: '/api/v1/billing/subscriptions/{subscriptionId}/cancel',
+  summary: 'Cancel subscription',
+  tags: ['Subscriptions'],
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: subscriptionParamsSchema,
+  },
+  responses: {
+    200: {
+      description: 'Subscription cancelled successfully',
+      content: {
+        'application/json': {
+          schema: subscriptionSchema,
+        },
+      },
+    },
+    401: {
+      description: 'Unauthorized',
+    },
+    404: {
+      description: 'Subscription not found',
+    },
+  },
+});
+
+// POST /api/v1/billing/subscriptions/{subscriptionId}/portal
+registry.registerPath({
+  method: 'post',
+  path: '/api/v1/billing/subscriptions/{subscriptionId}/portal',
+  summary: 'Get customer portal URL',
+  tags: ['Subscriptions'],
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: subscriptionParamsSchema,
+  },
+  responses: {
+    200: {
+      description: 'Portal URL retrieved successfully',
+      content: {
+        'application/json': {
+          schema: portalUrlResponseSchema,
+        },
+      },
+    },
+    401: {
+      description: 'Unauthorized',
+    },
+    404: {
+      description: 'Subscription not found',
+    },
+  },
+});
+
+// GET /api/v1/billing/plans
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/billing/plans',
+  summary: 'Get available plans',
+  tags: ['Subscriptions'],
+  responses: {
+    200: {
+      description: 'Plans retrieved successfully',
+      content: {
+        'application/json': {
+          schema: plansListResponseSchema,
+        },
+      },
+    },
+  },
+});
 
 // Type exports
 export type CreateSubscriptionInput = z.infer<typeof createSubscriptionSchema>;

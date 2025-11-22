@@ -2,8 +2,8 @@
 // Do not edit manually
 
 export type PostApiV1AuthRefresh200 = {
-  /** New JWT access token */
+  /** New access token */
   accessToken: string;
-  /** New JWT refresh token */
+  /** New refresh token */
   refreshToken: string;
 };

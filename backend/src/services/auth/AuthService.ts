@@ -297,7 +297,9 @@ export class AuthService {
       email: user.email,
       fullName: user.fullName,
       authProvider: user.authProvider,
+      isAdmin: user.isAdmin || false,
       createdAt: user.createdAt.toISOString(),
+      updatedAt: user.updatedAt.toISOString(),
       lastLoginAt: user.lastLoginAt?.toISOString() || null,
     };
   }

@@ -220,6 +220,287 @@ export const widgetSettingsSchema = registry.register(
   })
 );
 
+// Widget settings update schema (partial)
+export const updateWidgetSettingsSchema = registry.register(
+  'UpdateWidgetSettingsRequest',
+  widgetSettingsSchema.partial().openapi({
+    description: 'Update widget settings (all fields optional)',
+  })
+);
+
+// ============================================
+// Path Registrations
+// ============================================
+
+// GET /api/v1/widget/{siteId}/starters (Public)
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/widget/{siteId}/starters',
+  summary: 'Get conversation starters (public)',
+  tags: ['Widget'],
+  request: {
+    params: z.object({
+      siteId: z.string().openapi({ description: 'Site ID' }),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'Successfully retrieved starters',
+      content: {
+        'application/json': {
+          schema: startersResponseSchema,
+        },
+      },
+    },
+    404: {
+      description: 'Site not found',
+    },
+  },
+});
+
+// GET /api/v1/widget/{siteId}/config (Public)
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/widget/{siteId}/config',
+  summary: 'Get site configuration (public)',
+  tags: ['Widget'],
+  request: {
+    params: z.object({
+      siteId: z.string().openapi({ description: 'Site ID' }),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'Successfully retrieved config',
+      content: {
+        'application/json': {
+          schema: siteConfigResponseSchema,
+        },
+      },
+    },
+    404: {
+      description: 'Site not found',
+    },
+  },
+});
+
+// GET /api/v1/widget/{siteId}/validate (Public)
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/widget/{siteId}/validate',
+  summary: 'Validate site exists (public)',
+  tags: ['Widget'],
+  request: {
+    params: z.object({
+      siteId: z.string().openapi({ description: 'Site ID' }),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'Site validation result',
+      content: {
+        'application/json': {
+          schema: validateSiteResponseSchema,
+        },
+      },
+    },
+    404: {
+      description: 'Site not found',
+    },
+  },
+});
+
+// GET /api/v1/widget/{siteId}/settings (Public)
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/widget/{siteId}/settings',
+  summary: 'Get public widget settings',
+  tags: ['Widget'],
+  request: {
+    params: z.object({
+      siteId: z.string().openapi({ description: 'Site ID' }),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'Successfully retrieved settings',
+      content: {
+        'application/json': {
+          schema: widgetSettingsSchema,
+        },
+      },
+    },
+    404: {
+      description: 'Site not found',
+    },
+  },
+});
+
+// PATCH /api/v1/widget/{siteId}/settings
+registry.registerPath({
+  method: 'patch',
+  path: '/api/v1/widget/{siteId}/settings',
+  summary: 'Update widget settings (partial)',
+  tags: ['Widget'],
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: z.object({
+      siteId: z.string().openapi({ description: 'Site ID' }),
+    }),
+    body: {
+      content: {
+        'application/json': {
+          schema: updateWidgetSettingsSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: 'Settings updated successfully',
+      content: {
+        'application/json': {
+          schema: widgetSettingsSchema,
+        },
+      },
+    },
+    401: {
+      description: 'Unauthorized',
+    },
+    404: {
+      description: 'Site not found',
+    },
+  },
+});
+
+// PUT /api/v1/widget/{siteId}/settings
+registry.registerPath({
+  method: 'put',
+  path: '/api/v1/widget/{siteId}/settings',
+  summary: 'Update widget settings (full replace)',
+  tags: ['Widget'],
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: z.object({
+      siteId: z.string().openapi({ description: 'Site ID' }),
+    }),
+    body: {
+      content: {
+        'application/json': {
+          schema: updateWidgetSettingsSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: 'Settings updated successfully',
+      content: {
+        'application/json': {
+          schema: widgetSettingsSchema,
+        },
+      },
+    },
+    401: {
+      description: 'Unauthorized',
+    },
+    404: {
+      description: 'Site not found',
+    },
+  },
+});
+
+// GET /api/v1/widget/{siteId}/settings/admin
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/widget/{siteId}/settings/admin',
+  summary: 'Get admin widget settings',
+  tags: ['Widget'],
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: z.object({
+      siteId: z.string().openapi({ description: 'Site ID' }),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'Successfully retrieved admin settings',
+      content: {
+        'application/json': {
+          schema: widgetSettingsSchema,
+        },
+      },
+    },
+    401: {
+      description: 'Unauthorized',
+    },
+    404: {
+      description: 'Site not found',
+    },
+  },
+});
+
+// GET /api/v1/widget/{siteId}/settings/category/{category}
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/widget/{siteId}/settings/category/{category}',
+  summary: 'Get widget settings by category',
+  tags: ['Widget'],
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: z.object({
+      siteId: z.string().openapi({ description: 'Site ID' }),
+      category: z.string().openapi({ description: 'Settings category' }),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'Successfully retrieved category settings',
+      content: {
+        'application/json': {
+          schema: z.record(z.any()).openapi({ description: 'Category settings' }),
+        },
+      },
+    },
+    401: {
+      description: 'Unauthorized',
+    },
+    404: {
+      description: 'Site not found',
+    },
+  },
+});
+
+// PUT /api/v1/widget/{siteId}/settings/reset
+registry.registerPath({
+  method: 'put',
+  path: '/api/v1/widget/{siteId}/settings/reset',
+  summary: 'Reset widget settings to defaults',
+  tags: ['Widget'],
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: z.object({
+      siteId: z.string().openapi({ description: 'Site ID' }),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'Settings reset successfully',
+      content: {
+        'application/json': {
+          schema: widgetSettingsSchema,
+        },
+      },
+    },
+    401: {
+      description: 'Unauthorized',
+    },
+    404: {
+      description: 'Site not found',
+    },
+  },
+});
+
 // Type exports
 export type ErrorResponse = z.infer<typeof errorSchema>;
 export type StartersResponse = z.infer<typeof startersResponseSchema>;

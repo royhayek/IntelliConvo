@@ -109,23 +109,4 @@ router.post(
   })
 );
 
-// ============================================
-// Subscription Plans
-// ============================================
-
-/**
- * @swagger
- * /api/v1/billing/plans:
- *   get:
- *     summary: Get available plans
- *     tags: [Billing]
- */
-router.get(
-  '/plans',
-  asyncHandler(async (req, res) => {
-    const plans = subscriptionService.getAvailablePlans();
-    res.json(plans);
-  })
-);
-
 export default router;

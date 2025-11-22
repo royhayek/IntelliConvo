@@ -141,6 +141,179 @@ export const conversationAnalyticsSchema = registry.register(
   })
 );
 
+// Conversations list response schema
+export const conversationsListResponseSchema = registry.register(
+  'ConversationsListResponse',
+  z.object({
+    conversations: z.array(conversationSchema).openapi({ description: 'List of conversations' }),
+    pagination: z.object({
+      page: z.number().int().openapi({ description: 'Current page' }),
+      limit: z.number().int().openapi({ description: 'Items per page' }),
+      total: z.number().int().openapi({ description: 'Total items' }),
+      totalPages: z.number().int().openapi({ description: 'Total pages' }),
+    }).openapi({ description: 'Pagination info' }),
+  }).openapi({
+    description: 'Conversations list response',
+  })
+);
+
+// Conversation details response schema
+export const conversationDetailsResponseSchema = registry.register(
+  'ConversationDetailsResponse',
+  z.object({
+    id: z.string().uuid().openapi({ description: 'Conversation ID' }),
+    site: z.object({
+      id: z.string().uuid().openapi({ description: 'Site ID' }),
+      siteName: z.string().openapi({ description: 'Site name' }),
+    }).openapi({ description: 'Site info' }),
+    sessionId: z.string().openapi({ description: 'Session ID' }),
+    userIdentifier: z.string().nullable().optional().openapi({ description: 'User identifier' }),
+    startedAt: z.string().openapi({ description: 'Start timestamp' }),
+    lastMessageAt: z.string().openapi({ description: 'Last message timestamp' }),
+    messageCount: z.number().int().optional().openapi({ description: 'Number of messages' }),
+    messages: z.array(messageSchema).openapi({ description: 'Conversation messages' }),
+  }).openapi({
+    description: 'Conversation details with messages',
+  })
+);
+
+// Message search response schema
+export const messageSearchResponseSchema = registry.register(
+  'MessageSearchResponse',
+  z.object({
+    messages: z.array(z.object({
+      id: z.string().uuid().openapi({ description: 'Message ID' }),
+      content: z.string().openapi({ description: 'Message content' }),
+      role: z.enum(['USER', 'ASSISTANT']).openapi({ description: 'Message role' }),
+      timestamp: z.string().openapi({ description: 'Timestamp' }),
+      conversation: z.object({
+        id: z.string().uuid().openapi({ description: 'Conversation ID' }),
+        sessionId: z.string().optional().openapi({ description: 'Session ID' }),
+        site: z.object({
+          id: z.string().uuid().openapi({ description: 'Site ID' }),
+          siteName: z.string().openapi({ description: 'Site name' }),
+        }).openapi({ description: 'Site info' }),
+      }).openapi({ description: 'Parent conversation' }),
+    })).openapi({ description: 'Search results' }),
+    total: z.number().int().openapi({ description: 'Total results' }),
+  }).openapi({
+    description: 'Message search response',
+  })
+);
+
+// ============================================
+// Path Registrations
+// ============================================
+
+// GET /api/v1/conversations
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/conversations',
+  summary: 'Get conversations with filtering and pagination',
+  tags: ['Conversations'],
+  security: [{ bearerAuth: [] }],
+  request: {
+    query: conversationQuerySchema,
+  },
+  responses: {
+    200: {
+      description: 'Conversations retrieved successfully',
+      content: {
+        'application/json': {
+          schema: conversationsListResponseSchema,
+        },
+      },
+    },
+    401: {
+      description: 'Unauthorized',
+    },
+  },
+});
+
+// GET /api/v1/conversations/analytics
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/conversations/analytics',
+  summary: 'Get conversation analytics',
+  tags: ['Conversations'],
+  security: [{ bearerAuth: [] }],
+  request: {
+    query: analyticsQuerySchema,
+  },
+  responses: {
+    200: {
+      description: 'Analytics retrieved successfully',
+      content: {
+        'application/json': {
+          schema: conversationAnalyticsSchema,
+        },
+      },
+    },
+    401: {
+      description: 'Unauthorized',
+    },
+  },
+});
+
+// GET /api/v1/conversations/search
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/conversations/search',
+  summary: 'Search messages across conversations',
+  tags: ['Conversations'],
+  security: [{ bearerAuth: [] }],
+  request: {
+    query: messageSearchSchema,
+  },
+  responses: {
+    200: {
+      description: 'Search results retrieved successfully',
+      content: {
+        'application/json': {
+          schema: messageSearchResponseSchema,
+        },
+      },
+    },
+    400: {
+      description: 'Validation error',
+    },
+    401: {
+      description: 'Unauthorized',
+    },
+  },
+});
+
+// GET /api/v1/conversations/{conversationId}
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/conversations/{conversationId}',
+  summary: 'Get conversation details with messages',
+  tags: ['Conversations'],
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: conversationParamsSchema,
+  },
+  responses: {
+    200: {
+      description: 'Conversation retrieved successfully',
+      content: {
+        'application/json': {
+          schema: conversationDetailsResponseSchema,
+        },
+      },
+    },
+    401: {
+      description: 'Unauthorized',
+    },
+    403: {
+      description: 'Forbidden',
+    },
+    404: {
+      description: 'Conversation not found',
+    },
+  },
+});
+
 // Type exports
 export type ConversationQuery = z.infer<typeof conversationQuerySchema>;
 export type MessageSearch = z.infer<typeof messageSearchSchema>;

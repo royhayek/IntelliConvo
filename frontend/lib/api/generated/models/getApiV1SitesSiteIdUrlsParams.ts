@@ -4,11 +4,11 @@ import type { GetApiV1SitesSiteIdUrlsStatus } from './getApiV1SitesSiteIdUrlsSta
 
 export type GetApiV1SitesSiteIdUrlsParams = {
 /**
- * Search term for filtering URLs
+ * Search query
  */
 search?: string;
 /**
- * Filter by URL status
+ * Filter by status
  */
 status?: GetApiV1SitesSiteIdUrlsStatus;
 };

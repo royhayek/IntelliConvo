@@ -20,13 +20,12 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  GetApiV1BillingPlans200Item,
-  GetApiV1BillingSubscriptions200Item,
-  PostApiV1BillingSubscriptions201,
-  PostApiV1BillingSubscriptionsBody,
-  PostApiV1BillingSubscriptionsSubscriptionIdCancel200,
-  PostApiV1BillingSubscriptionsSubscriptionIdPortal200,
-  UnauthorizedErrorResponse
+  CreateSubscriptionRequest,
+  CreateSubscriptionResponse,
+  PlansListResponse,
+  PortalUrlResponse,
+  Subscription,
+  SubscriptionsListResponse
 } from '../../models';
 
 import { customInstance } from '../../../axios-instance';
@@ -38,7 +37,6 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
 /**
- * Retrieve all subscriptions for the authenticated user
  * @summary Get user subscriptions
  */
 export const getApiV1BillingSubscriptions = (
@@ -47,7 +45,7 @@ export const getApiV1BillingSubscriptions = (
 ) => {
       
       
-      return customInstance<GetApiV1BillingSubscriptions200Item[]>(
+      return customInstance<SubscriptionsListResponse>(
       {url: `/api/v1/billing/subscriptions`, method: 'GET', signal
     },
       options);
@@ -63,7 +61,7 @@ export const getGetApiV1BillingSubscriptionsQueryKey = () => {
     }
 
     
-export const getGetApiV1BillingSubscriptionsQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError = ErrorType<UnauthorizedErrorResponse>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetApiV1BillingSubscriptionsQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -82,10 +80,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GetApiV1BillingSubscriptionsQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>>
-export type GetApiV1BillingSubscriptionsQueryError = ErrorType<UnauthorizedErrorResponse>
+export type GetApiV1BillingSubscriptionsQueryError = ErrorType<void>
 
 
-export function useGetApiV1BillingSubscriptions<TData = Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError = ErrorType<UnauthorizedErrorResponse>>(
+export function useGetApiV1BillingSubscriptions<TData = Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError = ErrorType<void>>(
   options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>,
@@ -95,7 +93,7 @@ export function useGetApiV1BillingSubscriptions<TData = Awaited<ReturnType<typeo
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1BillingSubscriptions<TData = Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError = ErrorType<UnauthorizedErrorResponse>>(
+export function useGetApiV1BillingSubscriptions<TData = Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError = ErrorType<void>>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>,
@@ -105,7 +103,7 @@ export function useGetApiV1BillingSubscriptions<TData = Awaited<ReturnType<typeo
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1BillingSubscriptions<TData = Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError = ErrorType<UnauthorizedErrorResponse>>(
+export function useGetApiV1BillingSubscriptions<TData = Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError = ErrorType<void>>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -113,7 +111,7 @@ export function useGetApiV1BillingSubscriptions<TData = Awaited<ReturnType<typeo
  * @summary Get user subscriptions
  */
 
-export function useGetApiV1BillingSubscriptions<TData = Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError = ErrorType<UnauthorizedErrorResponse>>(
+export function useGetApiV1BillingSubscriptions<TData = Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError = ErrorType<void>>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -131,28 +129,27 @@ export function useGetApiV1BillingSubscriptions<TData = Awaited<ReturnType<typeo
 
 
 /**
- * Create a new subscription for a site
  * @summary Create subscription
  */
 export const postApiV1BillingSubscriptions = (
-    postApiV1BillingSubscriptionsBody: BodyType<PostApiV1BillingSubscriptionsBody>,
+    createSubscriptionRequest: BodyType<CreateSubscriptionRequest>,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<PostApiV1BillingSubscriptions201>(
+      return customInstance<CreateSubscriptionResponse>(
       {url: `/api/v1/billing/subscriptions`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: postApiV1BillingSubscriptionsBody, signal
+      data: createSubscriptionRequest, signal
     },
       options);
     }
   
 
 
-export const getPostApiV1BillingSubscriptionsMutationOptions = <TError = ErrorType<UnauthorizedErrorResponse | void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1BillingSubscriptions>>, TError,{data: BodyType<PostApiV1BillingSubscriptionsBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof postApiV1BillingSubscriptions>>, TError,{data: BodyType<PostApiV1BillingSubscriptionsBody>}, TContext> => {
+export const getPostApiV1BillingSubscriptionsMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1BillingSubscriptions>>, TError,{data: BodyType<CreateSubscriptionRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postApiV1BillingSubscriptions>>, TError,{data: BodyType<CreateSubscriptionRequest>}, TContext> => {
 
 const mutationKey = ['postApiV1BillingSubscriptions'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -164,7 +161,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1BillingSubscriptions>>, {data: BodyType<PostApiV1BillingSubscriptionsBody>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1BillingSubscriptions>>, {data: BodyType<CreateSubscriptionRequest>}> = (props) => {
           const {data} = props ?? {};
 
           return  postApiV1BillingSubscriptions(data,requestOptions)
@@ -176,18 +173,18 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type PostApiV1BillingSubscriptionsMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1BillingSubscriptions>>>
-    export type PostApiV1BillingSubscriptionsMutationBody = BodyType<PostApiV1BillingSubscriptionsBody>
-    export type PostApiV1BillingSubscriptionsMutationError = ErrorType<UnauthorizedErrorResponse | void>
+    export type PostApiV1BillingSubscriptionsMutationBody = BodyType<CreateSubscriptionRequest>
+    export type PostApiV1BillingSubscriptionsMutationError = ErrorType<void>
 
     /**
  * @summary Create subscription
  */
-export const usePostApiV1BillingSubscriptions = <TError = ErrorType<UnauthorizedErrorResponse | void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1BillingSubscriptions>>, TError,{data: BodyType<PostApiV1BillingSubscriptionsBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePostApiV1BillingSubscriptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1BillingSubscriptions>>, TError,{data: BodyType<CreateSubscriptionRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof postApiV1BillingSubscriptions>>,
         TError,
-        {data: BodyType<PostApiV1BillingSubscriptionsBody>},
+        {data: BodyType<CreateSubscriptionRequest>},
         TContext
       > => {
 
@@ -196,7 +193,6 @@ export const usePostApiV1BillingSubscriptions = <TError = ErrorType<Unauthorized
       return useMutation(mutationOptions, queryClient);
     }
     /**
- * Cancel an existing subscription
  * @summary Cancel subscription
  */
 export const postApiV1BillingSubscriptionsSubscriptionIdCancel = (
@@ -205,7 +201,7 @@ export const postApiV1BillingSubscriptionsSubscriptionIdCancel = (
 ) => {
       
       
-      return customInstance<PostApiV1BillingSubscriptionsSubscriptionIdCancel200>(
+      return customInstance<Subscription>(
       {url: `/api/v1/billing/subscriptions/${subscriptionId}/cancel`, method: 'POST', signal
     },
       options);
@@ -213,7 +209,7 @@ export const postApiV1BillingSubscriptionsSubscriptionIdCancel = (
   
 
 
-export const getPostApiV1BillingSubscriptionsSubscriptionIdCancelMutationOptions = <TError = ErrorType<UnauthorizedErrorResponse | void>,
+export const getPostApiV1BillingSubscriptionsSubscriptionIdCancelMutationOptions = <TError = ErrorType<void>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdCancel>>, TError,{subscriptionId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdCancel>>, TError,{subscriptionId: string}, TContext> => {
 
@@ -240,12 +236,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type PostApiV1BillingSubscriptionsSubscriptionIdCancelMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdCancel>>>
     
-    export type PostApiV1BillingSubscriptionsSubscriptionIdCancelMutationError = ErrorType<UnauthorizedErrorResponse | void>
+    export type PostApiV1BillingSubscriptionsSubscriptionIdCancelMutationError = ErrorType<void>
 
     /**
  * @summary Cancel subscription
  */
-export const usePostApiV1BillingSubscriptionsSubscriptionIdCancel = <TError = ErrorType<UnauthorizedErrorResponse | void>,
+export const usePostApiV1BillingSubscriptionsSubscriptionIdCancel = <TError = ErrorType<void>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdCancel>>, TError,{subscriptionId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdCancel>>,
@@ -259,7 +255,6 @@ export const usePostApiV1BillingSubscriptionsSubscriptionIdCancel = <TError = Er
       return useMutation(mutationOptions, queryClient);
     }
     /**
- * Generate a Stripe customer portal session URL
  * @summary Get customer portal URL
  */
 export const postApiV1BillingSubscriptionsSubscriptionIdPortal = (
@@ -268,7 +263,7 @@ export const postApiV1BillingSubscriptionsSubscriptionIdPortal = (
 ) => {
       
       
-      return customInstance<PostApiV1BillingSubscriptionsSubscriptionIdPortal200>(
+      return customInstance<PortalUrlResponse>(
       {url: `/api/v1/billing/subscriptions/${subscriptionId}/portal`, method: 'POST', signal
     },
       options);
@@ -276,7 +271,7 @@ export const postApiV1BillingSubscriptionsSubscriptionIdPortal = (
   
 
 
-export const getPostApiV1BillingSubscriptionsSubscriptionIdPortalMutationOptions = <TError = ErrorType<UnauthorizedErrorResponse | void>,
+export const getPostApiV1BillingSubscriptionsSubscriptionIdPortalMutationOptions = <TError = ErrorType<void>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdPortal>>, TError,{subscriptionId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdPortal>>, TError,{subscriptionId: string}, TContext> => {
 
@@ -303,12 +298,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type PostApiV1BillingSubscriptionsSubscriptionIdPortalMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdPortal>>>
     
-    export type PostApiV1BillingSubscriptionsSubscriptionIdPortalMutationError = ErrorType<UnauthorizedErrorResponse | void>
+    export type PostApiV1BillingSubscriptionsSubscriptionIdPortalMutationError = ErrorType<void>
 
     /**
  * @summary Get customer portal URL
  */
-export const usePostApiV1BillingSubscriptionsSubscriptionIdPortal = <TError = ErrorType<UnauthorizedErrorResponse | void>,
+export const usePostApiV1BillingSubscriptionsSubscriptionIdPortal = <TError = ErrorType<void>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdPortal>>, TError,{subscriptionId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdPortal>>,
@@ -322,7 +317,6 @@ export const usePostApiV1BillingSubscriptionsSubscriptionIdPortal = <TError = Er
       return useMutation(mutationOptions, queryClient);
     }
     /**
- * Get list of available subscription plans
  * @summary Get available plans
  */
 export const getApiV1BillingPlans = (
@@ -331,7 +325,7 @@ export const getApiV1BillingPlans = (
 ) => {
       
       
-      return customInstance<GetApiV1BillingPlans200Item[]>(
+      return customInstance<PlansListResponse>(
       {url: `/api/v1/billing/plans`, method: 'GET', signal
     },
       options);

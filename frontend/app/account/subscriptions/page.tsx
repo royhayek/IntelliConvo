@@ -14,7 +14,7 @@ import {
   usePostApiV1BillingSubscriptions,
   usePostApiV1BillingSubscriptionsSubscriptionIdPortal,
 } from "@/lib/api/generated/queries/subscriptions/subscriptions";
-import type { GetApiV1BillingSubscriptions200Item } from "@/lib/api/generated/models";
+import type { Subscription } from "@/lib/api/generated/models";
 
 export default function SubscriptionsPage() {
   // Protected route - redirects to login if not authenticated
@@ -57,8 +57,7 @@ export default function SubscriptionsPage() {
     return null;
   }
 
-  const activeSubscription = subscriptions.find((sub: GetApiV1BillingSubscriptions200Item) => sub.status === "ACTIVE");
-  const trialSubscription = subscriptions.find((sub: GetApiV1BillingSubscriptions200Item) => sub.status === "TRIAL");
+  const activeSubscription = subscriptions.find((sub: Subscription) => sub.status === "ACTIVE");
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-slate-950">
@@ -95,7 +94,7 @@ export default function SubscriptionsPage() {
           </div>
 
           {/* Current Subscription */}
-          {(activeSubscription || trialSubscription) && (
+          {activeSubscription && (
             <Card>
               <CardHeader>
                 <CardTitle>Current Subscription</CardTitle>
@@ -107,23 +106,6 @@ export default function SubscriptionsPage() {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {trialSubscription && (
-                      <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/50 rounded-lg">
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <h4 className="font-medium text-blue-900 dark:text-blue-300">Free Trial</h4>
-                            <p className="text-sm text-blue-700 dark:text-blue-400 mt-1">
-                              Expires on {new Date(trialSubscription.trialEndsAt!).toLocaleDateString()}
-                            </p>
-                            <p className="text-sm text-blue-600 dark:text-blue-400 mt-2">
-                              Experience all features with your 14-day free trial
-                            </p>
-                          </div>
-                          <Crown className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-                        </div>
-                      </div>
-                    )}
-
                     {activeSubscription && (
                       <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800/50 rounded-lg">
                         <div className="flex items-start justify-between">
@@ -188,7 +170,7 @@ export default function SubscriptionsPage() {
 
                     <CardHeader>
                       <div className="flex items-center space-x-2">
-                        {plan.interval === "month" ? (
+                        {plan.interval === "monthly" || plan.billingPeriod === "monthly" ? (
                           <Zap className="h-6 w-6 text-indigo-600" />
                         ) : (
                           <Crown className="h-6 w-6 text-indigo-600" />
@@ -231,7 +213,7 @@ export default function SubscriptionsPage() {
                               }`}
                               onClick={() => plan.id && handleSubscribe(plan.id)}
                             >
-                              {trialSubscription ? "Upgrade Now" : "Start Trial"}
+                              Subscribe
                             </Button>
                           )}
                         </div>
@@ -266,7 +248,7 @@ export default function SubscriptionsPage() {
                 </div>
 
                 <div className="text-sm text-gray-600 dark:text-gray-400 space-y-2">
-                  <p>• All plans include a 14-day free trial</p>
+                  <p>• Secure payment processing</p>
                   <p>• Cancel anytime - no long-term commitments</p>
                   <p>• Questions? <a href="mailto:support@intelligentconvo.com" className="text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">Contact our support team</a></p>
                 </div>

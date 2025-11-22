@@ -9,6 +9,7 @@ import { AppError, ErrorCode } from '../../middleware/errors';
 import { queueCrawl } from '../../queues';
 import { CrawlStatus } from '@prisma/client';
 import { cacheService, CacheNamespace, CacheTTL } from '../cache';
+import { deleteSiteEmbeddings } from '../embeddings';
 import {
   SiteWithMetaDTO,
   SiteListResponse,
@@ -22,6 +23,16 @@ import {
   ActiveHostDTO,
   AddHostRequest,
 } from '../../dto/site.dto';
+
+/**
+ * Helper function to safely convert date to ISO string
+ * Handles both Date objects (from Prisma) and strings (from cache)
+ */
+function toISOString(date: Date | string | null | undefined): string | null {
+  if (!date) return null;
+  if (typeof date === 'string') return date;
+  return date.toISOString();
+}
 
 /**
  * SiteService class
@@ -80,7 +91,9 @@ export class SiteService {
   }
 
   /**
-   * Get site by ID with caching
+   * Get site by ID with short-lived caching
+   * Uses 60-second TTL to balance performance with data freshness
+   * Cache is also invalidated on status changes (webhooks, embedding completion)
    * @param siteId - Site ID
    * @param userId - User ID (for authorization)
    * @returns Site details with counts
@@ -92,7 +105,7 @@ export class SiteService {
       CacheNamespace.SITE_CONFIG,
       cacheKey,
       async () => {
-        const siteData = await prisma.site.findFirst({
+        return prisma.site.findFirst({
           where: {
             id: siteId,
             userId,
@@ -109,17 +122,15 @@ export class SiteService {
             },
           },
         });
-
-        return siteData;
       },
-      CacheTTL.MEDIUM // 30 minutes cache
+      60 // 60 seconds TTL - short cache for volatile data like crawlStatus
     );
 
     if (!site) {
       throw new NotFoundError('Site', siteId);
     }
 
-    // Map to DTO
+    // Map to DTO (use helper for dates that may be strings from cache)
     const siteDTO: SiteWithMetaDTO = {
       id: site.id,
       siteUrl: site.siteUrl,
@@ -129,16 +140,16 @@ export class SiteService {
       specialInstructions: site.specialInstructions,
       welcomeMessage: site.welcomeMessage,
       crawlStatus: site.crawlStatus,
-      lastCrawledAt: site.lastCrawledAt?.toISOString() || null,
-      createdAt: site.createdAt.toISOString(),
-      updatedAt: site.updatedAt.toISOString(),
+      lastCrawledAt: toISOString(site.lastCrawledAt),
+      createdAt: toISOString(site.createdAt) || new Date().toISOString(),
+      updatedAt: toISOString(site.updatedAt) || new Date().toISOString(),
       urlCount: site._count.urls,
       subscription: site.subscription
         ? {
             status: site.subscription.status,
             planType: site.subscription.planType,
-            trialEndsAt: site.subscription.trialEndsAt?.toISOString() || null,
-            currentPeriodEnd: site.subscription.currentPeriodEnd.toISOString(),
+            trialEndsAt: toISOString(site.subscription.trialEndsAt),
+            currentPeriodEnd: toISOString(site.subscription.currentPeriodEnd) || new Date().toISOString(),
           }
         : null,
       _count: site._count,
@@ -262,7 +273,10 @@ export class SiteService {
       throw new ValidationError('Cannot delete site with active subscription');
     }
 
-    // Delete site (cascade will handle related records)
+    // Delete embeddings from Pinecone first (before cascade deletes DB records)
+    await deleteSiteEmbeddings(siteId);
+
+    // Delete site (cascade will handle related database records)
     await prisma.site.delete({
       where: { id: siteId },
     });
@@ -377,7 +391,7 @@ export class SiteService {
     if (data.welcomeMessage !== undefined) {
       await prisma.site.update({
         where: { id: siteId },
-        data: { welcomeMessage: data.welcomeMessage },
+        data: { welcomeMessage: data.welcomeMessage ?? undefined },
       });
     }
 
@@ -650,9 +664,9 @@ export class SiteService {
       specialInstructions: site.specialInstructions,
       welcomeMessage: site.welcomeMessage,
       crawlStatus: site.crawlStatus,
-      lastCrawledAt: site.lastCrawledAt?.toISOString() || null,
-      createdAt: site.createdAt.toISOString(),
-      updatedAt: site.updatedAt.toISOString(),
+      lastCrawledAt: toISOString(site.lastCrawledAt),
+      createdAt: toISOString(site.createdAt) || new Date().toISOString(),
+      updatedAt: toISOString(site.updatedAt) || new Date().toISOString(),
       urlCount: 0, // Will be populated when needed
       subscription: null, // Will be populated when needed
     };
@@ -664,6 +678,15 @@ export class SiteService {
   private async invalidateCache(siteId: string, userId: string): Promise<void> {
     const cacheKey = `${siteId}:${userId}`;
     await cacheService.delete(CacheNamespace.SITE_CONFIG, cacheKey);
+  }
+
+  /**
+   * Invalidate site cache by siteId only (for use when userId is not available)
+   * Uses pattern matching to clear all cache entries for the site
+   */
+  async invalidateSiteCacheById(siteId: string): Promise<void> {
+    // Use pattern to match all user-specific caches for this site
+    await cacheService.deleteByPattern(CacheNamespace.SITE_CONFIG, `${siteId}:*`);
   }
 }
 

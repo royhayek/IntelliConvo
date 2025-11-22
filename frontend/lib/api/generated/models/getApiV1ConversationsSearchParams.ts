@@ -3,16 +3,16 @@
 
 export type GetApiV1ConversationsSearchParams = {
 /**
- * Search query
+ * Search query for messages
+ * @minLength 1
  */
 query: string;
 /**
- * Filter search by specific site
+ * Filter by site ID
  */
 siteId?: string;
 /**
- * Number of results to return
- * @maximum 100
+ * Maximum number of results (max 100)
  */
-limit?: number;
+limit?: string;
 };

@@ -123,7 +123,7 @@ export default function Home() {
           >
             <Link href="/auth/signup">
               <Button variant="gradient" size="lg" className="px-10 py-4 text-lg">
-                Start Free Trial
+                Get Started
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
@@ -195,13 +195,13 @@ export default function Home() {
         {/* CTA */}
         <CTASection
           title="Ready to get started?"
-          description="Try Intelligentconvo free for 14 days. No credit card required. Join thousands of websites already using our AI assistant."
+          description="Transform your website with an AI-powered assistant. Join thousands of websites already using Intelligentconvo."
           primaryAction={{
-            label: "Start Free Trial",
+            label: "Get Started",
             href: "/auth/signup",
             icon: CheckCircle,
           }}
-          secondaryText="14-day free trial"
+          secondaryText="Cancel anytime"
         />
       </main>
 

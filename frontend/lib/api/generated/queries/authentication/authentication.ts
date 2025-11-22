@@ -20,18 +20,15 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  AuthMessageResponse,
   AuthTokensResponse,
-  Error,
   GetApiV1AuthGithubCallbackParams,
   GetApiV1AuthGoogleCallbackParams,
-  InternalServerErrorResponse,
-  PostApiV1AuthLoginBody,
-  PostApiV1AuthLogout200,
-  PostApiV1AuthLogoutBody,
+  LoginRequest,
+  LogoutRequest,
   PostApiV1AuthRefresh200,
-  PostApiV1AuthRefreshBody,
-  PostApiV1AuthSignupBody,
-  ValidationErrorResponse
+  RefreshTokenRequest,
+  RegisterRequest
 } from '../../models';
 
 import { customInstance } from '../../../axios-instance';
@@ -43,11 +40,10 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
 /**
- * Create a new user account with email and password
  * @summary Register a new user
  */
 export const postApiV1AuthSignup = (
-    postApiV1AuthSignupBody: BodyType<PostApiV1AuthSignupBody>,
+    registerRequest: BodyType<RegisterRequest>,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
@@ -55,16 +51,16 @@ export const postApiV1AuthSignup = (
       return customInstance<AuthTokensResponse>(
       {url: `/api/v1/auth/signup`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: postApiV1AuthSignupBody, signal
+      data: registerRequest, signal
     },
       options);
     }
   
 
 
-export const getPostApiV1AuthSignupMutationOptions = <TError = ErrorType<ValidationErrorResponse | Error | InternalServerErrorResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AuthSignup>>, TError,{data: BodyType<PostApiV1AuthSignupBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof postApiV1AuthSignup>>, TError,{data: BodyType<PostApiV1AuthSignupBody>}, TContext> => {
+export const getPostApiV1AuthSignupMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AuthSignup>>, TError,{data: BodyType<RegisterRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postApiV1AuthSignup>>, TError,{data: BodyType<RegisterRequest>}, TContext> => {
 
 const mutationKey = ['postApiV1AuthSignup'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -76,7 +72,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1AuthSignup>>, {data: BodyType<PostApiV1AuthSignupBody>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1AuthSignup>>, {data: BodyType<RegisterRequest>}> = (props) => {
           const {data} = props ?? {};
 
           return  postApiV1AuthSignup(data,requestOptions)
@@ -88,18 +84,18 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type PostApiV1AuthSignupMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1AuthSignup>>>
-    export type PostApiV1AuthSignupMutationBody = BodyType<PostApiV1AuthSignupBody>
-    export type PostApiV1AuthSignupMutationError = ErrorType<ValidationErrorResponse | Error | InternalServerErrorResponse>
+    export type PostApiV1AuthSignupMutationBody = BodyType<RegisterRequest>
+    export type PostApiV1AuthSignupMutationError = ErrorType<void>
 
     /**
  * @summary Register a new user
  */
-export const usePostApiV1AuthSignup = <TError = ErrorType<ValidationErrorResponse | Error | InternalServerErrorResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AuthSignup>>, TError,{data: BodyType<PostApiV1AuthSignupBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePostApiV1AuthSignup = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AuthSignup>>, TError,{data: BodyType<RegisterRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof postApiV1AuthSignup>>,
         TError,
-        {data: BodyType<PostApiV1AuthSignupBody>},
+        {data: BodyType<RegisterRequest>},
         TContext
       > => {
 
@@ -108,11 +104,10 @@ export const usePostApiV1AuthSignup = <TError = ErrorType<ValidationErrorRespons
       return useMutation(mutationOptions, queryClient);
     }
     /**
- * Authenticate user with email and password
  * @summary User login
  */
 export const postApiV1AuthLogin = (
-    postApiV1AuthLoginBody: BodyType<PostApiV1AuthLoginBody>,
+    loginRequest: BodyType<LoginRequest>,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
@@ -120,16 +115,16 @@ export const postApiV1AuthLogin = (
       return customInstance<AuthTokensResponse>(
       {url: `/api/v1/auth/login`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: postApiV1AuthLoginBody, signal
+      data: loginRequest, signal
     },
       options);
     }
   
 
 
-export const getPostApiV1AuthLoginMutationOptions = <TError = ErrorType<ValidationErrorResponse | Error | InternalServerErrorResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AuthLogin>>, TError,{data: BodyType<PostApiV1AuthLoginBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof postApiV1AuthLogin>>, TError,{data: BodyType<PostApiV1AuthLoginBody>}, TContext> => {
+export const getPostApiV1AuthLoginMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AuthLogin>>, TError,{data: BodyType<LoginRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postApiV1AuthLogin>>, TError,{data: BodyType<LoginRequest>}, TContext> => {
 
 const mutationKey = ['postApiV1AuthLogin'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -141,7 +136,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1AuthLogin>>, {data: BodyType<PostApiV1AuthLoginBody>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1AuthLogin>>, {data: BodyType<LoginRequest>}> = (props) => {
           const {data} = props ?? {};
 
           return  postApiV1AuthLogin(data,requestOptions)
@@ -153,18 +148,18 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type PostApiV1AuthLoginMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1AuthLogin>>>
-    export type PostApiV1AuthLoginMutationBody = BodyType<PostApiV1AuthLoginBody>
-    export type PostApiV1AuthLoginMutationError = ErrorType<ValidationErrorResponse | Error | InternalServerErrorResponse>
+    export type PostApiV1AuthLoginMutationBody = BodyType<LoginRequest>
+    export type PostApiV1AuthLoginMutationError = ErrorType<void>
 
     /**
  * @summary User login
  */
-export const usePostApiV1AuthLogin = <TError = ErrorType<ValidationErrorResponse | Error | InternalServerErrorResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AuthLogin>>, TError,{data: BodyType<PostApiV1AuthLoginBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePostApiV1AuthLogin = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AuthLogin>>, TError,{data: BodyType<LoginRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof postApiV1AuthLogin>>,
         TError,
-        {data: BodyType<PostApiV1AuthLoginBody>},
+        {data: BodyType<LoginRequest>},
         TContext
       > => {
 
@@ -173,7 +168,6 @@ export const usePostApiV1AuthLogin = <TError = ErrorType<ValidationErrorResponse
       return useMutation(mutationOptions, queryClient);
     }
     /**
- * Redirects user to Google OAuth consent screen
  * @summary Initiate Google OAuth login
  */
 export const getApiV1AuthGoogle = (
@@ -198,7 +192,7 @@ export const getGetApiV1AuthGoogleQueryKey = () => {
     }
 
     
-export const getGetApiV1AuthGoogleQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AuthGoogle>>, TError = ErrorType<void | InternalServerErrorResponse>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AuthGoogle>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetApiV1AuthGoogleQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AuthGoogle>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AuthGoogle>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -217,10 +211,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GetApiV1AuthGoogleQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AuthGoogle>>>
-export type GetApiV1AuthGoogleQueryError = ErrorType<void | InternalServerErrorResponse>
+export type GetApiV1AuthGoogleQueryError = ErrorType<void>
 
 
-export function useGetApiV1AuthGoogle<TData = Awaited<ReturnType<typeof getApiV1AuthGoogle>>, TError = ErrorType<void | InternalServerErrorResponse>>(
+export function useGetApiV1AuthGoogle<TData = Awaited<ReturnType<typeof getApiV1AuthGoogle>>, TError = ErrorType<void>>(
   options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AuthGoogle>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiV1AuthGoogle>>,
@@ -230,7 +224,7 @@ export function useGetApiV1AuthGoogle<TData = Awaited<ReturnType<typeof getApiV1
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AuthGoogle<TData = Awaited<ReturnType<typeof getApiV1AuthGoogle>>, TError = ErrorType<void | InternalServerErrorResponse>>(
+export function useGetApiV1AuthGoogle<TData = Awaited<ReturnType<typeof getApiV1AuthGoogle>>, TError = ErrorType<void>>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AuthGoogle>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiV1AuthGoogle>>,
@@ -240,7 +234,7 @@ export function useGetApiV1AuthGoogle<TData = Awaited<ReturnType<typeof getApiV1
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AuthGoogle<TData = Awaited<ReturnType<typeof getApiV1AuthGoogle>>, TError = ErrorType<void | InternalServerErrorResponse>>(
+export function useGetApiV1AuthGoogle<TData = Awaited<ReturnType<typeof getApiV1AuthGoogle>>, TError = ErrorType<void>>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AuthGoogle>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -248,7 +242,7 @@ export function useGetApiV1AuthGoogle<TData = Awaited<ReturnType<typeof getApiV1
  * @summary Initiate Google OAuth login
  */
 
-export function useGetApiV1AuthGoogle<TData = Awaited<ReturnType<typeof getApiV1AuthGoogle>>, TError = ErrorType<void | InternalServerErrorResponse>>(
+export function useGetApiV1AuthGoogle<TData = Awaited<ReturnType<typeof getApiV1AuthGoogle>>, TError = ErrorType<void>>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AuthGoogle>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -266,11 +260,10 @@ export function useGetApiV1AuthGoogle<TData = Awaited<ReturnType<typeof getApiV1
 
 
 /**
- * Handles Google OAuth callback and redirects with tokens
  * @summary Google OAuth callback
  */
 export const getApiV1AuthGoogleCallback = (
-    params: GetApiV1AuthGoogleCallbackParams,
+    params?: GetApiV1AuthGoogleCallbackParams,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
@@ -292,7 +285,7 @@ export const getGetApiV1AuthGoogleCallbackQueryKey = (params?: GetApiV1AuthGoogl
     }
 
     
-export const getGetApiV1AuthGoogleCallbackQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AuthGoogleCallback>>, TError = ErrorType<void | InternalServerErrorResponse>>(params: GetApiV1AuthGoogleCallbackParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AuthGoogleCallback>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetApiV1AuthGoogleCallbackQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AuthGoogleCallback>>, TError = ErrorType<void>>(params?: GetApiV1AuthGoogleCallbackParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AuthGoogleCallback>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -311,11 +304,11 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GetApiV1AuthGoogleCallbackQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AuthGoogleCallback>>>
-export type GetApiV1AuthGoogleCallbackQueryError = ErrorType<void | InternalServerErrorResponse>
+export type GetApiV1AuthGoogleCallbackQueryError = ErrorType<void>
 
 
-export function useGetApiV1AuthGoogleCallback<TData = Awaited<ReturnType<typeof getApiV1AuthGoogleCallback>>, TError = ErrorType<void | InternalServerErrorResponse>>(
- params: GetApiV1AuthGoogleCallbackParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AuthGoogleCallback>>, TError, TData>> & Pick<
+export function useGetApiV1AuthGoogleCallback<TData = Awaited<ReturnType<typeof getApiV1AuthGoogleCallback>>, TError = ErrorType<void>>(
+ params: undefined |  GetApiV1AuthGoogleCallbackParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AuthGoogleCallback>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiV1AuthGoogleCallback>>,
           TError,
@@ -324,8 +317,8 @@ export function useGetApiV1AuthGoogleCallback<TData = Awaited<ReturnType<typeof 
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AuthGoogleCallback<TData = Awaited<ReturnType<typeof getApiV1AuthGoogleCallback>>, TError = ErrorType<void | InternalServerErrorResponse>>(
- params: GetApiV1AuthGoogleCallbackParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AuthGoogleCallback>>, TError, TData>> & Pick<
+export function useGetApiV1AuthGoogleCallback<TData = Awaited<ReturnType<typeof getApiV1AuthGoogleCallback>>, TError = ErrorType<void>>(
+ params?: GetApiV1AuthGoogleCallbackParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AuthGoogleCallback>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiV1AuthGoogleCallback>>,
           TError,
@@ -334,16 +327,16 @@ export function useGetApiV1AuthGoogleCallback<TData = Awaited<ReturnType<typeof 
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AuthGoogleCallback<TData = Awaited<ReturnType<typeof getApiV1AuthGoogleCallback>>, TError = ErrorType<void | InternalServerErrorResponse>>(
- params: GetApiV1AuthGoogleCallbackParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AuthGoogleCallback>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetApiV1AuthGoogleCallback<TData = Awaited<ReturnType<typeof getApiV1AuthGoogleCallback>>, TError = ErrorType<void>>(
+ params?: GetApiV1AuthGoogleCallbackParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AuthGoogleCallback>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Google OAuth callback
  */
 
-export function useGetApiV1AuthGoogleCallback<TData = Awaited<ReturnType<typeof getApiV1AuthGoogleCallback>>, TError = ErrorType<void | InternalServerErrorResponse>>(
- params: GetApiV1AuthGoogleCallbackParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AuthGoogleCallback>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetApiV1AuthGoogleCallback<TData = Awaited<ReturnType<typeof getApiV1AuthGoogleCallback>>, TError = ErrorType<void>>(
+ params?: GetApiV1AuthGoogleCallbackParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AuthGoogleCallback>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -360,7 +353,6 @@ export function useGetApiV1AuthGoogleCallback<TData = Awaited<ReturnType<typeof 
 
 
 /**
- * Redirects user to GitHub OAuth consent screen
  * @summary Initiate GitHub OAuth login
  */
 export const getApiV1AuthGithub = (
@@ -385,7 +377,7 @@ export const getGetApiV1AuthGithubQueryKey = () => {
     }
 
     
-export const getGetApiV1AuthGithubQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AuthGithub>>, TError = ErrorType<void | InternalServerErrorResponse>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AuthGithub>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetApiV1AuthGithubQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AuthGithub>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AuthGithub>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -404,10 +396,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GetApiV1AuthGithubQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AuthGithub>>>
-export type GetApiV1AuthGithubQueryError = ErrorType<void | InternalServerErrorResponse>
+export type GetApiV1AuthGithubQueryError = ErrorType<void>
 
 
-export function useGetApiV1AuthGithub<TData = Awaited<ReturnType<typeof getApiV1AuthGithub>>, TError = ErrorType<void | InternalServerErrorResponse>>(
+export function useGetApiV1AuthGithub<TData = Awaited<ReturnType<typeof getApiV1AuthGithub>>, TError = ErrorType<void>>(
   options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AuthGithub>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiV1AuthGithub>>,
@@ -417,7 +409,7 @@ export function useGetApiV1AuthGithub<TData = Awaited<ReturnType<typeof getApiV1
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AuthGithub<TData = Awaited<ReturnType<typeof getApiV1AuthGithub>>, TError = ErrorType<void | InternalServerErrorResponse>>(
+export function useGetApiV1AuthGithub<TData = Awaited<ReturnType<typeof getApiV1AuthGithub>>, TError = ErrorType<void>>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AuthGithub>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiV1AuthGithub>>,
@@ -427,7 +419,7 @@ export function useGetApiV1AuthGithub<TData = Awaited<ReturnType<typeof getApiV1
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AuthGithub<TData = Awaited<ReturnType<typeof getApiV1AuthGithub>>, TError = ErrorType<void | InternalServerErrorResponse>>(
+export function useGetApiV1AuthGithub<TData = Awaited<ReturnType<typeof getApiV1AuthGithub>>, TError = ErrorType<void>>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AuthGithub>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -435,7 +427,7 @@ export function useGetApiV1AuthGithub<TData = Awaited<ReturnType<typeof getApiV1
  * @summary Initiate GitHub OAuth login
  */
 
-export function useGetApiV1AuthGithub<TData = Awaited<ReturnType<typeof getApiV1AuthGithub>>, TError = ErrorType<void | InternalServerErrorResponse>>(
+export function useGetApiV1AuthGithub<TData = Awaited<ReturnType<typeof getApiV1AuthGithub>>, TError = ErrorType<void>>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AuthGithub>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -453,11 +445,10 @@ export function useGetApiV1AuthGithub<TData = Awaited<ReturnType<typeof getApiV1
 
 
 /**
- * Handles GitHub OAuth callback and redirects with tokens
  * @summary GitHub OAuth callback
  */
 export const getApiV1AuthGithubCallback = (
-    params: GetApiV1AuthGithubCallbackParams,
+    params?: GetApiV1AuthGithubCallbackParams,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
@@ -479,7 +470,7 @@ export const getGetApiV1AuthGithubCallbackQueryKey = (params?: GetApiV1AuthGithu
     }
 
     
-export const getGetApiV1AuthGithubCallbackQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AuthGithubCallback>>, TError = ErrorType<void | InternalServerErrorResponse>>(params: GetApiV1AuthGithubCallbackParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AuthGithubCallback>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetApiV1AuthGithubCallbackQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AuthGithubCallback>>, TError = ErrorType<void>>(params?: GetApiV1AuthGithubCallbackParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AuthGithubCallback>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -498,11 +489,11 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GetApiV1AuthGithubCallbackQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AuthGithubCallback>>>
-export type GetApiV1AuthGithubCallbackQueryError = ErrorType<void | InternalServerErrorResponse>
+export type GetApiV1AuthGithubCallbackQueryError = ErrorType<void>
 
 
-export function useGetApiV1AuthGithubCallback<TData = Awaited<ReturnType<typeof getApiV1AuthGithubCallback>>, TError = ErrorType<void | InternalServerErrorResponse>>(
- params: GetApiV1AuthGithubCallbackParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AuthGithubCallback>>, TError, TData>> & Pick<
+export function useGetApiV1AuthGithubCallback<TData = Awaited<ReturnType<typeof getApiV1AuthGithubCallback>>, TError = ErrorType<void>>(
+ params: undefined |  GetApiV1AuthGithubCallbackParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AuthGithubCallback>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiV1AuthGithubCallback>>,
           TError,
@@ -511,8 +502,8 @@ export function useGetApiV1AuthGithubCallback<TData = Awaited<ReturnType<typeof 
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AuthGithubCallback<TData = Awaited<ReturnType<typeof getApiV1AuthGithubCallback>>, TError = ErrorType<void | InternalServerErrorResponse>>(
- params: GetApiV1AuthGithubCallbackParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AuthGithubCallback>>, TError, TData>> & Pick<
+export function useGetApiV1AuthGithubCallback<TData = Awaited<ReturnType<typeof getApiV1AuthGithubCallback>>, TError = ErrorType<void>>(
+ params?: GetApiV1AuthGithubCallbackParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AuthGithubCallback>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiV1AuthGithubCallback>>,
           TError,
@@ -521,16 +512,16 @@ export function useGetApiV1AuthGithubCallback<TData = Awaited<ReturnType<typeof 
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AuthGithubCallback<TData = Awaited<ReturnType<typeof getApiV1AuthGithubCallback>>, TError = ErrorType<void | InternalServerErrorResponse>>(
- params: GetApiV1AuthGithubCallbackParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AuthGithubCallback>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetApiV1AuthGithubCallback<TData = Awaited<ReturnType<typeof getApiV1AuthGithubCallback>>, TError = ErrorType<void>>(
+ params?: GetApiV1AuthGithubCallbackParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AuthGithubCallback>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary GitHub OAuth callback
  */
 
-export function useGetApiV1AuthGithubCallback<TData = Awaited<ReturnType<typeof getApiV1AuthGithubCallback>>, TError = ErrorType<void | InternalServerErrorResponse>>(
- params: GetApiV1AuthGithubCallbackParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AuthGithubCallback>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetApiV1AuthGithubCallback<TData = Awaited<ReturnType<typeof getApiV1AuthGithubCallback>>, TError = ErrorType<void>>(
+ params?: GetApiV1AuthGithubCallbackParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AuthGithubCallback>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -547,11 +538,10 @@ export function useGetApiV1AuthGithubCallback<TData = Awaited<ReturnType<typeof 
 
 
 /**
- * Generate new access token using refresh token
  * @summary Refresh access token
  */
 export const postApiV1AuthRefresh = (
-    postApiV1AuthRefreshBody: BodyType<PostApiV1AuthRefreshBody>,
+    refreshTokenRequest: BodyType<RefreshTokenRequest>,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
@@ -559,16 +549,16 @@ export const postApiV1AuthRefresh = (
       return customInstance<PostApiV1AuthRefresh200>(
       {url: `/api/v1/auth/refresh`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: postApiV1AuthRefreshBody, signal
+      data: refreshTokenRequest, signal
     },
       options);
     }
   
 
 
-export const getPostApiV1AuthRefreshMutationOptions = <TError = ErrorType<Error | InternalServerErrorResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AuthRefresh>>, TError,{data: BodyType<PostApiV1AuthRefreshBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof postApiV1AuthRefresh>>, TError,{data: BodyType<PostApiV1AuthRefreshBody>}, TContext> => {
+export const getPostApiV1AuthRefreshMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AuthRefresh>>, TError,{data: BodyType<RefreshTokenRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postApiV1AuthRefresh>>, TError,{data: BodyType<RefreshTokenRequest>}, TContext> => {
 
 const mutationKey = ['postApiV1AuthRefresh'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -580,7 +570,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1AuthRefresh>>, {data: BodyType<PostApiV1AuthRefreshBody>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1AuthRefresh>>, {data: BodyType<RefreshTokenRequest>}> = (props) => {
           const {data} = props ?? {};
 
           return  postApiV1AuthRefresh(data,requestOptions)
@@ -592,18 +582,18 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type PostApiV1AuthRefreshMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1AuthRefresh>>>
-    export type PostApiV1AuthRefreshMutationBody = BodyType<PostApiV1AuthRefreshBody>
-    export type PostApiV1AuthRefreshMutationError = ErrorType<Error | InternalServerErrorResponse>
+    export type PostApiV1AuthRefreshMutationBody = BodyType<RefreshTokenRequest>
+    export type PostApiV1AuthRefreshMutationError = ErrorType<void>
 
     /**
  * @summary Refresh access token
  */
-export const usePostApiV1AuthRefresh = <TError = ErrorType<Error | InternalServerErrorResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AuthRefresh>>, TError,{data: BodyType<PostApiV1AuthRefreshBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePostApiV1AuthRefresh = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AuthRefresh>>, TError,{data: BodyType<RefreshTokenRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof postApiV1AuthRefresh>>,
         TError,
-        {data: BodyType<PostApiV1AuthRefreshBody>},
+        {data: BodyType<RefreshTokenRequest>},
         TContext
       > => {
 
@@ -612,28 +602,27 @@ export const usePostApiV1AuthRefresh = <TError = ErrorType<Error | InternalServe
       return useMutation(mutationOptions, queryClient);
     }
     /**
- * Invalidate refresh token and log out user
  * @summary User logout
  */
 export const postApiV1AuthLogout = (
-    postApiV1AuthLogoutBody: BodyType<PostApiV1AuthLogoutBody>,
+    logoutRequest: BodyType<LogoutRequest>,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<PostApiV1AuthLogout200>(
+      return customInstance<AuthMessageResponse>(
       {url: `/api/v1/auth/logout`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: postApiV1AuthLogoutBody, signal
+      data: logoutRequest, signal
     },
       options);
     }
   
 
 
-export const getPostApiV1AuthLogoutMutationOptions = <TError = ErrorType<InternalServerErrorResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AuthLogout>>, TError,{data: BodyType<PostApiV1AuthLogoutBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof postApiV1AuthLogout>>, TError,{data: BodyType<PostApiV1AuthLogoutBody>}, TContext> => {
+export const getPostApiV1AuthLogoutMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AuthLogout>>, TError,{data: BodyType<LogoutRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postApiV1AuthLogout>>, TError,{data: BodyType<LogoutRequest>}, TContext> => {
 
 const mutationKey = ['postApiV1AuthLogout'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -645,7 +634,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1AuthLogout>>, {data: BodyType<PostApiV1AuthLogoutBody>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1AuthLogout>>, {data: BodyType<LogoutRequest>}> = (props) => {
           const {data} = props ?? {};
 
           return  postApiV1AuthLogout(data,requestOptions)
@@ -657,18 +646,18 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type PostApiV1AuthLogoutMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1AuthLogout>>>
-    export type PostApiV1AuthLogoutMutationBody = BodyType<PostApiV1AuthLogoutBody>
-    export type PostApiV1AuthLogoutMutationError = ErrorType<InternalServerErrorResponse>
+    export type PostApiV1AuthLogoutMutationBody = BodyType<LogoutRequest>
+    export type PostApiV1AuthLogoutMutationError = ErrorType<unknown>
 
     /**
  * @summary User logout
  */
-export const usePostApiV1AuthLogout = <TError = ErrorType<InternalServerErrorResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AuthLogout>>, TError,{data: BodyType<PostApiV1AuthLogoutBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePostApiV1AuthLogout = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AuthLogout>>, TError,{data: BodyType<LogoutRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof postApiV1AuthLogout>>,
         TError,
-        {data: BodyType<PostApiV1AuthLogoutBody>},
+        {data: BodyType<LogoutRequest>},
         TContext
       > => {
 

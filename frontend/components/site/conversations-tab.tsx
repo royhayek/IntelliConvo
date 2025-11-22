@@ -24,15 +24,15 @@ import {
   useGetApiV1ConversationsConversationId,
 } from "@/lib/api/generated/queries/conversations/conversations";
 import {
-  type GetApiV1SitesSiteId200,
-  type GetApiV1Conversations200ConversationsItem,
-  type GetApiV1ConversationsSearch200MessagesItem,
-  type GetApiV1ConversationsConversationId200MessagesItem,
+  type SiteResponse,
+  type Conversation,
+  type MessageSearchResponseMessagesItem,
+  type Message,
 } from "@/lib/api/generated/models";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface ConversationsTabProps {
-  site: GetApiV1SitesSiteId200;
+  site: SiteResponse;
 }
 
 export function ConversationsTab({ site }: ConversationsTabProps) {
@@ -68,7 +68,7 @@ export function ConversationsTab({ site }: ConversationsTabProps) {
 
   // Get search results
   const { data: searchResults } = useGetApiV1ConversationsSearch(
-    { siteId: site.id, query: searchQuery, limit: 20 },
+    { siteId: site.id, query: searchQuery, limit: "20" },
     { query: { enabled: searchQuery.length > 2 } }
   );
 
@@ -227,7 +227,7 @@ export function ConversationsTab({ site }: ConversationsTabProps) {
                 {searchResults.messages.length === 0 ? (
                   <p className="text-sm text-gray-600 dark:text-gray-400 text-center py-4">No results found</p>
                 ) : (
-                  searchResults.messages.map((result: GetApiV1ConversationsSearch200MessagesItem) => (
+                  searchResults.messages.map((result: MessageSearchResponseMessagesItem) => (
                     <div key={result.id} className="p-3 border dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 cursor-pointer">
                       <p className="text-sm font-medium text-gray-900 dark:text-white">
                         {result.conversation?.sessionId || "Anonymous"}
@@ -259,7 +259,7 @@ export function ConversationsTab({ site }: ConversationsTabProps) {
             ) : (
               <>
                 <div className="space-y-2">
-                  {paginatedConversations.map((conversation: GetApiV1Conversations200ConversationsItem) => (
+                  {paginatedConversations.map((conversation: Conversation) => (
                     <ConversationListItem
                       key={conversation.id}
                       conversationId={conversation.id || ""}
@@ -312,7 +312,7 @@ export function ConversationsTab({ site }: ConversationsTabProps) {
                 <div className="border-t dark:border-gray-600 pt-4">
                   <h5 className="font-medium text-gray-900 dark:text-white mb-3">Messages</h5>
                   <div className="space-y-3 max-h-60 overflow-y-auto">
-                    {selectedConversationData.messages.map((message: GetApiV1ConversationsConversationId200MessagesItem) => (
+                    {selectedConversationData.messages.map((message: Message) => (
                       <div key={message.id} className={`flex ${message.role === 'USER' ? 'justify-start' : 'justify-end'}`}>
                         <div className={`max-w-xs lg:max-w-md px-3 py-2 rounded-lg text-sm ${
                           message.role === 'USER'

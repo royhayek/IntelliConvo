@@ -123,6 +123,18 @@ export const updateContentSchema = registry.register(
     })
 );
 
+// URL embedding status enum
+export const urlEmbeddingStatusEnum = z.enum([
+  'SCRAPED',
+  'PENDING',
+  'PROCESSING',
+  'READY',
+  'FAILED',
+  'EXCLUDED',
+]).openapi({
+  description: 'URL embedding status',
+});
+
 // URL response schema
 export const siteUrlSchema = registry.register(
   'SiteUrl',
@@ -135,14 +147,289 @@ export const siteUrlSchema = registry.register(
     htmlContent: z.string().nullable().openapi({ description: 'Cleaned HTML' }),
     isActive: z.boolean().openapi({ description: 'Whether URL is active' }),
     isExcluded: z.boolean().openapi({ description: 'Whether URL is excluded from training' }),
+    embeddingStatus: urlEmbeddingStatusEnum.openapi({ description: 'Current embedding status' }),
     lastCrawledAt: z.string().nullable().openapi({ description: 'Last crawl timestamp' }),
     contentHash: z.string().nullable().openapi({ description: 'Content hash for change detection' }),
     createdAt: z.string().openapi({ description: 'Creation timestamp' }),
     updatedAt: z.string().openapi({ description: 'Update timestamp' }),
+    embeddingsCount: z.number().int().optional().openapi({ description: 'Number of embeddings for this URL' }),
   }).openapi({
     description: 'Site URL information',
   })
 );
+
+// URLs list response schema
+export const urlsListResponseSchema = registry.register(
+  'UrlsListResponse',
+  z.array(siteUrlSchema).openapi({
+    description: 'List of site URLs',
+  })
+);
+
+// Add URLs response schema
+export const addUrlsResponseSchema = registry.register(
+  'AddUrlsResponse',
+  z.object({
+    added: z.number().int().openapi({ description: 'Number of URLs added' }),
+    urls: z.array(siteUrlSchema).openapi({ description: 'Added URLs' }),
+  }).openapi({
+    description: 'Add URLs response',
+  })
+);
+
+// URL message response schema
+export const urlMessageResponseSchema = registry.register(
+  'UrlMessageResponse',
+  z.object({
+    message: z.string().openapi({ description: 'Response message' }),
+  }).openapi({
+    description: 'Simple message response',
+  })
+);
+
+// ============================================
+// Path Registrations
+// ============================================
+
+// GET /api/v1/sites/{siteId}/urls
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/sites/{siteId}/urls',
+  summary: 'Get site URLs',
+  tags: ['URLs'],
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: z.object({
+      siteId: z.string().uuid().openapi({ description: 'Site ID' }),
+    }),
+    query: z.object({
+      search: z.string().optional().openapi({ description: 'Search query' }),
+      status: z.enum(['active', 'excluded']).optional().openapi({ description: 'Filter by status' }),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'Successfully retrieved URLs',
+      content: {
+        'application/json': {
+          schema: urlsListResponseSchema,
+        },
+      },
+    },
+    401: {
+      description: 'Unauthorized',
+    },
+    404: {
+      description: 'Site not found',
+    },
+  },
+});
+
+// POST /api/v1/sites/{siteId}/urls
+registry.registerPath({
+  method: 'post',
+  path: '/api/v1/sites/{siteId}/urls',
+  summary: 'Add new URLs',
+  tags: ['URLs'],
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: z.object({
+      siteId: z.string().uuid().openapi({ description: 'Site ID' }),
+    }),
+    body: {
+      content: {
+        'application/json': {
+          schema: addUrlsSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    201: {
+      description: 'URLs added successfully',
+      content: {
+        'application/json': {
+          schema: addUrlsResponseSchema,
+        },
+      },
+    },
+    400: {
+      description: 'Validation error',
+    },
+    401: {
+      description: 'Unauthorized',
+    },
+  },
+});
+
+// GET /api/v1/sites/{siteId}/urls/{urlId}
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/sites/{siteId}/urls/{urlId}',
+  summary: 'Get single URL details',
+  tags: ['URLs'],
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: z.object({
+      siteId: z.string().uuid().openapi({ description: 'Site ID' }),
+      urlId: z.string().uuid().openapi({ description: 'URL ID' }),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'Successfully retrieved URL',
+      content: {
+        'application/json': {
+          schema: siteUrlSchema,
+        },
+      },
+    },
+    401: {
+      description: 'Unauthorized',
+    },
+    404: {
+      description: 'URL not found',
+    },
+  },
+});
+
+// PATCH /api/v1/sites/{siteId}/urls/{urlId}
+registry.registerPath({
+  method: 'patch',
+  path: '/api/v1/sites/{siteId}/urls/{urlId}',
+  summary: 'Update URL settings',
+  tags: ['URLs'],
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: z.object({
+      siteId: z.string().uuid().openapi({ description: 'Site ID' }),
+      urlId: z.string().uuid().openapi({ description: 'URL ID' }),
+    }),
+    body: {
+      content: {
+        'application/json': {
+          schema: updateUrlSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: 'URL updated successfully',
+      content: {
+        'application/json': {
+          schema: siteUrlSchema,
+        },
+      },
+    },
+    401: {
+      description: 'Unauthorized',
+    },
+    404: {
+      description: 'URL not found',
+    },
+  },
+});
+
+// DELETE /api/v1/sites/{siteId}/urls/{urlId}
+registry.registerPath({
+  method: 'delete',
+  path: '/api/v1/sites/{siteId}/urls/{urlId}',
+  summary: 'Delete URL',
+  tags: ['URLs'],
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: z.object({
+      siteId: z.string().uuid().openapi({ description: 'Site ID' }),
+      urlId: z.string().uuid().openapi({ description: 'URL ID' }),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'URL deleted successfully',
+      content: {
+        'application/json': {
+          schema: urlMessageResponseSchema,
+        },
+      },
+    },
+    401: {
+      description: 'Unauthorized',
+    },
+    404: {
+      description: 'URL not found',
+    },
+  },
+});
+
+// PUT /api/v1/sites/{siteId}/urls/{urlId}/content
+registry.registerPath({
+  method: 'put',
+  path: '/api/v1/sites/{siteId}/urls/{urlId}/content',
+  summary: 'Update URL content',
+  tags: ['URLs'],
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: z.object({
+      siteId: z.string().uuid().openapi({ description: 'Site ID' }),
+      urlId: z.string().uuid().openapi({ description: 'URL ID' }),
+    }),
+    body: {
+      content: {
+        'application/json': {
+          schema: updateContentSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: 'Content updated successfully',
+      content: {
+        'application/json': {
+          schema: siteUrlSchema,
+        },
+      },
+    },
+    401: {
+      description: 'Unauthorized',
+    },
+    404: {
+      description: 'URL not found',
+    },
+  },
+});
+
+// POST /api/v1/sites/{siteId}/urls/{urlId}/crawl
+registry.registerPath({
+  method: 'post',
+  path: '/api/v1/sites/{siteId}/urls/{urlId}/crawl',
+  summary: 'Trigger URL recrawl',
+  tags: ['URLs'],
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: z.object({
+      siteId: z.string().uuid().openapi({ description: 'Site ID' }),
+      urlId: z.string().uuid().openapi({ description: 'URL ID' }),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'Crawl initiated successfully',
+      content: {
+        'application/json': {
+          schema: urlMessageResponseSchema,
+        },
+      },
+    },
+    401: {
+      description: 'Unauthorized',
+    },
+    404: {
+      description: 'URL not found',
+    },
+  },
+});
 
 // Type exports
 export type UrlQuery = z.infer<typeof urlQuerySchema>;

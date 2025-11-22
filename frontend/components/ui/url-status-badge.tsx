@@ -1,16 +1,30 @@
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import {
+  urlStatusLabels,
+  urlStatusAdminLabels,
+  urlStatusVariants,
+  type UrlEmbeddingStatus,
+} from "@/lib/utils/status-labels";
 
-type UrlStatus = "active" | "inactive" | "excluded" | "crawling" | "error";
+// Legacy status types for backward compatibility
+type LegacyUrlStatus = "active" | "inactive" | "excluded" | "crawling" | "error";
 
 interface UrlStatusBadgeProps {
-  status: UrlStatus;
+  // New prop: embedding status from backend
+  embeddingStatus?: UrlEmbeddingStatus;
+  // Legacy props for backward compatibility
+  status?: LegacyUrlStatus;
   isActive?: boolean;
   isExcluded?: boolean;
+  // Display options
+  isAdmin?: boolean;
   className?: string;
+  showTooltip?: boolean;
 }
 
-const statusConfig = {
+// Legacy status config for backward compatibility
+const legacyStatusConfig = {
   active: {
     label: "Active",
     variant: "default" as const,
@@ -39,18 +53,35 @@ const statusConfig = {
 };
 
 export function UrlStatusBadge({
+  embeddingStatus,
   status,
   isActive,
   isExcluded,
+  isAdmin = false,
   className,
 }: UrlStatusBadgeProps) {
-  // Support legacy props for backward compatibility
-  let finalStatus = status;
+  // If embeddingStatus is provided, use new status system
+  if (embeddingStatus) {
+    const labels = isAdmin ? urlStatusAdminLabels : urlStatusLabels;
+    const variant = urlStatusVariants[embeddingStatus];
+
+    return (
+      <Badge
+        variant={variant.variant}
+        className={cn(variant.className, className)}
+      >
+        {labels[embeddingStatus]}
+      </Badge>
+    );
+  }
+
+  // Fall back to legacy status handling
+  let finalStatus: LegacyUrlStatus = status || "inactive";
   if (isExcluded !== undefined || isActive !== undefined) {
     finalStatus = isExcluded ? "excluded" : isActive ? "active" : "inactive";
   }
 
-  const config = statusConfig[finalStatus];
+  const config = legacyStatusConfig[finalStatus];
 
   return (
     <Badge

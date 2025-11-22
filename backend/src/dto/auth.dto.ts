@@ -13,6 +13,7 @@ export interface UserDTO {
   email: string;
   fullName: string | null;
   authProvider: AuthProvider;
+  isAdmin: boolean;
   createdAt: string;
   updatedAt: string;
   lastLoginAt: string | null;

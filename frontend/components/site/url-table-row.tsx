@@ -2,14 +2,15 @@ import { Button } from "@/components/ui/button";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { UrlStatusBadge } from "@/components/ui/url-status-badge";
 import { Eye, ExternalLink, RefreshCw, Check, X, Trash2 } from "lucide-react";
-import { type GetApiV1SitesSiteIdUrls200Item } from "@/lib/api/generated/models";
+import { type SiteUrl } from "@/lib/api/generated/models";
+import { type UrlEmbeddingStatus } from "@/lib/utils/status-labels";
 
 interface UrlTableRowProps {
-  url: GetApiV1SitesSiteIdUrls200Item;
+  url: SiteUrl;
   onPreview?: (urlId: string) => void;
   onRecrawl?: (urlId: string) => void;
-  onToggleStatus?: (url: GetApiV1SitesSiteIdUrls200Item, field: "isExcluded" | "isActive") => void;
-  onDelete?: (url: GetApiV1SitesSiteIdUrls200Item) => void;
+  onToggleStatus?: (url: SiteUrl, field: "isExcluded" | "isActive") => void;
+  onDelete?: (url: SiteUrl) => void;
   isRecrawling?: boolean;
 }
 
@@ -39,7 +40,9 @@ export function UrlTableRow({
     <TableRow className="group">
       <TableCell>
         <UrlStatusBadge
-          status={url.isExcluded ? "excluded" : url.isActive ? "active" : "inactive"}
+          embeddingStatus={url.embeddingStatus as UrlEmbeddingStatus}
+          isActive={url.isActive}
+          isExcluded={url.isExcluded}
         />
       </TableCell>
       <TableCell>

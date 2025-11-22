@@ -1,21 +1,14 @@
-import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import { Express } from 'express';
 import { generateOpenAPIDocument } from './openapi';
 
 /**
- * Hybrid Swagger UI Configuration
+ * Swagger UI Configuration
  *
- * This configuration uses a hybrid approach combining the best of both worlds:
- * 1. **Schemas**: Generated from Zod via zod-to-openapi (type-safe, no duplication)
- * 2. **Paths**: Documented with JSDoc comments in route files (close to implementation)
- *
- * Benefits:
- * - Single source of truth for request/response schemas (Zod)
- * - Type safety between code and documentation
- * - Path documentation stays close to route definitions
- * - No massive path registration files
- * - Easy to maintain and understand
+ * This configuration uses Zod schemas via zod-to-openapi for:
+ * - Type-safe schema generation
+ * - Path registration via registry.registerPath()
+ * - Single source of truth for request/response schemas
  */
 
 // Import all schema files to ensure they register with the OpenAPI registry
@@ -27,208 +20,14 @@ import '../schemas/subscriptions.schema';
 import '../schemas/files.schema';
 import '../schemas/urls.schema';
 import '../schemas/widget.schema';
+import '../schemas/account.schema';
+import '../schemas/admin.schema';
+import '../schemas/notifications.schema';
+import '../schemas/admin-sessions.schema';
+import '../schemas/admin-audit.schema';
 
-// Generate schemas from Zod
-const zodOpenApiDoc = generateOpenAPIDocument();
-
-// Swagger JSDoc configuration to scan route files for path documentation
-const swaggerJsdocOptions: swaggerJsdoc.Options = {
-  definition: {
-    openapi: '3.0.0',
-    info: {
-      title: 'IntelligentConvo API',
-      version: '1.0.0',
-      description:
-        'A comprehensive API for IntelligentConvo - an AI-powered conversation platform that provides intelligent chatbot solutions for websites',
-      contact: {
-        name: 'API Support',
-        email: 'support@intelligentconvo.com',
-      },
-      license: {
-        name: 'MIT',
-      },
-    },
-    servers: [
-      {
-        url: process.env.API_URL || 'http://localhost:5000',
-        description: 'Development server',
-      },
-      {
-        url: process.env.PRODUCTION_API_URL || 'https://api.intelligentconvo.com',
-        description: 'Production server',
-      },
-    ],
-    components: {
-      securitySchemes: {
-        bearerAuth: {
-          type: 'http',
-          scheme: 'bearer',
-          bearerFormat: 'JWT',
-          description: 'Enter your JWT token',
-        },
-        googleOAuth: {
-          type: 'oauth2',
-          flows: {
-            authorizationCode: {
-              authorizationUrl: '/api/auth/google',
-              tokenUrl: '/api/auth/google/callback',
-              scopes: {
-                'profile email': 'Access profile and email',
-              },
-            },
-          },
-        },
-        githubOAuth: {
-          type: 'oauth2',
-          flows: {
-            authorizationCode: {
-              authorizationUrl: '/api/auth/github',
-              tokenUrl: '/api/auth/github/callback',
-              scopes: {
-                'user:email': 'Access user email',
-              },
-            },
-          },
-        },
-      },
-      // Inject Zod-generated schemas
-      schemas: zodOpenApiDoc.components?.schemas || {},
-      // Inject common responses
-      responses: {
-        UnauthorizedError: {
-          description: 'Authentication information is missing or invalid',
-          content: {
-            'application/json': {
-              schema: {
-                type: 'object',
-                properties: {
-                  success: { type: 'boolean', example: false },
-                  error: { type: 'string', example: 'Unauthorized' },
-                },
-              },
-            },
-          },
-        },
-        ForbiddenError: {
-          description: 'Access forbidden - insufficient permissions',
-          content: {
-            'application/json': {
-              schema: {
-                type: 'object',
-                properties: {
-                  success: { type: 'boolean', example: false },
-                  error: { type: 'string', example: 'Forbidden' },
-                },
-              },
-            },
-          },
-        },
-        NotFoundError: {
-          description: 'The requested resource was not found',
-          content: {
-            'application/json': {
-              schema: {
-                type: 'object',
-                properties: {
-                  success: { type: 'boolean', example: false },
-                  error: { type: 'string', example: 'Resource not found' },
-                },
-              },
-            },
-          },
-        },
-        ValidationError: {
-          description: 'Validation error - invalid request data',
-          content: {
-            'application/json': {
-              schema: {
-                type: 'object',
-                properties: {
-                  success: { type: 'boolean', example: false },
-                  error: { type: 'string', example: 'Validation failed' },
-                },
-              },
-            },
-          },
-        },
-        InternalServerError: {
-          description: 'Internal server error',
-          content: {
-            'application/json': {
-              schema: {
-                type: 'object',
-                properties: {
-                  success: { type: 'boolean', example: false },
-                  error: { type: 'string', example: 'Internal server error' },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-    security: [
-      {
-        bearerAuth: [],
-      },
-    ],
-    tags: [
-      {
-        name: 'Authentication',
-        description: 'User authentication and authorization operations',
-      },
-      {
-        name: 'Sites',
-        description: 'Website management operations',
-      },
-      {
-        name: 'URLs',
-        description: 'URL crawling and content management operations',
-      },
-      {
-        name: 'Files',
-        description: 'Knowledge file upload and management operations',
-      },
-      {
-        name: 'Conversations',
-        description: 'Chat conversation management operations',
-      },
-      {
-        name: 'Subscriptions',
-        description: 'User subscription and billing operations',
-      },
-      {
-        name: 'Widget',
-        description: 'Chat widget configuration and public endpoints',
-      },
-      {
-        name: 'Account',
-        description: 'User account management operations',
-      },
-      {
-        name: 'Billing',
-        description: 'Billing information and transaction operations',
-      },
-      {
-        name: 'Webhooks',
-        description: 'External webhook operations',
-      },
-      {
-        name: 'Health',
-        description: 'System health check operations',
-      },
-      {
-        name: 'Monitoring',
-        description: 'System monitoring and performance metrics',
-      },
-    ],
-  },
-  // Scan route files for @swagger JSDoc comments
-  apis: ['./src/routes/*.ts', './src/routes/*.js', './src/index.ts'],
-};
-
-// Generate the complete OpenAPI document
-const openApiDocument = swaggerJsdoc(swaggerJsdocOptions);
+// Generate complete OpenAPI document from Zod schemas
+const openApiDocument = generateOpenAPIDocument();
 
 export const setupSwagger = (app: Express): void => {
   const swaggerOptions = {

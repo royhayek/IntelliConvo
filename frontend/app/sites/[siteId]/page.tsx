@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import {
@@ -30,7 +31,12 @@ import { SiteNavigationSidebar } from "@/components/site/site-navigation-sidebar
 import { useUIStore } from "@/lib/store";
 import { useRequireAuth } from "@/lib/hooks/useAuth";
 import { AuthLoading } from "@/components/auth/auth-loading";
-import { useGetApiV1SitesSiteId } from "@/lib/api/generated/queries/sites/sites";
+import { useSiteSocket } from "@/lib/hooks/useSiteSocket";
+import {
+  useGetApiV1SitesSiteId,
+  getGetApiV1SitesSiteIdQueryKey,
+} from "@/lib/api/generated/queries/sites/sites";
+import type { SiteResponse } from "@/lib/api/generated/models";
 
 // Tab components (these would be separate files in a real app)
 import { OverviewTab } from "@/components/site/overview-tab";
@@ -53,12 +59,38 @@ export default function SiteManagePage() {
   // Protected route - redirects to login if not authenticated
   const { isLoading: isAuthLoading, isAuthenticated } = useRequireAuth();
   const { navigationLayout } = useUIStore();
+  const queryClient = useQueryClient();
 
   // Fetch site using generated hook
   const { data: site, isLoading: isSiteLoading } = useGetApiV1SitesSiteId(siteId, {
     query: {
       enabled: isAuthenticated && !!siteId,
+      refetchOnMount: true, // Always refetch fresh data on mount
+      staleTime: 0, // Consider data stale immediately to ensure fresh status
     },
+  });
+
+  // Handle real-time crawl status updates
+  const handleCrawlStatusUpdate = useCallback(
+    (update: { siteId: string; crawlStatus: string }) => {
+      if (update.siteId !== siteId) return;
+
+      // Update the query cache directly for real-time updates
+      queryClient.setQueryData(
+        getGetApiV1SitesSiteIdQueryKey(siteId),
+        (oldData: SiteResponse | undefined) => {
+          if (!oldData) return oldData;
+          return { ...oldData, crawlStatus: update.crawlStatus };
+        }
+      );
+    },
+    [siteId, queryClient]
+  );
+
+  // Connect to socket for real-time crawl status updates
+  useSiteSocket({
+    siteId: isAuthenticated ? siteId : null,
+    onCrawlStatusUpdate: handleCrawlStatusUpdate,
   });
 
   // Update URL when tab changes
@@ -143,6 +175,7 @@ export default function SiteManagePage() {
     { id: "playground", label: "Playground", icon: Play },
   ];
 
+  console.log('site.crawlStatus', site.crawlStatus)
   return (
     <div className="min-h-screen gradient-surface">
       <DashboardHeader
@@ -216,52 +249,51 @@ export default function SiteManagePage() {
                 </div>
               </div>
 
-              {site.subscription && (
-                <Badge
-                  variant={
-                    site.subscription.status === "ACTIVE" ? "default" :
-                    site.subscription.status === "TRIAL" ? "secondary" : "destructive"
-                  }
-                  className={`px-4 py-2 text-sm ${
-                    site.subscription.status === "TRIAL" ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 border-blue-200 dark:border-blue-800" :
-                    site.subscription.status === "ACTIVE" ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 border-green-200 dark:border-green-800" : ""
-                  }`}
-                >
-                  {site.subscription.status === "TRIAL" ? "✨ Trial" :
-                   site.subscription.status === "ACTIVE" ? "✅ Active" : "❌ Expired"}
-                </Badge>
-              )}
-
               <Badge
                 variant={
-                  site.crawlStatus === "COMPLETED" ? "default" :
+                  site.crawlStatus === "READY" || site.crawlStatus === "COMPLETED" ? "default" :
                   site.crawlStatus === "FAILED" ? "destructive" : "secondary"
                 }
                 className={`flex items-center space-x-2 text-sm ${
+                  site.crawlStatus === "READY" ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 border-green-200 dark:border-green-800" :
                   site.crawlStatus === "COMPLETED" ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 border-green-200 dark:border-green-800" :
-                  site.crawlStatus === "CRAWLING" ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800" : ""
+                  site.crawlStatus === "CRAWLING" ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800" :
+                  site.crawlStatus === "PROCESSING" ? "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800" :
+                  site.crawlStatus === "PARTIAL" ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800" :
+                  site.crawlStatus === "AWAITING_PAYMENT" ? "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 border-amber-200 dark:border-amber-800" :
+                  site.crawlStatus === "FAILED" ? "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 border-red-200 dark:border-red-800" : ""
                 }`}
               >
                 <motion.div
                   animate={{
-                    scale: site.crawlStatus === "CRAWLING" ? [1, 1.3, 1] : 1,
+                    scale: (site.crawlStatus === "CRAWLING" || site.crawlStatus === "PROCESSING" || site.crawlStatus === "PENDING") ? [1, 1.3, 1] : 1,
                   }}
                   transition={{
                     duration: 1.5,
-                    repeat: site.crawlStatus === "CRAWLING" ? Infinity : 0,
+                    repeat: (site.crawlStatus === "CRAWLING" || site.crawlStatus === "PROCESSING" || site.crawlStatus === "PENDING") ? Infinity : 0,
                   }}
                   className={`h-2 w-2 rounded-full ${
+                    site.crawlStatus === "READY" ? "bg-green-500" :
                     site.crawlStatus === "COMPLETED" ? "bg-green-500" :
                     site.crawlStatus === "CRAWLING" ? "bg-yellow-500" :
+                    site.crawlStatus === "PROCESSING" ? "bg-indigo-500" :
+                    site.crawlStatus === "PARTIAL" ? "bg-yellow-500" :
+                    site.crawlStatus === "AWAITING_PAYMENT" ? "bg-amber-500" :
                     site.crawlStatus === "FAILED" ? "bg-red-500" :
+                    site.crawlStatus === "PENDING" ? "bg-gray-500" :
                     "bg-gray-500"
                   }`}
                 ></motion.div>
                 <span>
-                  {site.crawlStatus === "COMPLETED" ? "Up to date" :
-                   site.crawlStatus === "CRAWLING" ? "Updating..." :
-                   site.crawlStatus === "FAILED" ? "Update failed" :
-                   "Pending"}
+                  {site.crawlStatus === "READY" ? "Active" :
+                   site.crawlStatus === "COMPLETED" ? "Analyzing content..." :
+                   site.crawlStatus === "CRAWLING" ? "Scanning website..." :
+                   site.crawlStatus === "PROCESSING" ? "Setting up assistant..." :
+                   site.crawlStatus === "PARTIAL" ? "Partially ready" :
+                   site.crawlStatus === "AWAITING_PAYMENT" ? "Awaiting activation" :
+                   site.crawlStatus === "FAILED" ? "Setup failed" :
+                   site.crawlStatus === "PENDING" ? "Setting up..." :
+                   "Setting up..."}
                 </span>
               </Badge>
             </motion.div>

@@ -27,12 +27,12 @@ import {
   usePutApiV1WidgetSiteIdSettingsReset,
   getGetApiV1WidgetSiteIdSettingsAdminQueryKey,
 } from "@/lib/api/generated/queries/widget/widget";
-import { type GetApiV1SitesSiteId200 } from "@/lib/api/generated/models";
+import { type SiteResponse } from "@/lib/api/generated/models";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "../ui/input";
 
 interface WidgetTabProps {
-  site: GetApiV1SitesSiteId200;
+  site: SiteResponse;
 }
 
 interface WidgetSettings {

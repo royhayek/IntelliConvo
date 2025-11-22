@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { useSiteSocket } from "@/lib/hooks/useSiteSocket";
 import {
   Plus,
   Edit2,
@@ -65,8 +66,8 @@ import {
   getGetApiV1SitesSiteIdUrlsUrlIdQueryKey,
 } from "@/lib/api/generated/queries/urls/urls";
 import {
-  type GetApiV1SitesSiteId200,
-  type GetApiV1SitesSiteIdUrls200Item,
+  type SiteResponse,
+  type SiteUrl,
 } from "@/lib/api/generated/models";
 
 // Validation schemas
@@ -122,7 +123,7 @@ type AddBulkUrlsInput = z.input<typeof addBulkUrlsSchema>;
 type EditContentFormData = z.infer<typeof editContentSchema>;
 
 interface SitemapTabProps {
-  site: GetApiV1SitesSiteId200;
+  site: SiteResponse;
 }
 
 export function SitemapTab({ site }: SitemapTabProps) {
@@ -141,7 +142,36 @@ export function SitemapTab({ site }: SitemapTabProps) {
 
   // Delete confirmation state
   const [urlToDelete, setUrlToDelete] =
-    useState<GetApiV1SitesSiteIdUrls200Item | null>(null);
+    useState<SiteUrl | null>(null);
+
+  // Handle real-time URL status updates
+  const handleUrlStatusUpdate = useCallback(
+    (update: { siteId: string; urls: Array<{ urlId: string; embeddingStatus: string }> }) => {
+      if (update.siteId !== site.id) return;
+
+      // Update the query cache directly for real-time updates
+      queryClient.setQueryData(
+        getGetApiV1SitesSiteIdUrlsQueryKey(site.id),
+        (oldData: SiteUrl[] | undefined) => {
+          if (!oldData) return oldData;
+          return oldData.map((url) => {
+            const updatedUrl = update.urls.find((u) => u.urlId === url.id);
+            if (updatedUrl) {
+              return { ...url, embeddingStatus: updatedUrl.embeddingStatus };
+            }
+            return url;
+          });
+        }
+      );
+    },
+    [site.id, queryClient]
+  );
+
+  // Connect to socket for real-time URL status updates
+  useSiteSocket({
+    siteId: site.id,
+    onUrlStatusUpdate: handleUrlStatusUpdate,
+  });
 
   // Forms
   const singleUrlForm = useForm<AddSingleUrlFormData>({
@@ -279,7 +309,7 @@ export function SitemapTab({ site }: SitemapTabProps) {
   };
 
   const toggleUrlStatus = (
-    url: GetApiV1SitesSiteIdUrls200Item,
+    url: SiteUrl,
     field: "isActive" | "isExcluded"
   ) => {
     if (!url.id) return;

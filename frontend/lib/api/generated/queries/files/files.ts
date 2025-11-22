@@ -20,17 +20,12 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  DeleteApiV1SitesSiteIdFilesFileId200,
-  Error,
-  GetApiV1SitesSiteIdFiles200,
-  GetApiV1SitesSiteIdFilesFileId200,
+  FileUploadResponse,
+  FilesListResponse,
   GetApiV1SitesSiteIdFilesParams,
-  InternalServerErrorResponse,
-  NotFoundErrorResponse,
-  PostApiV1SitesSiteIdFiles201,
-  PostApiV1SitesSiteIdFilesBody,
-  PostApiV1SitesSiteIdFilesFileIdReprocess200,
-  UnauthorizedErrorResponse
+  KnowledgeFile,
+  MessageResponse,
+  PostApiV1SitesSiteIdFilesBody
 } from '../../models';
 
 import { customInstance } from '../../../axios-instance';
@@ -42,7 +37,6 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
 /**
- * Retrieve all uploaded knowledge files for the specified site
  * @summary Get all knowledge files for a site
  */
 export const getApiV1SitesSiteIdFiles = (
@@ -52,7 +46,7 @@ export const getApiV1SitesSiteIdFiles = (
 ) => {
       
       
-      return customInstance<GetApiV1SitesSiteIdFiles200>(
+      return customInstance<FilesListResponse>(
       {url: `/api/v1/sites/${siteId}/files`, method: 'GET',
         params, signal
     },
@@ -70,7 +64,7 @@ export const getGetApiV1SitesSiteIdFilesQueryKey = (siteId?: string,
     }
 
     
-export const getGetApiV1SitesSiteIdFilesQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdFiles>>, TError = ErrorType<UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>>(siteId: string,
+export const getGetApiV1SitesSiteIdFilesQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdFiles>>, TError = ErrorType<void>>(siteId: string,
     params?: GetApiV1SitesSiteIdFilesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdFiles>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
@@ -90,10 +84,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GetApiV1SitesSiteIdFilesQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1SitesSiteIdFiles>>>
-export type GetApiV1SitesSiteIdFilesQueryError = ErrorType<UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>
+export type GetApiV1SitesSiteIdFilesQueryError = ErrorType<void>
 
 
-export function useGetApiV1SitesSiteIdFiles<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdFiles>>, TError = ErrorType<UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>>(
+export function useGetApiV1SitesSiteIdFiles<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdFiles>>, TError = ErrorType<void>>(
  siteId: string,
     params: undefined |  GetApiV1SitesSiteIdFilesParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdFiles>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
@@ -104,7 +98,7 @@ export function useGetApiV1SitesSiteIdFiles<TData = Awaited<ReturnType<typeof ge
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1SitesSiteIdFiles<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdFiles>>, TError = ErrorType<UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>>(
+export function useGetApiV1SitesSiteIdFiles<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdFiles>>, TError = ErrorType<void>>(
  siteId: string,
     params?: GetApiV1SitesSiteIdFilesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdFiles>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
@@ -115,7 +109,7 @@ export function useGetApiV1SitesSiteIdFiles<TData = Awaited<ReturnType<typeof ge
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1SitesSiteIdFiles<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdFiles>>, TError = ErrorType<UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>>(
+export function useGetApiV1SitesSiteIdFiles<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdFiles>>, TError = ErrorType<void>>(
  siteId: string,
     params?: GetApiV1SitesSiteIdFilesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdFiles>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
@@ -124,7 +118,7 @@ export function useGetApiV1SitesSiteIdFiles<TData = Awaited<ReturnType<typeof ge
  * @summary Get all knowledge files for a site
  */
 
-export function useGetApiV1SitesSiteIdFiles<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdFiles>>, TError = ErrorType<UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>>(
+export function useGetApiV1SitesSiteIdFiles<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdFiles>>, TError = ErrorType<void>>(
  siteId: string,
     params?: GetApiV1SitesSiteIdFilesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdFiles>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
@@ -143,7 +137,6 @@ export function useGetApiV1SitesSiteIdFiles<TData = Awaited<ReturnType<typeof ge
 
 
 /**
- * Upload a PDF or TXT file to add to the site's knowledge base
  * @summary Upload a knowledge file
  */
 export const postApiV1SitesSiteIdFiles = (
@@ -153,9 +146,11 @@ export const postApiV1SitesSiteIdFiles = (
 ) => {
       
       const formData = new FormData();
-formData.append(`file`, postApiV1SitesSiteIdFilesBody.file)
+if(postApiV1SitesSiteIdFilesBody.file !== undefined) {
+ formData.append(`file`, postApiV1SitesSiteIdFilesBody.file)
+ }
 
-      return customInstance<PostApiV1SitesSiteIdFiles201>(
+      return customInstance<FileUploadResponse>(
       {url: `/api/v1/sites/${siteId}/files`, method: 'POST',
       headers: {'Content-Type': 'multipart/form-data', },
        data: formData, signal
@@ -165,7 +160,7 @@ formData.append(`file`, postApiV1SitesSiteIdFilesBody.file)
   
 
 
-export const getPostApiV1SitesSiteIdFilesMutationOptions = <TError = ErrorType<Error | UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>,
+export const getPostApiV1SitesSiteIdFilesMutationOptions = <TError = ErrorType<void>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1SitesSiteIdFiles>>, TError,{siteId: string;data: BodyType<PostApiV1SitesSiteIdFilesBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof postApiV1SitesSiteIdFiles>>, TError,{siteId: string;data: BodyType<PostApiV1SitesSiteIdFilesBody>}, TContext> => {
 
@@ -192,12 +187,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type PostApiV1SitesSiteIdFilesMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1SitesSiteIdFiles>>>
     export type PostApiV1SitesSiteIdFilesMutationBody = BodyType<PostApiV1SitesSiteIdFilesBody>
-    export type PostApiV1SitesSiteIdFilesMutationError = ErrorType<Error | UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>
+    export type PostApiV1SitesSiteIdFilesMutationError = ErrorType<void>
 
     /**
  * @summary Upload a knowledge file
  */
-export const usePostApiV1SitesSiteIdFiles = <TError = ErrorType<Error | UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>,
+export const usePostApiV1SitesSiteIdFiles = <TError = ErrorType<void>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1SitesSiteIdFiles>>, TError,{siteId: string;data: BodyType<PostApiV1SitesSiteIdFilesBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof postApiV1SitesSiteIdFiles>>,
@@ -211,8 +206,7 @@ export const usePostApiV1SitesSiteIdFiles = <TError = ErrorType<Error | Unauthor
       return useMutation(mutationOptions, queryClient);
     }
     /**
- * Retrieve detailed information about a specific knowledge file
- * @summary Get file details and content
+ * @summary Get file details
  */
 export const getApiV1SitesSiteIdFilesFileId = (
     siteId: string,
@@ -221,7 +215,7 @@ export const getApiV1SitesSiteIdFilesFileId = (
 ) => {
       
       
-      return customInstance<GetApiV1SitesSiteIdFilesFileId200>(
+      return customInstance<KnowledgeFile>(
       {url: `/api/v1/sites/${siteId}/files/${fileId}`, method: 'GET', signal
     },
       options);
@@ -238,7 +232,7 @@ export const getGetApiV1SitesSiteIdFilesFileIdQueryKey = (siteId?: string,
     }
 
     
-export const getGetApiV1SitesSiteIdFilesFileIdQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdFilesFileId>>, TError = ErrorType<UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>>(siteId: string,
+export const getGetApiV1SitesSiteIdFilesFileIdQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdFilesFileId>>, TError = ErrorType<void>>(siteId: string,
     fileId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdFilesFileId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
@@ -258,10 +252,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GetApiV1SitesSiteIdFilesFileIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1SitesSiteIdFilesFileId>>>
-export type GetApiV1SitesSiteIdFilesFileIdQueryError = ErrorType<UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>
+export type GetApiV1SitesSiteIdFilesFileIdQueryError = ErrorType<void>
 
 
-export function useGetApiV1SitesSiteIdFilesFileId<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdFilesFileId>>, TError = ErrorType<UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>>(
+export function useGetApiV1SitesSiteIdFilesFileId<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdFilesFileId>>, TError = ErrorType<void>>(
  siteId: string,
     fileId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdFilesFileId>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
@@ -272,7 +266,7 @@ export function useGetApiV1SitesSiteIdFilesFileId<TData = Awaited<ReturnType<typ
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1SitesSiteIdFilesFileId<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdFilesFileId>>, TError = ErrorType<UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>>(
+export function useGetApiV1SitesSiteIdFilesFileId<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdFilesFileId>>, TError = ErrorType<void>>(
  siteId: string,
     fileId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdFilesFileId>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
@@ -283,16 +277,16 @@ export function useGetApiV1SitesSiteIdFilesFileId<TData = Awaited<ReturnType<typ
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1SitesSiteIdFilesFileId<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdFilesFileId>>, TError = ErrorType<UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>>(
+export function useGetApiV1SitesSiteIdFilesFileId<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdFilesFileId>>, TError = ErrorType<void>>(
  siteId: string,
     fileId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdFilesFileId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary Get file details and content
+ * @summary Get file details
  */
 
-export function useGetApiV1SitesSiteIdFilesFileId<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdFilesFileId>>, TError = ErrorType<UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>>(
+export function useGetApiV1SitesSiteIdFilesFileId<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdFilesFileId>>, TError = ErrorType<void>>(
  siteId: string,
     fileId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdFilesFileId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
@@ -311,7 +305,6 @@ export function useGetApiV1SitesSiteIdFilesFileId<TData = Awaited<ReturnType<typ
 
 
 /**
- * Delete a knowledge file and all associated embeddings
  * @summary Delete a knowledge file
  */
 export const deleteApiV1SitesSiteIdFilesFileId = (
@@ -320,7 +313,7 @@ export const deleteApiV1SitesSiteIdFilesFileId = (
  options?: SecondParameter<typeof customInstance>,) => {
       
       
-      return customInstance<DeleteApiV1SitesSiteIdFilesFileId200>(
+      return customInstance<MessageResponse>(
       {url: `/api/v1/sites/${siteId}/files/${fileId}`, method: 'DELETE'
     },
       options);
@@ -328,7 +321,7 @@ export const deleteApiV1SitesSiteIdFilesFileId = (
   
 
 
-export const getDeleteApiV1SitesSiteIdFilesFileIdMutationOptions = <TError = ErrorType<UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>,
+export const getDeleteApiV1SitesSiteIdFilesFileIdMutationOptions = <TError = ErrorType<void>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1SitesSiteIdFilesFileId>>, TError,{siteId: string;fileId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1SitesSiteIdFilesFileId>>, TError,{siteId: string;fileId: string}, TContext> => {
 
@@ -355,12 +348,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type DeleteApiV1SitesSiteIdFilesFileIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteApiV1SitesSiteIdFilesFileId>>>
     
-    export type DeleteApiV1SitesSiteIdFilesFileIdMutationError = ErrorType<UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>
+    export type DeleteApiV1SitesSiteIdFilesFileIdMutationError = ErrorType<void>
 
     /**
  * @summary Delete a knowledge file
  */
-export const useDeleteApiV1SitesSiteIdFilesFileId = <TError = ErrorType<UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>,
+export const useDeleteApiV1SitesSiteIdFilesFileId = <TError = ErrorType<void>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1SitesSiteIdFilesFileId>>, TError,{siteId: string;fileId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof deleteApiV1SitesSiteIdFilesFileId>>,
@@ -374,7 +367,6 @@ export const useDeleteApiV1SitesSiteIdFilesFileId = <TError = ErrorType<Unauthor
       return useMutation(mutationOptions, queryClient);
     }
     /**
- * Regenerate embeddings for an existing knowledge file
  * @summary Reprocess a knowledge file
  */
 export const postApiV1SitesSiteIdFilesFileIdReprocess = (
@@ -384,7 +376,7 @@ export const postApiV1SitesSiteIdFilesFileIdReprocess = (
 ) => {
       
       
-      return customInstance<PostApiV1SitesSiteIdFilesFileIdReprocess200>(
+      return customInstance<MessageResponse>(
       {url: `/api/v1/sites/${siteId}/files/${fileId}/reprocess`, method: 'POST', signal
     },
       options);
@@ -392,7 +384,7 @@ export const postApiV1SitesSiteIdFilesFileIdReprocess = (
   
 
 
-export const getPostApiV1SitesSiteIdFilesFileIdReprocessMutationOptions = <TError = ErrorType<UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>,
+export const getPostApiV1SitesSiteIdFilesFileIdReprocessMutationOptions = <TError = ErrorType<void>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1SitesSiteIdFilesFileIdReprocess>>, TError,{siteId: string;fileId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof postApiV1SitesSiteIdFilesFileIdReprocess>>, TError,{siteId: string;fileId: string}, TContext> => {
 
@@ -419,12 +411,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type PostApiV1SitesSiteIdFilesFileIdReprocessMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1SitesSiteIdFilesFileIdReprocess>>>
     
-    export type PostApiV1SitesSiteIdFilesFileIdReprocessMutationError = ErrorType<UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>
+    export type PostApiV1SitesSiteIdFilesFileIdReprocessMutationError = ErrorType<void>
 
     /**
  * @summary Reprocess a knowledge file
  */
-export const usePostApiV1SitesSiteIdFilesFileIdReprocess = <TError = ErrorType<UnauthorizedErrorResponse | NotFoundErrorResponse | InternalServerErrorResponse>,
+export const usePostApiV1SitesSiteIdFilesFileIdReprocess = <TError = ErrorType<void>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1SitesSiteIdFilesFileIdReprocess>>, TError,{siteId: string;fileId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof postApiV1SitesSiteIdFilesFileIdReprocess>>,

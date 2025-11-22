@@ -7,7 +7,7 @@ import crypto from 'crypto';
 import { prisma } from '../../lib/prisma';
 import { NotFoundError, ValidationError } from '../../middleware/errors';
 import { queueCrawl } from '../../queues';
-import { generateEmbeddings } from '../embeddings';
+import { generateEmbeddings, deleteEmbeddings } from '../embeddings';
 import { htmlToText } from '../../utils/textProcessor';
 
 /**
@@ -19,6 +19,7 @@ export interface SiteUrlDTO {
   title: string | null;
   isActive: boolean;
   isExcluded: boolean;
+  embeddingStatus: string;
   lastCrawledAt: string | null;
 }
 
@@ -93,6 +94,7 @@ export class UrlService {
         title: true,
         isActive: true,
         isExcluded: true,
+        embeddingStatus: true,
         lastCrawledAt: true,
       },
     });
@@ -139,6 +141,7 @@ export class UrlService {
       htmlContent: siteUrl.htmlContent,
       isActive: siteUrl.isActive,
       isExcluded: siteUrl.isExcluded,
+      embeddingStatus: siteUrl.embeddingStatus || 'SCRAPED',
       lastCrawledAt: siteUrl.lastCrawledAt?.toISOString() || null,
       embeddingsCount: siteUrl._count.embeddings,
     };
@@ -266,10 +269,8 @@ export class UrlService {
       },
     });
 
-    // Delete old embeddings and regenerate
-    await prisma.embedding.deleteMany({
-      where: { siteUrlId: urlId },
-    });
+    // Delete old embeddings from Pinecone and database, then regenerate
+    await deleteEmbeddings(urlId);
 
     await generateEmbeddings(urlId, plainTextContent);
 
@@ -286,6 +287,7 @@ export class UrlService {
       htmlContent: updatedUrl.htmlContent,
       isActive: updatedUrl.isActive,
       isExcluded: updatedUrl.isExcluded,
+      embeddingStatus: updatedUrl.embeddingStatus || 'READY',
       lastCrawledAt: updatedUrl.lastCrawledAt?.toISOString() || null,
       embeddingsCount,
     };
@@ -341,7 +343,10 @@ export class UrlService {
       throw new NotFoundError('URL', urlId);
     }
 
-    // Delete URL (cascade will handle embeddings)
+    // Delete embeddings from Pinecone and database first
+    await deleteEmbeddings(urlId);
+
+    // Delete URL
     await prisma.siteUrl.delete({
       where: { id: urlId },
     });
@@ -417,6 +422,7 @@ export class UrlService {
       title: url.title,
       isActive: url.isActive,
       isExcluded: url.isExcluded,
+      embeddingStatus: url.embeddingStatus || 'SCRAPED',
       lastCrawledAt: url.lastCrawledAt?.toISOString() || null,
     };
   }

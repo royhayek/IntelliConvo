@@ -129,6 +129,27 @@ class CacheService {
   }
 
   /**
+   * Delete all keys matching a pattern within a namespace
+   * Useful for invalidating all cache entries for a specific entity (e.g., all user caches for a site)
+   */
+  async deleteByPattern(namespace: string, pattern: string): Promise<boolean> {
+    try {
+      const fullPattern = this.getKey(namespace, pattern);
+      const keys = await this.getClient().keys(fullPattern);
+
+      if (keys.length > 0) {
+        await this.getClient().del(...keys);
+        logger.debug('Cache pattern deleted:', { namespace, pattern, count: keys.length });
+      }
+
+      return true;
+    } catch (error) {
+      logger.error('Cache deleteByPattern error:', { namespace, pattern, error });
+      return false;
+    }
+  }
+
+  /**
    * Check if a key exists in cache
    */
   async has(namespace: string, key: string): Promise<boolean> {
@@ -301,6 +322,7 @@ export const CacheNamespace = {
   SITE_STATS: 'stats',
   USER_SESSION: 'session',
   EMBEDDING_SEARCH: 'embedding',
+  SUBSCRIPTION_PLANS: 'plans',
 } as const;
 
 /**

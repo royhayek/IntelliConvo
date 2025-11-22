@@ -18,11 +18,11 @@ import {
   getGetApiV1SitesSiteIdHostsQueryKey,
 } from "@/lib/api/generated/queries/sites/sites";
 import {
-  type GetApiV1SitesSiteId200,
+  type SiteResponse,
 } from "@/lib/api/generated/models";
 
 interface HostsTabProps {
-  site: GetApiV1SitesSiteId200;
+  site: SiteResponse;
 }
 
 export function HostsTab({ site }: HostsTabProps) {

@@ -21,9 +21,9 @@ import {
   useGetApiV1BillingSummary,
 } from "@/lib/api/generated/queries/billing/billing";
 import {
-  type GetApiV1BillingHistory200TransactionsItem,
-  type GetApiV1BillingSummary200ActiveSubscriptionsItem,
-  type GetApiV1BillingSummary200UpcomingChargesItem,
+  type BillingTransaction,
+  type BillingSummaryActiveSubscriptionsItem,
+  type BillingSummaryUpcomingChargesItem,
 } from "@/lib/api/generated/models";
 
 export default function BillingHistoryPage() {
@@ -31,7 +31,7 @@ export default function BillingHistoryPage() {
   const { isLoading: isAuthLoading, isAuthenticated, user } = useRequireAuth();
 
   const { data: billingData, isLoading } = useGetApiV1BillingHistory(
-    { limit: 50 },
+    { limit: "50" },
     { query: { enabled: isAuthenticated } }
   );
 
@@ -189,7 +189,7 @@ export default function BillingHistoryPage() {
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {billingSummary.activeSubscriptions.map((subscription: GetApiV1BillingSummary200ActiveSubscriptionsItem) => (
+                  {billingSummary.activeSubscriptions.map((subscription: BillingSummaryActiveSubscriptionsItem) => (
                     <div key={subscription.id} className="flex items-center justify-between p-4 border dark:border-gray-600 rounded-lg">
                       <div className="flex items-center space-x-3">
                         <CreditCard className="h-6 w-6 text-gray-400 dark:text-gray-500" />
@@ -223,7 +223,7 @@ export default function BillingHistoryPage() {
                 <div className="mt-6 pt-6 border-t">
                   <h4 className="font-medium text-gray-900 mb-3">Upcoming Charges</h4>
                   <div className="space-y-2">
-                    {billingSummary?.upcomingCharges?.map((charge: GetApiV1BillingSummary200UpcomingChargesItem, index: number) => (
+                    {billingSummary?.upcomingCharges?.map((charge: BillingSummaryUpcomingChargesItem, index: number) => (
                       <div key={index} className="flex justify-between items-center text-sm">
                         <span className="text-gray-600">{charge.siteName}</span>
                         <div className="text-right">
@@ -271,7 +271,7 @@ export default function BillingHistoryPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {transactions.map((transaction: GetApiV1BillingHistory200TransactionsItem) => {
+                    {transactions.map((transaction: BillingTransaction) => {
                       const statusBadge = getStatusBadge(transaction.status || "pending");
                       return (
                         <TableRow key={transaction.id}>

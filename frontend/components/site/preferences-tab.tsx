@@ -32,7 +32,7 @@ import {
   getGetApiV1SitesSiteIdQueryKey,
   getGetApiV1SitesSiteIdStartersQueryKey,
 } from "@/lib/api/generated/queries/sites/sites";
-import { type GetApiV1SitesSiteId200 } from "@/lib/api/generated/models";
+import { type SiteResponse } from "@/lib/api/generated/models";
 
 // Validation schemas
 const siteInfoSchema = z.object({
@@ -55,7 +55,7 @@ type SiteInfoFormData = z.infer<typeof siteInfoSchema>;
 type ConversationStartersFormData = z.infer<typeof conversationStartersSchema>;
 
 interface PreferencesTabProps {
-  site: GetApiV1SitesSiteId200;
+  site: SiteResponse;
 }
 
 export function PreferencesTab({ site }: PreferencesTabProps) {

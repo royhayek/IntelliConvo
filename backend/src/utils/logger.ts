@@ -27,9 +27,30 @@ winston.addColors(colors);
 const format = winston.format.combine(
   winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss:ms' }),
   winston.format.colorize({ all: true }),
-  winston.format.printf(
-    (info) => `${info.timestamp} ${info.level}: ${info.message}`,
-  ),
+  winston.format.printf((info) => {
+    // Extract metadata (everything except level, message, timestamp)
+    const { level, message, timestamp, ...meta } = info;
+
+    // Format the base message
+    let output = `${timestamp} ${level}: ${message}`;
+
+    // Add metadata if present
+    if (Object.keys(meta).length > 0) {
+      try {
+        // Handle BigInt and circular references in metadata
+        const metaStr = JSON.stringify(meta, (key, value) =>
+          typeof value === 'bigint' ? value.toString() : value
+        );
+        if (metaStr !== '{}') {
+          output += ` ${metaStr}`;
+        }
+      } catch {
+        // If stringify fails, skip metadata
+      }
+    }
+
+    return output;
+  }),
 );
 
 const transports = [

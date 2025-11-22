@@ -1,7 +1,6 @@
 import { useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { useAuthStore } from "@/lib/store";
-import { AuthTokensResponseUser } from "@/lib/api/generated/models";
+import { useAuthStore, User } from "@/lib/store";
 
 /**
  * Auth hook return type
@@ -9,7 +8,14 @@ import { AuthTokensResponseUser } from "@/lib/api/generated/models";
 interface UseAuthReturn {
   isAuthenticated: boolean;
   isLoading: boolean;
-  user: AuthTokensResponseUser | null;
+  user: User | null;
+}
+
+/**
+ * Admin auth hook return type
+ */
+interface UseAdminAuthReturn extends UseAuthReturn {
+  isAdmin: boolean;
 }
 
 /**
@@ -117,11 +123,18 @@ export function useAuthRedirect(defaultRedirect = "/dashboard"): UseAuthReturn {
     if (!isLoading && isAuthenticated) {
       // Check for returnTo parameter
       const params = new URLSearchParams(window.location.search);
-      const returnTo = params.get("returnTo") || defaultRedirect;
+      const returnTo = params.get("returnTo");
 
-      router.push(returnTo);
+      if (returnTo) {
+        router.push(returnTo);
+      } else if (user?.isAdmin) {
+        // Redirect admin users to admin portal
+        router.push("/admin");
+      } else {
+        router.push(defaultRedirect);
+      }
     }
-  }, [isLoading, isAuthenticated, router, defaultRedirect]);
+  }, [isLoading, isAuthenticated, user, router, defaultRedirect]);
 
   return {
     isAuthenticated,
@@ -150,4 +163,48 @@ export function useLogout(): () => void {
     logout();
     router.push("/auth/login");
   }, [logout, router]);
+}
+
+/**
+ * Hook for protecting routes that require admin access.
+ * Automatically redirects to dashboard if user is not an admin.
+ * Shows loading state while hydration is in progress.
+ *
+ * @returns Authentication state with admin flag and loading indicator
+ *
+ * @example
+ * ```tsx
+ * export default function AdminPage() {
+ *   const { isLoading, isAdmin, user } = useRequireAdmin();
+ *
+ *   if (isLoading) return <LoadingSpinner />;
+ *   return <AdminContent user={user} />;
+ * }
+ * ```
+ */
+export function useRequireAdmin(): UseAdminAuthReturn {
+  const router = useRouter();
+  const { isAuthenticated, isLoading, user } = useAuth();
+  const isAdmin = user?.isAdmin ?? false;
+
+  useEffect(() => {
+    // Only perform redirect after hydration is complete
+    if (!isLoading) {
+      if (!isAuthenticated) {
+        // Not authenticated - redirect to login
+        const returnTo = window.location.pathname + window.location.search;
+        router.push(`/auth/login?returnTo=${encodeURIComponent(returnTo)}`);
+      } else if (!isAdmin) {
+        // Authenticated but not admin - redirect to dashboard
+        router.push("/dashboard");
+      }
+    }
+  }, [isLoading, isAuthenticated, isAdmin, router]);
+
+  return {
+    isAuthenticated,
+    isLoading,
+    isAdmin,
+    user,
+  };
 }

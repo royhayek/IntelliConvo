@@ -3,11 +3,14 @@
 import type { StartersResponseStartersItem } from './startersResponseStartersItem';
 
 /**
- * Widget conversation starters response
+ * Conversation starters response
  */
 export interface StartersResponse {
-  /** Welcome message for the widget */
-  welcomeMessage: string;
-  /** Array of conversation starters */
+  /**
+   * Welcome message
+   * @nullable
+   */
+  welcomeMessage: string | null;
+  /** Conversation starters */
   starters: StartersResponseStartersItem[];
 }

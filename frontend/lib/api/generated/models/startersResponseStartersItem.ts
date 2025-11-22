@@ -4,10 +4,10 @@
 export type StartersResponseStartersItem = {
   /** Starter ID */
   id: string;
-  /** Conversation starter text */
+  /** Starter text */
   starterText: string;
   /** Display order */
   orderIndex: number;
-  /** Whether the starter is active */
+  /** Is active */
   isActive: boolean;
 };

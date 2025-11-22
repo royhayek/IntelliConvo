@@ -8,6 +8,7 @@ import { authenticate } from '../middleware/auth';
 import { asyncHandler } from '../middleware/errorHandler';
 import { validateQuery, validateParams } from '../middleware/validate';
 import { billingService } from '../services/billing/BillingService';
+import { subscriptionService } from '../services';
 import { billingHistoryQuerySchema, transactionParamsSchema } from '../schemas';
 
 const router = Router();
@@ -126,6 +127,27 @@ router.get(
       req.user!.id
     );
     res.json(details);
+  })
+);
+
+/**
+ * @swagger
+ * /api/v1/billing/plans:
+ *   get:
+ *     summary: Get available plans
+ *     description: Fetches subscription plans from Stripe (cached for 1 hour)
+ *     tags: [Billing]
+ *     responses:
+ *       200:
+ *         description: Plans retrieved successfully
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
+router.get(
+  '/plans',
+  asyncHandler(async (req: Request, res: Response) => {
+    const plans = await subscriptionService.getAvailablePlans();
+    res.json(plans);
   })
 );
 

@@ -53,8 +53,9 @@ export interface CreateSubscriptionRequest {
  * Response for creating a subscription
  */
 export interface CreateSubscriptionResponse {
-  subscription: SubscriptionDTO;
+  subscription: SubscriptionDTO | null;
   clientSecret?: string | null;
+  checkoutUrl?: string | null;
   testMode?: boolean;
 }
 
@@ -66,7 +67,7 @@ export interface SubscriptionPlanDTO {
   name: string;
   description: string;
   price: number;
-  interval: 'month' | 'year';
+  interval: 'monthly' | 'annual';
   features: string[];
 }
 

@@ -5,10 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatPill } from "@/components/ui/stat-pill";
 import { SectionHeader } from "@/components/ui/section-header";
 import { OverviewCard } from "@/components/site/overview-card";
-import { type GetApiV1SitesSiteId200 } from "@/lib/api/generated/models";
+import { type SiteResponse } from "@/lib/api/generated/models";
 
 interface OverviewTabProps {
-  site: GetApiV1SitesSiteId200;
+  site: SiteResponse;
 }
 
 export function OverviewTab({ site }: OverviewTabProps) {
@@ -77,7 +77,7 @@ export function OverviewTab({ site }: OverviewTabProps) {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <StatPill
-              value={site._count?.urls || 0}
+              value={site._count?.siteUrls || 0}
               label="URLs Indexed"
               icon={LinkIcon}
               variant="blue"
