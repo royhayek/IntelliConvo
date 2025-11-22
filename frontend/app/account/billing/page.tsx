@@ -14,7 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useRequireAuth } from "@/lib/hooks/useAuth";
+import { useRequireUser } from "@/lib/hooks/useAuth";
 import { AuthLoading } from "@/components/auth/auth-loading";
 import {
   useGetApiV1BillingHistory,
@@ -27,8 +27,8 @@ import {
 } from "@/lib/api/generated/models";
 
 export default function BillingHistoryPage() {
-  // Protected route - redirects to login if not authenticated
-  const { isLoading: isAuthLoading, isAuthenticated, user } = useRequireAuth();
+  // Protected route - redirects to login if not authenticated, admins to admin portal
+  const { isLoading: isAuthLoading, isAuthenticated, user } = useRequireUser();
 
   const { data: billingData, isLoading } = useGetApiV1BillingHistory(
     { limit: "50" },
@@ -99,10 +99,10 @@ export default function BillingHistoryPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
-              <Link href="/dashboard">
+              <Link href={user?.isAdmin ? "/admin" : "/dashboard"}>
                 <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
                   <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back to Dashboard
+                  {user?.isAdmin ? "Back to Admin Portal" : "Back to Dashboard"}
                 </Button>
               </Link>
               <div className="h-6 border-l border-gray-300 dark:border-gray-600"></div>

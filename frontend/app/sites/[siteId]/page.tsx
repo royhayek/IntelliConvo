@@ -29,7 +29,7 @@ import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { SiteAvatar } from "@/components/site/site-avatar";
 import { SiteNavigationSidebar } from "@/components/site/site-navigation-sidebar";
 import { useUIStore } from "@/lib/store";
-import { useRequireAuth } from "@/lib/hooks/useAuth";
+import { useRequireUser } from "@/lib/hooks/useAuth";
 import { AuthLoading } from "@/components/auth/auth-loading";
 import { useSiteSocket } from "@/lib/hooks/useSiteSocket";
 import {
@@ -56,8 +56,8 @@ export default function SiteManagePage() {
   const initialTab = searchParams.get("tab") || "overview";
   const [activeTab, setActiveTab] = useState(initialTab);
 
-  // Protected route - redirects to login if not authenticated
-  const { isLoading: isAuthLoading, isAuthenticated } = useRequireAuth();
+  // Protected route - redirects to login if not authenticated, admins to admin portal
+  const { isLoading: isAuthLoading, isAuthenticated } = useRequireUser();
   const { navigationLayout } = useUIStore();
   const queryClient = useQueryClient();
 
@@ -175,7 +175,6 @@ export default function SiteManagePage() {
     { id: "playground", label: "Playground", icon: Play },
   ];
 
-  console.log('site.crawlStatus', site.crawlStatus)
   return (
     <div className="min-h-screen gradient-surface">
       <DashboardHeader

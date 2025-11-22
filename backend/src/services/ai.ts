@@ -131,7 +131,90 @@ function calculateCost(tokens: number): number {
   return Math.ceil((tokens / 1000) * 2); // 2 cents per 1K tokens
 }
 
-// Stream response for real-time chat
+export interface StreamResult {
+  tokensUsed: number;
+  costInCents: number;
+}
+
+// Stream response for real-time chat with usage tracking
+export async function streamResponseWithUsage(
+  context: ConversationContext,
+  onChunk: (chunk: string) => void
+): Promise<StreamResult> {
+  try {
+    // Get site information
+    const site = await prisma.site.findUnique({
+      where: { id: context.siteId },
+    });
+
+    if (!site) {
+      throw new Error('Site not found');
+    }
+
+    // Get conversation history
+    const previousMessages = await prisma.message.findMany({
+      where: { conversationId: context.conversationId },
+      orderBy: { timestamp: 'desc' },
+      take: 10,
+    });
+
+    // Search for relevant content
+    const relevantContent = await searchContent(context.siteId, context.message);
+
+    // Build system prompt
+    const systemPrompt = buildSystemPrompt(site, relevantContent);
+
+    // Build messages array
+    const messages: any[] = [
+      { role: 'system', content: systemPrompt },
+    ];
+
+    // Add conversation history
+    for (const msg of previousMessages.reverse()) {
+      messages.push({
+        role: msg.role === ConversationRole.USER ? 'user' : 'assistant',
+        content: msg.content,
+      });
+    }
+
+    // Add current message
+    messages.push({ role: 'user', content: context.message });
+
+    // Generate streaming response with usage tracking
+    if (!openai) {
+      throw new Error('OpenAI client not initialized. Please check OPENAI_API_KEY environment variable.');
+    }
+    const stream = await openai.chat.completions.create({
+      model: process.env.OPENAI_MODEL || 'gpt-4-turbo-preview',
+      messages,
+      temperature: 0.7,
+      max_tokens: 500,
+      stream: true,
+      stream_options: { include_usage: true },
+    });
+
+    let tokensUsed = 0;
+
+    for await (const chunk of stream) {
+      const content = chunk.choices[0]?.delta?.content;
+      if (content) {
+        onChunk(content);
+      }
+      // Capture usage from the final chunk
+      if (chunk.usage) {
+        tokensUsed = chunk.usage.total_tokens || 0;
+      }
+    }
+
+    const costInCents = calculateCost(tokensUsed);
+    return { tokensUsed, costInCents };
+  } catch (error) {
+    logger.error('Failed to stream AI response:', error);
+    throw error;
+  }
+}
+
+// Legacy stream response for real-time chat (kept for backwards compatibility)
 export async function* streamResponse(context: ConversationContext): AsyncGenerator<string> {
   try {
     // Get site information

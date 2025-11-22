@@ -66,6 +66,9 @@ export function chunkText(text: string, maxTokens: number = 500): string[] {
 // Generate embeddings for content
 export async function generateEmbeddings(siteUrlId: string, content: string): Promise<void> {
   try {
+    // First, delete any existing embeddings for this URL to avoid unique constraint violations
+    await deleteEmbeddings(siteUrlId);
+
     const chunks = chunkText(content);
 
     for (let i = 0; i < chunks.length; i++) {

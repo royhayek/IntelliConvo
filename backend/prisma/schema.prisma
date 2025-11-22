@@ -75,6 +75,7 @@ model User {
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
   lastLoginAt       DateTime?
+  forceLogoutAt     DateTime?         // When set, all tokens issued before this timestamp are invalid
 
   sites             Site[]
   subscriptions     Subscription[]

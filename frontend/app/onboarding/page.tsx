@@ -11,7 +11,7 @@ import { ArrowLeft } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { useRequireAuth } from "@/lib/hooks/useAuth";
+import { useRequireUser } from "@/lib/hooks/useAuth";
 import { AuthLoading } from "@/components/auth/auth-loading";
 import {
   useGetApiV1SitesSiteId,
@@ -26,7 +26,7 @@ import {
   usePostApiV1BillingSubscriptions,
   useGetApiV1BillingPlans,
 } from "@/lib/api/generated/queries/subscriptions/subscriptions";
-import { useSiteSocket } from "@/lib/hooks/useSiteSocket";
+import { useSiteSocket, CrawlProgressUpdate } from "@/lib/hooks/useSiteSocket";
 
 import {
   SiteUrlStep,
@@ -62,8 +62,8 @@ function OnboardingContent() {
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
 
-  // Protected route - redirects to login if not authenticated
-  const { isLoading: isAuthLoading, isAuthenticated, user } = useRequireAuth();
+  // Protected route - redirects to login if not authenticated, admins to admin portal
+  const { isLoading: isAuthLoading, isAuthenticated, user } = useRequireUser();
 
   // Refs to prevent stale closures
   const siteIdRef = useRef<string | null>(null);
@@ -75,6 +75,7 @@ function OnboardingContent() {
   const [error, setError] = useState("");
   const [showAllUrls, setShowAllUrls] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<PlanType>("PREMIUM_ANNUAL");
+  const [crawlProgress, setCrawlProgress] = useState<{ crawled: number; total: number } | null>(null);
 
   // Keep ref in sync
   useEffect(() => {
@@ -105,18 +106,11 @@ function OnboardingContent() {
   }, [searchParams]);
 
   // Fetch site data - ALL HOOKS MUST BE CALLED BEFORE ANY EARLY RETURNS
+  // Note: No polling needed - Socket.io provides real-time crawl status updates
+  // via useSiteSocket hook which triggers queryClient.invalidateQueries()
   const { data: site } = useGetApiV1SitesSiteId(siteId!, {
     query: {
       enabled: !isAuthLoading && isAuthenticated && !!siteId,
-      refetchInterval: (query) => {
-        const siteData = query.state.data;
-        // Only poll during crawling
-        if (currentStep === "analyzing" &&
-            (siteData?.crawlStatus === "CRAWLING" || siteData?.crawlStatus === "PENDING")) {
-          return 3000;
-        }
-        return false;
-      },
     },
   });
 
@@ -174,14 +168,28 @@ function OnboardingContent() {
     (update: { siteId: string; crawlStatus: string; urlCount?: number }) => {
       if (update.siteId === siteId) {
         queryClient.invalidateQueries({ queryKey: getGetApiV1SitesSiteIdQueryKey(siteId) });
+        // Reset progress when crawl completes
+        if (update.crawlStatus === "AWAITING_PAYMENT" || update.crawlStatus === "FAILED") {
+          setCrawlProgress(null);
+        }
       }
     },
     [siteId, queryClient]
   );
 
+  const handleCrawlProgress = useCallback(
+    (update: CrawlProgressUpdate) => {
+      if (update.siteId === siteId) {
+        setCrawlProgress({ crawled: update.crawled, total: update.total });
+      }
+    },
+    [siteId]
+  );
+
   useSiteSocket({
     siteId: currentStep === "analyzing" ? siteId : null,
     onCrawlStatusUpdate: handleCrawlStatusUpdate,
+    onCrawlProgress: handleCrawlProgress,
     autoConnect: true,
   });
 
@@ -438,6 +446,7 @@ function OnboardingContent() {
             <AnalyzingStep
               key="analyzing"
               site={site}
+              crawlProgress={crawlProgress}
               onContinue={handleAnalyzingContinue}
               onRetry={handleAnalyzingRetry}
               onBack={handleAnalyzingBack}

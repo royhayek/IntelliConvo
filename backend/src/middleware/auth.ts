@@ -83,11 +83,20 @@ export const authenticate = async (
         email: true,
         fullName: true,
         isAdmin: true,
+        forceLogoutAt: true,
       },
     });
 
     if (!user) {
       throw new NotFoundError('User', decoded.userId);
+    }
+
+    // Check if token was issued before force logout timestamp
+    if (user.forceLogoutAt && decoded.iat) {
+      const tokenIssuedAt = new Date(decoded.iat * 1000); // JWT iat is in seconds
+      if (tokenIssuedAt < user.forceLogoutAt) {
+        throw new UnauthorizedError('Session has been revoked. Please log in again.');
+      }
     }
 
     // Attach user to request

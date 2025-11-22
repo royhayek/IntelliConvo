@@ -80,24 +80,6 @@ router.get(
 
 /**
  * @swagger
- * /api/v1/admin/sessions/user/{userId}:
- *   delete:
- *     summary: Revoke all sessions for a user (force logout)
- *     tags: [Admin - Sessions]
- *     security:
- *       - bearerAuth: []
- */
-router.delete(
-  '/user/:userId',
-  asyncHandler(async (req, res) => {
-    const { userId } = req.params;
-    const result = await adminSessionService.revokeUserSessions(userId);
-    res.json(result);
-  })
-);
-
-/**
- * @swagger
  * /api/v1/admin/sessions/{sessionId}:
  *   delete:
  *     summary: Revoke a specific session

@@ -14,14 +14,14 @@ import { SiteCard } from "@/components/dashboard/site-card";
 import { StatsGrid } from "@/components/ui/stats-grid";
 import { PageHeader } from "@/components/ui/page-header";
 import { Globe, CheckCircle, Link as LinkIcon } from "lucide-react";
-import { useRequireAuth } from "@/lib/hooks/useAuth";
+import { useRequireUser } from "@/lib/hooks/useAuth";
 import { AuthLoading } from "@/components/auth/auth-loading";
 import { useGetApiV1Sites } from "@/lib/api/generated/queries/sites/sites";
 import type { SiteResponse } from "@/lib/api/generated/models";
 
 export default function DashboardPage() {
-  // Protected route - redirects to login if not authenticated
-  const { isLoading: isAuthLoading, isAuthenticated } = useRequireAuth();
+  // Protected route - redirects to login if not authenticated, admins to admin portal
+  const { isLoading: isAuthLoading, isAuthenticated } = useRequireUser();
 
   // Fetch sites using generated hook
   const { data: sites = [], isLoading: isSitesLoading, error } = useGetApiV1Sites({

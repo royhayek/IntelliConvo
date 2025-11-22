@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   MessageSquare,
   Users,
@@ -8,28 +8,34 @@ import {
   Search,
   BarChart3,
   Loader2,
+  User,
+  Bot,
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { AnalyticsMetricCard } from "@/components/ui/analytics-metric-card";
 import { DateRangeFilter, type DateRange } from "@/components/ui/date-range-filter";
 import { Input } from "@/components/ui/input";
-import { Pagination } from "@/components/ui/pagination";
 import { SectionHeader } from "@/components/ui/section-header";
-import { ConversationListItem } from "@/components/site/conversation-list-item";
 import { TopSiteItem } from "@/components/site/top-site-item";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from "@/components/ui/chart";
 import {
   useGetApiV1ConversationsAnalytics,
   useGetApiV1Conversations,
-  useGetApiV1ConversationsSearch,
   useGetApiV1ConversationsConversationId,
 } from "@/lib/api/generated/queries/conversations/conversations";
 import {
   type SiteResponse,
   type Conversation,
-  type MessageSearchResponseMessagesItem,
   type Message,
 } from "@/lib/api/generated/models";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts';
 
 interface ConversationsTabProps {
   site: SiteResponse;
@@ -39,20 +45,39 @@ export function ConversationsTab({ site }: ConversationsTabProps) {
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [dateFilter, setDateFilter] = useState<DateRange>("7d");
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
-  // Calculate date range
-  const endDate = new Date().toISOString();
-  const startDate = new Date(
-    Date.now() - (dateFilter === "7d" ? 7 : dateFilter === "30d" ? 30 : 90) * 24 * 60 * 60 * 1000
-  ).toISOString();
+  // Map dateFilter to API period (API supports 7d, 30d, 90d, 1y)
+  const getApiPeriod = (filter: DateRange): "7d" | "30d" | "90d" | "1y" => {
+    switch (filter) {
+      case "7d": return "7d";
+      case "30d": return "30d";
+      case "90d": return "90d";
+      case "all": return "1y";
+      default: return "30d";
+    }
+  };
 
-  // Get analytics data
+  // Get analytics data - sync with dateFilter
   const { data: analytics, isLoading: analyticsLoading } = useGetApiV1ConversationsAnalytics({
     siteId: site.id,
-    period: "7d",
+    period: getApiPeriod(dateFilter),
   });
+
+  // Chart configurations
+  const conversationsChartConfig = {
+    conversations: {
+      label: "Conversations",
+      color: "hsl(var(--chart-1))",
+    },
+  } satisfies ChartConfig;
+
+  const messagesChartConfig = {
+    messages: {
+      label: "Messages",
+      color: "hsl(var(--chart-2))",
+    },
+  } satisfies ChartConfig;
 
   // Get conversations list
   const { data: conversationsData, isLoading: conversationsLoading } = useGetApiV1Conversations({
@@ -60,25 +85,59 @@ export function ConversationsTab({ site }: ConversationsTabProps) {
   });
   const conversations = conversationsData?.conversations || [];
 
-  // Pagination logic
-  const totalPages = Math.ceil(conversations.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const paginatedConversations = conversations.slice(startIndex, endIndex);
-
-  // Get search results
-  const { data: searchResults } = useGetApiV1ConversationsSearch(
-    { siteId: site.id, query: searchQuery, limit: "20" },
-    { query: { enabled: searchQuery.length > 2 } }
-  );
+  // Filter conversations based on search query
+  const filteredConversations = conversations.filter((conversation: Conversation) => {
+    if (!searchQuery) return true;
+    const searchLower = searchQuery.toLowerCase();
+    const userIdentifier = conversation.userIdentifier?.toLowerCase() || "";
+    return userIdentifier.includes(searchLower);
+  });
 
   // Selected conversation details
-  const { data: selectedConversationData } = useGetApiV1ConversationsConversationId(
+  const { data: selectedConversationData, isLoading: messagesLoading } = useGetApiV1ConversationsConversationId(
     selectedConversation || "",
     { query: { enabled: !!selectedConversation } }
   );
 
+  // Auto-scroll to bottom when messages change
+  useEffect(() => {
+    const viewport = scrollAreaRef.current?.querySelector('[data-radix-scroll-area-viewport]');
+    if (viewport) {
+      viewport.scrollTop = viewport.scrollHeight;
+    }
+  }, [selectedConversationData?.messages]);
+
+  // Auto-select first conversation if none selected
+  useEffect(() => {
+    if (!selectedConversation && filteredConversations.length > 0) {
+      setSelectedConversation(filteredConversations[0].id || null);
+    }
+  }, [filteredConversations, selectedConversation]);
+
   const isLoading = analyticsLoading || conversationsLoading;
+
+  const formatMessageTime = (timestamp: string | Date | null | undefined) => {
+    if (!timestamp) return "";
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  };
+
+  const formatConversationDate = (timestamp: string | Date | null | undefined) => {
+    if (!timestamp) return "";
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 0) {
+      return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    } else if (diffDays === 1) {
+      return "Yesterday";
+    } else if (diffDays < 7) {
+      return date.toLocaleDateString([], { weekday: "short" });
+    } else {
+      return date.toLocaleDateString([], { month: "short", day: "numeric" });
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -119,61 +178,101 @@ export function ConversationsTab({ site }: ConversationsTabProps) {
       )}
 
       {/* Charts */}
-      {analytics && analytics.timeSeriesData && analytics.timeSeriesData.length > 0 && (
+      {analytics && analytics.timeSeriesData && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Card>
             <CardHeader>
               <CardTitle>Daily Conversations</CardTitle>
+              <CardDescription>
+                New conversations per day over the selected period
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={250}>
-                <LineChart data={analytics.timeSeriesData}>
-                  <CartesianGrid strokeDasharray="3 3" />
+              <ChartContainer config={conversationsChartConfig} className="h-[250px] w-full">
+                <LineChart
+                  data={analytics.timeSeriesData}
+                  margin={{ top: 5, right: 10, left: 10, bottom: 0 }}
+                >
+                  <CartesianGrid vertical={false} />
                   <XAxis
                     dataKey="date"
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={8}
                     tickFormatter={(date) => new Date(date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                   />
-                  <YAxis />
-                  <Tooltip
-                    labelFormatter={(date) => new Date(date).toLocaleDateString()}
+                  <YAxis
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={8}
+                    allowDecimals={false}
+                  />
+                  <ChartTooltip
+                    cursor={false}
+                    content={
+                      <ChartTooltipContent
+                        labelFormatter={(value) => new Date(value).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}
+                      />
+                    }
                   />
                   <Line
                     type="monotone"
                     dataKey="conversations"
-                    stroke="#6366f1"
+                    stroke="var(--color-conversations)"
                     strokeWidth={2}
-                    dot={{ fill: '#6366f1' }}
+                    dot={false}
+                    activeDot={{ r: 6, strokeWidth: 0 }}
                   />
                 </LineChart>
-              </ResponsiveContainer>
+              </ChartContainer>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
               <CardTitle>Daily Messages</CardTitle>
+              <CardDescription>
+                Total messages sent per day over the selected period
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={250}>
-                <LineChart data={analytics.timeSeriesData}>
-                  <CartesianGrid strokeDasharray="3 3" />
+              <ChartContainer config={messagesChartConfig} className="h-[250px] w-full">
+                <LineChart
+                  data={analytics.timeSeriesData}
+                  margin={{ top: 5, right: 10, left: 10, bottom: 0 }}
+                >
+                  <CartesianGrid vertical={false} />
                   <XAxis
                     dataKey="date"
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={8}
                     tickFormatter={(date) => new Date(date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                   />
-                  <YAxis />
-                  <Tooltip
-                    labelFormatter={(date) => new Date(date).toLocaleDateString()}
+                  <YAxis
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={8}
+                    allowDecimals={false}
+                  />
+                  <ChartTooltip
+                    cursor={false}
+                    content={
+                      <ChartTooltipContent
+                        labelFormatter={(value) => new Date(value).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}
+                      />
+                    }
                   />
                   <Line
                     type="monotone"
                     dataKey="messages"
-                    stroke="#10b981"
+                    stroke="var(--color-messages)"
                     strokeWidth={2}
-                    dot={{ fill: '#10b981' }}
+                    dot={false}
+                    activeDot={{ r: 6, strokeWidth: 0 }}
                   />
                 </LineChart>
-              </ResponsiveContainer>
+              </ChartContainer>
             </CardContent>
           </Card>
         </div>
@@ -201,140 +300,204 @@ export function ConversationsTab({ site }: ConversationsTabProps) {
         </Card>
       )}
 
-      {/* Search and Conversation List */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Search & Filter */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Search className="h-5 w-5" />
-              <span>Search Conversations</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input
-                placeholder="Search messages..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
+      {/* Chat Interface */}
+      <Card className="overflow-hidden">
+        <div className="flex h-[600px]">
+          {/* Conversations List - Left Side */}
+          <div className="w-80 border-r border-gray-200 dark:border-gray-700 flex flex-col">
+            {/* Search Header */}
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder="Search conversations..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
             </div>
 
-            {searchQuery.length > 2 && searchResults?.messages && (
-              <div className="space-y-2 max-h-60 overflow-y-auto">
-                {searchResults.messages.length === 0 ? (
-                  <p className="text-sm text-gray-600 dark:text-gray-400 text-center py-4">No results found</p>
-                ) : (
-                  searchResults.messages.map((result: MessageSearchResponseMessagesItem) => (
-                    <div key={result.id} className="p-3 border dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 cursor-pointer">
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        {result.conversation?.sessionId || "Anonymous"}
-                      </p>
-                      <p className="text-xs text-gray-600 dark:text-gray-400 truncate">{result.content}</p>
-                    </div>
-                  ))
-                )}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Recent Conversations */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Conversations</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <div className="flex items-center justify-center py-8">
-                <Loader2 className="h-6 w-6 animate-spin text-indigo-600" />
-              </div>
-            ) : conversations.length === 0 ? (
-              <div className="text-center py-8">
-                <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600 dark:text-gray-400">No conversations yet</p>
-              </div>
-            ) : (
-              <>
-                <div className="space-y-2">
-                  {paginatedConversations.map((conversation: Conversation) => (
-                    <ConversationListItem
-                      key={conversation.id}
-                      conversationId={conversation.id || ""}
-                      userIdentifier={conversation.userIdentifier}
-                      messageCount={conversation.messageCount}
-                      startedAt={conversation.startedAt}
-                      isSelected={selectedConversation === conversation.id}
-                      onClick={() => conversation.id && setSelectedConversation(conversation.id)}
-                    />
-                  ))}
+            {/* Conversations List */}
+            <ScrollArea className="flex-1">
+              {isLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="h-6 w-6 animate-spin text-indigo-600" />
                 </div>
-                {totalPages > 1 && (
-                  <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                    <Pagination
-                      currentPage={currentPage}
-                      totalPages={totalPages}
-                      onPageChange={setCurrentPage}
-                    />
-                  </div>
-                )}
-              </>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Conversation Details */}
-      {selectedConversation && selectedConversationData && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Conversation Details</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex justify-between items-start">
-                <div>
-                  <h4 className="font-medium text-gray-900 dark:text-white">
-                    {selectedConversationData.userIdentifier || "Anonymous User"}
-                  </h4>
+              ) : filteredConversations.length === 0 ? (
+                <div className="text-center py-8 px-4">
+                  <MessageSquare className="h-10 w-10 text-gray-400 mx-auto mb-3" />
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Started: {selectedConversationData.startedAt ? new Date(selectedConversationData.startedAt).toLocaleString() : 'N/A'}
-                  </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Messages: {selectedConversationData.messageCount}
+                    {searchQuery ? "No conversations found" : "No conversations yet"}
                   </p>
                 </div>
-              </div>
+              ) : (
+                <div className="divide-y divide-gray-100 dark:divide-gray-800">
+                  {filteredConversations.map((conversation: Conversation) => {
+                    const isSelected = selectedConversation === conversation.id;
+                    const initials = (conversation.userIdentifier || "A").charAt(0).toUpperCase();
+                    const displayName = conversation.userIdentifier || "Anonymous";
 
-              {selectedConversationData.messages && selectedConversationData.messages.length > 0 && (
-                <div className="border-t dark:border-gray-600 pt-4">
-                  <h5 className="font-medium text-gray-900 dark:text-white mb-3">Messages</h5>
-                  <div className="space-y-3 max-h-60 overflow-y-auto">
-                    {selectedConversationData.messages.map((message: Message) => (
-                      <div key={message.id} className={`flex ${message.role === 'USER' ? 'justify-start' : 'justify-end'}`}>
-                        <div className={`max-w-xs lg:max-w-md px-3 py-2 rounded-lg text-sm ${
-                          message.role === 'USER'
-                            ? 'bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-white'
-                            : 'bg-indigo-600 text-white'
-                        }`}>
-                          <p>{message.content}</p>
-                          <p className={`text-xs mt-1 ${
-                            message.role === 'USER' ? 'text-gray-500 dark:text-gray-400' : 'text-indigo-200'
-                          }`}>
-                            {message.timestamp ? new Date(message.timestamp).toLocaleTimeString() : ''}
-                          </p>
+                    return (
+                      <button
+                        key={conversation.id}
+                        onClick={() => conversation.id && setSelectedConversation(conversation.id)}
+                        className={cn(
+                          "w-full p-4 text-left transition-colors hover:bg-gray-50 dark:hover:bg-gray-800",
+                          isSelected && "bg-indigo-50 dark:bg-indigo-900/30 border-l-2 border-l-indigo-600"
+                        )}
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className={cn(
+                            "h-10 w-10 rounded-full flex items-center justify-center flex-shrink-0",
+                            isSelected
+                              ? "bg-indigo-100 dark:bg-indigo-900"
+                              : "bg-gray-100 dark:bg-gray-700"
+                          )}>
+                            <span className={cn(
+                              "text-sm font-medium",
+                              isSelected
+                                ? "text-indigo-700 dark:text-indigo-300"
+                                : "text-gray-700 dark:text-gray-300"
+                            )}>
+                              {initials}
+                            </span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between mb-1">
+                              <p className={cn(
+                                "text-sm font-medium truncate",
+                                isSelected
+                                  ? "text-indigo-900 dark:text-indigo-100"
+                                  : "text-gray-900 dark:text-white"
+                              )}>
+                                {displayName}
+                              </p>
+                              <span className="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0 ml-2">
+                                {formatConversationDate(conversation.startedAt)}
+                              </span>
+                            </div>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                              {conversation.messageCount ?? 0} messages
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
+                      </button>
+                    );
+                  })}
                 </div>
               )}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+            </ScrollArea>
+          </div>
+
+          {/* Messages Panel - Right Side */}
+          <div className="flex-1 flex flex-col bg-gray-50 dark:bg-gray-900/50">
+            {selectedConversation && selectedConversationData ? (
+              <>
+                {/* Conversation Header */}
+                <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center">
+                      <span className="text-sm font-medium text-indigo-700 dark:text-indigo-300">
+                        {(selectedConversationData.userIdentifier || "A").charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-gray-900 dark:text-white">
+                        {selectedConversationData.userIdentifier || "Anonymous User"}
+                      </h3>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Started {selectedConversationData.startedAt
+                          ? new Date(selectedConversationData.startedAt).toLocaleDateString([], {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit"
+                            })
+                          : "N/A"
+                        }
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Messages Area */}
+                <ScrollArea ref={scrollAreaRef} className="flex-1 p-4">
+                  {messagesLoading ? (
+                    <div className="flex items-center justify-center h-full">
+                      <Loader2 className="h-6 w-6 animate-spin text-indigo-600" />
+                    </div>
+                  ) : selectedConversationData.messages && selectedConversationData.messages.length > 0 ? (
+                    <div className="space-y-4">
+                      {selectedConversationData.messages.map((message: Message) => {
+                        const isUser = message.role === "USER";
+                        return (
+                          <div
+                            key={message.id}
+                            className={cn(
+                              "flex items-end gap-2",
+                              isUser ? "flex-row" : "flex-row-reverse"
+                            )}
+                          >
+                            <div className={cn(
+                              "h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0",
+                              isUser
+                                ? "bg-gray-200 dark:bg-gray-700"
+                                : "bg-indigo-600"
+                            )}>
+                              {isUser ? (
+                                <User className="h-4 w-4 text-gray-600 dark:text-gray-300" />
+                              ) : (
+                                <Bot className="h-4 w-4 text-white" />
+                              )}
+                            </div>
+                            <div className={cn(
+                              "max-w-[70%] group"
+                            )}>
+                              <div className={cn(
+                                "px-4 py-2.5 rounded-2xl text-sm",
+                                isUser
+                                  ? "bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-bl-md shadow-sm border border-gray-200 dark:border-gray-700"
+                                  : "bg-indigo-600 text-white rounded-br-md"
+                              )}>
+                                <p className="whitespace-pre-wrap break-words">{message.content}</p>
+                              </div>
+                              <p className={cn(
+                                "text-[10px] mt-1 opacity-0 group-hover:opacity-100 transition-opacity",
+                                isUser ? "text-left" : "text-right",
+                                "text-gray-500 dark:text-gray-400"
+                              )}>
+                                {formatMessageTime(message.timestamp)}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center h-full">
+                      <p className="text-sm text-gray-500 dark:text-gray-400">No messages in this conversation</p>
+                    </div>
+                  )}
+                </ScrollArea>
+              </>
+            ) : (
+              <div className="flex-1 flex items-center justify-center">
+                <div className="text-center">
+                  <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-1">
+                    Select a conversation
+                  </h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    Choose a conversation from the list to view messages
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </Card>
     </div>
   );
 }

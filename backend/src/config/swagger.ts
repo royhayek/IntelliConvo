@@ -25,6 +25,8 @@ import '../schemas/admin.schema';
 import '../schemas/notifications.schema';
 import '../schemas/admin-sessions.schema';
 import '../schemas/admin-audit.schema';
+import '../schemas/webhooks.schema';
+import '../schemas/health.schema';
 
 // Generate complete OpenAPI document from Zod schemas
 const openApiDocument = generateOpenAPIDocument();

@@ -3,6 +3,7 @@ import { NotFoundError, AlreadyExistsError, ValidationError } from '../../middle
 import { AuthProvider } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import { deleteSiteEmbeddings } from '../embeddings';
+import { emitForceLogout } from '../socket';
 
 interface UserListParams {
   page: number;
@@ -266,6 +267,7 @@ class AdminUserService {
 
   /**
    * Force logout user by invalidating all their sessions
+   * Sets forceLogoutAt to invalidate all existing access tokens immediately
    */
   async forceLogout(userId: string) {
     const user = await prisma.user.findUnique({
@@ -276,10 +278,21 @@ class AdminUserService {
       throw new NotFoundError('User', userId);
     }
 
-    // Delete all refresh tokens for this user
-    const result = await prisma.refreshToken.deleteMany({
-      where: { userId },
-    });
+    // Use transaction to ensure both operations succeed
+    const [, result] = await prisma.$transaction([
+      // Set forceLogoutAt to invalidate all existing access tokens
+      prisma.user.update({
+        where: { id: userId },
+        data: { forceLogoutAt: new Date() },
+      }),
+      // Delete all refresh tokens for this user
+      prisma.refreshToken.deleteMany({
+        where: { userId },
+      }),
+    ]);
+
+    // Emit force logout event via Socket.io to immediately notify the user
+    emitForceLogout(userId);
 
     return {
       success: true,

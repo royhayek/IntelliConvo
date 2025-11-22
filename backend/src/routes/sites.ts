@@ -264,7 +264,7 @@ router.post(
       req.user!.id,
       req.body
     );
-    res.status(201).json(host);
+    res.status(201).json({ host });
   })
 );
 
@@ -289,7 +289,7 @@ router.patch(
       req.user!.id,
       req.body.isEnabled
     );
-    res.json(host);
+    res.json({ host });
   })
 );
 

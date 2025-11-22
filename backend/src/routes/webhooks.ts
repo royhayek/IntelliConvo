@@ -13,36 +13,6 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2023-10-16',
 });
 
-/**
- * @swagger
- * /api/v1/webhooks/stripe:
- *   post:
- *     summary: Stripe webhook handler
- *     description: Handle Stripe webhook events for subscription and payment updates
- *     tags: [Webhooks]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             description: Stripe event payload
- *     responses:
- *       200:
- *         description: Webhook processed successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 received:
- *                   type: boolean
- *                   example: true
- *       400:
- *         description: Invalid webhook signature or missing secret
- *       500:
- *         description: Webhook processing failed
- */
 // Use express.raw() to get the raw body for Stripe signature verification
 router.post('/stripe', express.raw({ type: 'application/json' }), asyncHandler(async (req, res) => {
   const sig = req.headers['stripe-signature'];

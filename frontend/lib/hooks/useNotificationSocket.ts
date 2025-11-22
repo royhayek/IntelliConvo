@@ -3,6 +3,7 @@
 import { useEffect, useRef, useCallback, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 interface Notification {
   id?: string;
@@ -60,6 +61,20 @@ export function useNotificationSocket(options: UseNotificationSocketOptions) {
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
       // Call the callback if provided
       onNotificationRef.current?.(notification);
+    });
+
+    // Handle force logout from admin
+    socketRef.current.on("force-logout", (data: { message: string }) => {
+      // Clear all React Query cache
+      queryClient.clear();
+      // Clear all auth data from localStorage
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("auth-storage");
+      // Show notification to user
+      toast.error(data.message || "Your session has been terminated.");
+      // Redirect to login
+      window.location.href = "/auth/login";
     });
 
     socketRef.current.on("connect_error", (error) => {

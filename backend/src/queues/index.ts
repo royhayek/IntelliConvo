@@ -43,7 +43,9 @@ const crawlWorker = new Worker('crawl', async (job) => {
   }
 }, {
   connection: redisConnection,
-  concurrency: 3,
+  concurrency: 2,              // Reduced to prevent resource contention
+  lockDuration: 300000,        // 5 minutes - prevents premature lock expiration
+  stalledInterval: 60000,      // Check for stalls every 60s (default is 30s)
 });
 
 // Embedding worker - processes embeddings for a site after payment

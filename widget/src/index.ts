@@ -615,6 +615,12 @@ class IntelligentconvoWidget {
       }
     }
 
+    // Reset conversation loaded flag to allow reloading on next open
+    this.storageManager.resetConversationLoaded();
+
+    // Clear the messages array in place (not reassign) to maintain reference for MessageHandler
+    this.messages.length = 0;
+
     this.stateManager.setOpen(false);
     document.body.classList.remove('intelligentconvo-chat-open');
 
@@ -962,14 +968,16 @@ class IntelligentconvoWidget {
     const data = this.storageManager.loadPersistedConversation(this.settings);
 
     if (data && data.messages.length > 0) {
-      this.messages = data.messages;
+      // Push loaded messages to existing array (don't reassign to maintain MessageHandler reference)
+      this.messages.push(...data.messages);
+
       if (data.sessionId) {
         this.sessionId = data.sessionId;
       }
 
-      // Display loaded messages
+      // Display loaded messages (render only, don't add to array again)
       data.messages.forEach((msg: Message) => {
-        this.displayMessage(msg.role, msg.content, msg.id);
+        this.renderPersistedMessage(msg);
       });
 
       // Hide starters if there are messages
@@ -978,6 +986,61 @@ class IntelligentconvoWidget {
         starters.style.display = 'none';
       }
     }
+  }
+
+  /**
+   * Renders a persisted message to the DOM without adding to messages array
+   */
+  private renderPersistedMessage(msg: Message): void {
+    const messagesContainer = document.getElementById('intelligentconvo-messages');
+    if (!messagesContainer) return;
+
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `intelligentconvo-message intelligentconvo-${msg.role}`;
+    messageDiv.setAttribute('data-message-id', msg.id);
+
+    // Format timestamp from message
+    const showTimestamp = this.settings?.messageTimestampShow !== false;
+    const timestampFormat = this.settings?.messageTimestampFormat || 'HH:mm';
+    const msgDate = new Date(msg.timestamp);
+    let formattedTime = '';
+    if (showTimestamp) {
+      if (timestampFormat === 'HH:mm') {
+        formattedTime = msgDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+      } else if (timestampFormat === 'hh:mm A') {
+        formattedTime = msgDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+      } else if (timestampFormat === 'HH:mm:ss') {
+        formattedTime = msgDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+      } else {
+        formattedTime = msgDate.toLocaleTimeString();
+      }
+    }
+
+    // Show avatar for assistant messages if enabled
+    const showAvatar = this.settings?.showMessageAvatar && msg.role === 'assistant';
+    const avatarHtml = showAvatar ? `
+      <div class="intelligentconvo-message-avatar">
+        ${this.settings?.botAvatarUrl
+          ? `<img src="${this.settings.botAvatarUrl}" alt="${this.settings?.botName || 'Assistant'}" />`
+          : `<span>${this.settings?.botAvatarFallback || 'AI'}</span>`
+        }
+      </div>
+    ` : '';
+
+    const sanitizedContent = msg.role === 'assistant'
+      ? this.sanitizeHtml(msg.content)
+      : this.sanitizeHtml(msg.content);
+
+    messageDiv.innerHTML = `
+      ${avatarHtml}
+      <div class="intelligentconvo-message-wrapper">
+        <div class="intelligentconvo-message-content">${sanitizedContent || ''}</div>
+        ${showTimestamp ? `<div class="intelligentconvo-message-time">${formattedTime}</div>` : ''}
+      </div>
+    `;
+
+    messagesContainer.appendChild(messageDiv);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
   }
 
   private renderQuickReplies(replies: string[]): void {

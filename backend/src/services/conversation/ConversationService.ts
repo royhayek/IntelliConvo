@@ -429,6 +429,7 @@ export class ConversationService {
 
   /**
    * Get time series data (daily breakdown)
+   * Counts conversations by start date and messages by their actual timestamp
    */
   private async getTimeSeriesData(
     startDate: Date,
@@ -437,6 +438,11 @@ export class ConversationService {
   ): Promise<ConversationTimeSeriesPoint[]> {
     const timeSeriesData: ConversationTimeSeriesPoint[] = [];
     const currentDate = new Date(startDate);
+    // Reset to start of day
+    currentDate.setHours(0, 0, 0, 0);
+
+    // Extract site/user filters without the date filter for message counting
+    const { startedAt, ...baseWhereWithoutDate } = baseWhere;
 
     while (currentDate <= endDate) {
       const dayStart = new Date(currentDate);
@@ -444,18 +450,18 @@ export class ConversationService {
       dayEnd.setHours(23, 59, 59, 999);
 
       const [dailyConversations, dailyMessages] = await Promise.all([
+        // Count conversations that started on this day
         prisma.conversation.count({
           where: {
-            ...baseWhere,
+            ...baseWhereWithoutDate,
             startedAt: { gte: dayStart, lte: dayEnd },
           },
         }),
+        // Count messages sent on this day (by message timestamp, not conversation start)
         prisma.message.count({
           where: {
-            conversation: {
-              ...baseWhere,
-              startedAt: { gte: dayStart, lte: dayEnd },
-            },
+            timestamp: { gte: dayStart, lte: dayEnd },
+            conversation: baseWhereWithoutDate,
           },
         }),
       ]);

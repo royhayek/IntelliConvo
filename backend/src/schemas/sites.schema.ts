@@ -187,12 +187,9 @@ export const hostResponseSchema = registry.register(
     id: z.string().uuid().openapi({ description: 'Host ID' }),
     siteId: z.string().uuid().openapi({ description: 'Site ID' }),
     hostName: z.string().openapi({ description: 'Hostname' }),
-    hostname: z.string().optional().openapi({ description: 'Hostname (alias)' }),
     isEnabled: z.boolean().openapi({ description: 'Is enabled' }),
-    isActive: z.boolean().optional().openapi({ description: 'Is active' }),
     createdAt: z.string().openapi({ description: 'Creation timestamp' }),
-    addedAt: z.string().optional().openapi({ description: 'When host was added' }),
-    lastSeenAt: z.string().nullable().optional().openapi({ description: 'Last seen timestamp' }),
+    updatedAt: z.string().openapi({ description: 'Update timestamp' }),
   }).openapi({
     description: 'Active host information',
   })

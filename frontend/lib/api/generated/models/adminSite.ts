@@ -2,7 +2,7 @@
 // Do not edit manually
 import type { AdminSiteCrawlStatus } from './adminSiteCrawlStatus';
 import type { AdminSiteUser } from './adminSiteUser';
-import type { _AdminSiteCount } from './_adminSiteCount';
+import type { AdminSiteSubscription } from './adminSiteSubscription';
 
 /**
  * Admin site information
@@ -12,10 +12,19 @@ export interface AdminSite {
   userId: string;
   siteName: string;
   siteUrl: string;
+  /** @nullable */
+  siteDescription?: string | null;
+  /** @nullable */
+  siteIndustry?: string | null;
   crawlStatus: AdminSiteCrawlStatus;
   createdAt: string;
+  updatedAt: string;
   /** @nullable */
   lastCrawledAt: string | null;
   user?: AdminSiteUser;
-  _count?: _AdminSiteCount;
+  /** @nullable */
+  subscription?: AdminSiteSubscription;
+  urlsCount: number;
+  conversationsCount: number;
+  filesCount: number;
 }

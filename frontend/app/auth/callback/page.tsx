@@ -28,6 +28,7 @@ function AuthCallbackContent() {
           email: payload.email,
           fullName: payload.fullName || payload.email.split('@')[0],
           authProvider: payload.authProvider || 'EMAIL',
+          isAdmin: payload.isAdmin || false,
         };
 
         login(user, {
@@ -35,7 +36,12 @@ function AuthCallbackContent() {
           refreshToken: refresh,
         });
 
-        router.push("/dashboard");
+        // Redirect admin users to admin portal, regular users to dashboard
+        if (user.isAdmin) {
+          router.push("/admin");
+        } else {
+          router.push("/dashboard");
+        }
       } catch (err) {
         setError("Failed to process authentication");
       }

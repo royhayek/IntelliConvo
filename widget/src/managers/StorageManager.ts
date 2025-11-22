@@ -41,6 +41,13 @@ export class StorageManager {
     }
   }
 
+  /**
+   * Reset the conversation loaded flag to allow reloading on next open
+   */
+  resetConversationLoaded(): void {
+    this.conversationLoaded = false;
+  }
+
   loadPersistedConversation(
     settings: WidgetSettings | null
   ): { messages: Message[]; sessionId?: string } | null {

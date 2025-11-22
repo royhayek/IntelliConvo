@@ -408,11 +408,11 @@ export default function AdminSitesPage() {
                         {getSubscriptionBadge((site as AdminSite & { subscription?: { id: string; status: string; planType: string } | null }).subscription)}
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline">{site._count?.siteUrls ?? 0}</Badge>
+                        <Badge variant="outline">{site.urlsCount ?? 0}</Badge>
                       </TableCell>
                       <TableCell>
                         <Badge variant="outline">
-                          {site._count?.conversations ?? 0}
+                          {site.conversationsCount ?? 0}
                         </Badge>
                       </TableCell>
                       <TableCell>

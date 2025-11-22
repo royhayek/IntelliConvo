@@ -146,29 +146,6 @@ class AdminSessionService {
   }
 
   /**
-   * Revoke all sessions for a user (force logout)
-   */
-  async revokeUserSessions(userId: string) {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-    });
-
-    if (!user) {
-      throw new NotFoundError('User', userId);
-    }
-
-    const result = await prisma.refreshToken.deleteMany({
-      where: { userId },
-    });
-
-    return {
-      success: true,
-      message: `Revoked ${result.count} sessions for user`,
-      count: result.count,
-    };
-  }
-
-  /**
    * Clean up expired sessions
    */
   async cleanupExpiredSessions() {

@@ -225,7 +225,7 @@ export function useGetApiV1AdminSitesExport<TData = Awaited<ReturnType<typeof ge
 
 
 /**
- * @summary Get site by ID
+ * @summary Get site by ID with full details
  */
 export const getApiV1AdminSitesSiteId = (
     siteId: string,
@@ -296,7 +296,7 @@ export function useGetApiV1AdminSitesSiteId<TData = Awaited<ReturnType<typeof ge
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary Get site by ID
+ * @summary Get site by ID with full details
  */
 
 export function useGetApiV1AdminSitesSiteId<TData = Awaited<ReturnType<typeof getApiV1AdminSitesSiteId>>, TError = ErrorType<void>>(

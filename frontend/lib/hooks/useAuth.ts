@@ -208,3 +208,49 @@ export function useRequireAdmin(): UseAdminAuthReturn {
     user,
   };
 }
+
+/**
+ * Hook for protecting routes that are only for regular users (not admins).
+ * Automatically redirects admins to the admin portal and unauthenticated users to login.
+ * Shows loading state while hydration is in progress.
+ *
+ * Use this hook for user-specific pages like dashboard, sites, onboarding.
+ * Admins should only access the admin portal and not these user pages.
+ *
+ * @returns Authentication state with loading indicator
+ *
+ * @example
+ * ```tsx
+ * export default function DashboardPage() {
+ *   const { isLoading, user } = useRequireUser();
+ *
+ *   if (isLoading) return <LoadingSpinner />;
+ *   return <DashboardContent user={user} />;
+ * }
+ * ```
+ */
+export function useRequireUser(): UseAuthReturn {
+  const router = useRouter();
+  const { isAuthenticated, isLoading, user } = useAuth();
+  const isAdmin = user?.isAdmin ?? false;
+
+  useEffect(() => {
+    // Only perform redirect after hydration is complete
+    if (!isLoading) {
+      if (!isAuthenticated) {
+        // Not authenticated - redirect to login
+        const returnTo = window.location.pathname + window.location.search;
+        router.push(`/auth/login?returnTo=${encodeURIComponent(returnTo)}`);
+      } else if (isAdmin) {
+        // Admin users should only access the admin portal
+        router.push("/admin");
+      }
+    }
+  }, [isLoading, isAuthenticated, isAdmin, router]);
+
+  return {
+    isAuthenticated,
+    isLoading,
+    user,
+  };
+}

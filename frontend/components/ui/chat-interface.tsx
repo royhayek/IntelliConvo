@@ -39,11 +39,13 @@ export function ChatInterface({
   className,
 }: ChatInterfaceProps) {
   const [inputValue, setInputValue] = useState("");
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+    }
   };
 
   useEffect(() => {
@@ -92,19 +94,25 @@ export function ChatInterface({
 
       <CardContent className="flex-1 flex flex-col p-0">
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {messages.map((message) => (
-            <MessageBubble
-              key={message.id}
-              role={message.role}
-              content={message.content}
-              timestamp={message.timestamp}
-            />
-          ))}
+        <div ref={scrollContainerRef} className="flex-1 overflow-y-auto p-4 space-y-4">
+          {messages.map((message) => {
+            // For streaming messages with no content yet, show loading state
+            const isStreamingMessage = message.id.startsWith('streaming-');
+            const showAsLoading = isStreamingMessage && !message.content;
 
-          {isLoading && <MessageBubbleLoading />}
+            return (
+              <MessageBubble
+                key={message.id}
+                role={message.role}
+                content={message.content}
+                timestamp={message.timestamp}
+                isLoading={showAsLoading}
+              />
+            );
+          })}
 
-          <div ref={messagesEndRef} />
+          {/* Only show loading indicator if there's no streaming message */}
+          {isLoading && !messages.some(m => m.id.startsWith('streaming-')) && <MessageBubbleLoading />}
         </div>
 
         {/* Input */}

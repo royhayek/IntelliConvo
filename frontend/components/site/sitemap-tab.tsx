@@ -149,15 +149,16 @@ export function SitemapTab({ site }: SitemapTabProps) {
     (update: { siteId: string; urls: Array<{ urlId: string; embeddingStatus: string }> }) => {
       if (update.siteId !== site.id) return;
 
-      // Update the query cache directly for real-time updates
-      queryClient.setQueryData(
-        getGetApiV1SitesSiteIdUrlsQueryKey(site.id),
-        (oldData: SiteUrl[] | undefined) => {
+      // Update all matching queries (regardless of search/filter params)
+      // Using base key without params - setQueriesData does prefix matching
+      queryClient.setQueriesData<SiteUrl[]>(
+        { queryKey: getGetApiV1SitesSiteIdUrlsQueryKey(site.id) },
+        (oldData) => {
           if (!oldData) return oldData;
           return oldData.map((url) => {
             const updatedUrl = update.urls.find((u) => u.urlId === url.id);
             if (updatedUrl) {
-              return { ...url, embeddingStatus: updatedUrl.embeddingStatus };
+              return { ...url, embeddingStatus: updatedUrl.embeddingStatus as SiteUrl["embeddingStatus"] };
             }
             return url;
           });

@@ -281,7 +281,7 @@ export default function AdminUrlDetailPage() {
               <Brain className="h-4 w-4 text-gray-400" />
               <div>
                 <p className="text-sm text-gray-500">Embeddings</p>
-                <p className="font-medium">{data.embeddingsCount} chunks</p>
+                <p className="font-medium">{data.embeddingsCount === 1 ? "1 chunk" : `${data.embeddingsCount} chunks`}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">

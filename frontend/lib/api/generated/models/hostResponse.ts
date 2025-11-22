@@ -11,19 +11,10 @@ export interface HostResponse {
   siteId: string;
   /** Hostname */
   hostName: string;
-  /** Hostname (alias) */
-  hostname?: string;
   /** Is enabled */
   isEnabled: boolean;
-  /** Is active */
-  isActive?: boolean;
   /** Creation timestamp */
   createdAt: string;
-  /** When host was added */
-  addedAt?: string;
-  /**
-   * Last seen timestamp
-   * @nullable
-   */
-  lastSeenAt?: string | null;
+  /** Update timestamp */
+  updatedAt: string;
 }

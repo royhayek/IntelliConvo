@@ -189,7 +189,7 @@ export class MessageHandler {
     messagesContainer.appendChild(messageDiv);
     this.scrollToBottom();
 
-    if (role === 'assistant' && content) {
+    if (role === 'assistant') {
       const message: Message = {
         id: messageId || this.generateMessageId(),
         role,
@@ -198,14 +198,15 @@ export class MessageHandler {
       };
       this.dependencies.messages.push(message);
 
-      if (this.dependencies.onMessage) {
-        this.dependencies.onMessage(message);
-      }
-    }
-
-    if (role === 'assistant') {
       // Store the message element for streaming
       window.lastAssistantMessage = messageDiv;
+      // Store the message ID for updating content during streaming
+      messageDiv.setAttribute('data-message-id', message.id);
+
+      // Only call onMessage callback if there's actual content (not for streaming start)
+      if (content && this.dependencies.onMessage) {
+        this.dependencies.onMessage(message);
+      }
     }
   }
 
@@ -220,6 +221,15 @@ export class MessageHandler {
         if (contentDiv) {
           // Use textContent to prevent HTML injection
           contentDiv.textContent += chunk;
+        }
+
+        // Also update the message content in the messages array
+        const messageId = lastMessage.getAttribute('data-message-id');
+        if (messageId) {
+          const messageObj = this.dependencies.messages.find(m => m.id === messageId);
+          if (messageObj) {
+            messageObj.content += chunk;
+          }
         }
 
         this.scrollToBottom();

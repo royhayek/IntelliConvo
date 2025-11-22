@@ -150,14 +150,14 @@ export default function AccountSettingsPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
-              <Link href="/dashboard">
+              <Link href={user?.isAdmin ? "/admin" : "/dashboard"}>
                 <Button
                   variant="ghost"
                   size="sm"
                   className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                 >
                   <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back to Dashboard
+                  {user?.isAdmin ? "Back to Admin Portal" : "Back to Dashboard"}
                 </Button>
               </Link>
               <div className="h-6 border-l border-gray-300 dark:border-gray-600"></div>
@@ -355,36 +355,38 @@ export default function AccountSettingsPage() {
             </CardContent>
           </Card>
 
-          {/* Account Navigation */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Account Management</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Link href="/account/subscriptions" className="block">
-                  <div className="p-4 border dark:border-slate-700 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
-                    <h4 className="font-medium text-gray-900 dark:text-white">
-                      Subscriptions
-                    </h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                      Manage your subscription plans and billing
-                    </p>
-                  </div>
-                </Link>
-                <Link href="/account/billing" className="block">
-                  <div className="p-4 border dark:border-slate-700 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
-                    <h4 className="font-medium text-gray-900 dark:text-white">
-                      Billing History
-                    </h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                      View your payment history and invoices
-                    </p>
-                  </div>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Account Navigation - Only show for regular users, not admins */}
+          {!user?.isAdmin && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Account Management</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Link href="/account/subscriptions" className="block">
+                    <div className="p-4 border dark:border-slate-700 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
+                      <h4 className="font-medium text-gray-900 dark:text-white">
+                        Subscriptions
+                      </h4>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                        Manage your subscription plans and billing
+                      </p>
+                    </div>
+                  </Link>
+                  <Link href="/account/billing" className="block">
+                    <div className="p-4 border dark:border-slate-700 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
+                      <h4 className="font-medium text-gray-900 dark:text-white">
+                        Billing History
+                      </h4>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                        View your payment history and invoices
+                      </p>
+                    </div>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Danger Zone */}
           <Card className="border-red-200">

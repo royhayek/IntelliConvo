@@ -23,8 +23,11 @@ const getAuditInfo = (method: string, path: string): {
   action: AuditAction | null;
   entityType: AuditEntityType | null;
 } => {
-  // Extract the base path after /admin/
-  const pathParts = path.replace('/api/v1/admin/', '').split('/');
+  // Extract the base path - handle both full paths and relative paths
+  // When middleware is mounted on a router, req.path only contains the relative path
+  // e.g., /users/123 instead of /api/v1/admin/users/123
+  const cleanPath = path.replace(/^\/api\/v1\/admin/, '').replace(/^\//, '');
+  const pathParts = cleanPath.split('/');
   const resource = pathParts[0];
 
   // Map resources to entity types

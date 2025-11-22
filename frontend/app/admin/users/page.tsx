@@ -150,6 +150,7 @@ export default function AdminUsersPage() {
 
   // Extract data from responses
   const data = usersData?.data;
+
   const stats = statsData?.data as UserStats | undefined;
 
   // Compute error message
@@ -311,7 +312,7 @@ export default function AdminUsersPage() {
                         )}
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline">{user._count?.sites ?? 0}</Badge>
+                        <Badge variant="outline">{user.sitesCount ?? 0}</Badge>
                       </TableCell>
                       <TableCell>
                         {user.lastLoginAt ? (

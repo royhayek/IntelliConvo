@@ -164,17 +164,6 @@ app.use('/api', (req, res, next) => {
   res.redirect(307, newPath); // 307 preserves HTTP method
 });
 
-/**
- * @swagger
- * /health:
- *   get:
- *     summary: Basic health check
- *     description: Returns basic health status
- *     tags: [Health]
- *     responses:
- *       200:
- *         description: Server is healthy
- */
 app.get('/health', (req, res) => {
   res.json({
     status: 'healthy',
@@ -196,19 +185,6 @@ app.get('/health', (req, res) => {
  */
 app.get('/metrics', metricsEndpoint);
 
-/**
- * @swagger
- * /health/detailed:
- *   get:
- *     summary: Detailed health check
- *     description: Returns detailed health status of all services
- *     tags: [Health]
- *     responses:
- *       200:
- *         description: All services are healthy
- *       503:
- *         description: One or more services are unhealthy
- */
 app.get('/health/detailed', async (req, res) => {
   const startTime = Date.now();
 

@@ -1,4 +1,4 @@
-import { Globe, AlertCircle, CheckCircle, Clock, Trash2 } from "lucide-react";
+import { Globe, AlertCircle, CheckCircle, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { IconButton } from "@/components/ui/icon-button";
 import { cn } from "@/lib/utils";
@@ -12,7 +12,6 @@ interface HostStatus {
 interface HostListItemProps {
   hostname: string;
   isActive: boolean;
-  lastSeenAt?: string | Date | null;
   addedAt?: string | Date | null;
   onToggleActive: () => void;
   onDelete: () => void;
@@ -24,7 +23,6 @@ interface HostListItemProps {
 export function HostListItem({
   hostname,
   isActive,
-  lastSeenAt,
   addedAt,
   onToggleActive,
   onDelete,
@@ -36,34 +34,15 @@ export function HostListItem({
     if (!isActive) {
       return {
         icon: <AlertCircle className="h-4 w-4 text-gray-400" />,
-        text: "Inactive",
+        text: "Disabled",
         className: "text-gray-500"
       };
     }
 
-    if (lastSeenAt) {
-      const lastSeen = new Date(lastSeenAt);
-      const daysSinceLastSeen = Math.floor((Date.now() - lastSeen.getTime()) / (1000 * 60 * 60 * 24));
-
-      if (daysSinceLastSeen === 0) {
-        return {
-          icon: <CheckCircle className="h-4 w-4 text-green-600" />,
-          text: "Active Today",
-          className: "text-green-600"
-        };
-      } else if (daysSinceLastSeen <= 7) {
-        return {
-          icon: <Clock className="h-4 w-4 text-yellow-600" />,
-          text: `Last seen ${daysSinceLastSeen} day${daysSinceLastSeen > 1 ? 's' : ''} ago`,
-          className: "text-yellow-600"
-        };
-      }
-    }
-
     return {
-      icon: <AlertCircle className="h-4 w-4 text-orange-600" />,
-      text: "Not recently active",
-      className: "text-orange-600"
+      icon: <CheckCircle className="h-4 w-4 text-green-600" />,
+      text: "Enabled",
+      className: "text-green-600"
     };
   };
 

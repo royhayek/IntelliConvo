@@ -31,42 +31,7 @@ import {
   useDeleteApiV1AdminConversationsConversationId,
   getGetApiV1AdminConversationsQueryKey,
 } from "@/lib/api/generated/queries/admin-conversations/admin-conversations";
-
-// Extended interface for conversation detail with messages
-// The generated type doesn't include messages array
-interface ConversationDetail {
-  id: string;
-  siteId: string;
-  sessionId: string;
-  startedAt: string;
-  lastMessageAt: string;
-  messageCount: number;
-  userAgent: string | null;
-  ipAddress: string | null;
-  site: {
-    id: string;
-    siteName: string;
-    siteUrl: string;
-    user: {
-      id: string;
-      email: string;
-      fullName: string | null;
-    };
-  };
-  messages: {
-    id: string;
-    role: "USER" | "ASSISTANT";
-    content: string;
-    timestamp: string;
-    tokensUsed: number | null;
-    costInCents: number | null;
-  }[];
-  stats: {
-    messagesCount: number;
-    totalTokens: number;
-    totalCostCents: number;
-  };
-}
+import type { AdminConversationDetail } from "@/lib/api/generated/models";
 
 function formatCurrency(cents: number): string {
   return new Intl.NumberFormat("en-US", {
@@ -97,14 +62,13 @@ export default function AdminConversationDetailPage() {
     error,
   } = useGetApiV1AdminConversationsConversationId(conversationId);
 
-  // Cast to our extended type that includes messages
-  const conversation = response?.data as ConversationDetail | undefined;
+  // Use the AdminConversationDetail type from the generated API
+  const conversation: AdminConversationDetail | undefined = response?.data;
 
   // Delete mutation
   const deleteMutation = useDeleteApiV1AdminConversationsConversationId({
     mutation: {
       onSuccess: () => {
-        // Invalidate and refetch conversations list
         queryClient.invalidateQueries({
           queryKey: [getGetApiV1AdminConversationsQueryKey()[0]],
         });

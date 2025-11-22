@@ -39,9 +39,6 @@ export function HostsTab({ site }: HostsTabProps) {
         toast.success("Host added successfully!");
         setNewHost("");
       },
-      onError: (error: any) => {
-        toast.error(error.response?.data?.message || "Failed to add host");
-      },
     },
   });
 
@@ -51,9 +48,6 @@ export function HostsTab({ site }: HostsTabProps) {
         queryClient.invalidateQueries({ queryKey: getGetApiV1SitesSiteIdHostsQueryKey(site.id) });
         toast.success("Host updated successfully!");
       },
-      onError: (error: any) => {
-        toast.error(error.response?.data?.message || "Failed to update host");
-      },
     },
   });
 
@@ -62,9 +56,6 @@ export function HostsTab({ site }: HostsTabProps) {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: getGetApiV1SitesSiteIdHostsQueryKey(site.id) });
         toast.success("Host deleted successfully!");
-      },
-      onError: (error: any) => {
-        toast.error(error.response?.data?.message || "Failed to delete host");
       },
     },
   });
@@ -156,16 +147,15 @@ export function HostsTab({ site }: HostsTabProps) {
               {hosts.map((host) => (
                 <HostListItem
                   key={host.id}
-                  hostname={host.hostname || ""}
-                  isActive={host.isActive || false}
-                  lastSeenAt={host.lastSeenAt}
-                  addedAt={host.addedAt}
+                  hostname={host.hostName || ""}
+                  isActive={host.isEnabled || false}
+                  addedAt={host.createdAt}
                   onToggleActive={() => updateHostMutation.mutate({
                     siteId: site.id,
-                    hostId: host.id!,
-                    data: { isEnabled: !host.isActive }
+                    hostId: host.id,
+                    data: { isEnabled: !host.isEnabled }
                   })}
-                  onDelete={() => deleteHostMutation.mutate({ siteId: site.id, hostId: host.id! })}
+                  onDelete={() => deleteHostMutation.mutate({ siteId: site.id, hostId: host.id })}
                   isUpdating={updateHostMutation.isPending}
                   isDeleting={deleteHostMutation.isPending}
                 />
@@ -182,22 +172,16 @@ export function HostsTab({ site }: HostsTabProps) {
             <CardTitle>Access Statistics</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
                 <p className="text-2xl font-bold text-blue-600">{hosts.length}</p>
                 <p className="text-sm text-blue-600">Total Domains</p>
               </div>
               <div className="text-center p-4 bg-green-50 dark:bg-green-900/30 rounded-lg">
                 <p className="text-2xl font-bold text-green-600">
-                  {hosts.filter(h => h.isActive).length}
+                  {hosts.filter(h => h.isEnabled).length}
                 </p>
-                <p className="text-sm text-green-600">Active Domains</p>
-              </div>
-              <div className="text-center p-4 bg-orange-50 dark:bg-orange-900/30 rounded-lg">
-                <p className="text-2xl font-bold text-orange-600">
-                  {hosts.filter(h => h.lastSeenAt && new Date(h.lastSeenAt).getTime() > Date.now() - 24 * 60 * 60 * 1000).length}
-                </p>
-                <p className="text-sm text-orange-600">Active Today</p>
+                <p className="text-sm text-green-600">Enabled Domains</p>
               </div>
             </div>
           </CardContent>

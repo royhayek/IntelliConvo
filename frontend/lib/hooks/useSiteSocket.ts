@@ -3,10 +3,17 @@
 import { useEffect, useRef, useCallback, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
-interface CrawlStatusUpdate {
+export interface CrawlStatusUpdate {
   siteId: string;
   crawlStatus: "PENDING" | "CRAWLING" | "COMPLETED" | "FAILED" | "AWAITING_PAYMENT" | "PROCESSING" | "READY" | "PARTIAL";
   urlCount?: number;
+}
+
+export interface CrawlProgressUpdate {
+  siteId: string;
+  crawled: number;
+  total: number;
+  currentUrl: string;
 }
 
 interface UrlStatusItem {
@@ -22,21 +29,27 @@ interface UrlStatusUpdate {
 interface UseSiteSocketOptions {
   siteId: string | null;
   onCrawlStatusUpdate?: (update: CrawlStatusUpdate) => void;
+  onCrawlProgress?: (update: CrawlProgressUpdate) => void;
   onUrlStatusUpdate?: (update: UrlStatusUpdate) => void;
   autoConnect?: boolean;
 }
 
 export function useSiteSocket(options: UseSiteSocketOptions) {
-  const { siteId, onCrawlStatusUpdate, onUrlStatusUpdate, autoConnect = true } = options;
+  const { siteId, onCrawlStatusUpdate, onCrawlProgress, onUrlStatusUpdate, autoConnect = true } = options;
   const socketRef = useRef<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const onCrawlStatusUpdateRef = useRef(onCrawlStatusUpdate);
+  const onCrawlProgressRef = useRef(onCrawlProgress);
   const onUrlStatusUpdateRef = useRef(onUrlStatusUpdate);
 
   // Keep the callback refs updated
   useEffect(() => {
     onCrawlStatusUpdateRef.current = onCrawlStatusUpdate;
   }, [onCrawlStatusUpdate]);
+
+  useEffect(() => {
+    onCrawlProgressRef.current = onCrawlProgress;
+  }, [onCrawlProgress]);
 
   useEffect(() => {
     onUrlStatusUpdateRef.current = onUrlStatusUpdate;
@@ -68,6 +81,10 @@ export function useSiteSocket(options: UseSiteSocketOptions) {
 
     socketRef.current.on("crawl-status-update", (update: CrawlStatusUpdate) => {
       onCrawlStatusUpdateRef.current?.(update);
+    });
+
+    socketRef.current.on("crawl-progress", (update: CrawlProgressUpdate) => {
+      onCrawlProgressRef.current?.(update);
     });
 
     socketRef.current.on("url-status-update", (update: UrlStatusUpdate) => {

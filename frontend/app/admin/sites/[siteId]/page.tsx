@@ -43,66 +43,7 @@ import {
   usePostApiV1AdminSitesSiteIdRecrawl,
   getGetApiV1AdminSitesSiteIdQueryKey,
 } from "@/lib/api/generated/queries/admin-sites/admin-sites";
-
-// Extended type for site detail since generated type may not include all fields
-interface SiteDetail {
-  id: string;
-  siteName: string;
-  siteUrl: string;
-  siteDescription: string | null;
-  siteIndustry: string | null;
-  specialInstructions: string | null;
-  welcomeMessage: string | null;
-  crawlStatus: string;
-  createdAt: string;
-  updatedAt: string;
-  lastCrawledAt: string | null;
-  crawlDepth: number;
-  maxPages: number;
-  user: {
-    id: string;
-    email: string;
-    fullName: string | null;
-  };
-  subscription: {
-    id: string;
-    status: string;
-    planType: string;
-    trialEndsAt: string | null;
-    currentPeriodEnd: string | null;
-  } | null;
-  widgetSettings: {
-    id: string;
-    primaryColor: string;
-    position: string;
-  } | null;
-  conversationStarters: {
-    id: string;
-    text: string;
-    orderIndex: number;
-  }[];
-  activeHosts: {
-    id: string;
-    host: string;
-    isVerified: boolean;
-    createdAt: string;
-  }[];
-  stats: {
-    urls: {
-      total: number;
-      breakdown: { isActive: boolean; isExcluded: boolean; _count: { id: number } }[];
-    };
-    conversations: {
-      total: number;
-      totalMessages: number;
-      avgMessages: number;
-    };
-    files: {
-      total: number;
-      byStatus: { status: string; _count: { id: number } }[];
-    };
-  };
-}
+import type { AdminSiteDetail } from "@/lib/api/generated/models";
 
 export default function AdminSiteDetailPage() {
   const params = useParams();
@@ -113,15 +54,15 @@ export default function AdminSiteDetailPage() {
   const [showDelete, setShowDelete] = useState(false);
   const [mutationError, setMutationError] = useState<string | null>(null);
 
-  // Fetch site details using generated hook
+  // Fetch site details - now includes all related data
   const {
     data: siteResponse,
     isLoading,
     error: fetchError,
   } = useGetApiV1AdminSitesSiteId(siteId);
 
-  // Cast the data to our extended SiteDetail type since the API returns more fields
-  const site = siteResponse?.data as SiteDetail | undefined;
+  // Use the AdminSiteDetail type from the generated API
+  const site: AdminSiteDetail | undefined = siteResponse?.data;
 
   // Delete mutation
   const deleteMutation = useDeleteApiV1AdminSitesSiteId({
@@ -139,7 +80,6 @@ export default function AdminSiteDetailPage() {
   const recrawlMutation = usePostApiV1AdminSitesSiteIdRecrawl({
     mutation: {
       onSuccess: () => {
-        // Invalidate and refetch site data
         queryClient.invalidateQueries({
           queryKey: getGetApiV1AdminSitesSiteIdQueryKey(siteId),
         });
@@ -170,7 +110,16 @@ export default function AdminSiteDetailPage() {
     return <Badge variant={variant} className={className}>{status}</Badge>;
   };
 
-  // Combine fetch error and mutation error for display
+  const getSubscriptionStatusBadge = (status: string) => {
+    const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+      ACTIVE: "default",
+      TRIAL: "secondary",
+      CANCELLED: "destructive",
+      EXPIRED: "outline",
+    };
+    return <Badge variant={variants[status] || "outline"}>{status}</Badge>;
+  };
+
   const error = fetchError ? "Failed to fetch site" : mutationError;
 
   if (isLoading) {
@@ -194,8 +143,8 @@ export default function AdminSiteDetailPage() {
     return null;
   }
 
+  // Calculate stats from the detailed response
   const activeUrls = site.stats.urls.breakdown.find(b => b.isActive && !b.isExcluded)?._count.id || 0;
-  const excludedUrls = site.stats.urls.breakdown.find(b => b.isExcluded)?._count.id || 0;
 
   return (
     <div className="space-y-6">
@@ -295,12 +244,12 @@ export default function AdminSiteDetailPage() {
                 )}
               </p>
             </div>
-            <div className="md:col-span-2">
-              <label className="text-sm font-medium text-gray-500">Description</label>
-              <p className="mt-1 text-gray-700 dark:text-gray-300">
-                {site.siteDescription || "—"}
-              </p>
-            </div>
+            {site.siteDescription && (
+              <div className="md:col-span-2 lg:col-span-3">
+                <label className="text-sm font-medium text-gray-500">Description</label>
+                <p className="mt-1 text-gray-700 dark:text-gray-300">{site.siteDescription}</p>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -371,7 +320,7 @@ export default function AdminSiteDetailPage() {
         </CardHeader>
         <CardContent>
           {site.subscription ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div>
                 <label className="text-sm font-medium text-gray-500">Plan</label>
                 <p className="mt-1">
@@ -380,12 +329,14 @@ export default function AdminSiteDetailPage() {
               </div>
               <div>
                 <label className="text-sm font-medium text-gray-500">Status</label>
+                <p className="mt-1">{getSubscriptionStatusBadge(site.subscription.status)}</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-500">Current Period Started</label>
                 <p className="mt-1">
-                  <Badge
-                    variant={site.subscription.status === "ACTIVE" ? "default" : "outline"}
-                  >
-                    {site.subscription.status}
-                  </Badge>
+                  {site.subscription.currentPeriodStart
+                    ? new Date(site.subscription.currentPeriodStart).toLocaleDateString()
+                    : "—"}
                 </p>
               </div>
               <div>
@@ -421,19 +372,23 @@ export default function AdminSiteDetailPage() {
                   <TableHead>Host</TableHead>
                   <TableHead>Verified</TableHead>
                   <TableHead>Added</TableHead>
+                  <TableHead>Updated</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {site.activeHosts.map((host) => (
                   <TableRow key={host.id}>
-                    <TableCell className="font-mono">{host.host}</TableCell>
+                    <TableCell className="font-mono">{host.hostName}</TableCell>
                     <TableCell>
-                      <Badge variant={host.isVerified ? "default" : "outline"}>
-                        {host.isVerified ? "Verified" : "Unverified"}
+                      <Badge variant={host.isEnabled ? "default" : "outline"}>
+                        {host.isEnabled ? "Enabled" : "Disabled"}
                       </Badge>
                     </TableCell>
                     <TableCell>
                       <TimeAgo date={host.createdAt} />
+                    </TableCell>
+                    <TableCell>
+                      <TimeAgo date={host.updatedAt} />
                     </TableCell>
                   </TableRow>
                 ))}
@@ -492,7 +447,7 @@ export default function AdminSiteDetailPage() {
               <div>
                 <label className="text-sm font-medium text-gray-500">Position</label>
                 <p className="mt-1">
-                  <Badge variant="outline">{site.widgetSettings.position}</Badge>
+                  <Badge variant="outline">{site.widgetSettings.launcherPosition}</Badge>
                 </p>
               </div>
             </div>

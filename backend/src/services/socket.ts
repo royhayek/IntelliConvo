@@ -1,6 +1,6 @@
 import { Server, Socket } from 'socket.io';
 import { prisma } from '../lib/prisma';
-import { streamResponse } from './ai';
+import { streamResponseWithUsage } from './ai';
 import { logger } from '../utils/logger';
 import { ConversationRole } from '@prisma/client';
 import { adminStatsService } from './admin';
@@ -36,6 +36,22 @@ export async function broadcastAdminStats(): Promise<void> {
   } catch (error) {
     logger.error('Error broadcasting admin stats:', error);
   }
+}
+
+/**
+ * Emit force logout event to a specific user
+ * This will notify all connected clients for that user to logout immediately
+ */
+export function emitForceLogout(userId: string): void {
+  if (!ioInstance) {
+    logger.warn('Socket.IO not initialized, cannot emit force logout');
+    return;
+  }
+
+  ioInstance.to(`user:${userId}`).emit('force-logout', {
+    message: 'Your session has been terminated by an administrator.',
+  });
+  logger.info(`Force logout event emitted to user ${userId}`);
 }
 
 interface ChatMessage {
@@ -133,25 +149,28 @@ export function initializeSocketIO(io: Server): void {
 
         // Stream AI response
         let fullResponse = '';
-        let tokensUsed = 0;
 
         try {
-          for await (const chunk of streamResponse({
-            siteId,
-            conversationId: conversation.id,
-            message: content,
-          })) {
-            fullResponse += chunk;
-            socket.emit('stream', { chunk });
-          }
+          const { tokensUsed, costInCents } = await streamResponseWithUsage(
+            {
+              siteId,
+              conversationId: conversation.id,
+              message: content,
+            },
+            (chunk) => {
+              fullResponse += chunk;
+              socket.emit('stream', { chunk });
+            }
+          );
 
-          // Save AI response
+          // Save AI response with token usage and cost
           const message = await prisma.message.create({
             data: {
               conversationId: conversation.id,
               role: ConversationRole.ASSISTANT,
               content: fullResponse,
               tokensUsed,
+              costInCents,
             },
           });
 

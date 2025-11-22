@@ -67,11 +67,10 @@ const adminUserSchema = registry.register(
     authProvider: z.enum(['EMAIL', 'GOOGLE', 'GITHUB']),
     isAdmin: z.boolean(),
     createdAt: z.string(),
+    updatedAt: z.string(),
     lastLoginAt: z.string().nullable(),
-    _count: z.object({
-      sites: z.number().int(),
-      subscriptions: z.number().int(),
-    }).optional(),
+    sitesCount: z.number().int(),
+    subscriptionsCount: z.number().int(),
   }).openapi({ description: 'Admin user information' })
 );
 
@@ -81,6 +80,68 @@ const adminUsersListSchema = registry.register(
     users: z.array(adminUserSchema),
     pagination: paginationSchema,
   }).openapi({ description: 'Admin users list response' })
+);
+
+// Detailed user schema for single user view
+const adminUserDetailSchema = registry.register(
+  'AdminUserDetail',
+  z.object({
+    id: z.string().uuid(),
+    email: z.string().email(),
+    fullName: z.string().nullable(),
+    authProvider: z.enum(['EMAIL', 'GOOGLE', 'GITHUB']),
+    authProviderId: z.string().nullable(),
+    isAdmin: z.boolean(),
+    createdAt: z.string(),
+    updatedAt: z.string(),
+    lastLoginAt: z.string().nullable(),
+    forceLogoutAt: z.string().nullable(),
+    activeSessions: z.number().int(),
+    sites: z.array(z.object({
+      id: z.string().uuid(),
+      siteName: z.string(),
+      siteUrl: z.string().url(),
+      crawlStatus: z.enum(['PENDING', 'IN_PROGRESS', 'COMPLETED', 'FAILED']),
+      createdAt: z.string(),
+      _count: z.object({
+        urls: z.number().int(),
+        conversations: z.number().int(),
+      }),
+    })),
+    subscriptions: z.array(z.object({
+      id: z.string().uuid(),
+      planType: z.enum(['PREMIUM_MONTHLY', 'PREMIUM_ANNUAL']),
+      status: z.enum(['TRIAL', 'ACTIVE', 'CANCELLED', 'EXPIRED']),
+      trialEndsAt: z.string().nullable(),
+      currentPeriodEnd: z.string(),
+      site: z.object({
+        id: z.string().uuid(),
+        siteName: z.string(),
+      }).nullable(),
+    })),
+    billingInfo: z.object({
+      id: z.string().uuid(),
+      userId: z.string().uuid(),
+      fullName: z.string().nullable(),
+      email: z.string().nullable(),
+      addressLine1: z.string().nullable(),
+      addressLine2: z.string().nullable(),
+      city: z.string().nullable(),
+      state: z.string().nullable(),
+      postalCode: z.string().nullable(),
+      country: z.string().nullable(),
+      companyName: z.string().nullable(),
+      vatNumber: z.string().nullable(),
+    }).nullable(),
+    billingHistory: z.array(z.object({
+      id: z.string().uuid(),
+      invoiceId: z.string().nullable(),
+      amount: z.number().int(),
+      currency: z.string(),
+      status: z.string(),
+      createdAt: z.string(),
+    })),
+  }).openapi({ description: 'Detailed admin user information with related data' })
 );
 
 // ============================================
@@ -94,19 +155,25 @@ const adminSiteSchema = registry.register(
     userId: z.string().uuid(),
     siteName: z.string(),
     siteUrl: z.string().url(),
+    siteDescription: z.string().nullable().optional(),
+    siteIndustry: z.string().nullable().optional(),
     crawlStatus: z.enum(['PENDING', 'IN_PROGRESS', 'COMPLETED', 'FAILED']),
     createdAt: z.string(),
+    updatedAt: z.string(),
     lastCrawledAt: z.string().nullable(),
     user: z.object({
       id: z.string().uuid(),
       email: z.string(),
       fullName: z.string().nullable(),
     }).optional(),
-    _count: z.object({
-      siteUrls: z.number().int(),
-      conversations: z.number().int(),
-      knowledgeFiles: z.number().int(),
-    }).optional(),
+    subscription: z.object({
+      id: z.string().uuid(),
+      status: z.enum(['TRIAL', 'ACTIVE', 'CANCELLED', 'EXPIRED']),
+      planType: z.enum(['PREMIUM_MONTHLY', 'PREMIUM_ANNUAL']),
+    }).nullable().optional(),
+    urlsCount: z.number().int(),
+    conversationsCount: z.number().int(),
+    filesCount: z.number().int(),
   }).openapi({ description: 'Admin site information' })
 );
 
@@ -116,6 +183,140 @@ const adminSitesListSchema = registry.register(
     sites: z.array(adminSiteSchema),
     pagination: paginationSchema,
   }).openapi({ description: 'Admin sites list response' })
+);
+
+// Detailed site schema for single site view
+const adminSiteDetailSchema = registry.register(
+  'AdminSiteDetail',
+  z.object({
+    id: z.string().uuid(),
+    userId: z.string().uuid(),
+    siteName: z.string(),
+    siteUrl: z.string().url(),
+    siteDescription: z.string().nullable(),
+    siteIndustry: z.string().nullable(),
+    specialInstructions: z.string().nullable(),
+    welcomeMessage: z.string(),
+    crawlStatus: z.enum(['PENDING', 'IN_PROGRESS', 'COMPLETED', 'FAILED']),
+    createdAt: z.string(),
+    updatedAt: z.string(),
+    lastCrawledAt: z.string().nullable(),
+    user: z.object({
+      id: z.string().uuid(),
+      email: z.string(),
+      fullName: z.string().nullable(),
+    }),
+    subscription: z.object({
+      id: z.string().uuid(),
+      userId: z.string().uuid(),
+      siteId: z.string().uuid(),
+      status: z.enum(['TRIAL', 'ACTIVE', 'CANCELLED', 'EXPIRED']),
+      planType: z.enum(['PREMIUM_MONTHLY', 'PREMIUM_ANNUAL']),
+      trialEndsAt: z.string().nullable(),
+      currentPeriodStart: z.string(),
+      currentPeriodEnd: z.string(),
+      stripeSubscriptionId: z.string().nullable(),
+      stripePriceId: z.string().nullable(),
+      createdAt: z.string(),
+      updatedAt: z.string(),
+      cancelledAt: z.string().nullable(),
+    }).nullable(),
+    widgetSettings: z.object({
+      id: z.string().uuid(),
+      siteId: z.string().uuid(),
+      // Appearance & Branding
+      primaryColor: z.string(),
+      secondaryColor: z.string(),
+      backgroundColor: z.string(),
+      textColor: z.string(),
+      textSecondaryColor: z.string(),
+      borderColor: z.string(),
+      fontFamily: z.string(),
+      fontSize: z.number().int(),
+      fontWeightNormal: z.number().int(),
+      fontWeightMedium: z.number().int(),
+      fontWeightBold: z.number().int(),
+      borderRadius: z.number().int(),
+      borderRadiusSmall: z.number().int(),
+      borderRadiusButton: z.number().int(),
+      borderWidth: z.number().int(),
+      shadowColor: z.string(),
+      shadowSize: z.string(),
+      // Launcher
+      launcherIcon: z.string(),
+      launcherCustomIconUrl: z.string().nullable(),
+      launcherSize: z.string(),
+      launcherPosition: z.string(),
+      launcherOffsetX: z.number().int(),
+      launcherOffsetY: z.number().int(),
+      launcherShape: z.string(),
+      launcherBackgroundColor: z.string().nullable(),
+      launcherIconColor: z.string(),
+      launcherBorderColor: z.string().nullable(),
+      launcherBorderWidth: z.number().int(),
+      launcherText: z.string().nullable(),
+      launcherTooltip: z.string(),
+      launcherShowTooltip: z.boolean(),
+      launcherShowBadge: z.boolean(),
+      launcherBadgeColor: z.string(),
+      launcherBadgeTextColor: z.string(),
+      launcherAnimation: z.string(),
+      launcherAnimationDelay: z.number().int(),
+      // Chat Window
+      chatWindowWidth: z.number().int(),
+      chatWindowHeight: z.number().int(),
+      chatWindowMaxHeight: z.string(),
+      chatWindowZIndex: z.number().int(),
+      headerBackgroundColor: z.string().nullable(),
+      headerTextColor: z.string(),
+      headerHeight: z.number().int(),
+      headerTitle: z.string(),
+      headerSubtitle: z.string().nullable(),
+    }).nullable(),
+    conversationStarters: z.array(z.object({
+      id: z.string().uuid(),
+      siteId: z.string().uuid(),
+      text: z.string(),
+      orderIndex: z.number().int(),
+      createdAt: z.string(),
+      updatedAt: z.string(),
+    })),
+    activeHosts: z.array(z.object({
+      id: z.string().uuid(),
+      siteId: z.string().uuid(),
+      hostName: z.string(),
+      isEnabled: z.boolean(),
+      createdAt: z.string(),
+      updatedAt: z.string(),
+    })),
+    _count: z.object({
+      urls: z.number().int(),
+      conversations: z.number().int(),
+      knowledgeFiles: z.number().int(),
+    }),
+    stats: z.object({
+      urls: z.object({
+        total: z.number().int(),
+        breakdown: z.array(z.object({
+          isActive: z.boolean(),
+          isExcluded: z.boolean(),
+          _count: z.object({ id: z.number().int() }),
+        })),
+      }),
+      conversations: z.object({
+        total: z.number().int(),
+        totalMessages: z.number().int(),
+        avgMessages: z.number(),
+      }),
+      files: z.object({
+        total: z.number().int(),
+        byStatus: z.array(z.object({
+          status: z.string(),
+          _count: z.object({ id: z.number().int() }),
+        })),
+      }),
+    }),
+  }).openapi({ description: 'Detailed admin site information with stats' })
 );
 
 // ============================================
@@ -223,6 +424,44 @@ const adminConversationsListSchema = registry.register(
     conversations: z.array(adminConversationSchema),
     pagination: paginationSchema,
   }).openapi({ description: 'Admin conversations list response' })
+);
+
+// Detailed conversation schema for single conversation view
+const adminConversationDetailSchema = registry.register(
+  'AdminConversationDetail',
+  z.object({
+    id: z.string().uuid(),
+    siteId: z.string().uuid(),
+    sessionId: z.string(),
+    startedAt: z.string(),
+    lastMessageAt: z.string(),
+    messageCount: z.number().int(),
+    userAgent: z.string().nullable(),
+    ipAddress: z.string().nullable(),
+    site: z.object({
+      id: z.string().uuid(),
+      siteName: z.string(),
+      siteUrl: z.string().url(),
+      user: z.object({
+        id: z.string().uuid(),
+        email: z.string(),
+        fullName: z.string().nullable(),
+      }),
+    }),
+    messages: z.array(z.object({
+      id: z.string().uuid(),
+      role: z.enum(['USER', 'ASSISTANT']),
+      content: z.string(),
+      timestamp: z.string(),
+      tokensUsed: z.number().int().nullable(),
+      costInCents: z.number().int().nullable(),
+    })),
+    stats: z.object({
+      messagesCount: z.number().int(),
+      totalTokens: z.number().int(),
+      totalCostCents: z.number().int(),
+    }),
+  }).openapi({ description: 'Detailed admin conversation information with messages' })
 );
 
 // ============================================
@@ -529,14 +768,14 @@ registry.registerPath({
 registry.registerPath({
   method: 'get',
   path: '/api/v1/admin/users/{userId}',
-  summary: 'Get user by ID',
+  summary: 'Get user by ID with full details',
   tags: ['Admin - Users'],
   security: [{ bearerAuth: [] }],
   request: {
     params: z.object({ userId: z.string().uuid() }),
   },
   responses: {
-    200: { description: 'User retrieved successfully', content: { 'application/json': { schema: z.object({ data: adminUserSchema }) } } },
+    200: { description: 'User retrieved successfully', content: { 'application/json': { schema: z.object({ data: adminUserDetailSchema }) } } },
     401: { description: 'Unauthorized' },
     404: { description: 'User not found' },
   },
@@ -652,14 +891,14 @@ registry.registerPath({
 registry.registerPath({
   method: 'get',
   path: '/api/v1/admin/sites/{siteId}',
-  summary: 'Get site by ID',
+  summary: 'Get site by ID with full details',
   tags: ['Admin - Sites'],
   security: [{ bearerAuth: [] }],
   request: {
     params: z.object({ siteId: z.string().uuid() }),
   },
   responses: {
-    200: { description: 'Site retrieved successfully', content: { 'application/json': { schema: z.object({ data: adminSiteSchema }) } } },
+    200: { description: 'Site retrieved successfully', content: { 'application/json': { schema: z.object({ data: adminSiteDetailSchema }) } } },
     401: { description: 'Unauthorized' },
     404: { description: 'Site not found' },
   },
@@ -952,7 +1191,7 @@ registry.registerPath({
     params: z.object({ conversationId: z.string().uuid() }),
   },
   responses: {
-    200: { description: 'Conversation retrieved successfully', content: { 'application/json': { schema: z.object({ data: adminConversationSchema }) } } },
+    200: { description: 'Conversation retrieved successfully', content: { 'application/json': { schema: z.object({ data: adminConversationDetailSchema }) } } },
     401: { description: 'Unauthorized' },
     404: { description: 'Not found' },
   },

@@ -18,6 +18,8 @@ import {
   Trash2,
   AlertTriangle,
   ExternalLink,
+  Monitor,
+  Receipt,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -34,62 +36,14 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
 import { TimeAgo } from "@/components/ui/time-ago";
+import { StatCard } from "@/components/ui/stat-card";
 import {
   useGetApiV1AdminUsersUserId,
   useDeleteApiV1AdminUsersUserId,
   usePostApiV1AdminUsersUserIdForceLogout,
   getGetApiV1AdminUsersUserIdQueryKey,
 } from "@/lib/api/generated/queries/admin-users/admin-users";
-
-// Extended user detail interface for the detailed API response
-// The generated AdminUser type doesn't include all these fields
-interface UserDetail {
-  id: string;
-  email: string;
-  fullName: string | null;
-  authProvider: string;
-  isAdmin: boolean;
-  createdAt: string;
-  updatedAt: string;
-  lastLoginAt: string | null;
-  activeSessions: number;
-  sites: {
-    id: string;
-    siteName: string;
-    siteUrl: string;
-    crawlStatus: string;
-    createdAt: string;
-    _count: {
-      urls: number;
-      conversations: number;
-    };
-  }[];
-  subscriptions: {
-    id: string;
-    planType: string;
-    status: string;
-    trialEndsAt: string | null;
-    currentPeriodEnd: string | null;
-    site: {
-      id: string;
-      siteName: string;
-    } | null;
-  }[];
-  billingInfo: {
-    id: string;
-    stripeCustomerId: string | null;
-    email: string | null;
-    fullName: string | null;
-  } | null;
-  billingHistory: {
-    id: string;
-    invoiceId: string;
-    amount: number;
-    currency: string;
-    status: string;
-    createdAt: string;
-  }[];
-}
+import type { AdminUserDetail } from "@/lib/api/generated/models";
 
 export default function AdminUserDetailPage() {
   const params = useParams();
@@ -100,15 +54,15 @@ export default function AdminUserDetailPage() {
   const [showDelete, setShowDelete] = useState(false);
   const [mutationError, setMutationError] = useState<string | null>(null);
 
-  // Fetch user details using generated hook
+  // Fetch user details - now includes all related data (sites, subscriptions, billing)
   const {
     data: userData,
     isLoading,
-    error: queryError,
+    error: userError,
   } = useGetApiV1AdminUsersUserId(userId);
 
-  // Type the user data as UserDetail since the API returns extended data
-  const user = userData?.data as UserDetail | undefined;
+  // Use the AdminUserDetail type from the generated API
+  const user: AdminUserDetail | undefined = userData?.data;
 
   // Delete mutation
   const deleteMutation = useDeleteApiV1AdminUsersUserId({
@@ -128,7 +82,6 @@ export default function AdminUserDetailPage() {
   const forceLogoutMutation = usePostApiV1AdminUsersUserIdForceLogout({
     mutation: {
       onSuccess: () => {
-        // Refresh user data after force logout
         queryClient.invalidateQueries({
           queryKey: getGetApiV1AdminUsersUserIdQueryKey(userId),
         });
@@ -162,17 +115,14 @@ export default function AdminUserDetailPage() {
   const getSubscriptionStatusBadge = (status: string) => {
     const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
       ACTIVE: "default",
-      TRIALING: "secondary",
-      PAST_DUE: "destructive",
-      CANCELED: "outline",
+      TRIAL: "secondary",
+      CANCELLED: "destructive",
+      EXPIRED: "outline",
     };
     return <Badge variant={variants[status] || "outline"}>{status}</Badge>;
   };
 
-  // Combine query error and mutation error
-  const error = queryError
-    ? "Failed to fetch user"
-    : mutationError;
+  const error = userError ? "Failed to fetch user" : mutationError;
 
   if (isLoading) {
     return (
@@ -299,15 +249,31 @@ export default function AdminUserDetailPage() {
                 )}
               </p>
             </div>
-            <div>
-              <label className="text-sm font-medium text-gray-500">Active Sessions</label>
-              <p className="mt-1">
-                <Badge variant="outline">{user.activeSessions}</Badge>
-              </p>
-            </div>
           </div>
         </CardContent>
       </Card>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <StatCard
+          label="Sites"
+          value={user.sites.length}
+          icon={Globe}
+          color="blue"
+        />
+        <StatCard
+          label="Subscriptions"
+          value={user.subscriptions.length}
+          icon={CreditCard}
+          color="green"
+        />
+        <StatCard
+          label="Active Sessions"
+          value={user.activeSessions}
+          icon={Monitor}
+          color="purple"
+        />
+      </div>
 
       {/* Sites */}
       <Card>
@@ -443,11 +409,59 @@ export default function AdminUserDetailPage() {
         </CardContent>
       </Card>
 
+      {/* Billing Info */}
+      {user.billingInfo && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Receipt className="h-5 w-5" />
+              Billing Information
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div>
+                <label className="text-sm font-medium text-gray-500">Name</label>
+                <p className="mt-1">{user.billingInfo.fullName || "—"}</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-500">Email</label>
+                <p className="mt-1">{user.billingInfo.email || "—"}</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-500">Company</label>
+                <p className="mt-1">{user.billingInfo.companyName || "—"}</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-500">Address</label>
+                <p className="mt-1">
+                  {[
+                    user.billingInfo.addressLine1,
+                    user.billingInfo.addressLine2,
+                    user.billingInfo.city,
+                    user.billingInfo.state,
+                    user.billingInfo.postalCode,
+                    user.billingInfo.country,
+                  ].filter(Boolean).join(", ") || "—"}
+                </p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-500">VAT Number</label>
+                <p className="mt-1">{user.billingInfo.vatNumber || "—"}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Billing History */}
       {user.billingHistory.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Recent Transactions</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <Receipt className="h-5 w-5" />
+              Recent Billing History
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
@@ -460,22 +474,24 @@ export default function AdminUserDetailPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {user.billingHistory.map((txn) => (
-                  <TableRow key={txn.id}>
-                    <TableCell className="font-mono text-sm">{txn.invoiceId}</TableCell>
+                {user.billingHistory.map((item) => (
+                  <TableRow key={item.id}>
+                    <TableCell className="font-mono text-sm">
+                      {item.invoiceId || "—"}
+                    </TableCell>
                     <TableCell>
                       {new Intl.NumberFormat("en-US", {
                         style: "currency",
-                        currency: txn.currency,
-                      }).format(txn.amount / 100)}
+                        currency: item.currency,
+                      }).format(item.amount / 100)}
                     </TableCell>
                     <TableCell>
-                      <Badge variant={txn.status === "paid" ? "default" : "outline"}>
-                        {txn.status}
+                      <Badge variant={item.status === "PAID" ? "default" : "outline"}>
+                        {item.status}
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <TimeAgo date={txn.createdAt} />
+                      <TimeAgo date={item.createdAt} />
                     </TableCell>
                   </TableRow>
                 ))}

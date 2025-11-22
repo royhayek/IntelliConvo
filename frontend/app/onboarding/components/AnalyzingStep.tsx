@@ -9,6 +9,7 @@ import { Site } from "./types";
 
 interface AnalyzingStepProps {
   site: Site | undefined;
+  crawlProgress?: { crawled: number; total: number } | null;
   onContinue: () => void;
   onRetry: () => void;
   onBack: () => void;
@@ -16,6 +17,7 @@ interface AnalyzingStepProps {
 
 export const AnalyzingStep = memo(function AnalyzingStep({
   site,
+  crawlProgress,
   onContinue,
   onRetry,
   onBack,
@@ -47,16 +49,33 @@ export const AnalyzingStep = memo(function AnalyzingStep({
               Scanning <span className="font-medium text-gray-900 dark:text-white">{site?.siteUrl}</span>
             </p>
 
-            <div className="flex justify-center gap-1">
-              {[0, 1, 2].map((i) => (
-                <motion.div
-                  key={i}
-                  className="h-1.5 w-1.5 rounded-full bg-indigo-500"
-                  animate={{ opacity: [0.3, 1, 0.3] }}
-                  transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.2 }}
-                />
-              ))}
-            </div>
+            {crawlProgress ? (
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
+                  <span>Crawling pages...</span>
+                  <span>{crawlProgress.crawled} / {crawlProgress.total}</span>
+                </div>
+                <div className="h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                  <motion.div
+                    className="h-full bg-indigo-500"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${(crawlProgress.crawled / crawlProgress.total) * 100}%` }}
+                    transition={{ duration: 0.3 }}
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="flex justify-center gap-1">
+                {[0, 1, 2].map((i) => (
+                  <motion.div
+                    key={i}
+                    className="h-1.5 w-1.5 rounded-full bg-indigo-500"
+                    animate={{ opacity: [0.3, 1, 0.3] }}
+                    transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.2 }}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </motion.div>

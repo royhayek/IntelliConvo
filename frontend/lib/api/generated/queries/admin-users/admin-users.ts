@@ -291,7 +291,7 @@ export function useGetApiV1AdminUsersExport<TData = Awaited<ReturnType<typeof ge
 
 
 /**
- * @summary Get user by ID
+ * @summary Get user by ID with full details
  */
 export const getApiV1AdminUsersUserId = (
     userId: string,
@@ -362,7 +362,7 @@ export function useGetApiV1AdminUsersUserId<TData = Awaited<ReturnType<typeof ge
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary Get user by ID
+ * @summary Get user by ID with full details
  */
 
 export function useGetApiV1AdminUsersUserId<TData = Awaited<ReturnType<typeof getApiV1AdminUsersUserId>>, TError = ErrorType<void>>(

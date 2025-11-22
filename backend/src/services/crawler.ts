@@ -10,6 +10,7 @@ import { CrawlStatus, UrlEmbeddingStatus } from '@prisma/client';
 import { logger } from '../utils/logger';
 import { getIO } from './socket';
 import { cacheService, CacheNamespace } from './cache';
+import { deleteEmbeddingsForUrls } from './embeddings';
 
 interface CrawlResult {
   url: string;
@@ -31,11 +32,11 @@ interface CrawlerConfig {
 
 const DEFAULT_CONFIG: CrawlerConfig = {
   maxPages: 100,
-  concurrency: 3,          // Parallel page crawls (reduced to prevent connection issues)
+  concurrency: 5,          // Parallel page crawls (increased for faster crawling)
   retryAttempts: 3,        // Retry failed pages
-  retryDelay: 2000,        // Delay between retries (ms)
-  requestDelay: 1000,      // Delay between requests (ms)
-  timeout: 45000,          // Page load timeout (ms)
+  retryDelay: 1500,        // Delay between retries (ms)
+  requestDelay: 300,       // Delay between requests (ms) - reduced from 1000ms
+  timeout: 30000,          // Page load timeout (ms) - reduced from 45s
   maxContentSize: 100000,  // Max content size (chars)
 };
 
@@ -357,14 +358,15 @@ async function crawlPage(browser: Browser, url: string, config: CrawlerConfig): 
       }
     });
 
-    // Navigate to page
+    // Navigate to page - use domcontentloaded for faster loading
+    // This is sufficient for content extraction as we block images/media anyway
     await page.goto(url, {
-      waitUntil: 'networkidle2',
+      waitUntil: 'domcontentloaded',
       timeout: config.timeout,
     });
 
-    // Wait a bit for any dynamic content
-    await sleep(1000);
+    // Brief wait for any critical JS to execute (reduced from 1000ms)
+    await sleep(200);
 
     // Get the full HTML
     const html = await page.content();
@@ -487,6 +489,7 @@ async function launchBrowser(): Promise<Browser> {
 
 /**
  * Process a single URL in the crawl queue
+ * Returns the crawl result instead of saving to DB (for batch processing)
  */
 async function processCrawlUrl(
   browser: Browser,
@@ -498,12 +501,13 @@ async function processCrawlUrl(
   toVisit: string[],
   visited: Set<string>,
   failed: string[],
-  processedCount: { count: number }
-): Promise<void> {
+  processedCount: { count: number },
+  totalUrls: number
+): Promise<CrawlResult | null> {
   const normalizedUrl = normalizeUrl(url);
 
   if (visited.has(normalizedUrl)) {
-    return;
+    return null;
   }
 
   visited.add(normalizedUrl);
@@ -512,13 +516,21 @@ async function processCrawlUrl(
   await sleep(config.requestDelay);
 
   processedCount.count++;
-  logger.debug(`Crawling page ${processedCount.count}/${config.maxPages}: ${normalizedUrl}`);
+  logger.debug(`Crawling page ${processedCount.count}/${totalUrls}: ${normalizedUrl}`);
 
   const result = await crawlPageWithRetry(browser, normalizedUrl, config);
 
   if (result) {
-    // Save to database
-    await saveUrlToDatabase(siteId, result);
+    // Emit progress update via Socket.io
+    const io = getIO();
+    if (io) {
+      io.to(`site:${siteId}`).emit('crawl-progress', {
+        siteId,
+        crawled: processedCount.count,
+        total: totalUrls,
+        currentUrl: normalizedUrl,
+      });
+    }
 
     // Add discovered links to queue (only if not using sitemap)
     if (!usingSitemap) {
@@ -534,13 +546,20 @@ async function processCrawlUrl(
         }
       }
     }
+
+    return result;
   } else {
     failed.push(normalizedUrl);
+    return null;
   }
 }
 
+// Batch size for database saves (save every N successful crawls)
+const DB_BATCH_SIZE = 10;
+
 /**
  * Process crawl batches with concurrency control
+ * Collects results and saves to DB in batches for better performance
  */
 async function processCrawlBatches(
   browser: Browser,
@@ -554,6 +573,11 @@ async function processCrawlBatches(
 ): Promise<void> {
   const limit = pLimit(config.concurrency);
   const processedCount = { count: 0 };
+  // Calculate total URLs to crawl (capped by maxPages)
+  const totalUrls = Math.min(toVisit.length, config.maxPages);
+
+  // Collect results for batch database saves
+  const pendingResults: CrawlResult[] = [];
 
   while (toVisit.length > 0 && visited.size < config.maxPages) {
     // Get batch of URLs to process
@@ -578,12 +602,31 @@ async function processCrawlBatches(
           toVisit,
           visited,
           failed,
-          processedCount
+          processedCount,
+          totalUrls
         )
       )
     );
 
-    await Promise.all(promises);
+    const results = await Promise.all(promises);
+
+    // Collect successful results
+    for (const result of results) {
+      if (result) {
+        pendingResults.push(result);
+      }
+    }
+
+    // Save to database when we have enough results (batch save)
+    if (pendingResults.length >= DB_BATCH_SIZE) {
+      await batchSaveUrlsToDatabase(siteId, pendingResults);
+      pendingResults.length = 0; // Clear the array
+    }
+  }
+
+  // Save any remaining results
+  if (pendingResults.length > 0) {
+    await batchSaveUrlsToDatabase(siteId, pendingResults);
   }
 }
 
@@ -705,64 +748,124 @@ export async function crawlWebsite(
 }
 
 /**
- * Save URL result to database (scrape only, no embeddings)
- * Embeddings are generated after payment is confirmed
+ * Prepare crawl result with content hash for database operations
  */
-async function saveUrlToDatabase(siteId: string, result: CrawlResult): Promise<void> {
-  const contentHash = crypto
-    .createHash('md5')
-    .update(result.content)
-    .digest('hex');
+interface PreparedCrawlResult extends CrawlResult {
+  contentHash: string;
+}
 
-  const existingUrl = await prisma.siteUrl.findFirst({
-    where: { siteId, url: result.url },
+function prepareCrawlResult(result: CrawlResult): PreparedCrawlResult {
+  return {
+    ...result,
+    contentHash: crypto.createHash('md5').update(result.content).digest('hex'),
+  };
+}
+
+/**
+ * Batch save URL results to database (optimized for performance)
+ * Reduces ~3 queries per URL to ~3 queries total
+ */
+async function batchSaveUrlsToDatabase(siteId: string, results: CrawlResult[]): Promise<void> {
+  if (results.length === 0) return;
+
+  const preparedResults = results.map(prepareCrawlResult);
+  const urls = preparedResults.map(r => r.url);
+  const now = new Date();
+
+  // 1. Fetch all existing URLs for this site in ONE query
+  const existingUrls = await prisma.siteUrl.findMany({
+    where: { siteId, url: { in: urls } },
+    select: { id: true, url: true, contentHash: true },
   });
 
-  if (existingUrl) {
-    // Update if content changed
-    if (existingUrl.contentHash !== contentHash) {
-      await prisma.siteUrl.update({
-        where: { id: existingUrl.id },
+  const existingUrlMap = new Map(existingUrls.map(u => [u.url, u]));
+
+  // 2. Separate into creates, updates (content changed), and touches (no change)
+  const toCreate: PreparedCrawlResult[] = [];
+  const toUpdate: { id: string; result: PreparedCrawlResult }[] = [];
+  const toTouch: string[] = []; // Just update lastCrawledAt
+  const embeddingsToDelete: string[] = []; // SiteUrl IDs whose embeddings need deletion
+
+  for (const result of preparedResults) {
+    const existing = existingUrlMap.get(result.url);
+    if (!existing) {
+      toCreate.push(result);
+    } else if (existing.contentHash !== result.contentHash) {
+      toUpdate.push({ id: existing.id, result });
+      embeddingsToDelete.push(existing.id);
+    } else {
+      toTouch.push(existing.id);
+    }
+  }
+
+  // 3. Delete old embeddings from Pinecone BEFORE the transaction
+  // (Pinecone operations can't be rolled back, so do this first)
+  if (embeddingsToDelete.length > 0) {
+    await deleteEmbeddingsForUrls(embeddingsToDelete);
+  }
+
+  // 4. Execute all database operations in a transaction
+  await prisma.$transaction(async (tx) => {
+    // Batch create new URLs
+    if (toCreate.length > 0) {
+      await tx.siteUrl.createMany({
+        data: toCreate.map(r => ({
+          siteId,
+          url: r.url,
+          title: r.title,
+          content: r.content,
+          htmlContent: r.htmlContent,
+          contentHash: r.contentHash,
+          lastCrawledAt: now,
+          embeddingStatus: UrlEmbeddingStatus.SCRAPED,
+        })),
+      });
+    }
+
+    // Batch update URLs with changed content (need individual updates for different data)
+    for (const { id, result } of toUpdate) {
+      await tx.siteUrl.update({
+        where: { id },
         data: {
           title: result.title,
           content: result.content,
           htmlContent: result.htmlContent,
-          contentHash,
-          lastCrawledAt: new Date(),
-          embeddingStatus: UrlEmbeddingStatus.SCRAPED, // Reset to scraped, embeddings will be regenerated after payment
+          contentHash: result.contentHash,
+          lastCrawledAt: now,
+          embeddingStatus: UrlEmbeddingStatus.SCRAPED,
         },
       });
+    }
 
-      // Delete old embeddings since content changed
-      await prisma.embedding.deleteMany({
-        where: { siteUrlId: existingUrl.id },
-      });
-    } else {
-      // Just update last crawled time
-      await prisma.siteUrl.update({
-        where: { id: existingUrl.id },
-        data: { lastCrawledAt: new Date() },
+    // Batch touch URLs (just update lastCrawledAt)
+    if (toTouch.length > 0) {
+      await tx.siteUrl.updateMany({
+        where: { id: { in: toTouch } },
+        data: { lastCrawledAt: now },
       });
     }
-  } else {
-    // Create new URL with SCRAPED status (no embeddings yet)
-    await prisma.siteUrl.create({
-      data: {
-        siteId,
-        url: result.url,
-        title: result.title,
-        content: result.content,
-        htmlContent: result.htmlContent,
-        contentHash,
-        lastCrawledAt: new Date(),
-        embeddingStatus: UrlEmbeddingStatus.SCRAPED,
-      },
-    });
-  }
+
+    // Batch delete old embeddings for changed content
+    if (embeddingsToDelete.length > 0) {
+      await tx.embedding.deleteMany({
+        where: { siteUrlId: { in: embeddingsToDelete } },
+      });
+    }
+  });
+
+  logger.debug(`Batch saved ${results.length} URLs: ${toCreate.length} created, ${toUpdate.length} updated, ${toTouch.length} unchanged`);
 }
 
 /**
- * Crawl a single URL (for manual URL additions)
+ * Save single URL result to database (for manual URL additions)
+ * Uses batch function internally for consistency
+ */
+async function saveUrlToDatabase(siteId: string, result: CrawlResult): Promise<void> {
+  await batchSaveUrlsToDatabase(siteId, [result]);
+}
+
+/**
+ * Crawl a single URL (for manual URL additions or recrawl)
  */
 export async function crawlSingleUrl(siteId: string, urlToCrawl: string): Promise<void> {
   const config = DEFAULT_CONFIG;
@@ -782,6 +885,134 @@ export async function crawlSingleUrl(siteId: string, urlToCrawl: string): Promis
     if (result) {
       await saveUrlToDatabase(siteId, result);
       logger.info(`Successfully crawled single URL: ${urlToCrawl}`);
+
+      // Get the URL record to emit socket event
+      const siteUrl = await prisma.siteUrl.findFirst({
+        where: { siteId, url: urlToCrawl },
+        select: { id: true, htmlContent: true, content: true },
+      });
+
+      if (siteUrl) {
+        const io = getIO();
+
+        // Emit status update to frontend
+        if (io) {
+          io.to(`site:${siteId}`).emit('url-status-update', {
+            siteId,
+            urls: [{ urlId: siteUrl.id, embeddingStatus: UrlEmbeddingStatus.SCRAPED }],
+          });
+        }
+
+        // Check if site is ready for embeddings (already paid/activated)
+        const site = await prisma.site.findUnique({
+          where: { id: siteId },
+          select: { crawlStatus: true },
+        });
+
+        // If site is READY or PARTIAL, generate embeddings immediately
+        if (site && (site.crawlStatus === CrawlStatus.READY || site.crawlStatus === CrawlStatus.PARTIAL)) {
+          logger.info(`Site ${siteId} is active, generating embeddings for recrawled URL`);
+
+          // Import dynamically to avoid circular dependency
+          const { generateEmbeddings } = await import('./embeddings');
+          const { htmlToText } = await import('../utils/textProcessor');
+
+          try {
+            // Update status to PROCESSING
+            await prisma.siteUrl.update({
+              where: { id: siteUrl.id },
+              data: { embeddingStatus: UrlEmbeddingStatus.PROCESSING },
+            });
+
+            if (io) {
+              io.to(`site:${siteId}`).emit('url-status-update', {
+                siteId,
+                urls: [{ urlId: siteUrl.id, embeddingStatus: UrlEmbeddingStatus.PROCESSING }],
+              });
+            }
+
+            // Generate embeddings
+            const textContent = htmlToText(siteUrl.htmlContent || siteUrl.content || '');
+            if (textContent.trim()) {
+              await generateEmbeddings(siteUrl.id, textContent);
+            }
+
+            // Update status to READY
+            await prisma.siteUrl.update({
+              where: { id: siteUrl.id },
+              data: { embeddingStatus: UrlEmbeddingStatus.READY },
+            });
+
+            if (io) {
+              io.to(`site:${siteId}`).emit('url-status-update', {
+                siteId,
+                urls: [{ urlId: siteUrl.id, embeddingStatus: UrlEmbeddingStatus.READY }],
+              });
+            }
+
+            logger.info(`Successfully generated embeddings for recrawled URL: ${urlToCrawl}`);
+
+            // Check if site status needs to be updated based on URL statuses
+            if (site.crawlStatus === CrawlStatus.PARTIAL || site.crawlStatus === CrawlStatus.READY) {
+              const urlCounts = await prisma.siteUrl.groupBy({
+                by: ['embeddingStatus'],
+                where: { siteId, isExcluded: false },
+                _count: true,
+              });
+
+              const statusMap = new Map(urlCounts.map(c => [c.embeddingStatus, c._count]));
+              const failedCount = statusMap.get(UrlEmbeddingStatus.FAILED) || 0;
+              const processingCount = statusMap.get(UrlEmbeddingStatus.PROCESSING) || 0;
+              const pendingCount = statusMap.get(UrlEmbeddingStatus.PENDING) || 0;
+              const scrapedCount = statusMap.get(UrlEmbeddingStatus.SCRAPED) || 0;
+
+              // Determine new site status based on URL statuses
+              let newSiteStatus: CrawlStatus | null = null;
+
+              if (failedCount === 0 && processingCount === 0 && pendingCount === 0 && scrapedCount === 0) {
+                // All URLs are READY - site is fully READY
+                if (site.crawlStatus !== CrawlStatus.READY) {
+                  newSiteStatus = CrawlStatus.READY;
+                }
+              } else if (failedCount > 0 && site.crawlStatus === CrawlStatus.READY) {
+                // Some URLs failed - site is PARTIAL
+                newSiteStatus = CrawlStatus.PARTIAL;
+              }
+
+              if (newSiteStatus) {
+                await prisma.site.update({
+                  where: { id: siteId },
+                  data: { crawlStatus: newSiteStatus },
+                });
+
+                if (io) {
+                  io.to(`site:${siteId}`).emit('crawl-status-update', {
+                    siteId,
+                    crawlStatus: newSiteStatus,
+                  });
+                }
+
+                logger.info(`Site ${siteId} status updated to ${newSiteStatus}`);
+              }
+            }
+          } catch (embeddingError) {
+            logger.error(`Failed to generate embeddings for URL ${urlToCrawl}:`, embeddingError);
+
+            // Update status to FAILED
+            await prisma.siteUrl.update({
+              where: { id: siteUrl.id },
+              data: { embeddingStatus: UrlEmbeddingStatus.FAILED },
+            });
+
+            if (io) {
+              io.to(`site:${siteId}`).emit('url-status-update', {
+                siteId,
+                urls: [{ urlId: siteUrl.id, embeddingStatus: UrlEmbeddingStatus.FAILED }],
+              });
+            }
+          }
+        }
+      }
     } else {
       throw new Error(`Failed to crawl URL after ${config.retryAttempts} attempts`);
     }

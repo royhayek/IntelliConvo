@@ -170,10 +170,20 @@ export class AuthService {
     // Get user
     const user = await prisma.user.findUnique({
       where: { id: storedToken.userId },
+      select: {
+        id: true,
+        email: true,
+        forceLogoutAt: true,
+      },
     });
 
     if (!user) {
       throw new NotFoundError('User', storedToken.userId);
+    }
+
+    // Check if user was force logged out after this refresh token was created
+    if (user.forceLogoutAt && storedToken.createdAt < user.forceLogoutAt) {
+      throw new UnauthorizedError('Session has been revoked. Please log in again.');
     }
 
     // REFRESH TOKEN ROTATION for security
