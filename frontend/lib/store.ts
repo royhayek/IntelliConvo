@@ -2,23 +2,23 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { SiteResponse, AuthTokensResponseUser } from "./api/generated/models";
 
-// Extended User type that includes isAdmin (from backend UserDTO)
-// The generated type may not include isAdmin, so we extend it
-export type User = AuthTokensResponseUser & {
-  isAdmin?: boolean;
-};
+// User type from the generated API types
+// Includes isAdmin and emailVerified from backend UserDTO
+export type User = AuthTokensResponseUser;
 
 type Site = SiteResponse;
 
 interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
+  isLoggingOut: boolean;
   _hasHydrated: boolean;
   login: (
     user: User,
     tokens: { accessToken: string; refreshToken: string }
   ) => void;
   logout: () => void;
+  setLoggingOut: (value: boolean) => void;
   setUser: (user: User) => void;
   updateUser: (updates: Partial<User>) => void;
   _setHasHydrated: (hasHydrated: boolean) => void;
@@ -40,18 +40,23 @@ export const useAuthStore = create<AuthState>()(
     (set, get) => ({
       user: null,
       isAuthenticated: false,
+      isLoggingOut: false,
       _hasHydrated: false,
 
       login: (user, tokens) => {
         localStorage.setItem("accessToken", tokens.accessToken);
         localStorage.setItem("refreshToken", tokens.refreshToken);
-        set({ user, isAuthenticated: true });
+        set({ user, isAuthenticated: true, isLoggingOut: false });
       },
 
       logout: () => {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
-        set({ user: null, isAuthenticated: false });
+        set({ user: null, isAuthenticated: false, isLoggingOut: false });
+      },
+
+      setLoggingOut: (value) => {
+        set({ isLoggingOut: value });
       },
 
       setUser: (user) => {

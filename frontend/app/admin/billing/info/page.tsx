@@ -32,37 +32,10 @@ import { Pagination } from "@/components/ui/pagination";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { TimeAgo } from "@/components/ui/time-ago";
+import { formatAddress } from "@/lib/utils";
+import { getPaginationText } from "@/lib/utils/pagination";
 import { useGetApiV1AdminBillingInfo } from "@/lib/api/generated/queries/admin-billing/admin-billing";
-
-interface BillingInfo {
-  id: string;
-  fullName: string | null;
-  email: string | null;
-  address: string | null;
-  city: string | null;
-  state: string | null;
-  postalCode: string | null;
-  country: string | null;
-  createdAt: string;
-  updatedAt: string;
-  user: {
-    id: string;
-    email: string;
-    fullName: string | null;
-  };
-}
-
-interface BillingInfoResponse {
-  data: {
-    billingInfos: BillingInfo[];
-    pagination: {
-      page: number;
-      limit: number;
-      total: number;
-      pages: number;
-    };
-  };
-}
+import type { BillingInfo, BillingInfoResponse } from "@/lib/types/billing";
 
 export default function AdminBillingInfoPage() {
   const [search, setSearch] = useState("");
@@ -82,11 +55,6 @@ export default function AdminBillingInfoPage() {
   const handleSearch = () => {
     setPage(1);
     setSearchQuery(search);
-  };
-
-  const formatAddress = (info: BillingInfo) => {
-    const parts = [info.address, info.city, info.state, info.postalCode, info.country].filter(Boolean);
-    return parts.length > 0 ? parts.join(", ") : "No address";
   };
 
   return (
@@ -209,7 +177,10 @@ export default function AdminBillingInfoPage() {
           {data.pagination.pages > 1 && (
             <div className="flex items-center justify-between">
               <p className="text-sm text-gray-500">
-                Showing {((page - 1) * 20) + 1} to {Math.min(page * 20, data.pagination.total)} of {data.pagination.total} records
+                {getPaginationText(
+                  { page, limit: 20, total: data.pagination.total },
+                  "records"
+                )}
               </p>
               <Pagination
                 currentPage={page}

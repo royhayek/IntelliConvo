@@ -13,3 +13,4 @@ export { adminExportService } from './AdminExportService';
 export { adminSessionService } from './AdminSessionService';
 export { adminAuditService, AuditAction, AuditEntityType } from './AdminAuditService';
 export type { AuditLogInput } from './AdminAuditService';
+export { adminSettingsService } from './AdminSettingsService';

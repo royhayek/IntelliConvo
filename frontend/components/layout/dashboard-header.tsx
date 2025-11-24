@@ -2,17 +2,14 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import {
-  Sparkles,
   Settings,
-  Home,
-  Search,
   ArrowLeft,
-  CreditCard,
   LogOut,
-  User,
   Shield,
+  CreditCard,
+  Crown,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -30,10 +27,12 @@ import { BrandLogo } from "@/components/ui/brand-logo";
 import { NotificationBell } from "@/components/notifications/notification-bell";
 import { NavigationSettingsDrawer } from "@/components/layout/navigation-settings-drawer";
 import { useAuthStore } from "@/lib/store";
+import { useLogout } from "@/lib/hooks/useAuth";
 
 interface DashboardHeaderProps {
   variant?: "dashboard" | "site";
   siteName?: string;
+  siteId?: string;
   showBackButton?: boolean;
   showNavigation?: boolean;
   showQuickActions?: boolean;
@@ -43,28 +42,18 @@ interface DashboardHeaderProps {
 export function DashboardHeader({
   variant = "dashboard",
   siteName,
+  siteId,
   showBackButton = false,
   showNavigation = true,
   showQuickActions = true,
   showNavigationSettings = false,
 }: DashboardHeaderProps) {
-  const router = useRouter();
-  const { user, logout } = useAuthStore();
+  const pathname = usePathname();
+  const user = useAuthStore((state) => state.user);
+  const handleLogout = useLogout();
 
-  const handleLogout = async () => {
-    try {
-      const refreshToken = localStorage.getItem("refreshToken");
-      if (refreshToken) {
-        // Don't wait for logout API call
-        // await authApi.logout(refreshToken);
-      }
-    } catch (error) {
-      // Ignore logout errors
-    } finally {
-      logout();
-      router.push("/");
-    }
-  };
+  // Build the returnTo parameter for account settings navigation
+  const accountSettingsHref = `/account/settings${pathname !== "/dashboard" ? `?returnTo=${encodeURIComponent(pathname)}` : ""}`;
 
   return (
     <motion.header
@@ -84,7 +73,11 @@ export function DashboardHeader({
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900 hover:bg-white/60 dark:text-gray-400 dark:hover:text-gray-100 dark:hover:bg-slate-700/40">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-gray-600 hover:text-gray-900 hover:bg-white/60 dark:text-gray-400 dark:hover:text-gray-100 dark:hover:bg-slate-700/40"
+                    >
                       <ArrowLeft className="h-4 w-4 mr-2" />
                       Back to Dashboard
                     </Button>
@@ -99,22 +92,7 @@ export function DashboardHeader({
           </div>
 
           {/* Navigation & Actions */}
-          <div className="flex items-center space-x-2 sm:space-x-4">
-            {/* Navigation Pills (Dashboard only) */}
-            {showNavigation && variant === "dashboard" && (
-              <motion.nav
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2 }}
-                className="hidden md:flex items-center space-x-1 bg-gray-100/80 dark:bg-slate-800/50 rounded-lg p-1"
-              >
-                <div className="flex items-center space-x-1 bg-white dark:bg-slate-700 rounded-md px-3 py-1.5 shadow-sm">
-                  <Home className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">Dashboard</span>
-                </div>
-              </motion.nav>
-            )}
-
+          <div className="flex items-center space-x-2 sm:space-x-4">          
             {/* Quick Actions (Dashboard only) */}
             {showQuickActions && variant === "dashboard" && (
               <motion.div
@@ -123,14 +101,6 @@ export function DashboardHeader({
                 transition={{ delay: 0.3 }}
                 className="hidden sm:flex items-center space-x-2"
               >
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="p-2 rounded-lg bg-white/80 hover:bg-white dark:bg-gray-800/80 dark:hover:bg-gray-800 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 transition-all"
-                  title="Search sites"
-                >
-                  <Search className="w-4 h-4" />
-                </motion.button>
                 <NotificationBell />
                 <ThemeToggle />
               </motion.div>
@@ -153,13 +123,20 @@ export function DashboardHeader({
             {/* Profile Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center space-x-2 px-2 sm:px-3">
+                <Button
+                  variant="ghost"
+                  className="flex items-center space-x-2 px-2 sm:px-3"
+                >
                   <Avatar className="h-8 w-8">
                     <AvatarFallback className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold text-sm">
-                      {user?.fullName ? user.fullName.charAt(0).toUpperCase() : user?.email?.charAt(0).toUpperCase()}
+                      {user?.fullName
+                        ? user.fullName.charAt(0).toUpperCase()
+                        : user?.email?.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="text-sm font-medium hidden sm:block">{user?.fullName || user?.email}</span>
+                  <span className="text-sm font-medium hidden sm:block">
+                    {user?.fullName || user?.email}
+                  </span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56" align="end">
@@ -167,12 +144,18 @@ export function DashboardHeader({
                   <div className="flex items-center space-x-3">
                     <Avatar className="h-10 w-10">
                       <AvatarFallback className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold text-sm">
-                        {user?.fullName ? user.fullName.charAt(0).toUpperCase() : user?.email?.charAt(0).toUpperCase()}
+                        {user?.fullName
+                          ? user.fullName.charAt(0).toUpperCase()
+                          : user?.email?.charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">{user?.fullName || 'User'}</p>
-                      <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+                      <p className="text-sm font-medium truncate">
+                        {user?.fullName || "User"}
+                      </p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {user?.email}
+                      </p>
                     </div>
                   </div>
                 </DropdownMenuLabel>
@@ -189,25 +172,38 @@ export function DashboardHeader({
                   </>
                 )}
                 <DropdownMenuItem asChild>
-                  <Link href="/account/subscriptions" className="cursor-pointer">
-                    <User className="mr-2 h-4 w-4" />
-                    Subscriptions
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/account/settings" className="cursor-pointer">
+                  <Link href={accountSettingsHref} className="cursor-pointer">
                     <Settings className="mr-2 h-4 w-4" />
                     Account Settings
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/account/billing" className="cursor-pointer">
-                    <CreditCard className="mr-2 h-4 w-4" />
-                    Billing History
-                  </Link>
-                </DropdownMenuItem>
+                {variant === "site" && siteId && (
+                  <>
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href={`/account/subscriptions?siteId=${siteId}`}
+                        className="cursor-pointer"
+                      >
+                        <Crown className="mr-2 h-4 w-4" />
+                        Subscription
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href={`/account/billing?siteId=${siteId}`}
+                        className="cursor-pointer"
+                      >
+                        <CreditCard className="mr-2 h-4 w-4" />
+                        Billing History
+                      </Link>
+                    </DropdownMenuItem>
+                  </>
+                )}
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout} className="text-red-600 dark:text-red-400">
+                <DropdownMenuItem
+                  onClick={handleLogout}
+                  className="text-red-600 dark:text-red-400"
+                >
                   <LogOut className="mr-2 h-4 w-4" />
                   Sign Out
                 </DropdownMenuItem>

@@ -53,6 +53,15 @@ export {
   hostsListResponseSchema,
   sitesListResponseSchema,
   sitesMessageResponseSchema,
+  // Discovery schemas
+  discoveredUrlSchema,
+  discoveryResultSchema,
+  updateSelectionsSchema,
+  bulkSelectSchema,
+  addManualUrlsSchema,
+  discoveryStatsSchema,
+  selectionsUpdateResponseSchema,
+  selectiveCrawlSchema,
   CreateSiteInput,
   UpdateSiteInput,
   UpdateStartersInput,
@@ -60,6 +69,10 @@ export {
   UpdateHostInput,
   SiteParams,
   HostParams,
+  UpdateSelectionsInput,
+  BulkSelectInput,
+  AddManualUrlsInput,
+  SelectiveCrawlInput,
   // Note: startersResponseSchema is exported from widget.schema
 } from './sites.schema';
 
@@ -82,6 +95,7 @@ export {
 // Billing schemas (canonical source for updateBillingInfoSchema, billingInfoResponseSchema)
 export {
   billingHistoryQuerySchema,
+  billingSummaryQuerySchema,
   transactionParamsSchema,
   billingInfoSchema,
   updateBillingInfoSchema,
@@ -121,6 +135,12 @@ export {
 
 // Admin schemas
 export * from './admin.schema';
+
+// Admin audit schemas (for OpenAPI registration)
+import './admin-audit.schema';
+
+// Admin email schemas (for OpenAPI registration)
+import './admin-emails.schema';
 
 /**
  * Schema Organization:

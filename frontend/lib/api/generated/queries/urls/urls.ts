@@ -22,7 +22,10 @@ import type {
 import type {
   AddUrlsRequest,
   AddUrlsResponse,
+  FailedUrlsResponse,
   GetApiV1SitesSiteIdUrlsParams,
+  PostApiV1SitesSiteIdUrlsRetryFailedBody,
+  RetryResponse,
   SiteUrl,
   UpdateContentRequest,
   UpdateUrlRequest,
@@ -554,6 +557,226 @@ export const usePostApiV1SitesSiteIdUrlsUrlIdCrawl = <TError = ErrorType<void>,
       > => {
 
       const mutationOptions = getPostApiV1SitesSiteIdUrlsUrlIdCrawlMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
+ * @summary Get failed URLs with error details
+ */
+export const getApiV1SitesSiteIdUrlsFailed = (
+    siteId: string,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<FailedUrlsResponse>(
+      {url: `/api/v1/sites/${siteId}/urls/failed`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+
+
+export const getGetApiV1SitesSiteIdUrlsFailedQueryKey = (siteId?: string,) => {
+    return [
+    `/api/v1/sites/${siteId}/urls/failed`
+    ] as const;
+    }
+
+    
+export const getGetApiV1SitesSiteIdUrlsFailedQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdUrlsFailed>>, TError = ErrorType<void>>(siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdUrlsFailed>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetApiV1SitesSiteIdUrlsFailedQueryKey(siteId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1SitesSiteIdUrlsFailed>>> = ({ signal }) => getApiV1SitesSiteIdUrlsFailed(siteId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(siteId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdUrlsFailed>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetApiV1SitesSiteIdUrlsFailedQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1SitesSiteIdUrlsFailed>>>
+export type GetApiV1SitesSiteIdUrlsFailedQueryError = ErrorType<void>
+
+
+export function useGetApiV1SitesSiteIdUrlsFailed<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdUrlsFailed>>, TError = ErrorType<void>>(
+ siteId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdUrlsFailed>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiV1SitesSiteIdUrlsFailed>>,
+          TError,
+          Awaited<ReturnType<typeof getApiV1SitesSiteIdUrlsFailed>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiV1SitesSiteIdUrlsFailed<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdUrlsFailed>>, TError = ErrorType<void>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdUrlsFailed>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiV1SitesSiteIdUrlsFailed>>,
+          TError,
+          Awaited<ReturnType<typeof getApiV1SitesSiteIdUrlsFailed>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiV1SitesSiteIdUrlsFailed<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdUrlsFailed>>, TError = ErrorType<void>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdUrlsFailed>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get failed URLs with error details
+ */
+
+export function useGetApiV1SitesSiteIdUrlsFailed<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdUrlsFailed>>, TError = ErrorType<void>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdUrlsFailed>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetApiV1SitesSiteIdUrlsFailedQueryOptions(siteId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Retry all failed URLs
+ */
+export const postApiV1SitesSiteIdUrlsRetryFailed = (
+    siteId: string,
+    postApiV1SitesSiteIdUrlsRetryFailedBody: BodyType<PostApiV1SitesSiteIdUrlsRetryFailedBody>,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<RetryResponse>(
+      {url: `/api/v1/sites/${siteId}/urls/retry-failed`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: postApiV1SitesSiteIdUrlsRetryFailedBody, signal
+    },
+      options);
+    }
+  
+
+
+export const getPostApiV1SitesSiteIdUrlsRetryFailedMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1SitesSiteIdUrlsRetryFailed>>, TError,{siteId: string;data: BodyType<PostApiV1SitesSiteIdUrlsRetryFailedBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postApiV1SitesSiteIdUrlsRetryFailed>>, TError,{siteId: string;data: BodyType<PostApiV1SitesSiteIdUrlsRetryFailedBody>}, TContext> => {
+
+const mutationKey = ['postApiV1SitesSiteIdUrlsRetryFailed'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1SitesSiteIdUrlsRetryFailed>>, {siteId: string;data: BodyType<PostApiV1SitesSiteIdUrlsRetryFailedBody>}> = (props) => {
+          const {siteId,data} = props ?? {};
+
+          return  postApiV1SitesSiteIdUrlsRetryFailed(siteId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostApiV1SitesSiteIdUrlsRetryFailedMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1SitesSiteIdUrlsRetryFailed>>>
+    export type PostApiV1SitesSiteIdUrlsRetryFailedMutationBody = BodyType<PostApiV1SitesSiteIdUrlsRetryFailedBody>
+    export type PostApiV1SitesSiteIdUrlsRetryFailedMutationError = ErrorType<void>
+
+    /**
+ * @summary Retry all failed URLs
+ */
+export const usePostApiV1SitesSiteIdUrlsRetryFailed = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1SitesSiteIdUrlsRetryFailed>>, TError,{siteId: string;data: BodyType<PostApiV1SitesSiteIdUrlsRetryFailedBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postApiV1SitesSiteIdUrlsRetryFailed>>,
+        TError,
+        {siteId: string;data: BodyType<PostApiV1SitesSiteIdUrlsRetryFailedBody>},
+        TContext
+      > => {
+
+      const mutationOptions = getPostApiV1SitesSiteIdUrlsRetryFailedMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
+ * @summary Retry a single failed URL
+ */
+export const postApiV1SitesSiteIdUrlsUrlIdRetry = (
+    siteId: string,
+    urlId: string,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<UrlMessageResponse>(
+      {url: `/api/v1/sites/${siteId}/urls/${urlId}/retry`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getPostApiV1SitesSiteIdUrlsUrlIdRetryMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1SitesSiteIdUrlsUrlIdRetry>>, TError,{siteId: string;urlId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postApiV1SitesSiteIdUrlsUrlIdRetry>>, TError,{siteId: string;urlId: string}, TContext> => {
+
+const mutationKey = ['postApiV1SitesSiteIdUrlsUrlIdRetry'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1SitesSiteIdUrlsUrlIdRetry>>, {siteId: string;urlId: string}> = (props) => {
+          const {siteId,urlId} = props ?? {};
+
+          return  postApiV1SitesSiteIdUrlsUrlIdRetry(siteId,urlId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostApiV1SitesSiteIdUrlsUrlIdRetryMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1SitesSiteIdUrlsUrlIdRetry>>>
+    
+    export type PostApiV1SitesSiteIdUrlsUrlIdRetryMutationError = ErrorType<void>
+
+    /**
+ * @summary Retry a single failed URL
+ */
+export const usePostApiV1SitesSiteIdUrlsUrlIdRetry = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1SitesSiteIdUrlsUrlIdRetry>>, TError,{siteId: string;urlId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postApiV1SitesSiteIdUrlsUrlIdRetry>>,
+        TError,
+        {siteId: string;urlId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getPostApiV1SitesSiteIdUrlsUrlIdRetryMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }

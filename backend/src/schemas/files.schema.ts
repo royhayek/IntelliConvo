@@ -81,8 +81,10 @@ export const ALLOWED_FILE_MIME_TYPES = [
 ] as const;
 
 // File upload constraints
+// Note: MAX_FILE_SIZE here is a hard cap for multer middleware.
+// The actual dynamic limit is checked in fileProcessor.ts using database settings.
 export const FILE_UPLOAD_CONSTRAINTS = {
-  MAX_FILE_SIZE: 10 * 1024 * 1024, // 10MB
+  MAX_FILE_SIZE: 100 * 1024 * 1024, // 100MB hard cap - actual limit from DB settings
   MAX_FILENAME_LENGTH: 255,
   DANGEROUS_EXTENSIONS: ['.exe', '.bat', '.cmd', '.sh', '.php', '.js', '.dll', '.com'],
 } as const;

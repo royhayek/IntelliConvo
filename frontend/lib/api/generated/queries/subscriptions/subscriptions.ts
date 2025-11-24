@@ -20,10 +20,15 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  ChangePlanRequest,
+  ChangePlanResponse,
   CreateSubscriptionRequest,
   CreateSubscriptionResponse,
+  GetApiV1BillingSubscriptionsParams,
+  GetApiV1BillingSubscriptionsSubscriptionIdPreviewChangeParams,
   PlansListResponse,
   PortalUrlResponse,
+  ProrationPreview,
   Subscription,
   SubscriptionsListResponse
 } from '../../models';
@@ -37,16 +42,18 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
 /**
+ * Retrieve user subscriptions, optionally filtered by site
  * @summary Get user subscriptions
  */
 export const getApiV1BillingSubscriptions = (
-    
+    params?: GetApiV1BillingSubscriptionsParams,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<SubscriptionsListResponse>(
-      {url: `/api/v1/billing/subscriptions`, method: 'GET', signal
+      {url: `/api/v1/billing/subscriptions`, method: 'GET',
+        params, signal
     },
       options);
     }
@@ -54,23 +61,23 @@ export const getApiV1BillingSubscriptions = (
 
 
 
-export const getGetApiV1BillingSubscriptionsQueryKey = () => {
+export const getGetApiV1BillingSubscriptionsQueryKey = (params?: GetApiV1BillingSubscriptionsParams,) => {
     return [
-    `/api/v1/billing/subscriptions`
+    `/api/v1/billing/subscriptions`, ...(params ? [params]: [])
     ] as const;
     }
 
     
-export const getGetApiV1BillingSubscriptionsQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetApiV1BillingSubscriptionsQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError = ErrorType<void>>(params?: GetApiV1BillingSubscriptionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1BillingSubscriptionsQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getGetApiV1BillingSubscriptionsQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>> = ({ signal }) => getApiV1BillingSubscriptions(requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>> = ({ signal }) => getApiV1BillingSubscriptions(params, requestOptions, signal);
 
       
 
@@ -84,7 +91,7 @@ export type GetApiV1BillingSubscriptionsQueryError = ErrorType<void>
 
 
 export function useGetApiV1BillingSubscriptions<TData = Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError = ErrorType<void>>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError, TData>> & Pick<
+ params: undefined |  GetApiV1BillingSubscriptionsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>,
           TError,
@@ -94,7 +101,7 @@ export function useGetApiV1BillingSubscriptions<TData = Awaited<ReturnType<typeo
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetApiV1BillingSubscriptions<TData = Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError, TData>> & Pick<
+ params?: GetApiV1BillingSubscriptionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>,
           TError,
@@ -104,7 +111,7 @@ export function useGetApiV1BillingSubscriptions<TData = Awaited<ReturnType<typeo
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetApiV1BillingSubscriptions<TData = Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ params?: GetApiV1BillingSubscriptionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
@@ -112,11 +119,11 @@ export function useGetApiV1BillingSubscriptions<TData = Awaited<ReturnType<typeo
  */
 
 export function useGetApiV1BillingSubscriptions<TData = Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ params?: GetApiV1BillingSubscriptionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1BillingSubscriptionsQueryOptions(options)
+  const queryOptions = getGetApiV1BillingSubscriptionsQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -251,6 +258,69 @@ export const usePostApiV1BillingSubscriptionsSubscriptionIdCancel = <TError = Er
       > => {
 
       const mutationOptions = getPostApiV1BillingSubscriptionsSubscriptionIdCancelMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
+ * Removes the pending cancellation from a subscription. Only works if subscription has cancelAtPeriodEnd set to true.
+ * @summary Reactivate subscription
+ */
+export const postApiV1BillingSubscriptionsSubscriptionIdReactivate = (
+    subscriptionId: string,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<Subscription>(
+      {url: `/api/v1/billing/subscriptions/${subscriptionId}/reactivate`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getPostApiV1BillingSubscriptionsSubscriptionIdReactivateMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdReactivate>>, TError,{subscriptionId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdReactivate>>, TError,{subscriptionId: string}, TContext> => {
+
+const mutationKey = ['postApiV1BillingSubscriptionsSubscriptionIdReactivate'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdReactivate>>, {subscriptionId: string}> = (props) => {
+          const {subscriptionId} = props ?? {};
+
+          return  postApiV1BillingSubscriptionsSubscriptionIdReactivate(subscriptionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostApiV1BillingSubscriptionsSubscriptionIdReactivateMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdReactivate>>>
+    
+    export type PostApiV1BillingSubscriptionsSubscriptionIdReactivateMutationError = ErrorType<void>
+
+    /**
+ * @summary Reactivate subscription
+ */
+export const usePostApiV1BillingSubscriptionsSubscriptionIdReactivate = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdReactivate>>, TError,{subscriptionId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdReactivate>>,
+        TError,
+        {subscriptionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getPostApiV1BillingSubscriptionsSubscriptionIdReactivateMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
@@ -397,6 +467,173 @@ export function useGetApiV1BillingPlans<TData = Awaited<ReturnType<typeof getApi
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getGetApiV1BillingPlansQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * Upgrade or downgrade subscription plan. Stripe handles proration automatically.
+ * @summary Change subscription plan
+ */
+export const postApiV1BillingSubscriptionsSubscriptionIdChangePlan = (
+    subscriptionId: string,
+    changePlanRequest: BodyType<ChangePlanRequest>,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<ChangePlanResponse>(
+      {url: `/api/v1/billing/subscriptions/${subscriptionId}/change-plan`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: changePlanRequest, signal
+    },
+      options);
+    }
+  
+
+
+export const getPostApiV1BillingSubscriptionsSubscriptionIdChangePlanMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdChangePlan>>, TError,{subscriptionId: string;data: BodyType<ChangePlanRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdChangePlan>>, TError,{subscriptionId: string;data: BodyType<ChangePlanRequest>}, TContext> => {
+
+const mutationKey = ['postApiV1BillingSubscriptionsSubscriptionIdChangePlan'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdChangePlan>>, {subscriptionId: string;data: BodyType<ChangePlanRequest>}> = (props) => {
+          const {subscriptionId,data} = props ?? {};
+
+          return  postApiV1BillingSubscriptionsSubscriptionIdChangePlan(subscriptionId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostApiV1BillingSubscriptionsSubscriptionIdChangePlanMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdChangePlan>>>
+    export type PostApiV1BillingSubscriptionsSubscriptionIdChangePlanMutationBody = BodyType<ChangePlanRequest>
+    export type PostApiV1BillingSubscriptionsSubscriptionIdChangePlanMutationError = ErrorType<void>
+
+    /**
+ * @summary Change subscription plan
+ */
+export const usePostApiV1BillingSubscriptionsSubscriptionIdChangePlan = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdChangePlan>>, TError,{subscriptionId: string;data: BodyType<ChangePlanRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdChangePlan>>,
+        TError,
+        {subscriptionId: string;data: BodyType<ChangePlanRequest>},
+        TContext
+      > => {
+
+      const mutationOptions = getPostApiV1BillingSubscriptionsSubscriptionIdChangePlanMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
+ * Get a preview of charges/credits for changing to a different plan
+ * @summary Preview plan change proration
+ */
+export const getApiV1BillingSubscriptionsSubscriptionIdPreviewChange = (
+    subscriptionId: string,
+    params: GetApiV1BillingSubscriptionsSubscriptionIdPreviewChangeParams,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<ProrationPreview>(
+      {url: `/api/v1/billing/subscriptions/${subscriptionId}/preview-change`, method: 'GET',
+        params, signal
+    },
+      options);
+    }
+  
+
+
+
+export const getGetApiV1BillingSubscriptionsSubscriptionIdPreviewChangeQueryKey = (subscriptionId?: string,
+    params?: GetApiV1BillingSubscriptionsSubscriptionIdPreviewChangeParams,) => {
+    return [
+    `/api/v1/billing/subscriptions/${subscriptionId}/preview-change`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getGetApiV1BillingSubscriptionsSubscriptionIdPreviewChangeQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1BillingSubscriptionsSubscriptionIdPreviewChange>>, TError = ErrorType<void>>(subscriptionId: string,
+    params: GetApiV1BillingSubscriptionsSubscriptionIdPreviewChangeParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSubscriptionsSubscriptionIdPreviewChange>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetApiV1BillingSubscriptionsSubscriptionIdPreviewChangeQueryKey(subscriptionId,params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1BillingSubscriptionsSubscriptionIdPreviewChange>>> = ({ signal }) => getApiV1BillingSubscriptionsSubscriptionIdPreviewChange(subscriptionId,params, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(subscriptionId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSubscriptionsSubscriptionIdPreviewChange>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetApiV1BillingSubscriptionsSubscriptionIdPreviewChangeQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1BillingSubscriptionsSubscriptionIdPreviewChange>>>
+export type GetApiV1BillingSubscriptionsSubscriptionIdPreviewChangeQueryError = ErrorType<void>
+
+
+export function useGetApiV1BillingSubscriptionsSubscriptionIdPreviewChange<TData = Awaited<ReturnType<typeof getApiV1BillingSubscriptionsSubscriptionIdPreviewChange>>, TError = ErrorType<void>>(
+ subscriptionId: string,
+    params: GetApiV1BillingSubscriptionsSubscriptionIdPreviewChangeParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSubscriptionsSubscriptionIdPreviewChange>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiV1BillingSubscriptionsSubscriptionIdPreviewChange>>,
+          TError,
+          Awaited<ReturnType<typeof getApiV1BillingSubscriptionsSubscriptionIdPreviewChange>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiV1BillingSubscriptionsSubscriptionIdPreviewChange<TData = Awaited<ReturnType<typeof getApiV1BillingSubscriptionsSubscriptionIdPreviewChange>>, TError = ErrorType<void>>(
+ subscriptionId: string,
+    params: GetApiV1BillingSubscriptionsSubscriptionIdPreviewChangeParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSubscriptionsSubscriptionIdPreviewChange>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiV1BillingSubscriptionsSubscriptionIdPreviewChange>>,
+          TError,
+          Awaited<ReturnType<typeof getApiV1BillingSubscriptionsSubscriptionIdPreviewChange>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiV1BillingSubscriptionsSubscriptionIdPreviewChange<TData = Awaited<ReturnType<typeof getApiV1BillingSubscriptionsSubscriptionIdPreviewChange>>, TError = ErrorType<void>>(
+ subscriptionId: string,
+    params: GetApiV1BillingSubscriptionsSubscriptionIdPreviewChangeParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSubscriptionsSubscriptionIdPreviewChange>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Preview plan change proration
+ */
+
+export function useGetApiV1BillingSubscriptionsSubscriptionIdPreviewChange<TData = Awaited<ReturnType<typeof getApiV1BillingSubscriptionsSubscriptionIdPreviewChange>>, TError = ErrorType<void>>(
+ subscriptionId: string,
+    params: GetApiV1BillingSubscriptionsSubscriptionIdPreviewChangeParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSubscriptionsSubscriptionIdPreviewChange>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetApiV1BillingSubscriptionsSubscriptionIdPreviewChangeQueryOptions(subscriptionId,params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

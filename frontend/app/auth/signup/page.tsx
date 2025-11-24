@@ -21,8 +21,9 @@ import { useAuthStore } from "@/lib/store";
 import { useAuthRedirect } from "@/lib/hooks/useAuth";
 import { AuthLoading } from "@/components/auth/auth-loading";
 import { usePostApiV1AuthSignup } from "@/lib/api/generated/queries/authentication/authentication";
+import { useGetApiV1ConfigPublic } from "@/lib/api/generated/queries/config/config";
 import { AlertCircle } from "lucide-react";
-import { OAuthButtons } from "@/components/auth/oauth-buttons";
+import { OAuthButtons, AuthProvider } from "@/components/auth/oauth-buttons";
 import { BrandLogo } from "@/components/ui/brand-logo";
 
 const signupSchema = z.object({
@@ -38,7 +39,11 @@ export default function SignupPage() {
   const { login } = useAuthStore();
 
   // Redirect authenticated users to onboarding
-  const { isLoading: isAuthLoading } = useAuthRedirect("/onboarding");
+  const { isLoading: isAuthLoading } = useAuthRedirect("/dashboard");
+
+  // Fetch public config to get enabled auth providers
+  const { data: configData } = useGetApiV1ConfigPublic();
+  const enabledProviders = configData?.data?.enabledAuthProviders ?? [];
 
   const form = useForm<SignupForm>({
     resolver: zodResolver(signupSchema),
@@ -55,7 +60,7 @@ export default function SignupPage() {
       onSuccess: (data) => {
         const { user, accessToken, refreshToken } = data;
         login(user, { accessToken, refreshToken });
-        router.push("/onboarding");
+        router.push("/dashboard");
       },
     },
   });
@@ -71,10 +76,12 @@ export default function SignupPage() {
   };
 
   const loading = signupMutation.isPending;
-  const error = (signupMutation.error as { response?: { data?: { error?: string } } })?.response?.data?.error ||
-    (signupMutation.isError ? "Failed to create account" : "");
+  const errorResponse = (signupMutation.error as { response?: { data?: { error?: { message?: string } | string } } })?.response?.data?.error;
+  const error = typeof errorResponse === 'string'
+    ? errorResponse
+    : errorResponse?.message || (signupMutation.isError ? "Failed to create account" : "");
 
-  const handleOAuthLogin = (provider: "google" | "github") => {
+  const handleOAuthLogin = (provider: AuthProvider) => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api/v1';
     window.location.href = `${apiUrl}/auth/${provider}`;
   };
@@ -184,6 +191,7 @@ export default function SignupPage() {
 
               <OAuthButtons
                 onProviderClick={handleOAuthLogin}
+                enabledProviders={enabledProviders}
                 disabled={loading}
                 separatorText="Or sign up with"
               />

@@ -25,27 +25,13 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
 import { TimeAgo } from "@/components/ui/time-ago";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { cn } from "@/lib/utils";
+import { cn, formatCurrency, formatCents, formatDateTime } from "@/lib/utils";
 import {
   useGetApiV1AdminConversationsConversationId,
   useDeleteApiV1AdminConversationsConversationId,
   getGetApiV1AdminConversationsQueryKey,
 } from "@/lib/api/generated/queries/admin-conversations/admin-conversations";
 import type { AdminConversationDetail } from "@/lib/api/generated/models";
-
-function formatCurrency(cents: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(cents / 100);
-}
-
-function formatDate(dateString: string): string {
-  return new Intl.DateTimeFormat("en-US", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(new Date(dateString));
-}
 
 export default function AdminConversationDetailPage() {
   const params = useParams();
@@ -168,7 +154,7 @@ export default function AdminConversationDetailPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold">{formatCurrency(conversation.stats.totalCostCents)}</p>
+            <p className="text-2xl font-bold">{formatCents(conversation.stats.totalCostCents)}</p>
           </CardContent>
         </Card>
 
@@ -244,11 +230,11 @@ export default function AdminConversationDetailPage() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="text-xs text-gray-500">Started</p>
-                <p className="text-sm font-medium">{formatDate(conversation.startedAt)}</p>
+                <p className="text-sm font-medium">{formatDateTime(conversation.startedAt)}</p>
               </div>
               <div>
                 <p className="text-xs text-gray-500">Last Message</p>
-                <p className="text-sm font-medium">{formatDate(conversation.lastMessageAt)}</p>
+                <p className="text-sm font-medium">{formatDateTime(conversation.lastMessageAt)}</p>
               </div>
               <div>
                 <p className="text-xs text-gray-500">Session ID</p>
@@ -314,7 +300,7 @@ export default function AdminConversationDetailPage() {
                             {message.tokensUsed} tokens
                           </span>
                         )}
-                        <span>{formatDate(message.timestamp)}</span>
+                        <span>{formatDateTime(message.timestamp)}</span>
                       </div>
                     </div>
                     <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap break-words">

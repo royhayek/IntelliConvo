@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { IconButton } from "@/components/ui/icon-button";
 import { ProcessingStatusIcon } from "@/components/ui/processing-status-icon";
-import { FileText, RefreshCw, Trash2 } from "lucide-react";
+import { FileText, RefreshCw, Trash2, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface KnowledgeFileItemProps {
@@ -9,6 +9,7 @@ interface KnowledgeFileItemProps {
   fileSize: number;
   fileType: string;
   embeddingStatus: "COMPLETED" | "PROCESSING" | "FAILED" | "PENDING";
+  onPreview?: () => void;
   onRetry?: () => void;
   onDelete?: () => void;
   isRetrying?: boolean;
@@ -21,6 +22,7 @@ export function KnowledgeFileItem({
   fileSize,
   fileType,
   embeddingStatus,
+  onPreview,
   onRetry,
   onDelete,
   isRetrying = false,
@@ -64,6 +66,16 @@ export function KnowledgeFileItem({
       </div>
 
       <div className="flex items-center space-x-2 flex-shrink-0">
+        {onPreview && (
+          <IconButton
+            icon={Eye}
+            label={`Preview ${fileName}`}
+            tooltip="Preview content"
+            onClick={onPreview}
+            variant="ghost"
+            size="sm"
+          />
+        )}
         {embeddingStatus === "FAILED" && onRetry && (
           <Button
             variant="outline"

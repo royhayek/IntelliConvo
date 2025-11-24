@@ -1,7 +1,8 @@
 "use client";
 
+import { useMemo } from "react";
 import { motion } from "framer-motion";
-import { Plus } from "lucide-react";
+import { Plus, Globe, CheckCircle, Link as LinkIcon } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -13,11 +14,12 @@ import { ErrorState } from "@/components/ui/error-state";
 import { SiteCard } from "@/components/dashboard/site-card";
 import { StatsGrid } from "@/components/ui/stats-grid";
 import { PageHeader } from "@/components/ui/page-header";
-import { Globe, CheckCircle, Link as LinkIcon } from "lucide-react";
 import { useRequireUser } from "@/lib/hooks/useAuth";
 import { AuthLoading } from "@/components/auth/auth-loading";
 import { useGetApiV1Sites } from "@/lib/api/generated/queries/sites/sites";
-import type { SiteResponse } from "@/lib/api/generated/models";
+import { EmailVerificationAlert } from "@/components/ui/email-verification-alert";
+import { SubscriptionAlert } from "@/components/ui/subscription-alert";
+import { computeDashboardStats } from "@/lib/utils/dashboard-stats";
 
 export default function DashboardPage() {
   // Protected route - redirects to login if not authenticated, admins to admin portal
@@ -30,9 +32,26 @@ export default function DashboardPage() {
     },
   });
 
+  // Compute dashboard stats
+  const dashboardStats = useMemo(
+    () =>
+      computeDashboardStats(sites, {
+        totalSites: Globe,
+        activeSites: CheckCircle,
+        totalUrls: LinkIcon,
+      }),
+    [sites]
+  );
+
   // Show loading state while auth is hydrating
   if (isAuthLoading) {
     return <AuthLoading message="Verifying authentication" />;
+  }
+
+  // If not authenticated, useRequireUser will redirect to login
+  // Don't show dashboard UI while redirecting
+  if (!isAuthenticated) {
+    return <AuthLoading message="Redirecting to login" />;
   }
 
   if (isSitesLoading) {
@@ -90,6 +109,11 @@ export default function DashboardPage() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        {/* Email Verification Alert */}
+        <EmailVerificationAlert className="mb-6" />
+
+        {/* Subscription Alert for cancelled/expiring subscriptions */}
+        {sites.length > 0 && <SubscriptionAlert sites={sites} className="mb-6" />}
         <PageHeader
           title="My Dashboard"
           description="Manage your connected sites and monitor performance"
@@ -111,29 +135,7 @@ export default function DashboardPage() {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="mt-10"
             >
-              <StatsGrid
-                stats={[
-                  {
-                    label: "Total Sites",
-                    value: sites.length,
-                    icon: Globe,
-                    color: "blue",
-                  },
-                  {
-                    label: "Active Sites",
-                    value: sites.filter(s => s.crawlStatus === 'COMPLETED').length,
-                    icon: CheckCircle,
-                    color: "green",
-                  },
-                  {
-                    label: "Total URLs",
-                    value: sites.reduce((sum, s) => sum + (s.urlCount ?? 0), 0),
-                    icon: LinkIcon,
-                    color: "purple",
-                  },
-                ]}
-                columns={3}
-              />
+              <StatsGrid stats={dashboardStats} columns={3} />
             </motion.div>
           )}
 

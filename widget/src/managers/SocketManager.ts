@@ -22,17 +22,25 @@ interface TypingEventData {
   isTyping: boolean;
 }
 
+interface TrialExpiredEventData {
+  reason: string;
+  daysRemaining?: number;
+  conversationsRemaining?: number;
+  messagesRemaining?: number;
+}
+
 export type ConnectionStatus = 'connected' | 'connecting' | 'disconnected';
 
 // Socket event handlers interface
 export interface SocketEventHandlers {
   onConnect?: () => void;
   onDisconnect?: (reason: string) => void;
-  onError?: (message: string) => void;
+  onError?: (message: string, code?: string) => void;
   onStream?: (chunk: string) => void;
   onComplete?: (content: string, quickReplies?: string[]) => void;
   onTyping?: (isTyping: boolean) => void;
   onConnectionError?: (error: Error) => void;
+  onTrialExpired?: (data: TrialExpiredEventData) => void;
 }
 
 export class SocketManager {
@@ -142,6 +150,14 @@ export class SocketManager {
     this.socket.on('typing', (data: TypingEventData) => {
       if (this.eventHandlers.onTyping) {
         this.eventHandlers.onTyping(data.isTyping);
+      }
+    });
+
+    // Trial expired
+    this.socket.on('trial-expired', (data: TrialExpiredEventData) => {
+      console.log('Trial expired:', data.reason);
+      if (this.eventHandlers.onTrialExpired) {
+        this.eventHandlers.onTrialExpired(data);
       }
     });
 

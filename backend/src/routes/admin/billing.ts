@@ -237,8 +237,82 @@ router.get(
 router.get(
   '/stats',
   asyncHandler(async (_req, res) => {
-    const stats = await adminBillingService.getBillingStats();
+    const stats = await adminBillingService.getBillingStatsEnhanced();
     res.json({ data: stats });
+  })
+);
+
+/**
+ * @swagger
+ * /api/v1/admin/billing/transactions/{transactionId}/refund:
+ *   post:
+ *     summary: Issue a refund for a transaction
+ *     description: Issues a full or partial refund via Stripe API
+ *     tags: [Admin - Billing]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.post(
+  '/transactions/:transactionId/refund',
+  asyncHandler(async (req, res) => {
+    const { transactionId } = req.params;
+    const { amount, reason, adminNotes } = req.body;
+
+    const result = await adminBillingService.issueRefund(transactionId, {
+      amount,
+      reason,
+      adminNotes,
+    });
+
+    res.json({ data: result });
+  })
+);
+
+/**
+ * @swagger
+ * /api/v1/admin/billing/disputes:
+ *   get:
+ *     summary: Get list of disputes from Stripe
+ *     description: Fetches disputes directly from Stripe API with local enrichment
+ *     tags: [Admin - Billing]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.get(
+  '/disputes',
+  asyncHandler(async (req, res) => {
+    const {
+      page = '1',
+      limit = '20',
+      status,
+    } = req.query;
+
+    const result = await adminBillingService.getDisputes({
+      page: parseInt(page as string, 10),
+      limit: parseInt(limit as string, 10),
+      status: status as string | undefined,
+    });
+
+    res.json({ data: result });
+  })
+);
+
+/**
+ * @swagger
+ * /api/v1/admin/billing/disputes/{disputeId}:
+ *   get:
+ *     summary: Get dispute details by ID
+ *     description: Fetches detailed dispute information from Stripe with local data
+ *     tags: [Admin - Billing]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.get(
+  '/disputes/:disputeId',
+  asyncHandler(async (req, res) => {
+    const { disputeId } = req.params;
+    const dispute = await adminBillingService.getDisputeById(disputeId);
+    res.json({ data: dispute });
   })
 );
 

@@ -5,6 +5,7 @@ import pdf from 'pdf-parse';
 import { prisma } from '../lib/prisma';
 import { generateEmbeddings } from './embeddings';
 import { logger } from '../utils/logger';
+import { settings } from '../lib/settings';
 import {
   AppError,
   ValidationError,
@@ -33,10 +34,11 @@ export async function processUploadedFile(
       throw new ValidationError('File type not supported. Only PDF and TXT files are allowed.');
     }
 
-    // Validate file size (10MB limit)
-    const maxSize = 10 * 1024 * 1024; // 10MB
+    // Validate file size using settings
+    const maxSizeMB = await settings.getMaxFileSizeMB();
+    const maxSize = maxSizeMB * 1024 * 1024;
     if (file.size > maxSize) {
-      throw new ValidationError('File size too large. Maximum size is 10MB.');
+      throw new ValidationError(`File size too large. Maximum size is ${maxSizeMB}MB.`);
     }
 
     // Extract text content based on file type
@@ -84,6 +86,7 @@ export async function processUploadedFile(
         lastCrawledAt: new Date(),
         isActive: true,
         isExcluded: false,
+        embeddingStatus: 'PROCESSING', // Set initial status for embedding generation
       },
     });
 
@@ -94,6 +97,12 @@ export async function processUploadedFile(
       // Get chunk count
       const embeddings = await prisma.embedding.findMany({
         where: { siteUrlId: tempUrl.id },
+      });
+
+      // Update SiteUrl embedding status to READY
+      await prisma.siteUrl.update({
+        where: { id: tempUrl.id },
+        data: { embeddingStatus: 'READY' },
       });
 
       // Update file as completed
@@ -117,6 +126,12 @@ export async function processUploadedFile(
         chunks: embeddings.length,
       };
     } catch (embeddingError) {
+      // Update SiteUrl embedding status to FAILED
+      await prisma.siteUrl.update({
+        where: { id: tempUrl.id },
+        data: { embeddingStatus: 'FAILED' },
+      });
+
       // Update file as failed
       const errorMsg = embeddingError instanceof Error ? embeddingError.message : 'Unknown error during embedding generation';
       await prisma.knowledgeFile.update({
@@ -168,8 +183,11 @@ async function saveFile(
   fileHash: string
 ): Promise<string> {
   try {
+    // Get upload directory from settings
+    const uploadDir = await settings.getUploadDir();
+
     // Create uploads directory if it doesn't exist
-    const uploadsDir = path.join(process.cwd(), 'uploads');
+    const uploadsDir = path.join(process.cwd(), uploadDir);
     await fs.mkdir(uploadsDir, { recursive: true });
 
     // Generate unique filename
@@ -181,7 +199,7 @@ async function saveFile(
     await fs.writeFile(filePath, buffer);
 
     // Return relative path for storage
-    return `/uploads/${fileName}`;
+    return `/${uploadDir}/${fileName}`;
   } catch (error) {
     logger.error('File save failed:', error);
     throw new InternalError('Failed to save file to storage.');
@@ -223,7 +241,8 @@ export async function deleteKnowledgeFile(fileId: string, siteId: string): Promi
     }
 
     // Delete file from storage
-    if (file.fileUrl && file.fileUrl.startsWith('/uploads/')) {
+    if (file.fileUrl) {
+      // File URLs are stored as /{uploadDir}/{filename}
       const filePath = path.join(process.cwd(), file.fileUrl);
       try {
         await fs.unlink(filePath);

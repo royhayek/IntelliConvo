@@ -5,5 +5,9 @@ import type { PatchApiV1AdminSitesSiteIdBodyCrawlStatus } from './patchApiV1Admi
 export type PatchApiV1AdminSitesSiteIdBody = {
   siteName?: string;
   siteUrl?: string;
+  siteDescription?: string;
+  siteIndustry?: string;
+  specialInstructions?: string;
+  welcomeMessage?: string;
   crawlStatus?: PatchApiV1AdminSitesSiteIdBodyCrawlStatus;
 };

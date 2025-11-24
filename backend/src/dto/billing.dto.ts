@@ -66,13 +66,15 @@ export interface BillingHistoryResponse {
  */
 export interface BillingSubscriptionDTO {
   id: string;
+  siteId: string;
+  siteName: string;
   planType: string;
   status: string;
   currentPeriodEnd: string;
+  amount: number;
   site: {
     id: string;
     siteName: string;
-    siteUrl: string;
   };
 }
 
@@ -80,18 +82,21 @@ export interface BillingSubscriptionDTO {
  * Upcoming charge information
  */
 export interface UpcomingChargeDTO {
-  subscriptionId: string;
+  siteId: string;
+  siteName: string;
   amount: number;
   dueDate: string;
-  siteName: string;
+  planType: string;
 }
 
 /**
  * Complete billing summary response
  */
 export interface BillingSummaryResponse {
-  currentPeriod: BillingPeriodSummary;
-  allTime: BillingPeriodSummary;
+  totalSpent: number;
+  currentMonthSpent: number;
+  transactionCount: number;
+  nextBillingDate: string | null;
   activeSubscriptions: BillingSubscriptionDTO[];
   upcomingCharges: UpcomingChargeDTO[];
 }

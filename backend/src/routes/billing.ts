@@ -9,7 +9,7 @@ import { asyncHandler } from '../middleware/errorHandler';
 import { validateQuery, validateParams } from '../middleware/validate';
 import { billingService } from '../services/billing/BillingService';
 import { subscriptionService } from '../services';
-import { billingHistoryQuerySchema, transactionParamsSchema } from '../schemas';
+import { billingHistoryQuerySchema, billingSummaryQuerySchema, transactionParamsSchema } from '../schemas';
 
 const router = Router();
 
@@ -85,8 +85,10 @@ router.get(
 router.get(
   '/summary',
   authenticate,
+  validateQuery(billingSummaryQuerySchema),
   asyncHandler(async (req: Request, res: Response) => {
-    const summary = await billingService.getSummary(req.user!.id);
+    const siteId = req.query.siteId as string | undefined;
+    const summary = await billingService.getSummary(req.user!.id, siteId);
     res.json(summary);
   })
 );
@@ -148,6 +150,45 @@ router.get(
   asyncHandler(async (req: Request, res: Response) => {
     const plans = await subscriptionService.getAvailablePlans();
     res.json(plans);
+  })
+);
+
+/**
+ * @swagger
+ * /api/v1/billing/receipts/{transactionId}:
+ *   get:
+ *     summary: Get receipt URL
+ *     description: Get the Stripe hosted receipt URL for a transaction
+ *     tags: [Billing]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: transactionId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Transaction ID
+ *     responses:
+ *       200:
+ *         description: Receipt URL retrieved successfully
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
+router.get(
+  '/receipts/:transactionId',
+  authenticate,
+  validateParams(transactionParamsSchema),
+  asyncHandler(async (req: Request, res: Response) => {
+    const result = await billingService.getReceiptUrl(
+      req.params.transactionId,
+      req.user!.id
+    );
+    res.json(result);
   })
 );
 

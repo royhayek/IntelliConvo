@@ -1,8 +1,8 @@
 "use client";
 
-import { memo } from "react";
+import { memo, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Check, Loader2 } from "lucide-react";
+import { Check, Loader2, Gift } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -26,6 +26,12 @@ export const PlanStep = memo(function PlanStep({
   isLoading,
   error,
 }: PlanStepProps) {
+  // Get trial days from the first plan (all plans have same trial period)
+  const trialDays = useMemo(() => {
+    const firstPlan = plans[0];
+    return firstPlan?.trialDays && firstPlan.trialDays > 0 ? firstPlan.trialDays : 0;
+  }, [plans]);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -38,6 +44,21 @@ export const PlanStep = memo(function PlanStep({
         <Alert variant="destructive" className="py-2">
           <AlertDescription className="text-sm">{error}</AlertDescription>
         </Alert>
+      )}
+
+      {/* Trial banner - applies to all plans */}
+      {trialDays > 0 && (
+        <motion.div
+          className="flex items-center justify-center gap-2 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/30 border border-green-200 dark:border-green-800 rounded-lg py-2.5 px-4"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.3 }}
+        >
+          <Gift className="h-4 w-4 text-green-600 dark:text-green-400" />
+          <span className="text-sm font-medium text-green-700 dark:text-green-300">
+            Start with {trialDays} days free on any plan
+          </span>
+        </motion.div>
       )}
 
       {/* Horizontal Plans Grid */}
@@ -57,7 +78,7 @@ export const PlanStep = memo(function PlanStep({
               whileTap={{ scale: 0.98 }}
             >
               {plan.popular && (
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
                   <span className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-[10px] font-medium px-3 py-1 rounded-full">
                     Most Popular
                   </span>
@@ -118,23 +139,45 @@ export const PlanStep = memo(function PlanStep({
       </div>
 
       {/* Submit Button */}
-      <Button
-        onClick={onSubmit}
-        disabled={isLoading}
-        className="w-full bg-indigo-600 hover:bg-indigo-700"
+      <motion.div
+        animate={!isLoading ? {
+          x: [0, -3, 3, -3, 3, 0],
+        } : {}}
+        transition={{
+          duration: 0.5,
+          repeat: Infinity,
+          repeatDelay: 2,
+          ease: "easeInOut",
+        }}
       >
-        {isLoading ? (
-          <>
-            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            Processing...
-          </>
-        ) : (
-          "Subscribe Now"
-        )}
-      </Button>
+        <Button
+          onClick={onSubmit}
+          disabled={isLoading}
+          className="w-full bg-indigo-600 hover:bg-indigo-700"
+        >
+          {isLoading ? (
+            <>
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              Processing...
+            </>
+          ) : trialDays > 0 ? (
+            `Start ${trialDays}-Day Free Trial`
+          ) : (
+            "Subscribe Now"
+          )}
+        </Button>
+      </motion.div>
 
       <p className="text-[11px] text-gray-500 dark:text-gray-400 text-center">
-        Secure payment via Stripe. Cancel anytime.
+        {trialDays > 0 ? (
+          <>
+            Start your {trialDays}-day free trial. No charges until trial ends.
+            <br />
+            Cancel anytime. Secure payment via Stripe.
+          </>
+        ) : (
+          "Secure payment via Stripe. Cancel anytime."
+        )}
       </p>
     </motion.div>
   );

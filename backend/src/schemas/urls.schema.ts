@@ -431,6 +431,150 @@ registry.registerPath({
   },
 });
 
+// ============================================
+// Retry Schemas and Paths
+// ============================================
+
+// Failed URL response schema
+export const failedUrlSchema = registry.register(
+  'FailedUrl',
+  z.object({
+    id: z.string().uuid().openapi({ description: 'URL ID' }),
+    url: z.string().openapi({ description: 'The URL' }),
+    lastError: z.string().nullable().openapi({ description: 'Last error message' }),
+    retryCount: z.number().int().openapi({ description: 'Number of retry attempts' }),
+    lastRetryAt: z.string().nullable().openapi({ description: 'Last retry timestamp' }),
+  }).openapi({
+    description: 'Failed URL with error details',
+  })
+);
+
+// Failed URLs response schema
+export const failedUrlsResponseSchema = registry.register(
+  'FailedUrlsResponse',
+  z.object({
+    urls: z.array(failedUrlSchema).openapi({ description: 'List of failed URLs' }),
+    totalFailed: z.number().int().openapi({ description: 'Total count of failed URLs' }),
+  }).openapi({
+    description: 'Failed URLs response',
+  })
+);
+
+// Retry response schema
+export const retryResponseSchema = registry.register(
+  'RetryResponse',
+  z.object({
+    message: z.string().openapi({ description: 'Response message' }),
+    retriedCount: z.number().int().openapi({ description: 'Number of URLs queued for retry' }),
+    skippedCount: z.number().int().openapi({ description: 'Number of URLs skipped (exceeded max retries)' }),
+  }).openapi({
+    description: 'Retry operation response',
+  })
+);
+
+// GET /api/v1/sites/{siteId}/urls/failed
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/sites/{siteId}/urls/failed',
+  summary: 'Get failed URLs with error details',
+  tags: ['URLs'],
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: z.object({
+      siteId: z.string().uuid().openapi({ description: 'Site ID' }),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'Failed URLs retrieved successfully',
+      content: {
+        'application/json': {
+          schema: failedUrlsResponseSchema,
+        },
+      },
+    },
+    401: {
+      description: 'Unauthorized',
+    },
+    404: {
+      description: 'Site not found',
+    },
+  },
+});
+
+// POST /api/v1/sites/{siteId}/urls/retry-failed
+registry.registerPath({
+  method: 'post',
+  path: '/api/v1/sites/{siteId}/urls/retry-failed',
+  summary: 'Retry all failed URLs',
+  tags: ['URLs'],
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: z.object({
+      siteId: z.string().uuid().openapi({ description: 'Site ID' }),
+    }),
+    body: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            maxRetries: z.number().int().optional().openapi({
+              description: 'Maximum retry attempts (default: 3)',
+              example: 3,
+            }),
+          }),
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: 'Retry initiated successfully',
+      content: {
+        'application/json': {
+          schema: retryResponseSchema,
+        },
+      },
+    },
+    401: {
+      description: 'Unauthorized',
+    },
+    404: {
+      description: 'Site not found',
+    },
+  },
+});
+
+// POST /api/v1/sites/{siteId}/urls/{urlId}/retry
+registry.registerPath({
+  method: 'post',
+  path: '/api/v1/sites/{siteId}/urls/{urlId}/retry',
+  summary: 'Retry a single failed URL',
+  tags: ['URLs'],
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: z.object({
+      siteId: z.string().uuid().openapi({ description: 'Site ID' }),
+      urlId: z.string().uuid().openapi({ description: 'URL ID' }),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'Retry initiated successfully',
+      content: {
+        'application/json': {
+          schema: urlMessageResponseSchema,
+        },
+      },
+    },
+    401: {
+      description: 'Unauthorized',
+    },
+    404: {
+      description: 'URL not found',
+    },
+  },
+});
+
 // Type exports
 export type UrlQuery = z.infer<typeof urlQuerySchema>;
 export type UrlParams = z.infer<typeof urlParamsSchema>;

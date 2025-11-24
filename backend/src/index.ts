@@ -19,6 +19,7 @@ import { correlationIdMiddleware } from './middleware/correlationId';
 import { requestLogger, performanceLogger } from './middleware/requestLogger';
 import { createGlobalRateLimiter } from './middleware/rateLimiter';
 import { performanceTracker, metricsEndpoint } from './middleware/performance';
+import { maintenanceMiddleware } from './middleware/maintenance';
 
 // Utilities and services
 import { logger } from './utils/logger';
@@ -28,6 +29,8 @@ import { initializeSocketIO } from './services/socket';
 import { setupQueues } from './queues';
 import { setupSwagger } from './config/swagger';
 import { cacheService, CacheNamespace } from './services/cache';
+import { settings } from './lib/settings';
+import { emailService } from './services/email/EmailService';
 import IORedis from 'ioredis';
 import { OpenAI } from 'openai';
 import { Pinecone } from '@pinecone-database/pinecone';
@@ -45,6 +48,7 @@ import webhookRoutes from './routes/webhooks';
 import widgetRoutes from './routes/widget';
 import adminRoutes from './routes/admin';
 import notificationRoutes from './routes/notifications';
+import configRoutes from './routes/config';
 
 // Get validated configuration
 const config = getConfig();
@@ -126,12 +130,14 @@ app.use(requestLogger);
 // Webhook routes (before body parsing middleware to allow raw body access)
 app.use('/api/v1/webhooks', webhookRoutes);
 
-// Body parsing middleware
-app.use(express.json({ limit: config.MAX_FILE_SIZE }));
-app.use(express.urlencoded({ extended: true, limit: config.MAX_FILE_SIZE }));
+// Body parsing middleware - use generous limit, actual validation in fileProcessor
+const bodyParserLimit = process.env.MAX_FILE_SIZE || '100mb';
+app.use(express.json({ limit: bodyParserLimit }));
+app.use(express.urlencoded({ extended: true, limit: bodyParserLimit }));
 
 // Static file serving for uploads
-app.use('/uploads', express.static(config.UPLOAD_DIR));
+const uploadDir = process.env.UPLOAD_DIR || 'uploads';
+app.use('/uploads', express.static(uploadDir));
 
 // Passport middleware
 app.use(passport.initialize());
@@ -139,6 +145,9 @@ app.use(passport.initialize());
 // Global rate limiting
 const globalLimiter = createGlobalRateLimiter();
 app.use('/api/', globalLimiter);
+
+// Maintenance mode check (after auth so admin users can be identified)
+app.use('/api/', maintenanceMiddleware);
 
 // API v1 Routes
 app.use('/api/v1/auth', authRoutes);
@@ -152,6 +161,7 @@ app.use('/api/v1/billing', billingRoutes);
 app.use('/api/v1/widget', widgetRoutes);
 app.use('/api/v1/admin', adminRoutes);
 app.use('/api/v1/notifications', notificationRoutes);
+app.use('/api/v1/config', configRoutes);
 
 // Backwards compatibility: redirect /api/* to /api/v1/*
 app.use('/api', (req, res, next) => {
@@ -164,9 +174,11 @@ app.use('/api', (req, res, next) => {
   res.redirect(307, newPath); // 307 preserves HTTP method
 });
 
-app.get('/health', (req, res) => {
+app.get('/health', async (req, res) => {
+  const platformName = await settings.getPlatformName();
   res.json({
     status: 'healthy',
+    platform: platformName,
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
   });
@@ -187,9 +199,11 @@ app.get('/metrics', metricsEndpoint);
 
 app.get('/health/detailed', async (req, res) => {
   const startTime = Date.now();
+  const platformName = await settings.getPlatformName();
 
   const checks = {
     status: 'healthy',
+    platform: platformName,
     timestamp: new Date().toISOString(),
     uptime: Math.floor(process.uptime()),
     environment: config.NODE_ENV,
@@ -310,7 +324,17 @@ app.use(errorHandler);
 initializeSocketIO(io);
 
 // Initialize background job queues
-setupQueues();
+setupQueues().catch((error) => {
+  logger.error('Failed to setup background job queues:', error);
+});
+
+// Initialize email service
+emailService.initialize().then(() => {
+  const provider = emailService.getProvider();
+  logger.info(`📧 Email service initialized with provider: ${provider?.name || 'none'}`);
+}).catch((error) => {
+  logger.warn('📧 Email service initialization failed (emails may not work):', error.message);
+});
 
 // Start server
 const PORT = config.PORT;

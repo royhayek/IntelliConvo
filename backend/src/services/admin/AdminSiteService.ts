@@ -3,6 +3,7 @@ import { NotFoundError } from '../../middleware/errors';
 import { CrawlStatus } from '@prisma/client';
 import { adminExportService, ExportResult } from './AdminExportService';
 import { deleteSiteEmbeddings } from '../embeddings';
+import { cacheService, CacheNamespace } from '../cache';
 
 interface SiteListParams {
   page: number;
@@ -244,6 +245,9 @@ class AdminSiteService {
     // Delete embeddings from Pinecone first (before cascade deletes DB records)
     await deleteSiteEmbeddings(siteId);
 
+    // Clear all site-specific caches before deletion
+    await this.clearSiteCacheInternal(siteId);
+
     // Delete site (cascades to all related database data due to schema)
     await prisma.site.delete({
       where: { id: siteId },
@@ -345,6 +349,59 @@ class AdminSiteService {
       format,
       adminExportService.generateFilename('sites')
     );
+  }
+
+  /**
+   * Clear all caches for a specific site
+   */
+  async clearSiteCache(siteId: string): Promise<{ cleared: string[] }> {
+    const site = await prisma.site.findUnique({
+      where: { id: siteId },
+    });
+
+    if (!site) {
+      throw new NotFoundError('Site', siteId);
+    }
+
+    return this.clearSiteCacheInternal(siteId);
+  }
+
+  /**
+   * Internal method to clear all caches for a site (without existence check)
+   * Used by deleteSite to clear caches before deletion
+   */
+  private async clearSiteCacheInternal(siteId: string): Promise<{ cleared: string[] }> {
+    const cleared: string[] = [];
+
+    // Clear site config cache (pattern: siteId:*)
+    await cacheService.deleteByPattern(CacheNamespace.SITE_CONFIG, `${siteId}:*`);
+    cleared.push('siteConfig');
+
+    // Clear widget settings cache
+    await cacheService.delete(CacheNamespace.WIDGET_SETTINGS, siteId);
+    cleared.push('widgetSettings');
+
+    // Clear conversation starters cache
+    await cacheService.delete(CacheNamespace.CONVERSATION_STARTERS, siteId);
+    cleared.push('conversationStarters');
+
+    // Clear site stats cache
+    await cacheService.delete(CacheNamespace.SITE_STATS, siteId);
+    cleared.push('siteStats');
+
+    // Clear embedding search cache for this site (pattern: siteId:*)
+    await cacheService.deleteByPattern(CacheNamespace.EMBEDDING_SEARCH, `${siteId}:*`);
+    cleared.push('embeddingSearch');
+
+    // Clear discovery cache for this site
+    await cacheService.delete(CacheNamespace.DISCOVERY, siteId);
+    cleared.push('discovery');
+
+    // Clear crawl pause flag
+    await cacheService.setCrawlPaused(siteId, false);
+    cleared.push('crawlPauseFlag');
+
+    return { cleared };
   }
 }
 

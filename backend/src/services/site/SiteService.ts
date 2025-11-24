@@ -6,10 +6,12 @@
 import { prisma } from '../../lib/prisma';
 import { NotFoundError, AlreadyExistsError, ValidationError } from '../../middleware/errors';
 import { AppError, ErrorCode } from '../../middleware/errors';
-import { queueCrawl } from '../../queues';
-import { CrawlStatus } from '@prisma/client';
+import { queueCrawl, queueSiteDeletedEmail } from '../../queues';
+import { logger } from '../../utils/logger';
+import { CrawlStatus, NotificationType } from '@prisma/client';
 import { cacheService, CacheNamespace, CacheTTL } from '../cache';
 import { deleteSiteEmbeddings } from '../embeddings';
+import { fetchFavicon } from '../../utils/favicon';
 import {
   SiteWithMetaDTO,
   SiteListResponse,
@@ -54,10 +56,12 @@ export class SiteService {
         },
         subscription: {
           select: {
+            id: true,
             status: true,
             planType: true,
             trialEndsAt: true,
             currentPeriodEnd: true,
+            cancelAtPeriodEnd: true,
           },
         },
       },
@@ -68,6 +72,7 @@ export class SiteService {
       id: site.id,
       siteUrl: site.siteUrl,
       siteName: site.siteName,
+      faviconUrl: site.faviconUrl,
       siteDescription: site.siteDescription,
       siteIndustry: site.siteIndustry,
       specialInstructions: site.specialInstructions,
@@ -79,10 +84,12 @@ export class SiteService {
       urlCount: site.urls.length,
       subscription: site.subscription
         ? {
+            id: site.subscription.id,
             status: site.subscription.status,
             planType: site.subscription.planType,
             trialEndsAt: site.subscription.trialEndsAt?.toISOString() || null,
             currentPeriodEnd: site.subscription.currentPeriodEnd.toISOString(),
+            cancelAtPeriodEnd: site.subscription.cancelAtPeriodEnd || false,
           }
         : null,
     }));
@@ -135,6 +142,7 @@ export class SiteService {
       id: site.id,
       siteUrl: site.siteUrl,
       siteName: site.siteName,
+      faviconUrl: site.faviconUrl,
       siteDescription: site.siteDescription,
       siteIndustry: site.siteIndustry,
       specialInstructions: site.specialInstructions,
@@ -146,10 +154,12 @@ export class SiteService {
       urlCount: site._count.urls,
       subscription: site.subscription
         ? {
+            id: site.subscription.id,
             status: site.subscription.status,
             planType: site.subscription.planType,
             trialEndsAt: toISOString(site.subscription.trialEndsAt),
             currentPeriodEnd: toISOString(site.subscription.currentPeriodEnd) || new Date().toISOString(),
+            cancelAtPeriodEnd: site.subscription.cancelAtPeriodEnd || false,
           }
         : null,
       _count: site._count,
@@ -183,12 +193,21 @@ export class SiteService {
       throw new AlreadyExistsError('Site', 'URL');
     }
 
+    // Fetch favicon (non-blocking - we'll still create site if this fails)
+    let faviconUrl: string | null = null;
+    try {
+      faviconUrl = await fetchFavicon(normalizedUrl);
+    } catch (error) {
+      // Silently fail - favicon is not critical
+    }
+
     // Create site
     const site = await prisma.site.create({
       data: {
         userId,
         siteUrl: normalizedUrl,
         siteName: data.siteName || normalizedUrl,
+        faviconUrl,
         siteDescription: data.siteDescription,
         siteIndustry: data.siteIndustry,
         crawlStatus: CrawlStatus.PENDING,
@@ -204,8 +223,10 @@ export class SiteService {
       },
     });
 
-    // Queue crawl job
-    await queueCrawl(site.id, 'full');
+    // NOTE: We no longer auto-queue a full crawl here.
+    // The new onboarding flow uses discovery + selective crawl.
+    // Users can trigger a crawl manually via the selective crawl endpoint
+    // or the triggerCrawl method for recrawling.
 
     // Map to DTO
     return this.mapSiteToDTO(site);
@@ -253,7 +274,7 @@ export class SiteService {
    * @param userId - User ID (for authorization)
    */
   async deleteSite(siteId: string, userId: string): Promise<void> {
-    // Check ownership and subscription
+    // Check ownership and subscription, get user info for email
     const site = await prisma.site.findFirst({
       where: {
         id: siteId,
@@ -261,6 +282,9 @@ export class SiteService {
       },
       include: {
         subscription: true,
+        user: {
+          select: { email: true, fullName: true },
+        },
       },
     });
 
@@ -273,16 +297,51 @@ export class SiteService {
       throw new ValidationError('Cannot delete site with active subscription');
     }
 
+    // Store site info for email before deletion
+    const siteInfo = {
+      siteName: site.siteName,
+      siteUrl: site.siteUrl,
+      userEmail: site.user.email,
+      userName: site.user.fullName || '',
+    };
+
     // Delete embeddings from Pinecone first (before cascade deletes DB records)
     await deleteSiteEmbeddings(siteId);
+
+    // Clear all site-specific caches before deletion
+    await this.clearAllSiteCaches(siteId, userId);
 
     // Delete site (cascade will handle related database records)
     await prisma.site.delete({
       where: { id: siteId },
     });
 
-    // Invalidate cache
-    await this.invalidateCache(siteId, userId);
+    // Send site deleted email confirmation and in-app notification
+    try {
+      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+      await queueSiteDeletedEmail(userId, siteInfo.userEmail, {
+        userName: siteInfo.userName,
+        email: siteInfo.userEmail,
+        siteName: siteInfo.siteName,
+        siteUrl: siteInfo.siteUrl,
+        createNewUrl: `${frontendUrl}/onboarding`,
+      });
+
+      // Create in-app notification (site is deleted, so no siteId link)
+      await prisma.notification.create({
+        data: {
+          userId,
+          type: NotificationType.INFO,
+          title: 'Assistant Deleted',
+          message: `Your assistant "${siteInfo.siteName}" has been permanently deleted.`,
+          link: '/dashboard',
+        },
+      });
+
+      logger.info(`Queued site deleted email for user ${userId}, site ${siteInfo.siteName}`);
+    } catch (error) {
+      logger.error('Failed to queue site deleted email:', error);
+    }
   }
 
   /**
@@ -659,6 +718,7 @@ export class SiteService {
       id: site.id,
       siteUrl: site.siteUrl,
       siteName: site.siteName,
+      faviconUrl: site.faviconUrl,
       siteDescription: site.siteDescription,
       siteIndustry: site.siteIndustry,
       specialInstructions: site.specialInstructions,
@@ -670,6 +730,95 @@ export class SiteService {
       urlCount: 0, // Will be populated when needed
       subscription: null, // Will be populated when needed
     };
+  }
+
+  /**
+   * Add URLs to an existing site
+   * @param siteId - Site ID
+   * @param userId - User ID (for authorization)
+   * @param urls - Array of URLs to add
+   * @param startCrawl - Whether to start crawling immediately
+   * @returns Added URL records and job info
+   */
+  async addUrlsToSite(
+    siteId: string,
+    userId: string,
+    urls: string[],
+    startCrawl: boolean = true
+  ): Promise<{ addedUrls: any[]; skippedUrls: string[]; jobQueued: boolean }> {
+    // Verify ownership
+    const site = await prisma.site.findFirst({
+      where: { id: siteId, userId },
+      include: {
+        urls: { select: { url: true } },
+        subscription: true,
+      },
+    });
+
+    if (!site) {
+      throw new NotFoundError('Site', siteId);
+    }
+
+    // Check subscription status
+    if (!site.subscription || ['EXPIRED', 'CANCELLED'].includes(site.subscription.status)) {
+      throw new AppError(400, ErrorCode.VALIDATION_ERROR, 'Active subscription required to add URLs');
+    }
+
+    // Get existing URLs to avoid duplicates
+    const existingUrls = new Set(site.urls.map(u => u.url.toLowerCase()));
+
+    // Filter out duplicates and normalize URLs
+    const newUrls: string[] = [];
+    const skippedUrls: string[] = [];
+
+    for (const url of urls) {
+      const normalizedUrl = url.toLowerCase().trim();
+      if (existingUrls.has(normalizedUrl)) {
+        skippedUrls.push(url);
+      } else {
+        newUrls.push(url);
+        existingUrls.add(normalizedUrl); // Prevent duplicates within the batch
+      }
+    }
+
+    if (newUrls.length === 0) {
+      return { addedUrls: [], skippedUrls, jobQueued: false };
+    }
+
+    // Create URL records
+    const addedUrls = await prisma.$transaction(
+      newUrls.map(url =>
+        prisma.siteUrl.create({
+          data: {
+            siteId,
+            url,
+            isActive: true,
+            isExcluded: false,
+            embeddingStatus: 'PENDING',
+          },
+        })
+      )
+    );
+
+    // Queue crawl if requested and site is ready/partial
+    let jobQueued = false;
+    if (startCrawl && ['READY', 'PARTIAL'].includes(site.crawlStatus)) {
+      const { queueSelectiveCrawl } = await import('../../queues');
+      await queueSelectiveCrawl(siteId, newUrls);
+
+      // Update site status to indicate processing
+      await prisma.site.update({
+        where: { id: siteId },
+        data: { crawlStatus: 'CRAWLING' },
+      });
+
+      jobQueued = true;
+    }
+
+    // Invalidate cache
+    await this.invalidateCache(siteId, userId);
+
+    return { addedUrls, skippedUrls, jobQueued };
   }
 
   /**
@@ -687,6 +836,35 @@ export class SiteService {
   async invalidateSiteCacheById(siteId: string): Promise<void> {
     // Use pattern to match all user-specific caches for this site
     await cacheService.deleteByPattern(CacheNamespace.SITE_CONFIG, `${siteId}:*`);
+  }
+
+  /**
+   * Clear all caches related to a specific site
+   * Used before site deletion to clean up all cached data
+   */
+  private async clearAllSiteCaches(siteId: string, userId: string): Promise<void> {
+    // Clear site config cache (pattern: siteId:userId)
+    await this.invalidateCache(siteId, userId);
+
+    // Clear widget settings cache
+    await cacheService.delete(CacheNamespace.WIDGET_SETTINGS, siteId);
+
+    // Clear conversation starters cache
+    await cacheService.delete(CacheNamespace.CONVERSATION_STARTERS, siteId);
+
+    // Clear site stats cache
+    await cacheService.delete(CacheNamespace.SITE_STATS, siteId);
+
+    // Clear embedding search cache for this site (pattern: siteId:*)
+    await cacheService.deleteByPattern(CacheNamespace.EMBEDDING_SEARCH, `${siteId}:*`);
+
+    // Clear discovery cache for this site
+    await cacheService.delete(CacheNamespace.DISCOVERY, siteId);
+
+    // Clear crawl pause flag
+    await cacheService.setCrawlPaused(siteId, false);
+
+    logger.info(`Cleared all caches for site ${siteId}`);
   }
 }
 

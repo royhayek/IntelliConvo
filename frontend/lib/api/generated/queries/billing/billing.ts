@@ -19,7 +19,9 @@ import type {
   BillingHistoryResponse,
   BillingSummary,
   GetApiV1BillingHistoryParams,
-  GetApiV1BillingTransactionsTransactionId200
+  GetApiV1BillingSummaryParams,
+  GetApiV1BillingTransactionsTransactionId200,
+  ReceiptUrlResponse
 } from '../../models';
 
 import { customInstance } from '../../../axios-instance';
@@ -124,16 +126,18 @@ export function useGetApiV1BillingHistory<TData = Awaited<ReturnType<typeof getA
 
 
 /**
+ * Retrieve billing summary, optionally filtered by site
  * @summary Get billing summary
  */
 export const getApiV1BillingSummary = (
-    
+    params?: GetApiV1BillingSummaryParams,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<BillingSummary>(
-      {url: `/api/v1/billing/summary`, method: 'GET', signal
+      {url: `/api/v1/billing/summary`, method: 'GET',
+        params, signal
     },
       options);
     }
@@ -141,23 +145,23 @@ export const getApiV1BillingSummary = (
 
 
 
-export const getGetApiV1BillingSummaryQueryKey = () => {
+export const getGetApiV1BillingSummaryQueryKey = (params?: GetApiV1BillingSummaryParams,) => {
     return [
-    `/api/v1/billing/summary`
+    `/api/v1/billing/summary`, ...(params ? [params]: [])
     ] as const;
     }
 
     
-export const getGetApiV1BillingSummaryQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1BillingSummary>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSummary>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetApiV1BillingSummaryQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1BillingSummary>>, TError = ErrorType<void>>(params?: GetApiV1BillingSummaryParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSummary>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1BillingSummaryQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getGetApiV1BillingSummaryQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1BillingSummary>>> = ({ signal }) => getApiV1BillingSummary(requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1BillingSummary>>> = ({ signal }) => getApiV1BillingSummary(params, requestOptions, signal);
 
       
 
@@ -171,7 +175,7 @@ export type GetApiV1BillingSummaryQueryError = ErrorType<void>
 
 
 export function useGetApiV1BillingSummary<TData = Awaited<ReturnType<typeof getApiV1BillingSummary>>, TError = ErrorType<void>>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSummary>>, TError, TData>> & Pick<
+ params: undefined |  GetApiV1BillingSummaryParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSummary>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiV1BillingSummary>>,
           TError,
@@ -181,7 +185,7 @@ export function useGetApiV1BillingSummary<TData = Awaited<ReturnType<typeof getA
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetApiV1BillingSummary<TData = Awaited<ReturnType<typeof getApiV1BillingSummary>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSummary>>, TError, TData>> & Pick<
+ params?: GetApiV1BillingSummaryParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSummary>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiV1BillingSummary>>,
           TError,
@@ -191,7 +195,7 @@ export function useGetApiV1BillingSummary<TData = Awaited<ReturnType<typeof getA
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetApiV1BillingSummary<TData = Awaited<ReturnType<typeof getApiV1BillingSummary>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSummary>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ params?: GetApiV1BillingSummaryParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSummary>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
@@ -199,11 +203,11 @@ export function useGetApiV1BillingSummary<TData = Awaited<ReturnType<typeof getA
  */
 
 export function useGetApiV1BillingSummary<TData = Awaited<ReturnType<typeof getApiV1BillingSummary>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSummary>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ params?: GetApiV1BillingSummaryParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSummary>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1BillingSummaryQueryOptions(options)
+  const queryOptions = getGetApiV1BillingSummaryQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -296,6 +300,99 @@ export function useGetApiV1BillingTransactionsTransactionId<TData = Awaited<Retu
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getGetApiV1BillingTransactionsTransactionIdQueryOptions(transactionId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * Get the Stripe hosted receipt URL for a transaction
+ * @summary Get receipt URL
+ */
+export const getApiV1BillingReceiptsTransactionId = (
+    transactionId: string,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<ReceiptUrlResponse>(
+      {url: `/api/v1/billing/receipts/${transactionId}`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+
+
+export const getGetApiV1BillingReceiptsTransactionIdQueryKey = (transactionId?: string,) => {
+    return [
+    `/api/v1/billing/receipts/${transactionId}`
+    ] as const;
+    }
+
+    
+export const getGetApiV1BillingReceiptsTransactionIdQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1BillingReceiptsTransactionId>>, TError = ErrorType<void>>(transactionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingReceiptsTransactionId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetApiV1BillingReceiptsTransactionIdQueryKey(transactionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1BillingReceiptsTransactionId>>> = ({ signal }) => getApiV1BillingReceiptsTransactionId(transactionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(transactionId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingReceiptsTransactionId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetApiV1BillingReceiptsTransactionIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1BillingReceiptsTransactionId>>>
+export type GetApiV1BillingReceiptsTransactionIdQueryError = ErrorType<void>
+
+
+export function useGetApiV1BillingReceiptsTransactionId<TData = Awaited<ReturnType<typeof getApiV1BillingReceiptsTransactionId>>, TError = ErrorType<void>>(
+ transactionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingReceiptsTransactionId>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiV1BillingReceiptsTransactionId>>,
+          TError,
+          Awaited<ReturnType<typeof getApiV1BillingReceiptsTransactionId>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiV1BillingReceiptsTransactionId<TData = Awaited<ReturnType<typeof getApiV1BillingReceiptsTransactionId>>, TError = ErrorType<void>>(
+ transactionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingReceiptsTransactionId>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiV1BillingReceiptsTransactionId>>,
+          TError,
+          Awaited<ReturnType<typeof getApiV1BillingReceiptsTransactionId>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiV1BillingReceiptsTransactionId<TData = Awaited<ReturnType<typeof getApiV1BillingReceiptsTransactionId>>, TError = ErrorType<void>>(
+ transactionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingReceiptsTransactionId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get receipt URL
+ */
+
+export function useGetApiV1BillingReceiptsTransactionId<TData = Awaited<ReturnType<typeof getApiV1BillingReceiptsTransactionId>>, TError = ErrorType<void>>(
+ transactionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingReceiptsTransactionId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetApiV1BillingReceiptsTransactionIdQueryOptions(transactionId,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

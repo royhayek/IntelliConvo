@@ -19,6 +19,8 @@ import billingRoutes from './billing';
 import widgetsRoutes from './widgets';
 import sessionsRoutes from './sessions';
 import auditRoutes from './audit';
+import settingsRoutes from './settings';
+import emailsRoutes from './emails';
 
 const router = Router();
 
@@ -41,5 +43,7 @@ router.use('/billing', billingRoutes);
 router.use('/widgets', widgetsRoutes);
 router.use('/sessions', sessionsRoutes);
 router.use('/audit', auditRoutes);
+router.use('/settings', settingsRoutes);
+router.use('/emails', emailsRoutes);
 
 export default router;

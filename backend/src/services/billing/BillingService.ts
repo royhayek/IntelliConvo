@@ -3,8 +3,15 @@
  * Business logic for billing and transaction management
  */
 
+import Stripe from 'stripe';
 import { prisma } from '../../lib/prisma';
-import { NotFoundError } from '../../middleware/errors';
+import { NotFoundError, ValidationError } from '../../middleware/errors';
+import { logger } from '../../utils/logger';
+
+// Initialize Stripe
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: '2023-10-16',
+});
 import {
   BillingHistoryResponse,
   BillingSummaryResponse,
@@ -84,8 +91,8 @@ export class BillingService {
       return acc;
     }, {} as Record<string, any>);
 
-    // Calculate summary statistics
-    const summary = await this.calculateSummary(userId);
+    // Calculate summary statistics (filtered by siteId if provided)
+    const summary = await this.calculateSummary(userId, siteId);
 
     // Map transactions to DTOs
     const transactionDTOs: TransactionDTO[] = transactions.map((transaction) => ({
@@ -109,17 +116,26 @@ export class BillingService {
   /**
    * Get billing summary for user
    * @param userId - User ID
+   * @param siteId - Optional site ID to filter by specific site
    * @returns Complete billing summary
    */
-  async getSummary(userId: string): Promise<BillingSummaryResponse> {
+  async getSummary(userId: string, siteId?: string): Promise<BillingSummaryResponse> {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    // Build where clause with optional siteId filter
+    const transactionWhere: { userId: string; status: string; createdAt?: { gte: Date }; siteId?: string } = {
+      userId,
+      status: 'paid',
+    };
+    if (siteId) {
+      transactionWhere.siteId = siteId;
+    }
 
     // Get current month transactions
     const currentMonthTransactions = await prisma.billingTransaction.findMany({
       where: {
-        userId,
-        status: 'paid',
+        ...transactionWhere,
         createdAt: { gte: startOfMonth },
       },
       select: { amount: true },
@@ -127,18 +143,16 @@ export class BillingService {
 
     // Get all-time transactions
     const allTimeTransactions = await prisma.billingTransaction.findMany({
-      where: {
-        userId,
-        status: 'paid',
-      },
+      where: transactionWhere,
       select: { amount: true },
     });
 
-    // Get active subscriptions
+    // Get active subscriptions with site info
     const activeSubscriptions = await prisma.subscription.findMany({
       where: {
         userId,
         status: { in: ['TRIAL', 'ACTIVE'] },
+        ...(siteId && { siteId }),
       },
       include: {
         site: {
@@ -147,13 +161,20 @@ export class BillingService {
       },
     });
 
-    // Map to DTOs
+    // Map to DTOs - include all required fields from OpenAPI schema
+    // Prices should match what's configured in Stripe ($29/month, $279/year)
     const subscriptionDTOs: BillingSubscriptionDTO[] = activeSubscriptions.map((sub) => ({
       id: sub.id,
+      siteId: sub.siteId,
+      siteName: sub.site.siteName,
       planType: sub.planType,
       status: sub.status,
       currentPeriodEnd: sub.currentPeriodEnd.toISOString(),
-      site: sub.site,
+      amount: sub.planType === 'PREMIUM_MONTHLY' ? 29 : 279,
+      site: {
+        id: sub.site.id,
+        siteName: sub.site.siteName,
+      },
     }));
 
     // Calculate upcoming charges (next 30 days)
@@ -161,23 +182,28 @@ export class BillingService {
     thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
 
     const upcomingCharges: UpcomingChargeDTO[] = activeSubscriptions
-      .filter((sub) => sub.currentPeriodEnd <= thirtyDaysFromNow)
+      .filter((sub) => sub.currentPeriodEnd <= thirtyDaysFromNow && !sub.cancelAtPeriodEnd)
       .map((sub) => ({
-        subscriptionId: sub.id,
-        amount: sub.planType === 'PREMIUM_MONTHLY' ? 49.99 : 499.99,
-        dueDate: sub.currentPeriodEnd.toISOString(),
+        siteId: sub.siteId,
         siteName: sub.site.siteName,
+        amount: sub.planType === 'PREMIUM_MONTHLY' ? 29 : 279,
+        dueDate: sub.currentPeriodEnd.toISOString(),
+        planType: sub.planType,
       }));
 
+    // Calculate next billing date from active subscriptions (exclude those scheduled to cancel)
+    const billableSubscriptions = activeSubscriptions.filter(sub => !sub.cancelAtPeriodEnd);
+    const nextBillingDate = billableSubscriptions.length > 0
+      ? billableSubscriptions
+          .map(sub => sub.currentPeriodEnd)
+          .sort((a, b) => a.getTime() - b.getTime())[0]?.toISOString() || null
+      : null;
+
     return {
-      currentPeriod: {
-        totalAmount: currentMonthTransactions.reduce((sum, t) => sum + t.amount, 0),
-        transactionCount: currentMonthTransactions.length,
-      },
-      allTime: {
-        totalAmount: allTimeTransactions.reduce((sum, t) => sum + t.amount, 0),
-        transactionCount: allTimeTransactions.length,
-      },
+      totalSpent: allTimeTransactions.reduce((sum, t) => sum + t.amount, 0),
+      currentMonthSpent: currentMonthTransactions.reduce((sum, t) => sum + t.amount, 0),
+      transactionCount: allTimeTransactions.length,
+      nextBillingDate,
       activeSubscriptions: subscriptionDTOs,
       upcomingCharges,
     };
@@ -227,13 +253,99 @@ export class BillingService {
   }
 
   /**
+   * Get receipt URL from Stripe
+   * @param transactionId - Transaction ID
+   * @param userId - User ID (for authorization)
+   * @returns Receipt URL to open in browser
+   */
+  async getReceiptUrl(
+    transactionId: string,
+    userId: string
+  ): Promise<{ receiptUrl: string }> {
+    // Fetch the transaction and verify ownership
+    const transaction = await prisma.billingTransaction.findFirst({
+      where: {
+        id: transactionId,
+        userId,
+      },
+    });
+
+    if (!transaction) {
+      throw new NotFoundError('Transaction', transactionId);
+    }
+
+    // Check if the transaction has a Stripe invoice ID
+    if (!transaction.stripeInvoiceId) {
+      throw new ValidationError('This transaction does not have an associated receipt');
+    }
+
+    // Check if the transaction is paid
+    if (transaction.status !== 'paid') {
+      throw new ValidationError('Receipt is only available for paid transactions');
+    }
+
+    try {
+      // Fetch the invoice from Stripe to get the charge
+      const invoice = await stripe.invoices.retrieve(transaction.stripeInvoiceId);
+
+      // Get the receipt URL from the charge
+      if (invoice.charge) {
+        const chargeId = typeof invoice.charge === 'string' ? invoice.charge : invoice.charge.id;
+        const charge = await stripe.charges.retrieve(chargeId);
+
+        if (charge.receipt_url) {
+          return { receiptUrl: charge.receipt_url };
+        }
+      }
+
+      // Fallback to hosted invoice URL if no receipt available
+      if (invoice.hosted_invoice_url) {
+        return { receiptUrl: invoice.hosted_invoice_url };
+      }
+
+      throw new ValidationError('Receipt is not available for this transaction');
+    } catch (error) {
+      // Handle Stripe-specific errors
+      if (error instanceof Stripe.errors.StripeError) {
+        logger.error('Stripe error fetching receipt:', {
+          transactionId,
+          stripeInvoiceId: transaction.stripeInvoiceId,
+          error: error.message,
+        });
+
+        if (error.code === 'resource_missing') {
+          throw new NotFoundError('Stripe Receipt', transaction.stripeInvoiceId);
+        }
+
+        throw new ValidationError(`Failed to retrieve receipt: ${error.message}`);
+      }
+
+      if (error instanceof ValidationError || error instanceof NotFoundError) {
+        throw error;
+      }
+
+      logger.error('Error fetching receipt URL:', {
+        transactionId,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+
+      throw new ValidationError('Failed to get receipt URL');
+    }
+  }
+
+  /**
    * Calculate billing summary for user
    * @param userId - User ID
    * @returns Billing summary
    */
-  private async calculateSummary(userId: string) {
+  private async calculateSummary(userId: string, siteId?: string) {
+    const where: { userId: string; siteId?: string } = { userId };
+    if (siteId) {
+      where.siteId = siteId;
+    }
+
     const allTransactions = await prisma.billingTransaction.findMany({
-      where: { userId },
+      where,
       select: { amount: true, status: true },
     });
 

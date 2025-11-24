@@ -40,7 +40,7 @@ export function UrlTableRow({
     <TableRow className="group">
       <TableCell>
         <UrlStatusBadge
-          embeddingStatus={url.embeddingStatus as UrlEmbeddingStatus}
+          embeddingStatus={url.embeddingStatus}
           isActive={url.isActive}
           isExcluded={url.isExcluded}
         />

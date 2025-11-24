@@ -16,6 +16,7 @@ interface StatusIndicatorProps {
   size?: "sm" | "md" | "lg";
   isAdmin?: boolean;
   className?: string;
+  customLabel?: string | null; // Override the default label
 }
 
 // Color configuration for each status
@@ -51,14 +52,17 @@ export function StatusIndicator({
   size = "md",
   isAdmin = false,
   className,
+  customLabel,
 }: StatusIndicatorProps) {
   // Handle unknown statuses by falling back to PENDING
   const knownStatus = status as StatusType;
   const color = statusColors[knownStatus] || statusColors.PENDING;
 
-  // Get label based on status type and admin mode
+  // Get label based on status type and admin mode, or use custom label
   let label: string;
-  if (status === "active" || status === "inactive") {
+  if (customLabel) {
+    label = customLabel;
+  } else if (status === "active" || status === "inactive") {
     label = legacyLabels[status];
   } else {
     const labels = isAdmin ? siteStatusAdminLabels : siteStatusLabels;

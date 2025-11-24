@@ -16,4 +16,8 @@ export type AuthTokensResponseUser = {
   fullName: string | null;
   /** Authentication provider */
   authProvider: string;
+  /** Whether the user is an admin */
+  isAdmin: boolean;
+  /** Whether the user email is verified */
+  emailVerified: boolean;
 };

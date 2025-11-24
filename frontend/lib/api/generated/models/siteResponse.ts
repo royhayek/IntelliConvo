@@ -17,6 +17,11 @@ export interface SiteResponse {
   /** Website name */
   siteName: string;
   /**
+   * Website favicon URL
+   * @nullable
+   */
+  faviconUrl: string | null;
+  /**
    * Website description
    * @nullable
    */

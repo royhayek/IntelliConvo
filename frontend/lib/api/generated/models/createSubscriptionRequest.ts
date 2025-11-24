@@ -12,4 +12,6 @@ export interface CreateSubscriptionRequest {
   planType: CreateSubscriptionRequestPlanType;
   /** Stripe payment method ID */
   paymentMethodId?: string;
+  /** URL to redirect to after checkout (defaults to onboarding) */
+  returnUrl?: string;
 }

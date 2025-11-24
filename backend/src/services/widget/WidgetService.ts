@@ -193,9 +193,14 @@ export class WidgetService {
       throw new NotFoundError('Site', siteId);
     }
 
-    // Check if subscription is active
-    if (site.subscription && site.subscription.status === 'EXPIRED') {
-      throw new AppError(403, ErrorCode.FORBIDDEN, 'Subscription expired');
+    // Check if subscription is active - block EXPIRED and CANCELLED subscriptions
+    // Use a generic user-friendly message that doesn't reveal billing details
+    if (site.subscription && ['EXPIRED', 'CANCELLED'].includes(site.subscription.status)) {
+      throw new AppError(
+        503,
+        ErrorCode.SERVICE_UNAVAILABLE,
+        'This service is temporarily unavailable. Please try again later.'
+      );
     }
 
     // Check if origin is allowed
@@ -230,18 +235,53 @@ export class WidgetService {
    * @param siteId - Site ID
    * @returns Public widget settings
    */
-  async getPublicSettings(siteId: string): Promise<Partial<WidgetSettings>> {
-    // Verify site exists
+  async getPublicSettings(siteId: string): Promise<Partial<WidgetSettings> & { readiness?: { ready: number; total: number; isPartiallyReady: boolean } }> {
+    // Verify site exists and get URL readiness stats
     const site = await prisma.site.findUnique({
       where: { id: siteId },
+      include: {
+        _count: {
+          select: {
+            urls: true,
+          },
+        },
+      },
     });
 
     if (!site) {
       throw new NotFoundError('Site', siteId);
     }
 
+    // Get readiness stats for progressive availability
+    const [readyCount, totalCount] = await Promise.all([
+      prisma.siteUrl.count({
+        where: {
+          siteId,
+          embeddingStatus: 'READY',
+          isActive: true,
+          isExcluded: false,
+        },
+      }),
+      prisma.siteUrl.count({
+        where: {
+          siteId,
+          isActive: true,
+          isExcluded: false,
+        },
+      }),
+    ]);
+
     const settings = await getPublicWidgetSettings(siteId);
-    return settings || {};
+
+    return {
+      ...settings,
+      // Add readiness info for progressive availability
+      readiness: {
+        ready: readyCount,
+        total: totalCount,
+        isPartiallyReady: readyCount > 0 && readyCount < totalCount,
+      },
+    };
   }
 
   // ============================================

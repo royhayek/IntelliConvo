@@ -29,6 +29,7 @@ enum PlanType {
 enum CrawlStatus {
   PENDING
   CRAWLING
+  PAUSED
   COMPLETED
   FAILED
   AWAITING_PAYMENT
@@ -37,7 +38,15 @@ enum CrawlStatus {
   PARTIAL
 }
 
+enum DiscoveryStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+}
+
 enum UrlEmbeddingStatus {
+  SCRAPING         // Currently being crawled
   SCRAPED          // Content crawled, waiting for embedding
   PENDING          // Queued for embedding generation
   PROCESSING       // Embeddings being generated
@@ -65,23 +74,33 @@ enum FileStatus {
 }
 
 model User {
-  id                String            @id @default(uuid())
-  email             String            @unique
-  fullName          String?
-  authProvider      AuthProvider
-  authProviderId    String?
-  passwordHash      String?
-  isAdmin           Boolean           @default(false)
-  createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
-  lastLoginAt       DateTime?
-  forceLogoutAt     DateTime?         // When set, all tokens issued before this timestamp are invalid
+  id                     String            @id @default(uuid())
+  email                  String            @unique
+  fullName               String?
+  authProvider           AuthProvider
+  authProviderId         String?
+  passwordHash           String?
+  isAdmin                Boolean           @default(false)
+  createdAt              DateTime          @default(now())
+  updatedAt              DateTime          @updatedAt
+  lastLoginAt            DateTime?
+  forceLogoutAt          DateTime?         // When set, all tokens issued before this timestamp are invalid
+
+  // Email verification
+  emailVerified          Boolean           @default(false)
+  emailVerifyToken       String?           @unique
+  emailVerifyExpiresAt   DateTime?
+
+  // Password reset
+  passwordResetToken     String?           @unique
+  passwordResetExpiresAt DateTime?
 
   sites             Site[]
   subscriptions     Subscription[]
   billingInfo       BillingInfo?
   billingHistory    BillingTransaction[]
   notifications     Notification[]
+  emailLogs         EmailLog[]
 
   @@index([email])
   @@index([authProvider, authProviderId])
@@ -116,6 +135,7 @@ model Site {
 
   siteUrl               String
   siteName              String
+  faviconUrl            String?
   siteDescription       String?
   siteIndustry          String?
   specialInstructions   String?
@@ -124,10 +144,17 @@ model Site {
   crawlStatus           CrawlStatus           @default(PENDING)
   lastCrawledAt         DateTime?
 
+  // Discovery phase fields
+  discoveryStatus       DiscoveryStatus       @default(PENDING)
+  discoveredAt          DateTime?
+  sitemapUrl            String?
+  totalDiscoveredUrls   Int                   @default(0)
+
   createdAt             DateTime              @default(now())
   updatedAt             DateTime              @updatedAt
 
   urls                  SiteUrl[]
+  urlSelections         UrlSelection[]
   conversationStarters  ConversationStarter[]
   conversations         Conversation[]
   knowledgeFiles        KnowledgeFile[]
@@ -138,6 +165,7 @@ model Site {
   @@unique([userId, siteUrl])
   @@index([userId])
   @@index([crawlStatus])
+  @@index([discoveryStatus])
 }
 
 model WidgetSettings {
@@ -443,6 +471,11 @@ model SiteUrl {
   lastCrawledAt   DateTime?
   contentHash     String?
 
+  // Retry tracking for failed URLs
+  retryCount      Int                 @default(0)
+  lastError       String?             @db.Text
+  lastRetryAt     DateTime?
+
   createdAt       DateTime            @default(now())
   updatedAt       DateTime            @updatedAt
 
@@ -453,6 +486,28 @@ model SiteUrl {
   @@index([isActive, isExcluded])
   @@index([siteId, isActive, isExcluded])
   @@index([embeddingStatus])
+}
+
+// URL selections before crawling - allows user to pick which URLs to include
+model UrlSelection {
+  id          String   @id @default(uuid())
+  siteId      String
+  site        Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  url         String
+  title       String?              // Page title from sitemap or discovery
+  source      String               // 'sitemap' | 'discovery' | 'manual'
+  category    String               // 'homepage' | 'product' | 'blog' | 'about' | 'support' | 'other'
+  priority    String               // 'high' | 'medium' | 'low'
+  selected    Boolean  @default(false)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([siteId, url])
+  @@index([siteId])
+  @@index([siteId, selected])
+  @@index([siteId, category])
 }
 
 model Embedding {
@@ -581,6 +636,7 @@ model Subscription {
   createdAt               DateTime            @default(now())
   updatedAt               DateTime            @updatedAt
   cancelledAt             DateTime?
+  cancelAtPeriodEnd       Boolean             @default(false)
 
   @@index([userId])
   @@index([status])
@@ -635,6 +691,45 @@ model Notification {
   @@index([userId])
   @@index([userId, isRead])
   @@index([createdAt])
+}
+
+// ============================================
+// System Settings
+// ============================================
+
+enum SettingType {
+  STRING
+  NUMBER
+  BOOLEAN
+  JSON
+}
+
+enum SettingCategory {
+  GENERAL
+  AI
+  SECURITY
+  RATE_LIMIT
+  EMAIL
+  BILLING
+  STORAGE
+}
+
+model SystemSetting {
+  id          String          @id @default(uuid())
+  key         String          @unique
+  value       String          @db.Text
+  type        SettingType     @default(STRING)
+  category    SettingCategory
+  label       String
+  description String?
+  isSecret    Boolean         @default(false)
+
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  updatedBy   String?         // Admin ID who last modified
+
+  @@index([category])
+  @@index([key])
 }
 
 // ============================================
@@ -707,4 +802,62 @@ model AuditLog {
   @@index([entityType, entityId])
   @@index([createdAt])
   @@index([adminId, createdAt])
+}
+
+// ============================================
+// Email System
+// ============================================
+
+enum EmailType {
+  WELCOME
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+  SUBSCRIPTION_ACTIVATED
+  TRIAL_EXPIRING
+  TRIAL_EXPIRED
+  PAYMENT_FAILED
+  PAYMENT_RECEIPT
+  SITE_READY
+  SUBSCRIPTION_CANCELLED
+  SITE_DELETED
+  REFUND_CONFIRMATION
+  DISPUTE_ALERT
+}
+
+enum EmailStatus {
+  PENDING
+  QUEUED
+  SENT
+  FAILED
+  BOUNCED
+}
+
+model EmailLog {
+  id          String        @id @default(uuid())
+  userId      String?
+  user        User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  email       String        // Recipient email
+  type        EmailType
+  subject     String
+  status      EmailStatus   @default(PENDING)
+
+  // Metadata
+  templateData Json?        // Data used to render the template
+  messageId   String?       // Provider message ID (e.g., Resend message ID)
+  provider    String?       // Email provider used (resend, sendgrid, smtp)
+
+  // Error tracking
+  errorMessage String?
+  attempts    Int           @default(0)
+  lastAttemptAt DateTime?
+
+  sentAt      DateTime?
+  createdAt   DateTime      @default(now())
+
+  @@index([userId])
+  @@index([email])
+  @@index([type])
+  @@index([status])
+  @@index([createdAt])
 }

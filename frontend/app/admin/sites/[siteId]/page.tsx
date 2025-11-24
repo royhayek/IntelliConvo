@@ -6,36 +6,18 @@ import { useParams, useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   ArrowLeft,
-  Globe,
-  User,
   Link2,
   MessageSquare,
   FileText,
-  Calendar,
-  Clock,
   RefreshCw,
   Edit,
   Trash2,
   AlertTriangle,
-  ExternalLink,
-  CreditCard,
-  Settings,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
-import { TimeAgo } from "@/components/ui/time-ago";
 import { StatCard } from "@/components/ui/stat-card";
 import {
   useGetApiV1AdminSitesSiteId,
@@ -43,6 +25,15 @@ import {
   usePostApiV1AdminSitesSiteIdRecrawl,
   getGetApiV1AdminSitesSiteIdQueryKey,
 } from "@/lib/api/generated/queries/admin-sites/admin-sites";
+import {
+  SiteInfoCard,
+  OwnerCard,
+  SubscriptionCard,
+  ActiveHostsCard,
+  ConversationStartersCard,
+  WidgetSettingsCard,
+  SpecialInstructionsCard,
+} from "@/components/admin/site-detail";
 import type { AdminSiteDetail } from "@/lib/api/generated/models";
 
 export default function AdminSiteDetailPage() {
@@ -54,17 +45,14 @@ export default function AdminSiteDetailPage() {
   const [showDelete, setShowDelete] = useState(false);
   const [mutationError, setMutationError] = useState<string | null>(null);
 
-  // Fetch site details - now includes all related data
   const {
     data: siteResponse,
     isLoading,
     error: fetchError,
   } = useGetApiV1AdminSitesSiteId(siteId);
 
-  // Use the AdminSiteDetail type from the generated API
   const site: AdminSiteDetail | undefined = siteResponse?.data;
 
-  // Delete mutation
   const deleteMutation = useDeleteApiV1AdminSitesSiteId({
     mutation: {
       onSuccess: () => {
@@ -76,7 +64,6 @@ export default function AdminSiteDetailPage() {
     },
   });
 
-  // Recrawl mutation
   const recrawlMutation = usePostApiV1AdminSitesSiteIdRecrawl({
     mutation: {
       onSuccess: () => {
@@ -97,27 +84,6 @@ export default function AdminSiteDetailPage() {
   const handleRecrawl = () => {
     setMutationError(null);
     recrawlMutation.mutate({ siteId });
-  };
-
-  const getCrawlStatusBadge = (status: string) => {
-    const config: Record<string, { variant: "default" | "secondary" | "destructive" | "outline"; className?: string }> = {
-      COMPLETED: { variant: "default", className: "bg-green-100 text-green-700" },
-      IN_PROGRESS: { variant: "secondary", className: "bg-blue-100 text-blue-700" },
-      PENDING: { variant: "outline" },
-      FAILED: { variant: "destructive" },
-    };
-    const { variant, className } = config[status] || { variant: "outline" };
-    return <Badge variant={variant} className={className}>{status}</Badge>;
-  };
-
-  const getSubscriptionStatusBadge = (status: string) => {
-    const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
-      ACTIVE: "default",
-      TRIAL: "secondary",
-      CANCELLED: "destructive",
-      EXPIRED: "outline",
-    };
-    return <Badge variant={variants[status] || "outline"}>{status}</Badge>;
   };
 
   const error = fetchError ? "Failed to fetch site" : mutationError;
@@ -143,12 +109,10 @@ export default function AdminSiteDetailPage() {
     return null;
   }
 
-  // Calculate stats from the detailed response
   const activeUrls = site.stats.urls.breakdown.find(b => b.isActive && !b.isExcluded)?._count.id || 0;
 
   return (
     <div className="space-y-6">
-      {/* Error Alert for mutations */}
       {mutationError && (
         <Alert variant="destructive">
           <AlertTriangle className="h-4 w-4" />
@@ -184,75 +148,7 @@ export default function AdminSiteDetailPage() {
         </div>
       </div>
 
-      {/* Site Info Card */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Globe className="h-5 w-5" />
-            Site Information
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div>
-              <label className="text-sm font-medium text-gray-500">Site Name</label>
-              <p className="mt-1 text-lg font-medium">{site.siteName}</p>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-500">URL</label>
-              <p className="mt-1">
-                <a
-                  href={site.siteUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:underline flex items-center gap-1"
-                >
-                  {site.siteUrl}
-                  <ExternalLink className="h-4 w-4" />
-                </a>
-              </p>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-500">Crawl Status</label>
-              <p className="mt-1">{getCrawlStatusBadge(site.crawlStatus)}</p>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-500">Industry</label>
-              <p className="mt-1">{site.siteIndustry || "—"}</p>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-500 flex items-center gap-1">
-                <Calendar className="h-4 w-4" /> Created
-              </label>
-              <p className="mt-1">
-                {new Date(site.createdAt).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </p>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-500 flex items-center gap-1">
-                <Clock className="h-4 w-4" /> Last Crawled
-              </label>
-              <p className="mt-1">
-                {site.lastCrawledAt ? (
-                  <TimeAgo date={site.lastCrawledAt} />
-                ) : (
-                  <span className="text-gray-400">Never</span>
-                )}
-              </p>
-            </div>
-            {site.siteDescription && (
-              <div className="md:col-span-2 lg:col-span-3">
-                <label className="text-sm font-medium text-gray-500">Description</label>
-                <p className="mt-1 text-gray-700 dark:text-gray-300">{site.siteDescription}</p>
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+      <SiteInfoCard site={site} />
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -282,194 +178,18 @@ export default function AdminSiteDetailPage() {
         />
       </div>
 
-      {/* Owner */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <User className="h-5 w-5" />
-            Owner
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center gap-4">
-            <div>
-              <Link
-                href={`/admin/users/${site.user.id}`}
-                className="font-medium text-lg hover:underline"
-              >
-                {site.user.fullName || "—"}
-              </Link>
-              <p className="text-gray-500">{site.user.email}</p>
-            </div>
-            <Button variant="outline" size="sm" asChild>
-              <Link href={`/admin/users/${site.user.id}`}>
-                View User
-              </Link>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <OwnerCard user={site.user} />
 
-      {/* Subscription */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <CreditCard className="h-5 w-5" />
-            Subscription
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {site.subscription ? (
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <div>
-                <label className="text-sm font-medium text-gray-500">Plan</label>
-                <p className="mt-1">
-                  <Badge variant="secondary">{site.subscription.planType}</Badge>
-                </p>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-500">Status</label>
-                <p className="mt-1">{getSubscriptionStatusBadge(site.subscription.status)}</p>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-500">Current Period Started</label>
-                <p className="mt-1">
-                  {site.subscription.currentPeriodStart
-                    ? new Date(site.subscription.currentPeriodStart).toLocaleDateString()
-                    : "—"}
-                </p>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-500">Current Period End</label>
-                <p className="mt-1">
-                  {site.subscription.currentPeriodEnd
-                    ? new Date(site.subscription.currentPeriodEnd).toLocaleDateString()
-                    : "—"}
-                </p>
-              </div>
-            </div>
-          ) : (
-            <p className="text-gray-500">No active subscription</p>
-          )}
-        </CardContent>
-      </Card>
+      <SubscriptionCard subscription={site.subscription} />
 
-      {/* Active Hosts */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Globe className="h-5 w-5" />
-            Active Hosts ({site.activeHosts.length})
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {site.activeHosts.length === 0 ? (
-            <p className="text-gray-500 text-center py-4">No active hosts</p>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Host</TableHead>
-                  <TableHead>Verified</TableHead>
-                  <TableHead>Added</TableHead>
-                  <TableHead>Updated</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {site.activeHosts.map((host) => (
-                  <TableRow key={host.id}>
-                    <TableCell className="font-mono">{host.hostName}</TableCell>
-                    <TableCell>
-                      <Badge variant={host.isEnabled ? "default" : "outline"}>
-                        {host.isEnabled ? "Enabled" : "Disabled"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <TimeAgo date={host.createdAt} />
-                    </TableCell>
-                    <TableCell>
-                      <TimeAgo date={host.updatedAt} />
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
+      <ActiveHostsCard hosts={site.activeHosts} />
 
-      {/* Conversation Starters */}
-      {site.conversationStarters.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <MessageSquare className="h-5 w-5" />
-              Conversation Starters
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-2">
-              {site.conversationStarters.map((starter) => (
-                <li
-                  key={starter.id}
-                  className="flex items-center gap-2 p-2 bg-gray-50 dark:bg-slate-800 rounded"
-                >
-                  <Badge variant="outline">{starter.orderIndex + 1}</Badge>
-                  <span>{starter.text}</span>
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
-      )}
+      <ConversationStartersCard starters={site.conversationStarters} />
 
-      {/* Widget Settings */}
-      {site.widgetSettings && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Settings className="h-5 w-5" />
-              Widget Settings
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-6">
-              <div>
-                <label className="text-sm font-medium text-gray-500">Primary Color</label>
-                <div className="mt-1 flex items-center gap-2">
-                  <div
-                    className="w-6 h-6 rounded border"
-                    style={{ backgroundColor: site.widgetSettings.primaryColor }}
-                  />
-                  <span className="font-mono text-sm">{site.widgetSettings.primaryColor}</span>
-                </div>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-500">Position</label>
-                <p className="mt-1">
-                  <Badge variant="outline">{site.widgetSettings.launcherPosition}</Badge>
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      <WidgetSettingsCard settings={site.widgetSettings} />
 
-      {/* Special Instructions */}
-      {site.specialInstructions && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Special Instructions</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
-              {site.specialInstructions}
-            </p>
-          </CardContent>
-        </Card>
-      )}
+      <SpecialInstructionsCard instructions={site.specialInstructions} />
 
-      {/* Delete Confirmation */}
       <DeleteConfirmationDialog
         open={showDelete}
         onOpenChange={setShowDelete}

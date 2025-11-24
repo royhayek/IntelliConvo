@@ -6,12 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useSiteSocket } from "@/lib/hooks/useSiteSocket";
-import {
-  Plus,
-  Edit2,
-  Save,
-  Loader2,
-} from "lucide-react";
+import { Plus, Edit2, Save, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -65,10 +60,7 @@ import {
   getGetApiV1SitesSiteIdUrlsQueryKey,
   getGetApiV1SitesSiteIdUrlsUrlIdQueryKey,
 } from "@/lib/api/generated/queries/urls/urls";
-import {
-  type SiteResponse,
-  type SiteUrl,
-} from "@/lib/api/generated/models";
+import { type SiteResponse, type SiteUrl } from "@/lib/api/generated/models";
 
 // Validation schemas
 const addSingleUrlSchema = z.object({
@@ -141,12 +133,14 @@ export function SitemapTab({ site }: SitemapTabProps) {
   const [viewMode, setViewMode] = useState<"rich" | "text">("rich");
 
   // Delete confirmation state
-  const [urlToDelete, setUrlToDelete] =
-    useState<SiteUrl | null>(null);
+  const [urlToDelete, setUrlToDelete] = useState<SiteUrl | null>(null);
 
   // Handle real-time URL status updates
   const handleUrlStatusUpdate = useCallback(
-    (update: { siteId: string; urls: Array<{ urlId: string; embeddingStatus: string }> }) => {
+    (update: {
+      siteId: string;
+      urls: Array<{ urlId: string; embeddingStatus: string }>;
+    }) => {
       if (update.siteId !== site.id) return;
 
       // Update all matching queries (regardless of search/filter params)
@@ -158,12 +152,41 @@ export function SitemapTab({ site }: SitemapTabProps) {
           return oldData.map((url) => {
             const updatedUrl = update.urls.find((u) => u.urlId === url.id);
             if (updatedUrl) {
-              return { ...url, embeddingStatus: updatedUrl.embeddingStatus as SiteUrl["embeddingStatus"] };
+              return {
+                ...url,
+                embeddingStatus:
+                  updatedUrl.embeddingStatus as SiteUrl["embeddingStatus"],
+              };
             }
             return url;
           });
         }
       );
+
+      // Check if any URL has completed scraping
+      const hasScrapedUrls = update.urls.some(
+        (u) => u.embeddingStatus === "SCRAPED"
+      );
+
+      if (hasScrapedUrls) {
+        // Invalidate URL list to refresh lastCrawledAt and other metadata
+        queryClient.invalidateQueries({
+          queryKey: getGetApiV1SitesSiteIdUrlsQueryKey(site.id),
+        });
+
+        // Invalidate individual URL queries when content has changed (SCRAPED status)
+        // This ensures the preview dialog shows fresh content after recrawl
+        for (const urlUpdate of update.urls) {
+          if (urlUpdate.embeddingStatus === "SCRAPED") {
+            queryClient.invalidateQueries({
+              queryKey: getGetApiV1SitesSiteIdUrlsUrlIdQueryKey(
+                site.id,
+                urlUpdate.urlId
+              ),
+            });
+          }
+        }
+      }
     },
     [site.id, queryClient]
   );
@@ -296,7 +319,10 @@ export function SitemapTab({ site }: SitemapTabProps) {
 
   const onAddBulkUrls = (data: any) => {
     // URLs are already validated and transformed by Zod schema (string -> string[])
-    addUrlsMutation.mutate({ siteId: site.id, data: { urls: data.urls as string[] } });
+    addUrlsMutation.mutate({
+      siteId: site.id,
+      data: { urls: data.urls as string[] },
+    });
   };
 
   const onSaveContent = (data: EditContentFormData) => {
@@ -309,10 +335,7 @@ export function SitemapTab({ site }: SitemapTabProps) {
     }
   };
 
-  const toggleUrlStatus = (
-    url: SiteUrl,
-    field: "isActive" | "isExcluded"
-  ) => {
+  const toggleUrlStatus = (url: SiteUrl, field: "isActive" | "isExcluded") => {
     if (!url.id) return;
     updateUrlMutation.mutate({
       siteId: site.id,
@@ -400,11 +423,9 @@ export function SitemapTab({ site }: SitemapTabProps) {
                   <SelectValue placeholder="Filter by status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Show All ({totalCount})</SelectItem>
-                  <SelectItem value="active">Active ({activeCount})</SelectItem>
-                  <SelectItem value="excluded">
-                    Excluded ({excludedCount})
-                  </SelectItem>
+                  <SelectItem value="all">Show All</SelectItem>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="excluded">Excluded</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -421,7 +442,9 @@ export function SitemapTab({ site }: SitemapTabProps) {
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="h-6 w-6 animate-spin text-indigo-600" />
-              <span className="ml-3 text-gray-600 dark:text-gray-400">Loading URLs...</span>
+              <span className="ml-3 text-gray-600 dark:text-gray-400">
+                Loading URLs...
+              </span>
             </div>
           ) : filteredUrls.length === 0 ? (
             <div className="text-center py-8">
@@ -608,8 +631,8 @@ export function SitemapTab({ site }: SitemapTabProps) {
             <div className="flex justify-between px-6 py-3 border-b dark:border-gray-600 bg-gray-50 dark:bg-slate-800/50">
               <div className="flex items-center justify-end">
                 <div className="text-sm text-gray-500 dark:text-gray-400">
-                  {selectedUrlData?.content?.length.toLocaleString()} characters |{" "}
-                  {selectedUrlData?.embeddingsCount} chunks
+                  {selectedUrlData?.content?.length.toLocaleString()} characters
+                  | {selectedUrlData?.embeddingsCount} chunks
                 </div>
               </div>
 

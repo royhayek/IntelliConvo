@@ -303,6 +303,44 @@ class CacheService {
       return false;
     }
   }
+
+  // ============================================
+  // Crawl Control Methods (Pause/Resume)
+  // ============================================
+
+  /**
+   * Set crawl paused state for a site
+   */
+  async setCrawlPaused(siteId: string, paused: boolean): Promise<boolean> {
+    try {
+      const key = `cache:crawl:paused:${siteId}`;
+      if (paused) {
+        // Set pause flag with 24 hour TTL (auto-clear if forgotten)
+        await this.getClient().setex(key, 86400, 'true');
+      } else {
+        await this.getClient().del(key);
+      }
+      logger.info(`Crawl ${paused ? 'paused' : 'resumed'} for site ${siteId}`);
+      return true;
+    } catch (error) {
+      logger.error('Error setting crawl paused state:', { siteId, paused, error });
+      return false;
+    }
+  }
+
+  /**
+   * Check if crawl is paused for a site
+   */
+  async isCrawlPaused(siteId: string): Promise<boolean> {
+    try {
+      const key = `cache:crawl:paused:${siteId}`;
+      const value = await this.getClient().get(key);
+      return value === 'true';
+    } catch (error) {
+      logger.error('Error checking crawl paused state:', { siteId, error });
+      return false; // Default to not paused on error
+    }
+  }
 }
 
 // Export singleton instance
@@ -323,6 +361,11 @@ export const CacheNamespace = {
   USER_SESSION: 'session',
   EMBEDDING_SEARCH: 'embedding',
   SUBSCRIPTION_PLANS: 'plans',
+  RATE_LIMIT: 'ratelimit',
+  LOGIN_ATTEMPTS: 'loginattempts',
+  CRAWL_CONTROL: 'crawl',
+  DISCOVERY: 'discovery',
+  STRIPE_EVENTS: 'stripe_events', // Idempotency tracking for webhook events
 } as const;
 
 /**

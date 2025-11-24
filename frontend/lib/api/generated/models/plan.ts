@@ -15,10 +15,14 @@ export interface Plan {
   description: string;
   /** Price in dollars */
   price: number;
+  /** Currency code (e.g., USD) */
+  currency?: string;
   /** Billing period */
   billingPeriod: PlanBillingPeriod;
   /** Billing interval (alias) */
   interval?: PlanInterval;
   /** Plan features */
   features: string[];
+  /** Number of trial days (0 or undefined means no trial) */
+  trialDays?: number;
 }

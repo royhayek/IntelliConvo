@@ -285,4 +285,39 @@ router.post(
   })
 );
 
+/**
+ * @swagger
+ * /api/v1/admin/sites/{siteId}/cache/clear:
+ *   post:
+ *     summary: Clear site cache
+ *     description: Clear all cached data for a specific site
+ *     tags: [Admin - Sites]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: siteId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Cache cleared successfully
+ *       404:
+ *         description: Site not found
+ */
+router.post(
+  '/:siteId/cache/clear',
+  asyncHandler(async (req, res) => {
+    const { siteId } = req.params;
+    const result = await adminSiteService.clearSiteCache(siteId);
+    res.json({
+      data: {
+        ...result,
+        message: 'Site cache cleared successfully',
+      },
+    });
+  })
+);
+
 export default router;

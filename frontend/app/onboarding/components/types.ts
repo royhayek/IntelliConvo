@@ -6,7 +6,7 @@ export interface Site {
   id: string;
   siteUrl: string;
   siteName: string;
-  crawlStatus: "PENDING" | "CRAWLING" | "COMPLETED" | "FAILED" | "AWAITING_PAYMENT" | "PROCESSING" | "READY" | "PARTIAL";
+  crawlStatus: "PENDING" | "CRAWLING" | "PAUSED" | "COMPLETED" | "FAILED" | "AWAITING_PAYMENT" | "PROCESSING" | "READY" | "PARTIAL";
   urlCount?: number;
 }
 
@@ -38,9 +38,10 @@ export interface Plan {
   originalPrice?: string;
   savings?: string;
   popular?: boolean;
+  trialDays?: number;
 }
 
-export type OnboardingStepId = "site-url" | "analyzing" | "sitemap" | "plan" | "complete";
+export type OnboardingStepId = "site-url" | "select-urls" | "crawling" | "plan" | "complete";
 
 export const ONBOARDING_STEPS: StepperStep[] = [
   {
@@ -50,15 +51,15 @@ export const ONBOARDING_STEPS: StepperStep[] = [
     status: "current",
   },
   {
-    id: "analyzing",
-    title: "Analyzing Site",
-    description: "Crawling your website content",
+    id: "select-urls",
+    title: "Select Pages",
+    description: "Choose which pages to include",
     status: "waiting",
   },
   {
-    id: "sitemap",
-    title: "Review Content",
-    description: "Check discovered pages",
+    id: "crawling",
+    title: "Crawling",
+    description: "Extracting content",
     status: "waiting",
   },
   {
@@ -74,6 +75,9 @@ export const ONBOARDING_STEPS: StepperStep[] = [
     status: "waiting",
   },
 ];
+
+// Legacy step IDs for backwards compatibility
+export type LegacyOnboardingStepId = "analyzing" | "sitemap";
 
 export const PLANS: Plan[] = [
   {

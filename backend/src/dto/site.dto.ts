@@ -13,6 +13,7 @@ export interface SiteDTO {
   userId: string;
   siteUrl: string;
   siteName: string;
+  faviconUrl: string | null;
   siteDescription: string | null;
   siteIndustry: string | null;
   specialInstructions: string | null;
@@ -27,10 +28,12 @@ export interface SiteDTO {
  * Subscription summary for site
  */
 export interface SiteSubscriptionSummary {
+  id: string;
   status: string;
   planType: string;
   trialEndsAt: string | null;
   currentPeriodEnd: string;
+  cancelAtPeriodEnd: boolean;
 }
 
 /**

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Bell, CheckCheck, Trash2, Info, CheckCircle, AlertTriangle, XCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
@@ -46,6 +46,64 @@ export function NotificationBell() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const prevUnreadCountRef = useRef<number>(0);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const hasInitializedRef = useRef(false);
+
+  // Play notification sound using Web Audio API
+  const playNotificationSound = useCallback(() => {
+    try {
+      // Create AudioContext lazily (must be created after user interaction)
+      if (!audioContextRef.current) {
+        audioContextRef.current = new (window.AudioContext || (window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+      }
+
+      const ctx = audioContextRef.current;
+
+      // Resume context if it was suspended (browser autoplay policy)
+      if (ctx.state === "suspended") {
+        ctx.resume();
+      }
+
+      // Create a soft, gentle two-tone notification sound
+      const now = ctx.currentTime;
+
+      // First tone (soft, lower pitch)
+      const osc1 = ctx.createOscillator();
+      const gain1 = ctx.createGain();
+      osc1.connect(gain1);
+      gain1.connect(ctx.destination);
+      osc1.frequency.value = 440; // A4 - softer, lower note
+      osc1.type = "sine";
+      gain1.gain.setValueAtTime(0.04, now);
+      gain1.gain.exponentialRampToValueAtTime(0.005, now + 0.2);
+      osc1.start(now);
+      osc1.stop(now + 0.2);
+
+      // Second tone (gentle chime, delayed)
+      const osc2 = ctx.createOscillator();
+      const gain2 = ctx.createGain();
+      osc2.connect(gain2);
+      gain2.connect(ctx.destination);
+      osc2.frequency.value = 523; // C5 - harmonious with A4
+      osc2.type = "sine";
+      gain2.gain.setValueAtTime(0, now + 0.15);
+      gain2.gain.linearRampToValueAtTime(0.035, now + 0.18);
+      gain2.gain.exponentialRampToValueAtTime(0.005, now + 0.4);
+      osc2.start(now + 0.15);
+      osc2.stop(now + 0.4);
+    } catch (err) {
+      // Web Audio API might not be available, that's ok
+      console.debug("Could not play notification sound:", err);
+    }
+  }, []);
+
+  // Trigger badge animation
+  const triggerBadgeAnimation = useCallback(() => {
+    setIsAnimating(true);
+    setTimeout(() => setIsAnimating(false), 1000);
+  }, []);
 
   // Fetch notifications using generated query
   const {
@@ -64,6 +122,24 @@ export function NotificationBell() {
 
   const notifications = notificationsData?.notifications ?? [];
   const unreadCount = notificationsData?.unreadCount ?? 0;
+
+  // Detect when new notifications arrive and play sound/animation
+  useEffect(() => {
+    // Skip the initial load
+    if (!hasInitializedRef.current) {
+      hasInitializedRef.current = true;
+      prevUnreadCountRef.current = unreadCount;
+      return;
+    }
+
+    // If unread count increased, we have new notifications
+    if (unreadCount > prevUnreadCountRef.current) {
+      playNotificationSound();
+      triggerBadgeAnimation();
+    }
+
+    prevUnreadCountRef.current = unreadCount;
+  }, [unreadCount, playNotificationSound, triggerBadgeAnimation]);
 
   // Mutations
   const markAsReadMutation = usePatchApiV1NotificationsNotificationIdRead({
@@ -149,7 +225,7 @@ export function NotificationBell() {
           className="relative p-2 rounded-lg bg-white/80 hover:bg-white dark:bg-gray-800/80 dark:hover:bg-gray-800 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 transition-all"
           title="Notifications"
         >
-          <Bell className="w-4 h-4" />
+          <Bell className={cn("w-4 h-4", isAnimating && "animate-wiggle")} />
           <AnimatePresence>
             {unreadCount > 0 && (
               <motion.span
@@ -159,6 +235,10 @@ export function NotificationBell() {
                 className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-medium text-white"
               >
                 {unreadCount > 9 ? "9+" : unreadCount}
+                {/* Ping animation when new notification arrives */}
+                {isAnimating && (
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75" />
+                )}
               </motion.span>
             )}
           </AnimatePresence>

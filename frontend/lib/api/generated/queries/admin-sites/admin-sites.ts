@@ -27,6 +27,7 @@ import type {
   GetApiV1AdminSitesSiteId200,
   PatchApiV1AdminSitesSiteId200,
   PatchApiV1AdminSitesSiteIdBody,
+  PostApiV1AdminSitesSiteIdCacheClear200,
   PostApiV1AdminSitesSiteIdRecrawl200
 } from '../../models';
 
@@ -500,6 +501,69 @@ export const usePostApiV1AdminSitesSiteIdRecrawl = <TError = ErrorType<void>,
       > => {
 
       const mutationOptions = getPostApiV1AdminSitesSiteIdRecrawlMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
+ * Clear all cached data for a specific site
+ * @summary Clear site cache
+ */
+export const postApiV1AdminSitesSiteIdCacheClear = (
+    siteId: string,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<PostApiV1AdminSitesSiteIdCacheClear200>(
+      {url: `/api/v1/admin/sites/${siteId}/cache/clear`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getPostApiV1AdminSitesSiteIdCacheClearMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminSitesSiteIdCacheClear>>, TError,{siteId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminSitesSiteIdCacheClear>>, TError,{siteId: string}, TContext> => {
+
+const mutationKey = ['postApiV1AdminSitesSiteIdCacheClear'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1AdminSitesSiteIdCacheClear>>, {siteId: string}> = (props) => {
+          const {siteId} = props ?? {};
+
+          return  postApiV1AdminSitesSiteIdCacheClear(siteId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostApiV1AdminSitesSiteIdCacheClearMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1AdminSitesSiteIdCacheClear>>>
+    
+    export type PostApiV1AdminSitesSiteIdCacheClearMutationError = ErrorType<void>
+
+    /**
+ * @summary Clear site cache
+ */
+export const usePostApiV1AdminSitesSiteIdCacheClear = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminSitesSiteIdCacheClear>>, TError,{siteId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postApiV1AdminSitesSiteIdCacheClear>>,
+        TError,
+        {siteId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getPostApiV1AdminSitesSiteIdCacheClearMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }

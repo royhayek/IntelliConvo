@@ -14,15 +14,11 @@ const configSchema = z.object({
   REDIS_PORT: z.string().transform(Number).pipe(z.number().int().positive()).default('6379'),
   REDIS_PASSWORD: z.string().optional(),
 
-  // JWT
+  // JWT - Only secret is required here, expiration is managed via DB settings
   JWT_SECRET: z.string().min(32, 'JWT_SECRET must be at least 32 characters for security'),
-  JWT_EXPIRES_IN: z.string().default('7d'),
-  JWT_REFRESH_EXPIRES_IN: z.string().default('30d'),
 
-  // OpenAI
+  // OpenAI - Only API key is required here, model selection is managed via DB settings
   OPENAI_API_KEY: z.string().min(1, 'OPENAI_API_KEY is required'),
-  OPENAI_MODEL: z.string().default('gpt-4-turbo-preview'),
-  OPENAI_EMBEDDING_MODEL: z.string().default('text-embedding-3-small'),
 
   // Pinecone
   PINECONE_API_KEY: z.string().min(1, 'PINECONE_API_KEY is required'),
@@ -45,15 +41,9 @@ const configSchema = z.object({
   STRIPE_PRICE_MONTHLY: z.string().optional(),
   STRIPE_PRICE_ANNUAL: z.string().optional(),
 
-  // Rate Limiting
+  // Rate Limiting - Window only (used at startup), max requests from DB settings
   RATE_LIMIT_WINDOW_MS: z.string().transform(Number).pipe(z.number().int().positive()).default('60000'),
-  RATE_LIMIT_MAX_REQUESTS: z.string().transform(Number).pipe(z.number().int().positive()).default('100'),
-  AUTH_RATE_LIMIT_WINDOW_MS: z.string().transform(Number).pipe(z.number().int().positive()).default('900000'), // 15 minutes
-  AUTH_RATE_LIMIT_MAX_REQUESTS: z.string().transform(Number).pipe(z.number().int().positive()).default('5'),
-
-  // File Upload
-  MAX_FILE_SIZE: z.string().default('10mb'),
-  UPLOAD_DIR: z.string().default('uploads'),
+  AUTH_RATE_LIMIT_WINDOW_MS: z.string().transform(Number).pipe(z.number().int().positive()).default('900000'),
 });
 
 export type Config = z.infer<typeof configSchema>;

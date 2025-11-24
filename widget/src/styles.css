@@ -1201,3 +1201,89 @@ body.ic-mobile-fullscreen .intelligentconvo-widget-container {
 .intelligentconvo-file-item {
   transition: all 0.3s ease;
 }
+
+/* Trial Expired Message */
+.intelligentconvo-trial-expired {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border: 1px solid #f59e0b;
+  border-radius: var(--ic-radius-lg, 12px);
+  padding: 16px;
+  margin: 12px 0;
+  animation: fadeIn 0.3s ease;
+}
+
+.intelligentconvo-trial-expired-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.intelligentconvo-trial-expired-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  background: #f59e0b;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.intelligentconvo-trial-expired-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.intelligentconvo-trial-expired-text {
+  flex: 1;
+}
+
+.intelligentconvo-trial-expired-text strong {
+  display: block;
+  color: #92400e;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.intelligentconvo-trial-expired-text p {
+  color: #a16207;
+  font-size: 13px;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Dark mode trial expired */
+@media (prefers-color-scheme: dark) {
+  .intelligentconvo-trial-expired {
+    background: linear-gradient(135deg, #422006 0%, #78350f 100%);
+    border-color: #d97706;
+  }
+
+  .intelligentconvo-trial-expired-icon {
+    background: #d97706;
+  }
+
+  .intelligentconvo-trial-expired-text strong {
+    color: #fcd34d;
+  }
+
+  .intelligentconvo-trial-expired-text p {
+    color: #fbbf24;
+  }
+}
+
+/* Disabled input state */
+.intelligentconvo-input input:disabled {
+  background: var(--ic-bg-secondary);
+  color: var(--ic-text-muted);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.intelligentconvo-send:disabled {
+  background: var(--ic-bg-secondary);
+  color: var(--ic-text-muted);
+  cursor: not-allowed;
+  opacity: 0.6;
+}

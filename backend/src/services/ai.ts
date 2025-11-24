@@ -3,6 +3,7 @@ import { prisma } from '../lib/prisma';
 import { searchContent } from './embeddings';
 import { logger } from '../utils/logger';
 import { ConversationRole } from '@prisma/client';
+import { settings } from '../lib/settings';
 
 // Initialize OpenAI only if API key is properly configured
 let openai: OpenAI | null = null;
@@ -70,11 +71,19 @@ export async function generateResponse(context: ConversationContext): Promise<{
     if (!openai) {
       throw new Error('OpenAI client not initialized. Please check OPENAI_API_KEY environment variable.');
     }
+
+    // Get AI settings from database
+    const [model, temperature, maxTokens] = await Promise.all([
+      settings.getAIModel(),
+      settings.getAITemperature(),
+      settings.getAIMaxTokens(),
+    ]);
+
     const completion = await openai.chat.completions.create({
-      model: process.env.OPENAI_MODEL || 'gpt-4-turbo-preview',
+      model,
       messages,
-      temperature: 0.7,
-      max_tokens: 500,
+      temperature,
+      max_tokens: Math.min(maxTokens, 500), // Cap at 500 for responses
     });
 
     const response = completion.choices[0].message.content || 'I apologize, but I was unable to generate a response.';
@@ -184,11 +193,19 @@ export async function streamResponseWithUsage(
     if (!openai) {
       throw new Error('OpenAI client not initialized. Please check OPENAI_API_KEY environment variable.');
     }
+
+    // Get AI settings from database
+    const [model, temperature, maxTokens] = await Promise.all([
+      settings.getAIModel(),
+      settings.getAITemperature(),
+      settings.getAIMaxTokens(),
+    ]);
+
     const stream = await openai.chat.completions.create({
-      model: process.env.OPENAI_MODEL || 'gpt-4-turbo-preview',
+      model,
       messages,
-      temperature: 0.7,
-      max_tokens: 500,
+      temperature,
+      max_tokens: Math.min(maxTokens, 500),
       stream: true,
       stream_options: { include_usage: true },
     });
@@ -259,11 +276,19 @@ export async function* streamResponse(context: ConversationContext): AsyncGenera
     if (!openai) {
       throw new Error('OpenAI client not initialized. Please check OPENAI_API_KEY environment variable.');
     }
+
+    // Get AI settings from database
+    const [model, temperature, maxTokens] = await Promise.all([
+      settings.getAIModel(),
+      settings.getAITemperature(),
+      settings.getAIMaxTokens(),
+    ]);
+
     const stream = await openai.chat.completions.create({
-      model: process.env.OPENAI_MODEL || 'gpt-4-turbo-preview',
+      model,
       messages,
-      temperature: 0.7,
-      max_tokens: 500,
+      temperature,
+      max_tokens: Math.min(maxTokens, 500),
       stream: true,
     });
 

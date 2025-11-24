@@ -13,6 +13,7 @@ interface UserListParams {
   isAdmin?: boolean;
   sortBy?: 'createdAt' | 'lastLoginAt' | 'email';
   sortOrder?: 'asc' | 'desc';
+  excludeUserId?: string; // Exclude the current admin from the list
 }
 
 interface UserListResult {
@@ -51,9 +52,15 @@ class AdminUserService {
       isAdmin,
       sortBy = 'createdAt',
       sortOrder = 'desc',
+      excludeUserId,
     } = params;
 
     const where: any = {};
+
+    // Exclude the current admin from the list (prevent self-modification/deletion)
+    if (excludeUserId) {
+      where.id = { not: excludeUserId };
+    }
 
     // Search filter
     if (search) {
@@ -349,6 +356,11 @@ class AdminUserService {
    */
   async exportUsers(format: 'csv' | 'json', filters?: UserListParams) {
     const where: any = {};
+
+    // Exclude the current admin from the export (prevent self-inclusion)
+    if (filters?.excludeUserId) {
+      where.id = { not: filters.excludeUserId };
+    }
 
     if (filters?.search) {
       where.OR = [

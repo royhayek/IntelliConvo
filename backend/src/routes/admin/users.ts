@@ -94,6 +94,7 @@ router.get(
       isAdmin: isAdmin === 'true' ? true : isAdmin === 'false' ? false : undefined,
       sortBy: sortBy as 'createdAt' | 'lastLoginAt' | 'email',
       sortOrder: sortOrder as 'asc' | 'desc',
+      excludeUserId: req.user?.id, // Exclude the current admin from the list
     });
 
     res.json({ data: result });
@@ -173,6 +174,7 @@ router.get(
         search: search as string | undefined,
         authProvider: authProvider as AuthProvider | undefined,
         isAdmin: isAdmin === 'true' ? true : isAdmin === 'false' ? false : undefined,
+        excludeUserId: req.user?.id, // Exclude the current admin from the export
       }
     );
 

@@ -108,7 +108,7 @@ router.get(
       req.user!.id,
       {
         search: search as string,
-        processed: processed === 'true',
+        processed: processed !== undefined ? processed === 'true' : undefined,
         status: status as string,
       }
     );

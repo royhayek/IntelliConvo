@@ -1,6 +1,9 @@
 import { prisma } from '../../lib/prisma';
 import { subDays, startOfDay, endOfDay } from 'date-fns';
 
+// Filter to exclude admin users from customer-facing metrics
+const NON_ADMIN_USER_FILTER = { isAdmin: false };
+
 interface UserStats {
   total: number;
   newToday: number;
@@ -137,26 +140,29 @@ class AdminStatsService {
       activeLastMonth,
       adminCount,
     ] = await Promise.all([
-      prisma.user.count(),
+      // Exclude admin users from customer counts
+      prisma.user.count({ where: NON_ADMIN_USER_FILTER }),
       prisma.user.count({
-        where: { createdAt: { gte: todayStart } },
+        where: { ...NON_ADMIN_USER_FILTER, createdAt: { gte: todayStart } },
       }),
       prisma.user.count({
-        where: { createdAt: { gte: weekAgo } },
+        where: { ...NON_ADMIN_USER_FILTER, createdAt: { gte: weekAgo } },
       }),
       prisma.user.count({
-        where: { createdAt: { gte: monthAgo } },
+        where: { ...NON_ADMIN_USER_FILTER, createdAt: { gte: monthAgo } },
       }),
       prisma.user.groupBy({
         by: ['authProvider'],
+        where: NON_ADMIN_USER_FILTER,
         _count: { id: true },
       }),
       prisma.user.count({
-        where: { lastLoginAt: { gte: weekAgo } },
+        where: { ...NON_ADMIN_USER_FILTER, lastLoginAt: { gte: weekAgo } },
       }),
       prisma.user.count({
-        where: { lastLoginAt: { gte: monthAgo } },
+        where: { ...NON_ADMIN_USER_FILTER, lastLoginAt: { gte: monthAgo } },
       }),
+      // Admin count is intentionally kept to show how many admins exist
       prisma.user.count({
         where: { isAdmin: true },
       }),
@@ -181,24 +187,36 @@ class AdminStatsService {
     const now = new Date();
     const dayAgo = subDays(now, 1);
 
+    // Filter to exclude sites owned by admin users
+    const nonAdminSiteFilter = { user: NON_ADMIN_USER_FILTER };
+
     const [total, byCrawlStatus, failedCrawlsLast24h, totalUrlsIndexed, urlsPendingCrawl] =
       await Promise.all([
-        prisma.site.count(),
+        prisma.site.count({ where: nonAdminSiteFilter }),
         prisma.site.groupBy({
           by: ['crawlStatus'],
+          where: nonAdminSiteFilter,
           _count: { id: true },
         }),
         prisma.site.count({
           where: {
+            ...nonAdminSiteFilter,
             crawlStatus: 'FAILED',
             updatedAt: { gte: dayAgo },
           },
         }),
         prisma.siteUrl.count({
-          where: { isActive: true, isExcluded: false },
+          where: {
+            isActive: true,
+            isExcluded: false,
+            site: nonAdminSiteFilter,
+          },
         }),
         prisma.siteUrl.count({
-          where: { lastCrawledAt: null },
+          where: {
+            lastCrawledAt: null,
+            site: nonAdminSiteFilter,
+          },
         }),
       ]);
 
@@ -218,22 +236,37 @@ class AdminStatsService {
     const now = new Date();
     const dayAgo = subDays(now, 1);
 
+    // Filter to exclude embeddings from admin-owned sites
+    const nonAdminSiteFilter = { user: NON_ADMIN_USER_FILTER };
+    const nonAdminUrlFilter = { site: nonAdminSiteFilter };
+
     const [total, createdLast24h, urlsWithEmbeddings, totalUrls, embeddingCounts] =
       await Promise.all([
-        prisma.embedding.count(),
         prisma.embedding.count({
-          where: { createdAt: { gte: dayAgo } },
+          where: { siteUrl: nonAdminUrlFilter },
+        }),
+        prisma.embedding.count({
+          where: {
+            createdAt: { gte: dayAgo },
+            siteUrl: nonAdminUrlFilter,
+          },
         }),
         prisma.siteUrl.count({
           where: {
+            ...nonAdminUrlFilter,
             embeddings: { some: {} },
           },
         }),
         prisma.siteUrl.count({
-          where: { isActive: true, isExcluded: false },
+          where: {
+            isActive: true,
+            isExcluded: false,
+            ...nonAdminUrlFilter,
+          },
         }),
         prisma.embedding.groupBy({
           by: ['siteUrlId'],
+          where: { siteUrl: nonAdminUrlFilter },
           _count: { id: true },
         }),
       ]);
@@ -256,22 +289,29 @@ class AdminStatsService {
     const now = new Date();
     const tenMinutesAgo = new Date(now.getTime() - 10 * 60 * 1000);
 
+    // Filter to exclude files from admin-owned sites
+    const nonAdminSiteFilter = { user: NON_ADMIN_USER_FILTER };
+    const nonAdminFileFilter = { site: nonAdminSiteFilter };
+
     const [total, byStatus, failedFiles, stuckFiles, totalStorage] = await Promise.all([
-      prisma.knowledgeFile.count(),
+      prisma.knowledgeFile.count({ where: nonAdminFileFilter }),
       prisma.knowledgeFile.groupBy({
         by: ['status'],
+        where: nonAdminFileFilter,
         _count: { id: true },
       }),
       prisma.knowledgeFile.count({
-        where: { status: 'FAILED' },
+        where: { ...nonAdminFileFilter, status: 'FAILED' },
       }),
       prisma.knowledgeFile.count({
         where: {
+          ...nonAdminFileFilter,
           status: 'PENDING',
           uploadedAt: { lt: tenMinutesAgo },
         },
       }),
       prisma.knowledgeFile.aggregate({
+        where: nonAdminFileFilter,
         _sum: { fileSize: true },
       }),
     ]);
@@ -292,16 +332,22 @@ class AdminStatsService {
     const now = new Date();
     const dayAgo = subDays(now, 1);
 
+    // Filter to exclude conversations from admin-owned sites
+    const nonAdminSiteFilter = { user: NON_ADMIN_USER_FILTER };
+    const nonAdminConversationFilter = { site: nonAdminSiteFilter };
+    const nonAdminMessageFilter = { conversation: nonAdminConversationFilter };
+
     const [total, activeLast24h, totalMessages, messagesLast24h, messageStats] = await Promise.all([
-      prisma.conversation.count(),
+      prisma.conversation.count({ where: nonAdminConversationFilter }),
       prisma.conversation.count({
-        where: { lastMessageAt: { gte: dayAgo } },
+        where: { ...nonAdminConversationFilter, lastMessageAt: { gte: dayAgo } },
       }),
-      prisma.message.count(),
+      prisma.message.count({ where: nonAdminMessageFilter }),
       prisma.message.count({
-        where: { timestamp: { gte: dayAgo } },
+        where: { ...nonAdminMessageFilter, timestamp: { gte: dayAgo } },
       }),
       prisma.message.aggregate({
+        where: nonAdminMessageFilter,
         _sum: {
           tokensUsed: true,
           costInCents: true,
@@ -326,18 +372,24 @@ class AdminStatsService {
     const now = new Date();
     const sevenDaysFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
 
+    // Filter to exclude subscriptions for admin users
+    const nonAdminSubscriptionFilter = { user: NON_ADMIN_USER_FILTER };
+
     const [total, byStatus, byPlanType, expiringTrialsNext7Days] = await Promise.all([
-      prisma.subscription.count(),
+      prisma.subscription.count({ where: nonAdminSubscriptionFilter }),
       prisma.subscription.groupBy({
         by: ['status'],
+        where: nonAdminSubscriptionFilter,
         _count: { id: true },
       }),
       prisma.subscription.groupBy({
         by: ['planType'],
+        where: nonAdminSubscriptionFilter,
         _count: { id: true },
       }),
       prisma.subscription.count({
         where: {
+          ...nonAdminSubscriptionFilter,
           status: 'TRIAL',
           trialEndsAt: {
             gte: now,
@@ -365,21 +417,31 @@ class AdminStatsService {
     const now = new Date();
     const dayAgo = subDays(now, 1);
 
+    // Get admin user IDs to exclude from session stats
+    const adminUsers = await prisma.user.findMany({
+      where: { isAdmin: true },
+      select: { id: true },
+    });
+    const adminUserIds = adminUsers.map((u) => u.id);
+
+    // Filter to exclude admin user sessions
+    const nonAdminSessionFilter = { userId: { notIn: adminUserIds } };
+
     const [activeSessions, sessionsCreatedLast24h, expiredTokensNeedingCleanup, sessionsByUser] =
       await Promise.all([
         prisma.refreshToken.count({
-          where: { expiresAt: { gt: now } },
+          where: { ...nonAdminSessionFilter, expiresAt: { gt: now } },
         }),
         prisma.refreshToken.count({
-          where: { createdAt: { gte: dayAgo } },
+          where: { ...nonAdminSessionFilter, createdAt: { gte: dayAgo } },
         }),
         prisma.refreshToken.count({
-          where: { expiresAt: { lt: now } },
+          where: { ...nonAdminSessionFilter, expiresAt: { lt: now } },
         }),
         prisma.refreshToken.groupBy({
           by: ['userId'],
           _count: { id: true },
-          where: { expiresAt: { gt: now } },
+          where: { ...nonAdminSessionFilter, expiresAt: { gt: now } },
         }),
       ]);
 
@@ -397,22 +459,27 @@ class AdminStatsService {
     const now = new Date();
     const monthStart = startOfDay(new Date(now.getFullYear(), now.getMonth(), 1));
 
+    // Filter to exclude transactions for admin users
+    const nonAdminTransactionFilter = { user: NON_ADMIN_USER_FILTER };
+
     const [totalTransactions, totalRevenue, revenueThisMonth, transactionsByStatus] =
       await Promise.all([
-        prisma.billingTransaction.count(),
+        prisma.billingTransaction.count({ where: nonAdminTransactionFilter }),
         prisma.billingTransaction.aggregate({
+          where: { ...nonAdminTransactionFilter, status: 'paid' },
           _sum: { amount: true },
-          where: { status: 'paid' },
         }),
         prisma.billingTransaction.aggregate({
-          _sum: { amount: true },
           where: {
+            ...nonAdminTransactionFilter,
             status: 'paid',
             createdAt: { gte: monthStart },
           },
+          _sum: { amount: true },
         }),
         prisma.billingTransaction.groupBy({
           by: ['status'],
+          where: nonAdminTransactionFilter,
           _count: { id: true },
         }),
       ]);

@@ -45,4 +45,6 @@ export interface Subscription {
    * @nullable
    */
   cancelledAt: string | null;
+  /** Whether subscription is scheduled to cancel at period end */
+  cancelAtPeriodEnd: boolean;
 }

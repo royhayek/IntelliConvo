@@ -60,6 +60,21 @@ export function UrlStatusBadge({
   isAdmin = false,
   className,
 }: UrlStatusBadgeProps) {
+  // Check isExcluded first - it takes priority over embeddingStatus
+  if (isExcluded) {
+    const labels = isAdmin ? urlStatusAdminLabels : urlStatusLabels;
+    const variant = urlStatusVariants["EXCLUDED"];
+
+    return (
+      <Badge
+        variant={variant.variant}
+        className={cn(variant.className, className)}
+      >
+        {labels["EXCLUDED"]}
+      </Badge>
+    );
+  }
+
   // If embeddingStatus is provided, use new status system
   if (embeddingStatus) {
     const labels = isAdmin ? urlStatusAdminLabels : urlStatusLabels;

@@ -21,4 +21,6 @@ export type SiteResponseSubscription = {
   trialEndsAt: string | null;
   /** Current period end */
   currentPeriodEnd: string;
+  /** Whether subscription is scheduled to cancel at period end */
+  cancelAtPeriodEnd: boolean;
 } | null;

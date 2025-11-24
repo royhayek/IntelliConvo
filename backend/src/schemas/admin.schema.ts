@@ -155,6 +155,7 @@ const adminSiteSchema = registry.register(
     userId: z.string().uuid(),
     siteName: z.string(),
     siteUrl: z.string().url(),
+    faviconUrl: z.string().nullable().optional(),
     siteDescription: z.string().nullable().optional(),
     siteIndustry: z.string().nullable().optional(),
     crawlStatus: z.enum(['PENDING', 'IN_PROGRESS', 'COMPLETED', 'FAILED']),
@@ -794,6 +795,7 @@ registry.registerPath({
         'application/json': {
           schema: z.object({
             fullName: z.string().optional(),
+            email: z.string().email().optional(),
             isAdmin: z.boolean().optional(),
           }),
         },
@@ -918,6 +920,10 @@ registry.registerPath({
           schema: z.object({
             siteName: z.string().optional(),
             siteUrl: z.string().url().optional(),
+            siteDescription: z.string().optional(),
+            siteIndustry: z.string().optional(),
+            specialInstructions: z.string().optional(),
+            welcomeMessage: z.string().optional(),
             crawlStatus: z.enum(['PENDING', 'IN_PROGRESS', 'COMPLETED', 'FAILED']).optional(),
           }),
         },
@@ -958,6 +964,23 @@ registry.registerPath({
   },
   responses: {
     200: { description: 'Recrawl initiated successfully', content: { 'application/json': { schema: adminMessageSchema } } },
+    401: { description: 'Unauthorized' },
+    404: { description: 'Site not found' },
+  },
+});
+
+registry.registerPath({
+  method: 'post',
+  path: '/api/v1/admin/sites/{siteId}/cache/clear',
+  summary: 'Clear site cache',
+  description: 'Clear all cached data for a specific site',
+  tags: ['Admin - Sites'],
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: z.object({ siteId: z.string().uuid() }),
+  },
+  responses: {
+    200: { description: 'Cache cleared successfully', content: { 'application/json': { schema: adminMessageSchema } } },
     401: { description: 'Unauthorized' },
     404: { description: 'Site not found' },
   },
@@ -1149,6 +1172,135 @@ registry.registerPath({
     200: { description: 'Billing statistics retrieved successfully' },
     401: { description: 'Unauthorized' },
     403: { description: 'Forbidden' },
+  },
+});
+
+// Refund endpoint
+registry.registerPath({
+  method: 'post',
+  path: '/api/v1/admin/billing/transactions/{transactionId}/refund',
+  summary: 'Issue a refund for a transaction',
+  description: 'Issues a full or partial refund via Stripe API',
+  tags: ['Admin - Billing'],
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: z.object({ transactionId: z.string().uuid() }),
+    body: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            amount: z.number().optional().openapi({ description: 'Amount to refund in cents. If not provided, full refund is issued.' }),
+            reason: z.enum(['duplicate', 'fraudulent', 'requested_by_customer']).optional(),
+            adminNotes: z.string().optional(),
+          }),
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: 'Refund issued successfully',
+      content: {
+        'application/json': {
+          schema: z.object({
+            data: z.object({
+              success: z.boolean(),
+              refundId: z.string(),
+              amount: z.number(),
+              status: z.string(),
+              transaction: adminTransactionSchema,
+            }),
+          }),
+        },
+      },
+    },
+    400: { description: 'Invalid request or transaction not refundable' },
+    401: { description: 'Unauthorized' },
+    404: { description: 'Transaction not found' },
+  },
+});
+
+// Disputes list endpoint
+const adminDisputeSchema = registry.register(
+  'AdminDispute',
+  z.object({
+    id: z.string(),
+    amount: z.number(),
+    currency: z.string(),
+    status: z.string(),
+    reason: z.string(),
+    created: z.number(),
+    chargeId: z.string().nullable(),
+    paymentIntentId: z.string().nullable(),
+    evidenceDueBy: z.number().nullable(),
+    isChargeRefundable: z.boolean(),
+    localTransaction: z.object({
+      id: z.string().uuid(),
+      userId: z.string().uuid(),
+      siteId: z.string().uuid(),
+      user: z.object({
+        id: z.string().uuid(),
+        email: z.string(),
+      }).nullable(),
+    }).nullable(),
+  }).openapi({ description: 'Stripe dispute with local enrichment' })
+);
+
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/admin/billing/disputes',
+  summary: 'Get list of disputes from Stripe',
+  description: 'Fetches disputes directly from Stripe API with local enrichment',
+  tags: ['Admin - Billing'],
+  security: [{ bearerAuth: [] }],
+  request: {
+    query: z.object({
+      page: z.string().optional(),
+      limit: z.string().optional(),
+      status: z.string().optional(),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'Disputes retrieved successfully',
+      content: {
+        'application/json': {
+          schema: z.object({
+            data: z.object({
+              disputes: z.array(adminDisputeSchema),
+              pagination: paginationSchema,
+              hasMore: z.boolean(),
+            }),
+          }),
+        },
+      },
+    },
+    401: { description: 'Unauthorized' },
+    403: { description: 'Forbidden' },
+  },
+});
+
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/admin/billing/disputes/{disputeId}',
+  summary: 'Get dispute details by ID',
+  description: 'Fetches detailed dispute information from Stripe with local data',
+  tags: ['Admin - Billing'],
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: z.object({ disputeId: z.string() }),
+  },
+  responses: {
+    200: {
+      description: 'Dispute retrieved successfully',
+      content: {
+        'application/json': {
+          schema: z.object({ data: adminDisputeSchema }),
+        },
+      },
+    },
+    401: { description: 'Unauthorized' },
+    404: { description: 'Dispute not found' },
   },
 });
 
@@ -2068,6 +2220,175 @@ registry.registerPath({
   },
 });
 
+// ============================================
+// System Settings Schemas
+// ============================================
+
+const settingTypeEnum = z.enum(['STRING', 'NUMBER', 'BOOLEAN', 'JSON']);
+const settingCategoryEnum = z.enum(['GENERAL', 'AI', 'SECURITY', 'RATE_LIMIT', 'EMAIL', 'BILLING', 'STORAGE']);
+
+const adminSystemSettingSchema = registry.register(
+  'AdminSystemSetting',
+  z.object({
+    id: z.string().uuid(),
+    key: z.string(),
+    value: z.string(),
+    type: settingTypeEnum,
+    category: settingCategoryEnum,
+    label: z.string(),
+    description: z.string().nullable(),
+    isSecret: z.boolean(),
+    createdAt: z.string(),
+    updatedAt: z.string(),
+    updatedBy: z.string().nullable(),
+  }).openapi({ description: 'System setting' })
+);
+
+const adminSystemSettingsListSchema = registry.register(
+  'AdminSystemSettingsList',
+  z.object({
+    settings: z.array(adminSystemSettingSchema),
+  }).openapi({ description: 'System settings list response' })
+);
+
+const adminSystemSettingsByCategorySchema = registry.register(
+  'AdminSystemSettingsByCategory',
+  z.record(settingCategoryEnum, z.array(adminSystemSettingSchema)).openapi({ description: 'System settings grouped by category' })
+);
+
+// ============================================
+// PATH REGISTRATIONS - Settings
+// ============================================
+
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/admin/settings',
+  summary: 'Get all system settings',
+  tags: ['Admin - Settings'],
+  security: [{ bearerAuth: [] }],
+  request: {
+    query: z.object({
+      category: settingCategoryEnum.optional(),
+    }),
+  },
+  responses: {
+    200: { description: 'Settings retrieved successfully', content: { 'application/json': { schema: z.object({ data: adminSystemSettingsListSchema }) } } },
+    401: { description: 'Unauthorized' },
+    403: { description: 'Forbidden - Admin access required' },
+  },
+});
+
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/admin/settings/by-category',
+  summary: 'Get all system settings grouped by category',
+  tags: ['Admin - Settings'],
+  security: [{ bearerAuth: [] }],
+  responses: {
+    200: { description: 'Settings retrieved successfully', content: { 'application/json': { schema: z.object({ data: adminSystemSettingsByCategorySchema }) } } },
+    401: { description: 'Unauthorized' },
+    403: { description: 'Forbidden - Admin access required' },
+  },
+});
+
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/admin/settings/{key}',
+  summary: 'Get a specific setting by key',
+  tags: ['Admin - Settings'],
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: z.object({ key: z.string() }),
+  },
+  responses: {
+    200: { description: 'Setting retrieved successfully', content: { 'application/json': { schema: z.object({ data: adminSystemSettingSchema }) } } },
+    401: { description: 'Unauthorized' },
+    404: { description: 'Setting not found' },
+  },
+});
+
+registry.registerPath({
+  method: 'patch',
+  path: '/api/v1/admin/settings/{key}',
+  summary: 'Update a specific setting',
+  tags: ['Admin - Settings'],
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: z.object({ key: z.string() }),
+    body: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            value: z.string(),
+          }),
+        },
+      },
+    },
+  },
+  responses: {
+    200: { description: 'Setting updated successfully', content: { 'application/json': { schema: z.object({ data: adminSystemSettingSchema }) } } },
+    401: { description: 'Unauthorized' },
+    404: { description: 'Setting not found' },
+  },
+});
+
+registry.registerPath({
+  method: 'patch',
+  path: '/api/v1/admin/settings/bulk',
+  summary: 'Bulk update multiple settings',
+  tags: ['Admin - Settings'],
+  security: [{ bearerAuth: [] }],
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            settings: z.array(z.object({
+              key: z.string(),
+              value: z.string(),
+            })),
+          }),
+        },
+      },
+    },
+  },
+  responses: {
+    200: { description: 'Settings updated successfully', content: { 'application/json': { schema: z.object({ data: adminSystemSettingsListSchema }) } } },
+    401: { description: 'Unauthorized' },
+    403: { description: 'Forbidden' },
+  },
+});
+
+// Cache clear response schema
+const cachesClearedResponseSchema = registry.register(
+  'CachesClearedResponse',
+  z.object({
+    cleared: z.array(z.string()).openapi({ description: 'List of cache namespaces that were cleared' }),
+    message: z.string().openapi({ description: 'Success message' }),
+  }).openapi({ description: 'Response after clearing caches' })
+);
+
+registry.registerPath({
+  method: 'post',
+  path: '/api/v1/admin/settings/cache/clear',
+  summary: 'Clear all system caches',
+  description: 'Clears all caches except user sessions. Safe to run anytime - caches will repopulate on next request.',
+  tags: ['Admin - Settings'],
+  security: [{ bearerAuth: [] }],
+  responses: {
+    200: {
+      description: 'Caches cleared successfully',
+      content: {
+        'application/json': {
+          schema: z.object({ data: cachesClearedResponseSchema }),
+        },
+      },
+    },
+    401: { description: 'Unauthorized' },
+    403: { description: 'Forbidden - Admin access required' },
+  },
+});
+
 // Type exports
 export type AdminUser = z.infer<typeof adminUserSchema>;
 export type AdminSite = z.infer<typeof adminSiteSchema>;
@@ -2079,3 +2400,4 @@ export type AdminMessage = z.infer<typeof adminMessageItemSchema>;
 export type AdminSubscription = z.infer<typeof adminSubscriptionSchema>;
 export type AdminTransaction = z.infer<typeof adminTransactionSchema>;
 export type AdminWidget = z.infer<typeof adminWidgetSchema>;
+export type AdminSystemSetting = z.infer<typeof adminSystemSettingSchema>;

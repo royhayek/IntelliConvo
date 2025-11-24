@@ -5,15 +5,33 @@ import { io, Socket } from "socket.io-client";
 
 export interface CrawlStatusUpdate {
   siteId: string;
-  crawlStatus: "PENDING" | "CRAWLING" | "COMPLETED" | "FAILED" | "AWAITING_PAYMENT" | "PROCESSING" | "READY" | "PARTIAL";
+  crawlStatus: "PENDING" | "CRAWLING" | "PAUSED" | "COMPLETED" | "FAILED" | "AWAITING_PAYMENT" | "PROCESSING" | "READY" | "PARTIAL";
   urlCount?: number;
 }
 
 export interface CrawlProgressUpdate {
   siteId: string;
-  crawled: number;
+  crawled: number;  // Total processed (success + failed)
   total: number;
   currentUrl: string;
+  estimatedSecondsRemaining?: number;
+  successCount?: number;  // Successfully crawled
+  failedCount?: number;   // Failed to crawl
+}
+
+export interface DiscoveryStatusUpdate {
+  siteId: string;
+  status: "PENDING" | "IN_PROGRESS" | "COMPLETED" | "FAILED";
+  urlCount?: number;
+}
+
+export interface EmbeddingProgressUpdate {
+  siteId: string;
+  completed: number;
+  total: number;
+  currentUrl?: string;
+  estimatedSecondsRemaining?: number;
+  phase: "embedding";
 }
 
 interface UrlStatusItem {
@@ -31,16 +49,20 @@ interface UseSiteSocketOptions {
   onCrawlStatusUpdate?: (update: CrawlStatusUpdate) => void;
   onCrawlProgress?: (update: CrawlProgressUpdate) => void;
   onUrlStatusUpdate?: (update: UrlStatusUpdate) => void;
+  onDiscoveryStatusUpdate?: (update: DiscoveryStatusUpdate) => void;
+  onEmbeddingProgress?: (update: EmbeddingProgressUpdate) => void;
   autoConnect?: boolean;
 }
 
 export function useSiteSocket(options: UseSiteSocketOptions) {
-  const { siteId, onCrawlStatusUpdate, onCrawlProgress, onUrlStatusUpdate, autoConnect = true } = options;
+  const { siteId, onCrawlStatusUpdate, onCrawlProgress, onUrlStatusUpdate, onDiscoveryStatusUpdate, onEmbeddingProgress, autoConnect = true } = options;
   const socketRef = useRef<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const onCrawlStatusUpdateRef = useRef(onCrawlStatusUpdate);
   const onCrawlProgressRef = useRef(onCrawlProgress);
   const onUrlStatusUpdateRef = useRef(onUrlStatusUpdate);
+  const onDiscoveryStatusUpdateRef = useRef(onDiscoveryStatusUpdate);
+  const onEmbeddingProgressRef = useRef(onEmbeddingProgress);
 
   // Keep the callback refs updated
   useEffect(() => {
@@ -54,6 +76,14 @@ export function useSiteSocket(options: UseSiteSocketOptions) {
   useEffect(() => {
     onUrlStatusUpdateRef.current = onUrlStatusUpdate;
   }, [onUrlStatusUpdate]);
+
+  useEffect(() => {
+    onDiscoveryStatusUpdateRef.current = onDiscoveryStatusUpdate;
+  }, [onDiscoveryStatusUpdate]);
+
+  useEffect(() => {
+    onEmbeddingProgressRef.current = onEmbeddingProgress;
+  }, [onEmbeddingProgress]);
 
   const connect = useCallback(() => {
     if (socketRef.current?.connected || !siteId) return;
@@ -89,6 +119,14 @@ export function useSiteSocket(options: UseSiteSocketOptions) {
 
     socketRef.current.on("url-status-update", (update: UrlStatusUpdate) => {
       onUrlStatusUpdateRef.current?.(update);
+    });
+
+    socketRef.current.on("discovery-status-update", (update: DiscoveryStatusUpdate) => {
+      onDiscoveryStatusUpdateRef.current?.(update);
+    });
+
+    socketRef.current.on("embedding-progress", (update: EmbeddingProgressUpdate) => {
+      onEmbeddingProgressRef.current?.(update);
     });
 
     socketRef.current.on("connect_error", (error) => {

@@ -21,15 +21,24 @@ import type {
 
 import type {
   AddHostRequest,
+  AddManualUrlsRequest,
+  BulkSelectRequest,
   CreateSiteRequest,
+  DiscoveryResult,
+  DiscoveryStats,
   HostsListResponse,
   PatchApiV1SitesSiteIdHostsHostId200,
+  PostApiV1SitesSiteIdCrawlSelective200,
+  PostApiV1SitesSiteIdDiscoveryManualUrls200,
   PostApiV1SitesSiteIdHosts201,
+  SelectionsUpdateResponse,
+  SelectiveCrawlRequest,
   SiteResponse,
   SitesListResponse,
   SitesMessageResponse,
   StartersResponse,
   UpdateHostRequest,
+  UpdateSelectionsRequest,
   UpdateSiteRequest,
   UpdateStartersRequest
 } from '../../models';
@@ -914,6 +923,518 @@ export const useDeleteApiV1SitesSiteIdHostsHostId = <TError = ErrorType<void>,
       > => {
 
       const mutationOptions = getDeleteApiV1SitesSiteIdHostsHostIdMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
+ * Discovers URLs from sitemap or homepage without crawling content. This is fast (~30 seconds).
+ * @summary Start URL discovery
+ */
+export const postApiV1SitesSiteIdDiscover = (
+    siteId: string,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<SitesMessageResponse>(
+      {url: `/api/v1/sites/${siteId}/discover`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getPostApiV1SitesSiteIdDiscoverMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1SitesSiteIdDiscover>>, TError,{siteId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postApiV1SitesSiteIdDiscover>>, TError,{siteId: string}, TContext> => {
+
+const mutationKey = ['postApiV1SitesSiteIdDiscover'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1SitesSiteIdDiscover>>, {siteId: string}> = (props) => {
+          const {siteId} = props ?? {};
+
+          return  postApiV1SitesSiteIdDiscover(siteId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostApiV1SitesSiteIdDiscoverMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1SitesSiteIdDiscover>>>
+    
+    export type PostApiV1SitesSiteIdDiscoverMutationError = ErrorType<void>
+
+    /**
+ * @summary Start URL discovery
+ */
+export const usePostApiV1SitesSiteIdDiscover = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1SitesSiteIdDiscover>>, TError,{siteId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postApiV1SitesSiteIdDiscover>>,
+        TError,
+        {siteId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getPostApiV1SitesSiteIdDiscoverMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
+ * Returns discovered URLs with their categories and selection status.
+ * @summary Get discovery results
+ */
+export const getApiV1SitesSiteIdDiscovery = (
+    siteId: string,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<DiscoveryResult>(
+      {url: `/api/v1/sites/${siteId}/discovery`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+
+
+export const getGetApiV1SitesSiteIdDiscoveryQueryKey = (siteId?: string,) => {
+    return [
+    `/api/v1/sites/${siteId}/discovery`
+    ] as const;
+    }
+
+    
+export const getGetApiV1SitesSiteIdDiscoveryQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscovery>>, TError = ErrorType<void>>(siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscovery>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetApiV1SitesSiteIdDiscoveryQueryKey(siteId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscovery>>> = ({ signal }) => getApiV1SitesSiteIdDiscovery(siteId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(siteId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscovery>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetApiV1SitesSiteIdDiscoveryQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscovery>>>
+export type GetApiV1SitesSiteIdDiscoveryQueryError = ErrorType<void>
+
+
+export function useGetApiV1SitesSiteIdDiscovery<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscovery>>, TError = ErrorType<void>>(
+ siteId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscovery>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscovery>>,
+          TError,
+          Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscovery>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiV1SitesSiteIdDiscovery<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscovery>>, TError = ErrorType<void>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscovery>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscovery>>,
+          TError,
+          Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscovery>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiV1SitesSiteIdDiscovery<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscovery>>, TError = ErrorType<void>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscovery>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get discovery results
+ */
+
+export function useGetApiV1SitesSiteIdDiscovery<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscovery>>, TError = ErrorType<void>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscovery>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetApiV1SitesSiteIdDiscoveryQueryOptions(siteId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * Returns statistics about discovered URLs by category and priority.
+ * @summary Get discovery statistics
+ */
+export const getApiV1SitesSiteIdDiscoveryStats = (
+    siteId: string,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<DiscoveryStats>(
+      {url: `/api/v1/sites/${siteId}/discovery/stats`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+
+
+export const getGetApiV1SitesSiteIdDiscoveryStatsQueryKey = (siteId?: string,) => {
+    return [
+    `/api/v1/sites/${siteId}/discovery/stats`
+    ] as const;
+    }
+
+    
+export const getGetApiV1SitesSiteIdDiscoveryStatsQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscoveryStats>>, TError = ErrorType<void>>(siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscoveryStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetApiV1SitesSiteIdDiscoveryStatsQueryKey(siteId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscoveryStats>>> = ({ signal }) => getApiV1SitesSiteIdDiscoveryStats(siteId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(siteId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscoveryStats>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetApiV1SitesSiteIdDiscoveryStatsQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscoveryStats>>>
+export type GetApiV1SitesSiteIdDiscoveryStatsQueryError = ErrorType<void>
+
+
+export function useGetApiV1SitesSiteIdDiscoveryStats<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscoveryStats>>, TError = ErrorType<void>>(
+ siteId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscoveryStats>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscoveryStats>>,
+          TError,
+          Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscoveryStats>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiV1SitesSiteIdDiscoveryStats<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscoveryStats>>, TError = ErrorType<void>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscoveryStats>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscoveryStats>>,
+          TError,
+          Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscoveryStats>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiV1SitesSiteIdDiscoveryStats<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscoveryStats>>, TError = ErrorType<void>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscoveryStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get discovery statistics
+ */
+
+export function useGetApiV1SitesSiteIdDiscoveryStats<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscoveryStats>>, TError = ErrorType<void>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscoveryStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetApiV1SitesSiteIdDiscoveryStatsQueryOptions(siteId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * Update which URLs should be included in the crawl.
+ * @summary Update URL selections
+ */
+export const putApiV1SitesSiteIdDiscoverySelections = (
+    siteId: string,
+    updateSelectionsRequest: BodyType<UpdateSelectionsRequest>,
+ options?: SecondParameter<typeof customInstance>,) => {
+      
+      
+      return customInstance<SelectionsUpdateResponse>(
+      {url: `/api/v1/sites/${siteId}/discovery/selections`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: updateSelectionsRequest
+    },
+      options);
+    }
+  
+
+
+export const getPutApiV1SitesSiteIdDiscoverySelectionsMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiV1SitesSiteIdDiscoverySelections>>, TError,{siteId: string;data: BodyType<UpdateSelectionsRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof putApiV1SitesSiteIdDiscoverySelections>>, TError,{siteId: string;data: BodyType<UpdateSelectionsRequest>}, TContext> => {
+
+const mutationKey = ['putApiV1SitesSiteIdDiscoverySelections'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putApiV1SitesSiteIdDiscoverySelections>>, {siteId: string;data: BodyType<UpdateSelectionsRequest>}> = (props) => {
+          const {siteId,data} = props ?? {};
+
+          return  putApiV1SitesSiteIdDiscoverySelections(siteId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PutApiV1SitesSiteIdDiscoverySelectionsMutationResult = NonNullable<Awaited<ReturnType<typeof putApiV1SitesSiteIdDiscoverySelections>>>
+    export type PutApiV1SitesSiteIdDiscoverySelectionsMutationBody = BodyType<UpdateSelectionsRequest>
+    export type PutApiV1SitesSiteIdDiscoverySelectionsMutationError = ErrorType<void>
+
+    /**
+ * @summary Update URL selections
+ */
+export const usePutApiV1SitesSiteIdDiscoverySelections = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiV1SitesSiteIdDiscoverySelections>>, TError,{siteId: string;data: BodyType<UpdateSelectionsRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof putApiV1SitesSiteIdDiscoverySelections>>,
+        TError,
+        {siteId: string;data: BodyType<UpdateSelectionsRequest>},
+        TContext
+      > => {
+
+      const mutationOptions = getPutApiV1SitesSiteIdDiscoverySelectionsMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
+ * Select or deselect all URLs matching a category or priority.
+ * @summary Bulk select/deselect URLs
+ */
+export const postApiV1SitesSiteIdDiscoveryBulkSelect = (
+    siteId: string,
+    bulkSelectRequest: BodyType<BulkSelectRequest>,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<SelectionsUpdateResponse>(
+      {url: `/api/v1/sites/${siteId}/discovery/bulk-select`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: bulkSelectRequest, signal
+    },
+      options);
+    }
+  
+
+
+export const getPostApiV1SitesSiteIdDiscoveryBulkSelectMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1SitesSiteIdDiscoveryBulkSelect>>, TError,{siteId: string;data: BodyType<BulkSelectRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postApiV1SitesSiteIdDiscoveryBulkSelect>>, TError,{siteId: string;data: BodyType<BulkSelectRequest>}, TContext> => {
+
+const mutationKey = ['postApiV1SitesSiteIdDiscoveryBulkSelect'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1SitesSiteIdDiscoveryBulkSelect>>, {siteId: string;data: BodyType<BulkSelectRequest>}> = (props) => {
+          const {siteId,data} = props ?? {};
+
+          return  postApiV1SitesSiteIdDiscoveryBulkSelect(siteId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostApiV1SitesSiteIdDiscoveryBulkSelectMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1SitesSiteIdDiscoveryBulkSelect>>>
+    export type PostApiV1SitesSiteIdDiscoveryBulkSelectMutationBody = BodyType<BulkSelectRequest>
+    export type PostApiV1SitesSiteIdDiscoveryBulkSelectMutationError = ErrorType<void>
+
+    /**
+ * @summary Bulk select/deselect URLs
+ */
+export const usePostApiV1SitesSiteIdDiscoveryBulkSelect = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1SitesSiteIdDiscoveryBulkSelect>>, TError,{siteId: string;data: BodyType<BulkSelectRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postApiV1SitesSiteIdDiscoveryBulkSelect>>,
+        TError,
+        {siteId: string;data: BodyType<BulkSelectRequest>},
+        TContext
+      > => {
+
+      const mutationOptions = getPostApiV1SitesSiteIdDiscoveryBulkSelectMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
+ * Add URLs manually that were not found in sitemap or discovery.
+ * @summary Add manual URLs
+ */
+export const postApiV1SitesSiteIdDiscoveryManualUrls = (
+    siteId: string,
+    addManualUrlsRequest: BodyType<AddManualUrlsRequest>,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<PostApiV1SitesSiteIdDiscoveryManualUrls200>(
+      {url: `/api/v1/sites/${siteId}/discovery/manual-urls`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: addManualUrlsRequest, signal
+    },
+      options);
+    }
+  
+
+
+export const getPostApiV1SitesSiteIdDiscoveryManualUrlsMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1SitesSiteIdDiscoveryManualUrls>>, TError,{siteId: string;data: BodyType<AddManualUrlsRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postApiV1SitesSiteIdDiscoveryManualUrls>>, TError,{siteId: string;data: BodyType<AddManualUrlsRequest>}, TContext> => {
+
+const mutationKey = ['postApiV1SitesSiteIdDiscoveryManualUrls'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1SitesSiteIdDiscoveryManualUrls>>, {siteId: string;data: BodyType<AddManualUrlsRequest>}> = (props) => {
+          const {siteId,data} = props ?? {};
+
+          return  postApiV1SitesSiteIdDiscoveryManualUrls(siteId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostApiV1SitesSiteIdDiscoveryManualUrlsMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1SitesSiteIdDiscoveryManualUrls>>>
+    export type PostApiV1SitesSiteIdDiscoveryManualUrlsMutationBody = BodyType<AddManualUrlsRequest>
+    export type PostApiV1SitesSiteIdDiscoveryManualUrlsMutationError = ErrorType<void>
+
+    /**
+ * @summary Add manual URLs
+ */
+export const usePostApiV1SitesSiteIdDiscoveryManualUrls = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1SitesSiteIdDiscoveryManualUrls>>, TError,{siteId: string;data: BodyType<AddManualUrlsRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postApiV1SitesSiteIdDiscoveryManualUrls>>,
+        TError,
+        {siteId: string;data: BodyType<AddManualUrlsRequest>},
+        TContext
+      > => {
+
+      const mutationOptions = getPostApiV1SitesSiteIdDiscoveryManualUrlsMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
+ * Crawl only the selected URLs from discovery.
+ * @summary Start selective crawl
+ */
+export const postApiV1SitesSiteIdCrawlSelective = (
+    siteId: string,
+    selectiveCrawlRequest: BodyType<SelectiveCrawlRequest>,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<PostApiV1SitesSiteIdCrawlSelective200>(
+      {url: `/api/v1/sites/${siteId}/crawl/selective`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: selectiveCrawlRequest, signal
+    },
+      options);
+    }
+  
+
+
+export const getPostApiV1SitesSiteIdCrawlSelectiveMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1SitesSiteIdCrawlSelective>>, TError,{siteId: string;data: BodyType<SelectiveCrawlRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postApiV1SitesSiteIdCrawlSelective>>, TError,{siteId: string;data: BodyType<SelectiveCrawlRequest>}, TContext> => {
+
+const mutationKey = ['postApiV1SitesSiteIdCrawlSelective'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1SitesSiteIdCrawlSelective>>, {siteId: string;data: BodyType<SelectiveCrawlRequest>}> = (props) => {
+          const {siteId,data} = props ?? {};
+
+          return  postApiV1SitesSiteIdCrawlSelective(siteId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostApiV1SitesSiteIdCrawlSelectiveMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1SitesSiteIdCrawlSelective>>>
+    export type PostApiV1SitesSiteIdCrawlSelectiveMutationBody = BodyType<SelectiveCrawlRequest>
+    export type PostApiV1SitesSiteIdCrawlSelectiveMutationError = ErrorType<void>
+
+    /**
+ * @summary Start selective crawl
+ */
+export const usePostApiV1SitesSiteIdCrawlSelective = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1SitesSiteIdCrawlSelective>>, TError,{siteId: string;data: BodyType<SelectiveCrawlRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postApiV1SitesSiteIdCrawlSelective>>,
+        TError,
+        {siteId: string;data: BodyType<SelectiveCrawlRequest>},
+        TContext
+      > => {
+
+      const mutationOptions = getPostApiV1SitesSiteIdCrawlSelectiveMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }

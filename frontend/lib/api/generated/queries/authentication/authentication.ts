@@ -22,13 +22,18 @@ import type {
 import type {
   AuthMessageResponse,
   AuthTokensResponse,
+  CurrentUserResponse,
   GetApiV1AuthGithubCallbackParams,
   GetApiV1AuthGoogleCallbackParams,
   LoginRequest,
   LogoutRequest,
   PostApiV1AuthRefresh200,
   RefreshTokenRequest,
-  RegisterRequest
+  RegisterRequest,
+  RequestPasswordResetRequest,
+  ResendVerificationRequest,
+  ResetPasswordRequest,
+  VerifyEmailRequest
 } from '../../models';
 
 import { customInstance } from '../../../axios-instance';
@@ -662,6 +667,354 @@ export const usePostApiV1AuthLogout = <TError = ErrorType<unknown>,
       > => {
 
       const mutationOptions = getPostApiV1AuthLogoutMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
+ * @summary Get current user profile
+ */
+export const getApiV1AuthMe = (
+    
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<CurrentUserResponse>(
+      {url: `/api/v1/auth/me`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+
+
+export const getGetApiV1AuthMeQueryKey = () => {
+    return [
+    `/api/v1/auth/me`
+    ] as const;
+    }
+
+    
+export const getGetApiV1AuthMeQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AuthMe>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AuthMe>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AuthMeQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AuthMe>>> = ({ signal }) => getApiV1AuthMe(requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AuthMe>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetApiV1AuthMeQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AuthMe>>>
+export type GetApiV1AuthMeQueryError = ErrorType<void>
+
+
+export function useGetApiV1AuthMe<TData = Awaited<ReturnType<typeof getApiV1AuthMe>>, TError = ErrorType<void>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AuthMe>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiV1AuthMe>>,
+          TError,
+          Awaited<ReturnType<typeof getApiV1AuthMe>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiV1AuthMe<TData = Awaited<ReturnType<typeof getApiV1AuthMe>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AuthMe>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiV1AuthMe>>,
+          TError,
+          Awaited<ReturnType<typeof getApiV1AuthMe>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiV1AuthMe<TData = Awaited<ReturnType<typeof getApiV1AuthMe>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AuthMe>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get current user profile
+ */
+
+export function useGetApiV1AuthMe<TData = Awaited<ReturnType<typeof getApiV1AuthMe>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AuthMe>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetApiV1AuthMeQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Request password reset email
+ */
+export const postApiV1AuthForgotPassword = (
+    requestPasswordResetRequest: BodyType<RequestPasswordResetRequest>,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<AuthMessageResponse>(
+      {url: `/api/v1/auth/forgot-password`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: requestPasswordResetRequest, signal
+    },
+      options);
+    }
+  
+
+
+export const getPostApiV1AuthForgotPasswordMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AuthForgotPassword>>, TError,{data: BodyType<RequestPasswordResetRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postApiV1AuthForgotPassword>>, TError,{data: BodyType<RequestPasswordResetRequest>}, TContext> => {
+
+const mutationKey = ['postApiV1AuthForgotPassword'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1AuthForgotPassword>>, {data: BodyType<RequestPasswordResetRequest>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  postApiV1AuthForgotPassword(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostApiV1AuthForgotPasswordMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1AuthForgotPassword>>>
+    export type PostApiV1AuthForgotPasswordMutationBody = BodyType<RequestPasswordResetRequest>
+    export type PostApiV1AuthForgotPasswordMutationError = ErrorType<void>
+
+    /**
+ * @summary Request password reset email
+ */
+export const usePostApiV1AuthForgotPassword = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AuthForgotPassword>>, TError,{data: BodyType<RequestPasswordResetRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postApiV1AuthForgotPassword>>,
+        TError,
+        {data: BodyType<RequestPasswordResetRequest>},
+        TContext
+      > => {
+
+      const mutationOptions = getPostApiV1AuthForgotPasswordMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
+ * @summary Reset password with token
+ */
+export const postApiV1AuthResetPassword = (
+    resetPasswordRequest: BodyType<ResetPasswordRequest>,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<AuthMessageResponse>(
+      {url: `/api/v1/auth/reset-password`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: resetPasswordRequest, signal
+    },
+      options);
+    }
+  
+
+
+export const getPostApiV1AuthResetPasswordMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AuthResetPassword>>, TError,{data: BodyType<ResetPasswordRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postApiV1AuthResetPassword>>, TError,{data: BodyType<ResetPasswordRequest>}, TContext> => {
+
+const mutationKey = ['postApiV1AuthResetPassword'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1AuthResetPassword>>, {data: BodyType<ResetPasswordRequest>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  postApiV1AuthResetPassword(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostApiV1AuthResetPasswordMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1AuthResetPassword>>>
+    export type PostApiV1AuthResetPasswordMutationBody = BodyType<ResetPasswordRequest>
+    export type PostApiV1AuthResetPasswordMutationError = ErrorType<void>
+
+    /**
+ * @summary Reset password with token
+ */
+export const usePostApiV1AuthResetPassword = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AuthResetPassword>>, TError,{data: BodyType<ResetPasswordRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postApiV1AuthResetPassword>>,
+        TError,
+        {data: BodyType<ResetPasswordRequest>},
+        TContext
+      > => {
+
+      const mutationOptions = getPostApiV1AuthResetPasswordMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
+ * @summary Verify email with token
+ */
+export const postApiV1AuthVerifyEmail = (
+    verifyEmailRequest: BodyType<VerifyEmailRequest>,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<AuthMessageResponse>(
+      {url: `/api/v1/auth/verify-email`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: verifyEmailRequest, signal
+    },
+      options);
+    }
+  
+
+
+export const getPostApiV1AuthVerifyEmailMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AuthVerifyEmail>>, TError,{data: BodyType<VerifyEmailRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postApiV1AuthVerifyEmail>>, TError,{data: BodyType<VerifyEmailRequest>}, TContext> => {
+
+const mutationKey = ['postApiV1AuthVerifyEmail'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1AuthVerifyEmail>>, {data: BodyType<VerifyEmailRequest>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  postApiV1AuthVerifyEmail(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostApiV1AuthVerifyEmailMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1AuthVerifyEmail>>>
+    export type PostApiV1AuthVerifyEmailMutationBody = BodyType<VerifyEmailRequest>
+    export type PostApiV1AuthVerifyEmailMutationError = ErrorType<void>
+
+    /**
+ * @summary Verify email with token
+ */
+export const usePostApiV1AuthVerifyEmail = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AuthVerifyEmail>>, TError,{data: BodyType<VerifyEmailRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postApiV1AuthVerifyEmail>>,
+        TError,
+        {data: BodyType<VerifyEmailRequest>},
+        TContext
+      > => {
+
+      const mutationOptions = getPostApiV1AuthVerifyEmailMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
+ * @summary Resend verification email
+ */
+export const postApiV1AuthResendVerification = (
+    resendVerificationRequest: BodyType<ResendVerificationRequest>,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<AuthMessageResponse>(
+      {url: `/api/v1/auth/resend-verification`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: resendVerificationRequest, signal
+    },
+      options);
+    }
+  
+
+
+export const getPostApiV1AuthResendVerificationMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AuthResendVerification>>, TError,{data: BodyType<ResendVerificationRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postApiV1AuthResendVerification>>, TError,{data: BodyType<ResendVerificationRequest>}, TContext> => {
+
+const mutationKey = ['postApiV1AuthResendVerification'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1AuthResendVerification>>, {data: BodyType<ResendVerificationRequest>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  postApiV1AuthResendVerification(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostApiV1AuthResendVerificationMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1AuthResendVerification>>>
+    export type PostApiV1AuthResendVerificationMutationBody = BodyType<ResendVerificationRequest>
+    export type PostApiV1AuthResendVerificationMutationError = ErrorType<void>
+
+    /**
+ * @summary Resend verification email
+ */
+export const usePostApiV1AuthResendVerification = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AuthResendVerification>>, TError,{data: BodyType<ResendVerificationRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postApiV1AuthResendVerification>>,
+        TError,
+        {data: BodyType<ResendVerificationRequest>},
+        TContext
+      > => {
+
+      const mutationOptions = getPostApiV1AuthResendVerificationMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }

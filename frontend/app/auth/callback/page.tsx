@@ -29,6 +29,7 @@ function AuthCallbackContent() {
           fullName: payload.fullName || payload.email.split('@')[0],
           authProvider: payload.authProvider || 'EMAIL',
           isAdmin: payload.isAdmin || false,
+          emailVerified: payload.emailVerified || false,
         };
 
         login(user, {

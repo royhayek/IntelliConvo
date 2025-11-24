@@ -10,6 +10,7 @@ import {
 } from './errors';
 import { getConfig } from '../config';
 import { tokenBlacklist } from '../services/tokenBlacklist';
+import { settings } from '../lib/settings';
 
 interface JWTPayload {
   userId: string;
@@ -26,6 +27,7 @@ declare module 'express-serve-static-core' {
       email: string;
       fullName?: string | null;
       isAdmin?: boolean;
+      emailVerified?: boolean;
     };
   }
 }
@@ -83,6 +85,7 @@ export const authenticate = async (
         email: true,
         fullName: true,
         isAdmin: true,
+        emailVerified: true,
         forceLogoutAt: true,
       },
     });
@@ -105,6 +108,7 @@ export const authenticate = async (
       email: user.email,
       fullName: user.fullName,
       isAdmin: user.isAdmin,
+      emailVerified: user.emailVerified,
     };
 
     next();
@@ -173,23 +177,30 @@ export const optionalAuth = async (
 
 /**
  * Generate JWT access and refresh tokens
+ * Uses database settings for expiration times with env var fallback
  */
-export const generateTokens = (
+export const generateTokens = async (
   userId: string,
   email: string
-): { accessToken: string; refreshToken: string } => {
+): Promise<{ accessToken: string; refreshToken: string }> => {
   const config = getConfig();
+
+  // Get expiration settings from database (with fallback to config)
+  const [sessionTimeoutDays, refreshTokenDays] = await Promise.all([
+    settings.getSessionTimeoutDays(),
+    settings.getRefreshTokenDays(),
+  ]);
 
   const accessToken = jwt.sign(
     { userId, email },
     config.JWT_SECRET,
-    { expiresIn: config.JWT_EXPIRES_IN as jwt.SignOptions['expiresIn'] }
+    { expiresIn: `${sessionTimeoutDays}d` }
   );
 
   const refreshToken = jwt.sign(
     { userId, email },
     config.JWT_SECRET,
-    { expiresIn: config.JWT_REFRESH_EXPIRES_IN as jwt.SignOptions['expiresIn'] }
+    { expiresIn: `${refreshTokenDays}d` }
   );
 
   return { accessToken, refreshToken };

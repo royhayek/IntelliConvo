@@ -15,9 +15,13 @@ import {
   CreateSubscriptionResponse,
   SubscriptionPlanDTO,
   CustomerPortalResponse,
+  ChangePlanRequest,
+  ChangePlanResponse,
+  ProrationPreviewDTO,
 } from '../../dto/subscription.dto';
 import { queueEmbeddingGeneration } from '../../queues';
 import { cacheService, CacheNamespace, CacheTTL } from '../cache';
+import { settings } from '../../lib/settings';
 
 // Plan features mapping - kept locally since Stripe doesn't store rich feature lists
 const PLAN_FEATURES: Record<string, string[]> = {
@@ -60,11 +64,18 @@ export class SubscriptionService {
   /**
    * Get all subscriptions for a user
    * @param userId - User ID
+   * @param siteId - Optional site ID to filter by specific site
    * @returns List of subscriptions with site information
    */
-  async getUserSubscriptions(userId: string): Promise<SubscriptionListResponse> {
+  async getUserSubscriptions(userId: string, siteId?: string): Promise<SubscriptionListResponse> {
+    const where: { userId: string; siteId?: string } = { userId };
+
+    if (siteId) {
+      where.siteId = siteId;
+    }
+
     const subscriptions = await prisma.subscription.findMany({
-      where: { userId },
+      where,
       include: {
         site: {
           select: {
@@ -87,6 +98,7 @@ export class SubscriptionService {
       currentPeriodStart: sub.currentPeriodStart.toISOString(),
       currentPeriodEnd: sub.currentPeriodEnd.toISOString(),
       cancelledAt: sub.cancelledAt?.toISOString() || null,
+      cancelAtPeriodEnd: sub.cancelAtPeriodEnd,
       createdAt: sub.createdAt.toISOString(),
       updatedAt: sub.updatedAt.toISOString(),
       site: sub.site,
@@ -105,7 +117,7 @@ export class SubscriptionService {
     userId: string,
     data: CreateSubscriptionRequest
   ): Promise<CreateSubscriptionResponse> {
-    const { siteId, planType, paymentMethodId } = data;
+    const { siteId, planType, paymentMethodId, returnUrl } = data;
 
     // Verify user owns the site
     const site = await prisma.site.findFirst({
@@ -119,21 +131,31 @@ export class SubscriptionService {
       throw new NotFoundError('Site', siteId);
     }
 
-    // Check if subscription already exists
+    // Check if an ACTIVE or TRIAL subscription already exists
+    // Allow creating new subscription if existing one is CANCELLED or EXPIRED
     const existingSubscription = await prisma.subscription.findUnique({
       where: { siteId },
     });
 
-    if (existingSubscription) {
+    if (existingSubscription && ['ACTIVE', 'TRIAL'].includes(existingSubscription.status)) {
       throw new AlreadyExistsError('Subscription', 'site');
     }
 
+    // Note: We do NOT delete cancelled/expired subscriptions here.
+    // The old subscription will be replaced in the webhook handler after payment is confirmed.
+    // This prevents data loss if the user abandons the checkout.
+    if (existingSubscription && ['CANCELLED', 'EXPIRED'].includes(existingSubscription.status)) {
+      logger.info(`Site ${siteId} has ${existingSubscription.status} subscription - will be replaced after successful payment`);
+    }
+
     // Create subscription via Stripe (uses test or live mode based on API key)
-    return this.createStripeSubscription(userId, siteId, planType);
+    return this.createStripeSubscription(userId, siteId, planType, returnUrl);
   }
 
   /**
-   * Cancel a subscription
+   * Cancel a subscription (schedules cancellation at period end)
+   * The subscription remains active until the current billing period ends.
+   * Use reactivateSubscription() to undo this before the period ends.
    * @param subscriptionId - Subscription ID
    * @param userId - User ID (for authorization)
    * @returns Updated subscription
@@ -157,19 +179,70 @@ export class SubscriptionService {
         await stripe.subscriptions.update(subscription.stripeSubscriptionId, {
           cancel_at_period_end: true,
         });
-        logger.info(`Cancelled Stripe subscription: ${subscription.stripeSubscriptionId}`);
+        logger.info(`Scheduled Stripe subscription for cancellation: ${subscription.stripeSubscriptionId}`);
       } catch (error) {
         logger.error('Failed to cancel Stripe subscription:', error);
-        // Continue with database update even if Stripe fails
+        throw new InternalError('Failed to cancel subscription with payment provider');
       }
     }
 
-    // Update subscription status
+    // Update subscription - mark as pending cancellation but keep status as-is
+    // The status will change to CANCELLED when Stripe sends customer.subscription.deleted webhook
     const updatedSubscription = await prisma.subscription.update({
       where: { id: subscriptionId },
       data: {
-        status: 'CANCELLED',
-        cancelledAt: new Date(),
+        cancelAtPeriodEnd: true,
+        // Don't set status to CANCELLED yet - subscription is still active until period ends
+      },
+    });
+
+    return this.mapSubscriptionToDTO(updatedSubscription);
+  }
+
+  /**
+   * Reactivate a subscription that was scheduled for cancellation
+   * Only works if cancelAtPeriodEnd is true and subscription hasn't been deleted yet
+   * @param subscriptionId - Subscription ID
+   * @param userId - User ID (for authorization)
+   * @returns Updated subscription
+   */
+  async reactivateSubscription(
+    subscriptionId: string,
+    userId: string
+  ): Promise<SubscriptionDTO> {
+    // Get subscription
+    const subscription = await prisma.subscription.findUnique({
+      where: { id: subscriptionId },
+    });
+
+    if (!subscription || subscription.userId !== userId) {
+      throw new NotFoundError('Subscription', subscriptionId);
+    }
+
+    // Can only reactivate if pending cancellation
+    if (!subscription.cancelAtPeriodEnd) {
+      throw new ValidationError('Subscription is not scheduled for cancellation');
+    }
+
+    // Reactivate in Stripe if we have a valid Stripe subscription ID
+    if (subscription.stripeSubscriptionId) {
+      try {
+        await stripe.subscriptions.update(subscription.stripeSubscriptionId, {
+          cancel_at_period_end: false,
+        });
+        logger.info(`Reactivated Stripe subscription: ${subscription.stripeSubscriptionId}`);
+      } catch (error) {
+        logger.error('Failed to reactivate Stripe subscription:', error);
+        throw new InternalError('Failed to reactivate subscription with payment provider');
+      }
+    }
+
+    // Update subscription - clear the pending cancellation
+    const updatedSubscription = await prisma.subscription.update({
+      where: { id: subscriptionId },
+      data: {
+        cancelAtPeriodEnd: false,
+        cancelledAt: null,
       },
     });
 
@@ -214,11 +287,15 @@ export class SubscriptionService {
 
     try {
       // Fetch prices with their associated products
-      const prices = await Promise.all(
-        priceIds.map((priceId) =>
-          stripe.prices.retrieve(priceId, { expand: ['product'] })
-        )
-      );
+      const [prices, currency, trialDays] = await Promise.all([
+        Promise.all(
+          priceIds.map((priceId) =>
+            stripe.prices.retrieve(priceId, { expand: ['product'] })
+          )
+        ),
+        settings.getCurrency(),
+        settings.getTrialDays(),
+      ]);
 
       const plans: SubscriptionPlanDTO[] = prices
         .filter((price) => price.active)
@@ -233,8 +310,10 @@ export class SubscriptionService {
             name: product.name,
             description: product.description || this.getDefaultDescription(planType),
             price: (price.unit_amount || 0) / 100, // Convert cents to dollars
+            currency: price.currency?.toUpperCase() || currency,
             interval,
             features: PLAN_FEATURES[planType] || [],
+            trialDays: trialDays > 0 ? trialDays : undefined,
           };
         });
 
@@ -273,6 +352,7 @@ export class SubscriptionService {
   /**
    * Fallback plans if Stripe fetch fails
    * Ensures the API never fails completely
+   * Note: This is sync, so we use defaults for currency/trial. Real values come from Stripe.
    */
   private getFallbackPlans(): SubscriptionPlanDTO[] {
     return [
@@ -281,6 +361,7 @@ export class SubscriptionService {
         name: 'Premium Monthly',
         description: 'Full access to all features, billed monthly',
         price: 29,
+        currency: 'USD',
         interval: 'monthly',
         features: PLAN_FEATURES['PREMIUM_MONTHLY'],
       },
@@ -289,6 +370,7 @@ export class SubscriptionService {
         name: 'Premium Annual',
         description: 'Full access to all features, billed annually (save 20%)',
         price: 279,
+        currency: 'USD',
         interval: 'annual',
         features: PLAN_FEATURES['PREMIUM_ANNUAL'],
       },
@@ -332,18 +414,246 @@ export class SubscriptionService {
       throw new ValidationError('No billing information found');
     }
 
-    // Create portal session
+    // Create portal session with siteId in return URL to preserve context
     const session = await stripe.billingPortal.sessions.create({
       customer: user.billingInfo.stripeCustomerId,
-      return_url: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/account/subscriptions`,
+      return_url: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/account/subscriptions?siteId=${subscription.siteId}`,
     });
 
     return { url: session.url };
   }
 
+  /**
+   * Change subscription plan (upgrade or downgrade)
+   * Uses Stripe's proration to handle billing adjustments
+   * @param subscriptionId - Subscription ID
+   * @param userId - User ID (for authorization)
+   * @param data - New plan type
+   * @returns Updated subscription with proration details
+   */
+  async changePlan(
+    subscriptionId: string,
+    userId: string,
+    data: ChangePlanRequest
+  ): Promise<ChangePlanResponse> {
+    const { newPlanType } = data;
+
+    // Get subscription with user verification
+    const subscription = await prisma.subscription.findUnique({
+      where: { id: subscriptionId },
+    });
+
+    if (!subscription || subscription.userId !== userId) {
+      throw new NotFoundError('Subscription', subscriptionId);
+    }
+
+    // Validate subscription is in a changeable state
+    if (!['ACTIVE', 'TRIAL'].includes(subscription.status)) {
+      throw new ValidationError(`Cannot change plan for subscription with status: ${subscription.status}`);
+    }
+
+    // Check if already on the requested plan
+    if (subscription.planType === newPlanType) {
+      throw new ValidationError(`Already subscribed to ${newPlanType}`);
+    }
+
+    // Ensure we have a Stripe subscription ID
+    if (!subscription.stripeSubscriptionId) {
+      throw new ValidationError('Subscription is not linked to a payment provider');
+    }
+
+    // Get the new price ID
+    const newPriceId = newPlanType === 'PREMIUM_MONTHLY'
+      ? process.env.STRIPE_PRICE_MONTHLY
+      : process.env.STRIPE_PRICE_ANNUAL;
+
+    if (!newPriceId) {
+      throw new InternalError('Stripe price ID not configured for the requested plan');
+    }
+
+    try {
+      // Retrieve the current Stripe subscription to get the item ID
+      const stripeSubscription = await stripe.subscriptions.retrieve(subscription.stripeSubscriptionId);
+
+      if (!stripeSubscription.items.data.length) {
+        throw new InternalError('No subscription items found in Stripe');
+      }
+
+      const subscriptionItemId = stripeSubscription.items.data[0].id;
+      const currentPriceId = stripeSubscription.items.data[0].price.id;
+
+      // Update the subscription in Stripe WITHOUT proration
+      // The plan change takes effect at the end of the current billing period
+      const updatedStripeSubscription = await stripe.subscriptions.update(
+        subscription.stripeSubscriptionId,
+        {
+          items: [{
+            id: subscriptionItemId,
+            price: newPriceId,
+          }],
+          proration_behavior: 'none', // No immediate charge/credit - change takes effect at period end
+        }
+      );
+
+      logger.info(`Scheduled plan change for Stripe subscription ${subscription.stripeSubscriptionId} from ${subscription.planType} to ${newPlanType} (effective at period end)`);
+
+      // Get prices for response details
+      const [currentPrice, newPrice] = await Promise.all([
+        stripe.prices.retrieve(currentPriceId, { expand: ['product'] }),
+        stripe.prices.retrieve(newPriceId, { expand: ['product'] }),
+      ]);
+
+      // Update local database - note: planType changes but takes effect at period end
+      const updatedSubscription = await prisma.subscription.update({
+        where: { id: subscriptionId },
+        data: {
+          planType: newPlanType as 'PREMIUM_MONTHLY' | 'PREMIUM_ANNUAL',
+          stripePriceId: newPriceId,
+          currentPeriodStart: new Date(updatedStripeSubscription.current_period_start * 1000),
+          currentPeriodEnd: new Date(updatedStripeSubscription.current_period_end * 1000),
+        },
+      });
+
+      const currency = (currentPrice.currency || 'usd').toUpperCase();
+
+      // Build response - no proration since change is at period end
+      const proration: ProrationPreviewDTO = {
+        currentPlan: {
+          id: subscription.planType,
+          name: this.getPlanName(subscription.planType),
+          price: (currentPrice.unit_amount || 0) / 100,
+        },
+        newPlan: {
+          id: newPlanType,
+          name: this.getPlanName(newPlanType),
+          price: (newPrice.unit_amount || 0) / 100,
+        },
+        prorationAmount: 0, // No proration - change at period end
+        creditAmount: 0, // No credit - current plan runs to completion
+        amountDue: 0, // No immediate charge
+        currency,
+        effectiveDate: new Date(updatedStripeSubscription.current_period_end * 1000).toISOString(), // Change takes effect at period end
+        billingCycleAnchor: new Date(updatedStripeSubscription.current_period_end * 1000).toISOString(),
+      };
+
+      return {
+        subscription: this.mapSubscriptionToDTO(updatedSubscription),
+        proration,
+      };
+    } catch (error: any) {
+      if (error instanceof ValidationError || error instanceof NotFoundError) {
+        throw error;
+      }
+      logger.error('Failed to change subscription plan:', error);
+      throw new InternalError(`Failed to change subscription plan: ${error.message}`);
+    }
+  }
+
+  /**
+   * Get proration preview for a potential plan change
+   * @param subscriptionId - Subscription ID
+   * @param userId - User ID (for authorization)
+   * @param newPlanType - Plan type to preview
+   * @returns Proration preview details
+   */
+  async getProrationPreview(
+    subscriptionId: string,
+    userId: string,
+    newPlanType: string
+  ): Promise<ProrationPreviewDTO> {
+    // Get subscription with user verification
+    const subscription = await prisma.subscription.findUnique({
+      where: { id: subscriptionId },
+    });
+
+    if (!subscription || subscription.userId !== userId) {
+      throw new NotFoundError('Subscription', subscriptionId);
+    }
+
+    // Validate subscription is in a changeable state
+    if (!['ACTIVE', 'TRIAL'].includes(subscription.status)) {
+      throw new ValidationError(`Cannot preview plan change for subscription with status: ${subscription.status}`);
+    }
+
+    // Check if already on the requested plan
+    if (subscription.planType === newPlanType) {
+      throw new ValidationError(`Already subscribed to ${newPlanType}`);
+    }
+
+    // Ensure we have a Stripe subscription ID
+    if (!subscription.stripeSubscriptionId) {
+      throw new ValidationError('Subscription is not linked to a payment provider');
+    }
+
+    // Get the new price ID
+    const newPriceId = newPlanType === 'PREMIUM_MONTHLY'
+      ? process.env.STRIPE_PRICE_MONTHLY
+      : process.env.STRIPE_PRICE_ANNUAL;
+
+    if (!newPriceId) {
+      throw new InternalError('Stripe price ID not configured for the requested plan');
+    }
+
+    try {
+      // Retrieve the current Stripe subscription
+      const stripeSubscription = await stripe.subscriptions.retrieve(subscription.stripeSubscriptionId);
+
+      if (!stripeSubscription.items.data.length) {
+        throw new InternalError('No subscription items found in Stripe');
+      }
+
+      const currentPriceId = stripeSubscription.items.data[0].price.id;
+
+      // Get prices for plan details
+      const [currentPrice, newPrice] = await Promise.all([
+        stripe.prices.retrieve(currentPriceId, { expand: ['product'] }),
+        stripe.prices.retrieve(newPriceId, { expand: ['product'] }),
+      ]);
+
+      const currency = (currentPrice.currency || 'usd').toUpperCase();
+
+      // No proration - plan change takes effect at period end
+      return {
+        currentPlan: {
+          id: subscription.planType,
+          name: this.getPlanName(subscription.planType),
+          price: (currentPrice.unit_amount || 0) / 100,
+        },
+        newPlan: {
+          id: newPlanType,
+          name: this.getPlanName(newPlanType),
+          price: (newPrice.unit_amount || 0) / 100,
+        },
+        prorationAmount: 0, // No proration
+        creditAmount: 0, // No credit - current plan runs to completion
+        amountDue: 0, // No immediate charge
+        currency,
+        effectiveDate: new Date(stripeSubscription.current_period_end * 1000).toISOString(), // Change at period end
+        billingCycleAnchor: new Date(stripeSubscription.current_period_end * 1000).toISOString(),
+      };
+    } catch (error: any) {
+      if (error instanceof ValidationError || error instanceof NotFoundError) {
+        throw error;
+      }
+      logger.error('Failed to get proration preview:', error);
+      throw new InternalError(`Failed to get proration preview: ${error.message}`);
+    }
+  }
+
   // ============================================
   // Private Helper Methods
   // ============================================
+
+  /**
+   * Get human-readable plan name
+   */
+  private getPlanName(planType: string): string {
+    const names: Record<string, string> = {
+      PREMIUM_MONTHLY: 'Premium Monthly',
+      PREMIUM_ANNUAL: 'Premium Annual',
+    };
+    return names[planType] || planType;
+  }
 
   /**
    * Create a Stripe Checkout Session for subscription
@@ -352,7 +662,8 @@ export class SubscriptionService {
   private async createStripeSubscription(
     userId: string,
     siteId: string,
-    planType: string
+    planType: string,
+    returnUrl?: string
   ): Promise<CreateSubscriptionResponse> {
 
     // Get or create Stripe customer
@@ -370,6 +681,31 @@ export class SubscriptionService {
 
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
 
+    // Get trial days from settings
+    const trialDays = await settings.getTrialDays();
+
+    // Build success and cancel URLs
+    // If returnUrl is provided, use it; otherwise default to onboarding flow
+    let successUrl: string;
+    let cancelUrl: string;
+
+    if (returnUrl) {
+      // returnUrl can be a path like "/account/subscriptions" or full URL
+      const baseReturnUrl = returnUrl.startsWith('http') ? returnUrl : `${frontendUrl}${returnUrl}`;
+      // Preserve siteId in query params
+      const separator = baseReturnUrl.includes('?') ? '&' : '?';
+      successUrl = `${baseReturnUrl}${separator}siteId=${siteId}&success=true&session_id={CHECKOUT_SESSION_ID}`;
+      cancelUrl = `${baseReturnUrl}${separator}siteId=${siteId}&canceled=true`;
+    } else {
+      // Default to onboarding flow for new site creation
+      successUrl = `${frontendUrl}/onboarding?step=complete&siteId=${siteId}&session_id={CHECKOUT_SESSION_ID}`;
+      cancelUrl = `${frontendUrl}/onboarding?step=plan&siteId=${siteId}&canceled=true`;
+    }
+
+    // Determine if this is a re-subscription (existing site subscribing again)
+    // vs a new subscription from onboarding flow
+    const isResubscription = !!returnUrl;
+
     // Create Stripe Checkout Session
     const session = await stripe.checkout.sessions.create({
       customer: customer.id,
@@ -381,14 +717,16 @@ export class SubscriptionService {
           quantity: 1,
         },
       ],
-      success_url: `${frontendUrl}/onboarding?step=complete&siteId=${siteId}&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${frontendUrl}/onboarding?step=plan&siteId=${siteId}&canceled=true`,
+      success_url: successUrl,
+      cancel_url: cancelUrl,
       metadata: {
         userId,
         siteId,
         planType,
+        isResubscription: isResubscription ? 'true' : 'false',
       },
       subscription_data: {
+        trial_period_days: trialDays > 0 ? trialDays : undefined,
         metadata: {
           userId,
           siteId,
@@ -470,6 +808,7 @@ export class SubscriptionService {
       currentPeriodStart: subscription.currentPeriodStart.toISOString(),
       currentPeriodEnd: subscription.currentPeriodEnd.toISOString(),
       cancelledAt: subscription.cancelledAt?.toISOString() || null,
+      cancelAtPeriodEnd: subscription.cancelAtPeriodEnd || false,
       createdAt: subscription.createdAt.toISOString(),
       updatedAt: subscription.updatedAt.toISOString(),
     };

@@ -9,12 +9,17 @@ import { LoadingCard } from "@/components/ui/loading-card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { FileUploadArea } from "@/components/ui/file-upload-area";
 import { KnowledgeFileItem } from "@/components/site/knowledge-file-item";
+import {
+  Dialog,
+  DialogContent,
+} from "@/components/ui/dialog";
 import { toast } from "sonner";
 import {
   useGetApiV1SitesSiteIdFiles,
   usePostApiV1SitesSiteIdFiles,
   useDeleteApiV1SitesSiteIdFilesFileId,
   usePostApiV1SitesSiteIdFilesFileIdReprocess,
+  useGetApiV1SitesSiteIdFilesFileId,
   getGetApiV1SitesSiteIdFilesQueryKey,
 } from "@/lib/api/generated/queries/files/files";
 import { type SiteResponse } from "@/lib/api/generated/models";
@@ -26,8 +31,15 @@ interface KnowledgeTabProps {
 export function KnowledgeTab({ site }: KnowledgeTabProps) {
   const queryClient = useQueryClient();
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [selectedFileId, setSelectedFileId] = useState<string | null>(null);
 
   const { data: filesData, isLoading: isLoadingFiles } = useGetApiV1SitesSiteIdFiles(site.id);
+
+  // Query for fetching single file with content
+  const { data: selectedFileData, isLoading: isLoadingContent } =
+    useGetApiV1SitesSiteIdFilesFileId(site.id, selectedFileId || "", {
+      query: { enabled: !!selectedFileId },
+    });
   const files = filesData?.files;
 
   const uploadMutation = usePostApiV1SitesSiteIdFiles({
@@ -144,6 +156,11 @@ export function KnowledgeTab({ site }: KnowledgeTabProps) {
                   fileSize={Number(file.fileSize) || 0}
                   fileType={file.fileType || "Unknown"}
                   embeddingStatus={(file.embeddingStatus as any) ?? "PENDING"}
+                  onPreview={
+                    file.id
+                      ? () => setSelectedFileId(file.id!)
+                      : undefined
+                  }
                   onRetry={
                     file.id
                       ? () => reprocessMutation.mutate({ siteId: site.id, fileId: file.id! })
@@ -183,6 +200,72 @@ export function KnowledgeTab({ site }: KnowledgeTabProps) {
           </CardContent>
         </Card>
       )}
+
+      {/* File Preview Dialog */}
+      <Dialog
+        open={!!selectedFileId}
+        onOpenChange={(open) => !open && setSelectedFileId(null)}
+      >
+        <DialogContent className="max-w-4xl max-h-[90vh] min-h-[600px] flex flex-col p-0">
+          <div className="p-6 border-b dark:border-gray-600">
+            <div className="flex items-center gap-4">
+              <div className="h-10 w-10 bg-gray-100 dark:bg-slate-700 rounded-lg flex items-center justify-center flex-shrink-0">
+                <FileText className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-lg font-semibold truncate text-gray-900 dark:text-white">
+                  {selectedFileData?.fileName || selectedFileData?.originalName || "Loading..."}
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  {selectedFileData?.fileType || ""}
+                  {selectedFileData?.fileSize && ` • ${formatFileSize(Number(selectedFileData.fileSize))}`}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex-1 overflow-hidden flex flex-col min-h-0">
+            {/* Info Header */}
+            <div className="flex justify-between px-6 py-3 border-b dark:border-gray-600 bg-gray-50 dark:bg-slate-800/50">
+              <div className="text-sm text-gray-500 dark:text-gray-400">
+                {(selectedFileData as any)?.content?.length?.toLocaleString() || 0} characters
+                {(selectedFileData as any)?.chunks !== undefined && ` | ${(selectedFileData as any).chunks} chunks`}
+              </div>
+            </div>
+
+            {/* Content Body */}
+            <div className="flex-1 overflow-hidden flex flex-col min-h-0">
+              {isLoadingContent ? (
+                <div className="flex items-center justify-center h-full p-6">
+                  <Loader2 className="h-6 w-6 animate-spin text-indigo-600" />
+                </div>
+              ) : !(selectedFileData as any)?.content ? (
+                <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400 p-6">
+                  <p>
+                    No content available. This file may not have been processed yet.
+                  </p>
+                </div>
+              ) : (
+                <div className="flex-1 flex flex-col p-6 overflow-hidden">
+                  <div className="flex-1 bg-gray-50 dark:bg-slate-700 rounded-lg p-4 overflow-auto">
+                    <pre className="whitespace-pre-wrap font-sans text-sm text-gray-700 dark:text-gray-300">
+                      {(selectedFileData as any).content}
+                    </pre>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
+}
+
+function formatFileSize(bytes: number) {
+  if (bytes === 0) return "0 Bytes";
+  const k = 1024;
+  const sizes = ["Bytes", "KB", "MB", "GB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
 }

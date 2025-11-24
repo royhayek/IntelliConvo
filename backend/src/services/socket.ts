@@ -110,6 +110,24 @@ export function initializeSocketIO(io: Server): void {
       try {
         const { sessionId, siteId, content } = data;
 
+        // Check trial limits
+        const { checkTrialStatus } = await import('../config/planLimits');
+        const trialStatus = await checkTrialStatus(siteId);
+
+        if (trialStatus.isInTrial && trialStatus.trialExpired) {
+          socket.emit('trial-expired', {
+            reason: trialStatus.reason,
+            daysRemaining: trialStatus.daysRemaining,
+            conversationsRemaining: trialStatus.conversationsRemaining,
+            messagesRemaining: trialStatus.messagesRemaining,
+          });
+          socket.emit('error', {
+            message: 'Your free trial has ended. Please upgrade to continue using this assistant.',
+            code: 'TRIAL_EXPIRED',
+          });
+          return;
+        }
+
         // Find or create conversation
         let conversation = await prisma.conversation.findFirst({
           where: { sessionId, siteId },

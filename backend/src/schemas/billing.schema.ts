@@ -223,13 +223,25 @@ registry.registerPath({
   },
 });
 
+// Billing summary query schema
+export const billingSummaryQuerySchema = z.object({
+  siteId: z.string().uuid('Invalid site ID format').optional().openapi({
+    description: 'Filter by site ID',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  }),
+});
+
 // GET /api/v1/billing/summary
 registry.registerPath({
   method: 'get',
   path: '/api/v1/billing/summary',
   summary: 'Get billing summary',
+  description: 'Retrieve billing summary, optionally filtered by site',
   tags: ['Billing'],
   security: [{ bearerAuth: [] }],
+  request: {
+    query: billingSummaryQuerySchema,
+  },
   responses: {
     200: {
       description: 'Billing summary retrieved successfully',
@@ -271,6 +283,48 @@ registry.registerPath({
     },
     404: {
       description: 'Transaction not found',
+    },
+  },
+});
+
+// Receipt URL response schema
+export const receiptUrlResponseSchema = registry.register(
+  'ReceiptUrlResponse',
+  z.object({
+    receiptUrl: z.string().url().openapi({
+      description: 'URL to the Stripe hosted receipt page',
+      example: 'https://pay.stripe.com/receipts/...',
+    }),
+  }).openapi({
+    description: 'Receipt URL response',
+  })
+);
+
+// GET /api/v1/billing/receipts/{transactionId}
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/billing/receipts/{transactionId}',
+  summary: 'Get receipt URL',
+  description: 'Get the Stripe hosted receipt URL for a transaction',
+  tags: ['Billing'],
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: transactionParamsSchema,
+  },
+  responses: {
+    200: {
+      description: 'Receipt URL retrieved successfully',
+      content: {
+        'application/json': {
+          schema: receiptUrlResponseSchema,
+        },
+      },
+    },
+    401: {
+      description: 'Unauthorized',
+    },
+    404: {
+      description: 'Transaction or receipt not found',
     },
   },
 });

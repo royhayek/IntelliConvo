@@ -51,7 +51,8 @@ export function SiteAvatar({
     <AvatarContainer
       className={cn(
         sizes.container,
-        "bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg overflow-hidden",
+        "relative flex items-center justify-center shadow-lg overflow-hidden",
+        imageUrl ? "bg-transparent" : "bg-gradient-to-br from-indigo-500 to-purple-600",
         className
       )}
       {...animationProps}
@@ -61,7 +62,8 @@ export function SiteAvatar({
           src={imageUrl}
           alt={`${siteName} logo`}
           fill
-          className="object-cover"
+          className="object-fill"
+          unoptimized
         />
       ) : (
         <span className={cn("font-bold text-white", sizes.text)}>

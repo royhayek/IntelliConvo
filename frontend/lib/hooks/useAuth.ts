@@ -1,6 +1,7 @@
 import { useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { useAuthStore, User } from "@/lib/store";
+import { useQueryClient } from "@tanstack/react-query";
+import { useAuthStore, User, useSiteStore } from "@/lib/store";
 
 /**
  * Auth hook return type
@@ -76,10 +77,12 @@ export function useAuth(): UseAuthReturn {
 export function useRequireAuth(redirectTo?: string): UseAuthReturn {
   const router = useRouter();
   const { isAuthenticated, isLoading, user } = useAuth();
+  const isLoggingOut = useAuthStore((state) => state.isLoggingOut);
 
   useEffect(() => {
     // Only perform redirect after hydration is complete
-    if (!isLoading && !isAuthenticated) {
+    // Skip if logging out - useLogout handles the redirect
+    if (!isLoading && !isAuthenticated && !isLoggingOut) {
       // Preserve current path for post-login redirect
       const returnTo = redirectTo || window.location.pathname + window.location.search;
       const loginPath = returnTo !== "/auth/login"
@@ -88,7 +91,7 @@ export function useRequireAuth(redirectTo?: string): UseAuthReturn {
 
       router.push(loginPath);
     }
-  }, [isLoading, isAuthenticated, router, redirectTo]);
+  }, [isLoading, isAuthenticated, isLoggingOut, router, redirectTo]);
 
   return {
     isAuthenticated,
@@ -145,7 +148,7 @@ export function useAuthRedirect(defaultRedirect = "/dashboard"): UseAuthReturn {
 
 /**
  * Hook to handle logout functionality.
- * Provides a callback that clears auth state and redirects to login.
+ * Provides a callback that clears auth state, React Query cache, and redirects to login.
  *
  * @returns Logout callback function
  *
@@ -157,12 +160,23 @@ export function useAuthRedirect(defaultRedirect = "/dashboard"): UseAuthReturn {
  */
 export function useLogout(): () => void {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const logout = useAuthStore((state) => state.logout);
+  const setLoggingOut = useAuthStore((state) => state.setLoggingOut);
+  const clearSites = useSiteStore((state) => state.setSites);
 
   return useCallback(() => {
+    // Set logging out flag FIRST to prevent auth hooks from adding returnTo
+    setLoggingOut(true);
+    // Clear React Query cache to prevent stale data for new user
+    queryClient.clear();
+    // Clear site store
+    clearSites([]);
+    // Clear auth state and tokens (also resets isLoggingOut)
     logout();
+    // Redirect to login without returnTo parameter
     router.push("/auth/login");
-  }, [logout, router]);
+  }, [logout, setLoggingOut, queryClient, clearSites, router]);
 }
 
 /**
@@ -185,11 +199,13 @@ export function useLogout(): () => void {
 export function useRequireAdmin(): UseAdminAuthReturn {
   const router = useRouter();
   const { isAuthenticated, isLoading, user } = useAuth();
+  const isLoggingOut = useAuthStore((state) => state.isLoggingOut);
   const isAdmin = user?.isAdmin ?? false;
 
   useEffect(() => {
     // Only perform redirect after hydration is complete
-    if (!isLoading) {
+    // Skip if logging out - useLogout handles the redirect
+    if (!isLoading && !isLoggingOut) {
       if (!isAuthenticated) {
         // Not authenticated - redirect to login
         const returnTo = window.location.pathname + window.location.search;
@@ -199,7 +215,7 @@ export function useRequireAdmin(): UseAdminAuthReturn {
         router.push("/dashboard");
       }
     }
-  }, [isLoading, isAuthenticated, isAdmin, router]);
+  }, [isLoading, isAuthenticated, isLoggingOut, isAdmin, router]);
 
   return {
     isAuthenticated,
@@ -232,11 +248,13 @@ export function useRequireAdmin(): UseAdminAuthReturn {
 export function useRequireUser(): UseAuthReturn {
   const router = useRouter();
   const { isAuthenticated, isLoading, user } = useAuth();
+  const isLoggingOut = useAuthStore((state) => state.isLoggingOut);
   const isAdmin = user?.isAdmin ?? false;
 
   useEffect(() => {
     // Only perform redirect after hydration is complete
-    if (!isLoading) {
+    // Skip if logging out - useLogout handles the redirect
+    if (!isLoading && !isLoggingOut) {
       if (!isAuthenticated) {
         // Not authenticated - redirect to login
         const returnTo = window.location.pathname + window.location.search;
@@ -246,7 +264,7 @@ export function useRequireUser(): UseAuthReturn {
         router.push("/admin");
       }
     }
-  }, [isLoading, isAuthenticated, isAdmin, router]);
+  }, [isLoading, isAuthenticated, isLoggingOut, isAdmin, router]);
 
   return {
     isAuthenticated,

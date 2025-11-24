@@ -21,8 +21,9 @@ import { useAuthStore } from "@/lib/store";
 import { useAuthRedirect } from "@/lib/hooks/useAuth";
 import { AuthLoading } from "@/components/auth/auth-loading";
 import { usePostApiV1AuthLogin } from "@/lib/api/generated/queries/authentication/authentication";
+import { useGetApiV1ConfigPublic } from "@/lib/api/generated/queries/config/config";
 import { AlertCircle } from "lucide-react";
-import { OAuthButtons } from "@/components/auth/oauth-buttons";
+import { OAuthButtons, AuthProvider } from "@/components/auth/oauth-buttons";
 import { BrandLogo } from "@/components/ui/brand-logo";
 
 const loginSchema = z.object({
@@ -38,6 +39,11 @@ export default function LoginPage() {
 
   // Redirect authenticated users away from login page
   const { isLoading: isAuthLoading } = useAuthRedirect();
+
+  // Fetch public config to get enabled auth providers
+  const { data: configData } = useGetApiV1ConfigPublic();
+  const enabledProviders = configData?.data?.enabledAuthProviders ?? [];
+  const isEmailEnabled = enabledProviders.includes('email');
 
   const form = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
@@ -77,10 +83,12 @@ export default function LoginPage() {
   };
 
   const loading = loginMutation.isPending;
-  const error = (loginMutation.error as { response?: { data?: { error?: string } } })?.response?.data?.error ||
-    (loginMutation.isError ? "Invalid credentials" : "");
+  const errorResponse = (loginMutation.error as { response?: { data?: { error?: { message?: string } | string } } })?.response?.data?.error;
+  const error = typeof errorResponse === 'string'
+    ? errorResponse
+    : errorResponse?.message || (loginMutation.isError ? "Invalid credentials" : "");
 
-  const handleOAuthLogin = (provider: "google" | "github") => {
+  const handleOAuthLogin = (provider: AuthProvider) => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api/v1';
     window.location.href = `${apiUrl}/auth/${provider}`;
   };
@@ -139,7 +147,15 @@ export default function LoginPage() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <div className="flex items-center justify-between">
+                      <FormLabel>Password</FormLabel>
+                      <Link
+                        href="/auth/forgot-password"
+                        className="text-sm text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300"
+                      >
+                        Forgot password?
+                      </Link>
+                    </div>
                     <FormControl>
                       <Input
                         type="password"
@@ -159,6 +175,7 @@ export default function LoginPage() {
 
               <OAuthButtons
                 onProviderClick={handleOAuthLogin}
+                enabledProviders={enabledProviders}
                 disabled={loading}
               />
             </form>

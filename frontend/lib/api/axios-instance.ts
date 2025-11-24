@@ -109,9 +109,15 @@ AXIOS_INSTANCE.interceptors.response.use(
       }
     }
 
-    // Don't show toast for cancelled requests or 401 (which redirects)
+    // Handle 403 - Forbidden access
+    if (error.response?.status === 403) {
+      window.location.href = '/forbidden';
+      return Promise.reject(error);
+    }
+
+    // Don't show toast for cancelled requests, 401 (which redirects), or 403 (which redirects)
     const isCancelled = Axios.isCancel(error) || error.message === 'canceled';
-    if (!isCancelled && error.response?.status !== 401) {
+    if (!isCancelled && error.response?.status !== 401 && error.response?.status !== 403) {
       const errorMessage = getErrorMessage(error);
       toast.error(errorMessage);
     }

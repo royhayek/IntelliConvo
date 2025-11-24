@@ -70,6 +70,7 @@ module.exports = {
         'slide-down': 'slideDown 0.3s ease-out',
         'scale-in': 'scaleIn 0.2s ease-out',
         'bounce-gentle': 'bounceGentle 0.6s ease-out',
+        'wiggle': 'wiggle 0.5s ease-in-out',
       },
       keyframes: {
         fadeIn: {
@@ -92,6 +93,14 @@ module.exports = {
           '0%, 20%, 53%, 80%, 100%': { transform: 'translateY(0)' },
           '40%, 43%': { transform: 'translateY(-2px)' },
           '70%': { transform: 'translateY(-1px)' },
+        },
+        wiggle: {
+          '0%, 100%': { transform: 'rotate(0deg)' },
+          '15%': { transform: 'rotate(-15deg)' },
+          '30%': { transform: 'rotate(10deg)' },
+          '45%': { transform: 'rotate(-10deg)' },
+          '60%': { transform: 'rotate(5deg)' },
+          '75%': { transform: 'rotate(-5deg)' },
         },
       },
       backdropBlur: {

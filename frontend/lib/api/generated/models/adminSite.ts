@@ -13,6 +13,8 @@ export interface AdminSite {
   siteName: string;
   siteUrl: string;
   /** @nullable */
+  faviconUrl?: string | null;
+  /** @nullable */
   siteDescription?: string | null;
   /** @nullable */
   siteIndustry?: string | null;

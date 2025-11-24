@@ -273,7 +273,7 @@ export class FileService {
       where: { siteUrlId: tempUrl.id },
     });
 
-    // Reset status to PENDING
+    // Reset status to PENDING/PROCESSING
     await prisma.knowledgeFile.update({
       where: { id: fileId },
       data: {
@@ -282,11 +282,23 @@ export class FileService {
       },
     });
 
+    // Update SiteUrl status to PROCESSING
+    await prisma.siteUrl.update({
+      where: { id: tempUrl.id },
+      data: { embeddingStatus: 'PROCESSING' },
+    });
+
     try {
       // Regenerate embeddings
       await generateEmbeddings(tempUrl.id, tempUrl.content);
 
-      // Update as completed
+      // Update SiteUrl status to READY
+      await prisma.siteUrl.update({
+        where: { id: tempUrl.id },
+        data: { embeddingStatus: 'READY' },
+      });
+
+      // Update file as completed
       await prisma.knowledgeFile.update({
         where: { id: fileId },
         data: {
@@ -296,7 +308,13 @@ export class FileService {
         },
       });
     } catch (reprocessError) {
-      // Update as failed
+      // Update SiteUrl status to FAILED
+      await prisma.siteUrl.update({
+        where: { id: tempUrl.id },
+        data: { embeddingStatus: 'FAILED' },
+      });
+
+      // Update file as failed
       const errorMsg =
         reprocessError instanceof Error
           ? reprocessError.message

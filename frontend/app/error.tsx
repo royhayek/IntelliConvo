@@ -1,0 +1,92 @@
+"use client";
+
+import { useEffect } from "react";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { AlertTriangle, Home, RefreshCw } from "lucide-react";
+import Link from "next/link";
+
+interface ErrorProps {
+  error: Error & { digest?: string };
+  reset: () => void;
+}
+
+export default function Error({ error, reset }: ErrorProps) {
+  useEffect(() => {
+    // Log the error to an error reporting service
+    console.error("Application error:", error);
+  }, [error]);
+
+  return (
+    <div className="min-h-screen gradient-surface flex items-center justify-center p-4">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="text-center max-w-md"
+      >
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="mb-8"
+        >
+          <div className="mx-auto h-24 w-24 rounded-full bg-gradient-to-br from-red-500/20 to-rose-500/20 flex items-center justify-center mb-6">
+            <AlertTriangle className="h-12 w-12 text-red-600 dark:text-red-400" />
+          </div>
+          <h1 className="text-8xl font-bold bg-gradient-to-r from-red-600 to-rose-600 bg-clip-text text-transparent mb-4">
+            500
+          </h1>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-3">
+            Something Went Wrong
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-8">
+            An unexpected error occurred. Our team has been notified and is working on a fix.
+          </p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="flex flex-col sm:flex-row items-center justify-center gap-4"
+        >
+          <Button
+            variant="outline"
+            onClick={reset}
+            className="w-full sm:w-auto"
+          >
+            <RefreshCw className="mr-2 h-4 w-4" />
+            Try Again
+          </Button>
+          <Link href="/" className="w-full sm:w-auto">
+            <Button variant="gradient" className="w-full">
+              <Home className="mr-2 h-4 w-4" />
+              Back to Home
+            </Button>
+          </Link>
+        </motion.div>
+
+        {process.env.NODE_ENV === "development" && error.message && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+            className="mt-8 p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800"
+          >
+            <p className="text-sm font-mono text-red-600 dark:text-red-400 text-left break-all">
+              {error.message}
+            </p>
+          </motion.div>
+        )}
+      </motion.div>
+    </div>
+  );
+}

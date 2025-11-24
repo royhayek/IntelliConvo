@@ -134,6 +134,7 @@ const siteSubscriptionSchema = z.object({
   status: z.enum(['TRIAL', 'ACTIVE', 'CANCELLED', 'EXPIRED']).openapi({ description: 'Subscription status' }),
   trialEndsAt: z.string().nullable().openapi({ description: 'Trial end date' }),
   currentPeriodEnd: z.string().openapi({ description: 'Current period end' }),
+  cancelAtPeriodEnd: z.boolean().openapi({ description: 'Whether subscription is scheduled to cancel at period end' }),
 }).nullable();
 
 // Site response schemas
@@ -144,6 +145,7 @@ export const siteResponseSchema = registry.register(
     userId: z.string().uuid().openapi({ description: 'Owner user ID' }),
     siteUrl: z.string().openapi({ description: 'Website URL' }),
     siteName: z.string().openapi({ description: 'Website name' }),
+    faviconUrl: z.string().nullable().openapi({ description: 'Website favicon URL' }),
     siteDescription: z.string().nullable().openapi({ description: 'Website description' }),
     siteIndustry: z.string().nullable().openapi({ description: 'Website industry' }),
     specialInstructions: z.string().nullable().openapi({ description: 'AI instructions' }),
@@ -592,6 +594,331 @@ registry.registerPath({
   },
 });
 
+// ============================================
+// URL Discovery Schemas
+// ============================================
+
+// Discovered URL schema
+export const discoveredUrlSchema = z.object({
+  url: z.string().url().openapi({ description: 'Page URL' }),
+  title: z.string().nullable().optional().openapi({ description: 'Page title if available' }),
+  source: z.enum(['sitemap', 'discovery', 'manual']).openapi({ description: 'How the URL was discovered' }),
+  category: z.enum(['homepage', 'product', 'blog', 'about', 'support', 'other']).openapi({ description: 'Page category' }),
+  priority: z.enum(['high', 'medium', 'low']).openapi({ description: 'Crawl priority' }),
+  suggested: z.boolean().openapi({ description: 'Whether this URL is suggested for crawling' }),
+});
+
+// Discovery result response schema
+export const discoveryResultSchema = registry.register(
+  'DiscoveryResult',
+  z.object({
+    status: z.enum(['PENDING', 'IN_PROGRESS', 'COMPLETED', 'FAILED']).openapi({ description: 'Discovery status' }),
+    urls: z.array(discoveredUrlSchema).openapi({ description: 'Discovered URLs' }),
+    sitemapFound: z.boolean().openapi({ description: 'Whether a sitemap was found' }),
+    sitemapUrl: z.string().nullable().optional().openapi({ description: 'Sitemap URL if found' }),
+    totalCount: z.number().int().openapi({ description: 'Total number of discovered URLs' }),
+    selectedCount: z.number().int().openapi({ description: 'Number of selected URLs' }),
+    estimatedCrawlTime: z.number().int().openapi({ description: 'Estimated crawl time in seconds' }),
+  }).openapi({
+    description: 'URL discovery results',
+  })
+);
+
+// Update URL selections schema
+export const updateSelectionsSchema = registry.register(
+  'UpdateSelectionsRequest',
+  z.object({
+    selections: z.array(z.object({
+      url: z.string().url().openapi({ description: 'URL to update' }),
+      selected: z.boolean().openapi({ description: 'Whether to include in crawl' }),
+    })).openapi({ description: 'URL selection updates' }),
+  }).openapi({
+    description: 'Update URL selections for crawling',
+  })
+);
+
+// Bulk select/deselect schema
+export const bulkSelectSchema = registry.register(
+  'BulkSelectRequest',
+  z.object({
+    action: z.enum(['select', 'deselect']).openapi({ description: 'Action to perform' }),
+    category: z.enum(['homepage', 'product', 'blog', 'about', 'support', 'other', 'all']).optional().openapi({ description: 'Category to apply action to' }),
+    priority: z.enum(['high', 'medium', 'low', 'all']).optional().openapi({ description: 'Priority to apply action to' }),
+  }).openapi({
+    description: 'Bulk select/deselect URLs by category or priority',
+  })
+);
+
+// Add manual URLs schema
+export const addManualUrlsSchema = registry.register(
+  'AddManualUrlsRequest',
+  z.object({
+    urls: z.array(z.string()).min(1, 'At least one URL is required').openapi({
+      description: 'URLs to add manually',
+      example: ['https://example.com/page1', 'https://example.com/page2'],
+    }),
+  }).openapi({
+    description: 'Add URLs manually for crawling',
+  })
+);
+
+// Discovery stats response schema
+export const discoveryStatsSchema = registry.register(
+  'DiscoveryStats',
+  z.object({
+    byCategory: z.record(z.object({
+      total: z.number().int(),
+      selected: z.number().int(),
+    })).openapi({ description: 'Stats by category' }),
+    byPriority: z.record(z.object({
+      total: z.number().int(),
+      selected: z.number().int(),
+    })).openapi({ description: 'Stats by priority' }),
+  }).openapi({
+    description: 'Discovery statistics',
+  })
+);
+
+// Selections update response schema
+export const selectionsUpdateResponseSchema = registry.register(
+  'SelectionsUpdateResponse',
+  z.object({
+    selectedCount: z.number().int().openapi({ description: 'Number of selected URLs' }),
+    estimatedCrawlTime: z.number().int().openapi({ description: 'Estimated crawl time in seconds' }),
+  }).openapi({
+    description: 'Response after updating URL selections',
+  })
+);
+
+// Selective crawl request schema
+export const selectiveCrawlSchema = registry.register(
+  'SelectiveCrawlRequest',
+  z.object({
+    mode: z.enum(['selective', 'full']).default('selective').openapi({
+      description: 'Crawl mode: selective (only selected URLs) or full (all discovered URLs)',
+    }),
+    urls: z.array(z.string().min(1)).optional().openapi({
+      description: 'Optional array of URLs to crawl. If provided, these URLs will be used instead of reading from database selections. This ensures the crawled URLs match exactly what the user selected in the UI.',
+    }),
+  }).openapi({
+    description: 'Start crawling with selected URLs',
+  })
+);
+
+// ============================================
+// Discovery Path Registrations
+// ============================================
+
+// POST /api/v1/sites/{siteId}/discover - Start URL discovery
+registry.registerPath({
+  method: 'post',
+  path: '/api/v1/sites/{siteId}/discover',
+  summary: 'Start URL discovery',
+  description: 'Discovers URLs from sitemap or homepage without crawling content. This is fast (~30 seconds).',
+  tags: ['Sites', 'Discovery'],
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: siteParamsSchema,
+  },
+  responses: {
+    200: {
+      description: 'Discovery started',
+      content: {
+        'application/json': {
+          schema: sitesMessageResponseSchema,
+        },
+      },
+    },
+    401: { description: 'Unauthorized' },
+    404: { description: 'Site not found' },
+  },
+});
+
+// GET /api/v1/sites/{siteId}/discovery - Get discovery results
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/sites/{siteId}/discovery',
+  summary: 'Get discovery results',
+  description: 'Returns discovered URLs with their categories and selection status.',
+  tags: ['Sites', 'Discovery'],
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: siteParamsSchema,
+  },
+  responses: {
+    200: {
+      description: 'Discovery results',
+      content: {
+        'application/json': {
+          schema: discoveryResultSchema,
+        },
+      },
+    },
+    401: { description: 'Unauthorized' },
+    404: { description: 'Site not found' },
+  },
+});
+
+// GET /api/v1/sites/{siteId}/discovery/stats - Get discovery statistics
+registry.registerPath({
+  method: 'get',
+  path: '/api/v1/sites/{siteId}/discovery/stats',
+  summary: 'Get discovery statistics',
+  description: 'Returns statistics about discovered URLs by category and priority.',
+  tags: ['Sites', 'Discovery'],
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: siteParamsSchema,
+  },
+  responses: {
+    200: {
+      description: 'Discovery statistics',
+      content: {
+        'application/json': {
+          schema: discoveryStatsSchema,
+        },
+      },
+    },
+    401: { description: 'Unauthorized' },
+    404: { description: 'Site not found' },
+  },
+});
+
+// PUT /api/v1/sites/{siteId}/discovery/selections - Update URL selections
+registry.registerPath({
+  method: 'put',
+  path: '/api/v1/sites/{siteId}/discovery/selections',
+  summary: 'Update URL selections',
+  description: 'Update which URLs should be included in the crawl.',
+  tags: ['Sites', 'Discovery'],
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: siteParamsSchema,
+    body: {
+      content: {
+        'application/json': {
+          schema: updateSelectionsSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: 'Selections updated',
+      content: {
+        'application/json': {
+          schema: selectionsUpdateResponseSchema,
+        },
+      },
+    },
+    401: { description: 'Unauthorized' },
+    404: { description: 'Site not found' },
+  },
+});
+
+// POST /api/v1/sites/{siteId}/discovery/bulk-select - Bulk select/deselect URLs
+registry.registerPath({
+  method: 'post',
+  path: '/api/v1/sites/{siteId}/discovery/bulk-select',
+  summary: 'Bulk select/deselect URLs',
+  description: 'Select or deselect all URLs matching a category or priority.',
+  tags: ['Sites', 'Discovery'],
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: siteParamsSchema,
+    body: {
+      content: {
+        'application/json': {
+          schema: bulkSelectSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: 'Bulk selection completed',
+      content: {
+        'application/json': {
+          schema: selectionsUpdateResponseSchema,
+        },
+      },
+    },
+    401: { description: 'Unauthorized' },
+    404: { description: 'Site not found' },
+  },
+});
+
+// POST /api/v1/sites/{siteId}/discovery/manual-urls - Add manual URLs
+registry.registerPath({
+  method: 'post',
+  path: '/api/v1/sites/{siteId}/discovery/manual-urls',
+  summary: 'Add manual URLs',
+  description: 'Add URLs manually that were not found in sitemap or discovery.',
+  tags: ['Sites', 'Discovery'],
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: siteParamsSchema,
+    body: {
+      content: {
+        'application/json': {
+          schema: addManualUrlsSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: 'URLs added',
+      content: {
+        'application/json': {
+          schema: z.object({
+            added: z.array(discoveredUrlSchema),
+            count: z.number().int(),
+          }),
+        },
+      },
+    },
+    401: { description: 'Unauthorized' },
+    404: { description: 'Site not found' },
+  },
+});
+
+// POST /api/v1/sites/{siteId}/crawl/selective - Start selective crawl
+registry.registerPath({
+  method: 'post',
+  path: '/api/v1/sites/{siteId}/crawl/selective',
+  summary: 'Start selective crawl',
+  description: 'Crawl only the selected URLs from discovery.',
+  tags: ['Sites', 'Discovery'],
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: siteParamsSchema,
+    body: {
+      content: {
+        'application/json': {
+          schema: selectiveCrawlSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: 'Crawl started',
+      content: {
+        'application/json': {
+          schema: z.object({
+            message: z.string(),
+            urlCount: z.number().int(),
+            estimatedTime: z.number().int(),
+          }),
+        },
+      },
+    },
+    401: { description: 'Unauthorized' },
+    404: { description: 'Site not found' },
+  },
+});
+
 // Type exports
 export type CreateSiteInput = z.infer<typeof createSiteSchema>;
 export type UpdateSiteInput = z.infer<typeof updateSiteSchema>;
@@ -600,3 +927,7 @@ export type AddHostInput = z.infer<typeof addHostSchema>;
 export type UpdateHostInput = z.infer<typeof updateHostSchema>;
 export type SiteParams = z.infer<typeof siteParamsSchema>;
 export type HostParams = z.infer<typeof hostParamsSchema>;
+export type UpdateSelectionsInput = z.infer<typeof updateSelectionsSchema>;
+export type BulkSelectInput = z.infer<typeof bulkSelectSchema>;
+export type AddManualUrlsInput = z.infer<typeof addManualUrlsSchema>;
+export type SelectiveCrawlInput = z.infer<typeof selectiveCrawlSchema>;

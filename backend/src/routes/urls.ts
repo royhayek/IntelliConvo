@@ -211,4 +211,72 @@ router.delete(
   })
 );
 
+// ============================================
+// Retry Operations
+// ============================================
+
+/**
+ * @swagger
+ * /api/v1/sites/{siteId}/urls/failed:
+ *   get:
+ *     summary: Get failed URLs with error details
+ *     tags: [Sites]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.get(
+  '/failed',
+  authenticate,
+  validateParams(siteParamsSchema),
+  asyncHandler(async (req, res) => {
+    const { siteId } = req.params;
+    const result = await urlService.getFailedUrls(siteId, req.user!.id);
+    res.json(result);
+  })
+);
+
+/**
+ * @swagger
+ * /api/v1/sites/{siteId}/urls/retry-failed:
+ *   post:
+ *     summary: Retry all failed URLs
+ *     tags: [Sites]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.post(
+  '/retry-failed',
+  authenticate,
+  validateParams(siteParamsSchema),
+  asyncHandler(async (req, res) => {
+    const { siteId } = req.params;
+    const maxRetries = req.body?.maxRetries || 3;
+    const result = await urlService.retryFailedUrls(siteId, req.user!.id, maxRetries);
+    res.json({
+      message: `Queued ${result.retriedCount} URLs for retry`,
+      ...result,
+    });
+  })
+);
+
+/**
+ * @swagger
+ * /api/v1/sites/{siteId}/urls/{urlId}/retry:
+ *   post:
+ *     summary: Retry a single failed URL
+ *     tags: [Sites]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.post(
+  '/:urlId/retry',
+  authenticate,
+  validateParams(urlParamsSchema),
+  asyncHandler(async (req, res) => {
+    const { siteId, urlId } = req.params;
+    await urlService.retryUrl(siteId, urlId, req.user!.id);
+    res.json(messageResponse('Retry initiated successfully'));
+  })
+);
+
 export default router;

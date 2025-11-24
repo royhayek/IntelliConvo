@@ -115,13 +115,26 @@ The CLI will output a webhook signing secret (`whsec_...`) - copy this for your 
    https://yourdomain.com/api/v1/webhooks/stripe
    ```
 4. Select these events to listen for:
-   - `customer.subscription.created`
-   - `customer.subscription.updated`
-   - `customer.subscription.deleted`
-   - `invoice.payment_succeeded`
-   - `invoice.payment_failed`
+
+   **Required (Core Subscription Lifecycle):**
+   - `checkout.session.completed` - Payment completed
+   - `customer.subscription.created` - New subscription
+   - `customer.subscription.updated` - Subscription changes (including cancellation scheduling)
+   - `customer.subscription.deleted` - Subscription terminated
+   - `customer.subscription.trial_will_end` - Trial ending reminder (3 days before)
+
+   **Required (Payments):**
+   - `invoice.payment_succeeded` - Successful payment/renewal
+   - `invoice.payment_failed` - Failed payment
+
+   **Required (Refunds & Disputes):**
+   - `charge.refunded` - Refund processed
+   - `charge.dispute.created` - Chargeback/dispute opened
+
 5. Click **Add endpoint**
 6. Copy the **Signing secret** (`whsec_...`)
+
+> **Important**: For local development using `stripe listen`, you don't need to configure the Dashboard. The Stripe CLI automatically forwards ALL events to your local server. Dashboard webhook configuration is only required for production deployments.
 
 ---
 
@@ -175,14 +188,92 @@ STRIPE_PRICE_ANNUAL=price_your_annual_price_id
    stripe listen --forward-to localhost:5000/api/v1/webhooks/stripe
    ```
 
+   > **Note**: Copy the webhook signing secret (`whsec_...`) from the output and update your `STRIPE_WEBHOOK_SECRET` in `.env`. This secret changes each time you restart `stripe listen`.
+
 3. Trigger test events:
    ```bash
-   # Trigger a test payment intent
-   stripe trigger payment_intent.succeeded
+   # Trigger a checkout session completion (new subscription)
+   stripe trigger checkout.session.completed
 
-   # Trigger a subscription creation
+   # Trigger subscription lifecycle events
    stripe trigger customer.subscription.created
+   stripe trigger customer.subscription.updated
+   stripe trigger customer.subscription.deleted
+
+   # Trigger payment events
+   stripe trigger invoice.payment_succeeded
+   stripe trigger invoice.payment_failed
+
+   # Trigger refund event
+   stripe trigger charge.refunded
+
+   # Trigger dispute event
+   stripe trigger charge.dispute.created
    ```
+
+4. View webhook event logs in real-time:
+   ```bash
+   # The stripe listen command shows events as they're received
+   # Look for "200 OK" responses to confirm your server handled them
+   ```
+
+5. Verify events in the Stripe Dashboard:
+   - Go to **Developers** → **Events** to see all triggered events
+   - Click on an event to see the full payload and response from your server
+
+### Testing Complete Subscription Flow Locally
+
+To test the full subscription flow end-to-end:
+
+1. **Create a test customer and subscription via the UI:**
+   - Use test card `4242 4242 4242 4242`
+   - Complete the checkout flow in your frontend
+   - Watch the `stripe listen` terminal for incoming webhooks
+
+2. **Simulate subscription changes:**
+   ```bash
+   # List recent subscriptions
+   stripe subscriptions list --limit 3
+
+   # Cancel a subscription (replace sub_xxx with actual ID)
+   stripe subscriptions cancel sub_xxx
+
+   # Update a subscription
+   stripe subscriptions update sub_xxx --proration-behavior=none
+   ```
+
+3. **Simulate failed payments:**
+   - Use test card `4000 0000 0000 0341` - Attaches but fails on first charge
+   - Or update a subscription's payment method to a failing card
+
+4. **Resend a webhook event:**
+   ```bash
+   # List recent events
+   stripe events list --limit 10
+
+   # Resend a specific event (replace evt_xxx with actual ID)
+   stripe events resend evt_xxx
+   ```
+
+### Debugging Webhook Issues
+
+If webhooks aren't working:
+
+1. **Check if events are being received:**
+   - Look at the `stripe listen` terminal output
+   - Should show: `-->  POST http://localhost:5000/api/v1/webhooks/stripe [evt_xxx]`
+   - And response: `<--  [200] POST http://localhost:5000/api/v1/webhooks/stripe`
+
+2. **Check server logs:**
+   ```bash
+   # Backend logs will show webhook processing
+   tail -f backend/logs/all.log
+   ```
+
+3. **Common issues:**
+   - Wrong `STRIPE_WEBHOOK_SECRET` - Must match the one from `stripe listen`
+   - Server not running on correct port
+   - Webhook endpoint returning errors (check backend logs)
 
 ---
 

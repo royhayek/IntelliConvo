@@ -14,6 +14,7 @@ export interface UserDTO {
   fullName: string | null;
   authProvider: AuthProvider;
   isAdmin: boolean;
+  emailVerified: boolean;
   createdAt: string;
   updatedAt: string;
   lastLoginAt: string | null;

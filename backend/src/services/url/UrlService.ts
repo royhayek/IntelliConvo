@@ -5,6 +5,7 @@
 
 import crypto from 'crypto';
 import { prisma } from '../../lib/prisma';
+import { UrlEmbeddingStatus } from '@prisma/client';
 import { NotFoundError, ValidationError } from '../../middleware/errors';
 import { queueCrawl } from '../../queues';
 import { generateEmbeddings, deleteEmbeddings } from '../embeddings';
@@ -69,7 +70,11 @@ export class UrlService {
     await this.verifySiteOwnership(siteId, userId);
 
     // Build filters
-    const filters: any = { siteId };
+    const filters: any = {
+      siteId,
+      // Exclude file:// URLs - these are managed in the Knowledge Files section
+      NOT: { url: { startsWith: 'file://' } },
+    };
 
     if (query.search) {
       filters.OR = [
@@ -87,7 +92,7 @@ export class UrlService {
 
     const urls = await prisma.siteUrl.findMany({
       where: filters,
-      orderBy: { lastCrawledAt: 'desc' },
+      orderBy: { createdAt: 'desc' },
       select: {
         id: true,
         url: true,
@@ -176,6 +181,7 @@ export class UrlService {
             siteId,
             url,
             isActive: true,
+            embeddingStatus: UrlEmbeddingStatus.SCRAPING,
           },
         });
 
@@ -350,6 +356,164 @@ export class UrlService {
     await prisma.siteUrl.delete({
       where: { id: urlId },
     });
+  }
+
+  // ============================================
+  // Retry Methods
+  // ============================================
+
+  /**
+   * Get failed URLs for a site with error details
+   * @param siteId - Site ID
+   * @param userId - User ID (for authorization)
+   * @returns List of failed URLs with error info
+   */
+  async getFailedUrls(
+    siteId: string,
+    userId: string
+  ): Promise<{
+    urls: Array<{
+      id: string;
+      url: string;
+      lastError: string | null;
+      retryCount: number;
+      lastRetryAt: string | null;
+    }>;
+    totalFailed: number;
+  }> {
+    // Verify user owns the site
+    await this.verifySiteOwnership(siteId, userId);
+
+    const failedUrls = await prisma.siteUrl.findMany({
+      where: {
+        siteId,
+        embeddingStatus: UrlEmbeddingStatus.FAILED,
+        isExcluded: false,
+      },
+      select: {
+        id: true,
+        url: true,
+        lastError: true,
+        retryCount: true,
+        lastRetryAt: true,
+      },
+      orderBy: { retryCount: 'asc' }, // Show URLs with fewer retries first
+    });
+
+    return {
+      urls: failedUrls.map(u => ({
+        id: u.id,
+        url: u.url,
+        lastError: u.lastError,
+        retryCount: u.retryCount,
+        lastRetryAt: u.lastRetryAt?.toISOString() || null,
+      })),
+      totalFailed: failedUrls.length,
+    };
+  }
+
+  /**
+   * Retry all failed URLs for a site
+   * @param siteId - Site ID
+   * @param userId - User ID (for authorization)
+   * @param maxRetries - Maximum retry attempts (default: 3)
+   * @returns Number of URLs queued for retry
+   */
+  async retryFailedUrls(
+    siteId: string,
+    userId: string,
+    maxRetries: number = 3
+  ): Promise<{ retriedCount: number; skippedCount: number }> {
+    // Verify user owns the site
+    await this.verifySiteOwnership(siteId, userId);
+
+    // Get failed URLs that haven't exceeded max retries
+    const failedUrls = await prisma.siteUrl.findMany({
+      where: {
+        siteId,
+        embeddingStatus: UrlEmbeddingStatus.FAILED,
+        isExcluded: false,
+        retryCount: { lt: maxRetries },
+      },
+      select: { id: true, url: true, content: true },
+    });
+
+    if (failedUrls.length === 0) {
+      return { retriedCount: 0, skippedCount: 0 };
+    }
+
+    // Count URLs that exceeded max retries
+    const skippedCount = await prisma.siteUrl.count({
+      where: {
+        siteId,
+        embeddingStatus: UrlEmbeddingStatus.FAILED,
+        isExcluded: false,
+        retryCount: { gte: maxRetries },
+      },
+    });
+
+    // Reset failed URLs to SCRAPED status for re-embedding
+    // (URLs with content go to embedding, URLs without go to crawling)
+    const urlsWithContent = failedUrls.filter(u => u.content);
+    const urlsWithoutContent = failedUrls.filter(u => !u.content);
+
+    // Reset URLs with content to SCRAPED for re-embedding
+    if (urlsWithContent.length > 0) {
+      await prisma.siteUrl.updateMany({
+        where: { id: { in: urlsWithContent.map(u => u.id) } },
+        data: { embeddingStatus: UrlEmbeddingStatus.SCRAPED },
+      });
+
+      // Queue embedding job
+      const { queueEmbeddingGeneration } = await import('../../queues');
+      await queueEmbeddingGeneration(siteId, userId);
+    }
+
+    // Queue crawl for URLs without content
+    if (urlsWithoutContent.length > 0) {
+      const { queueSelectiveCrawl } = await import('../../queues');
+      await queueSelectiveCrawl(siteId, urlsWithoutContent.map(u => u.url));
+    }
+
+    return { retriedCount: failedUrls.length, skippedCount };
+  }
+
+  /**
+   * Retry a single failed URL
+   * @param siteId - Site ID
+   * @param urlId - URL ID
+   * @param userId - User ID (for authorization)
+   */
+  async retryUrl(
+    siteId: string,
+    urlId: string,
+    userId: string
+  ): Promise<void> {
+    // Verify user owns the site
+    await this.verifySiteOwnership(siteId, userId);
+
+    const url = await prisma.siteUrl.findFirst({
+      where: { id: urlId, siteId, embeddingStatus: UrlEmbeddingStatus.FAILED },
+    });
+
+    if (!url) {
+      throw new NotFoundError('Failed URL', urlId);
+    }
+
+    if (url.content) {
+      // Has content, just re-embed
+      await prisma.siteUrl.update({
+        where: { id: urlId },
+        data: { embeddingStatus: UrlEmbeddingStatus.SCRAPED },
+      });
+
+      // Queue embedding job
+      const { queueEmbeddingGeneration } = await import('../../queues');
+      await queueEmbeddingGeneration(siteId, userId);
+    } else {
+      // No content, needs recrawl
+      await queueCrawl(siteId, 'single', url.url);
+    }
   }
 
   // ============================================

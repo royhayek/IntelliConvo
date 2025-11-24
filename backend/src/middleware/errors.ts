@@ -13,6 +13,7 @@ export enum ErrorCode {
   FORBIDDEN = 'FORBIDDEN',
   INSUFFICIENT_PERMISSIONS = 'INSUFFICIENT_PERMISSIONS',
   ACCOUNT_DISABLED = 'ACCOUNT_DISABLED',
+  ACCOUNT_LOCKED = 'ACCOUNT_LOCKED',
 
   // Validation (400)
   VALIDATION_ERROR = 'VALIDATION_ERROR',
@@ -108,6 +109,18 @@ export class InvalidCredentialsError extends AppError {
   }
 }
 
+export class AccountLockedError extends AppError {
+  constructor(retryAfter: number, message?: string) {
+    super(
+      429,
+      ErrorCode.ACCOUNT_LOCKED,
+      message || `Account temporarily locked due to too many failed login attempts. Try again in ${Math.ceil(retryAfter / 60)} minutes.`,
+      true,
+      { retryAfter }
+    );
+  }
+}
+
 /**
  * Authorization Errors (403)
  */
@@ -138,6 +151,12 @@ export class InvalidInputError extends AppError {
       ? `Invalid value for ${field}: ${reason}`
       : `Invalid value for ${field}`;
     super(400, ErrorCode.INVALID_INPUT, message, true, { field, reason });
+  }
+}
+
+export class BadRequestError extends AppError {
+  constructor(message: string, data?: any) {
+    super(400, ErrorCode.INVALID_INPUT, message, true, data);
   }
 }
 

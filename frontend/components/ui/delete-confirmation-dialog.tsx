@@ -45,7 +45,7 @@ export function DeleteConfirmationDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md overflow-hidden">
         <DialogHeader>
           <div className="flex items-center space-x-2">
             <AlertTriangle className={`h-5 w-5 ${titleColor}`} />
@@ -56,16 +56,16 @@ export function DeleteConfirmationDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 mt-4">
+        <div className="space-y-4 mt-4 min-w-0 overflow-hidden">
           {(itemName || itemDetails) && (
-            <div className="bg-gray-50 dark:bg-slate-800/50 rounded-lg p-3 border border-gray-200 dark:border-slate-700">
+            <div className="bg-gray-50 dark:bg-slate-800/50 rounded-lg p-3 border border-gray-200 dark:border-slate-700 min-w-0 overflow-hidden">
               {itemName && (
-                <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                <p className="text-sm font-medium text-gray-900 dark:text-white min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">
                   {itemName}
                 </p>
               )}
               {itemDetails && (
-                <p className="text-sm text-gray-600 dark:text-gray-400 truncate mt-1">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">
                   {itemDetails}
                 </p>
               )}

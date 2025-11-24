@@ -257,6 +257,11 @@ class IntelligentconvoWidget {
             ),
             'connect'
           );
+        },
+        onTrialExpired: (data) => {
+          this.setTyping(false);
+          this.displayTrialExpiredMessage(data.reason);
+          this.trackAnalyticsEvent('trial_expired', { reason: data.reason });
         }
       }
     );
@@ -421,6 +426,42 @@ class IntelligentconvoWidget {
       }
 
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+  }
+
+  private displayTrialExpiredMessage(reason: string): void {
+    const messagesContainer = document.getElementById('intelligentconvo-messages');
+    if (messagesContainer) {
+      const trialDiv = document.createElement('div');
+      trialDiv.className = 'intelligentconvo-message intelligentconvo-trial-expired';
+      trialDiv.innerHTML = `
+        <div class="intelligentconvo-trial-expired-content">
+          <div class="intelligentconvo-trial-expired-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+          </div>
+          <div class="intelligentconvo-trial-expired-text">
+            <strong>Free Trial Ended</strong>
+            <p>Your free trial has ended. Please upgrade to continue using this assistant.</p>
+          </div>
+        </div>
+      `;
+      messagesContainer.appendChild(trialDiv);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+      // Disable input
+      const input = document.getElementById('intelligentconvo-input') as HTMLInputElement;
+      const sendBtn = document.getElementById('intelligentconvo-send');
+      if (input) {
+        input.disabled = true;
+        input.placeholder = 'Upgrade to continue...';
+      }
+      if (sendBtn) {
+        sendBtn.setAttribute('disabled', 'true');
+      }
     }
   }
 

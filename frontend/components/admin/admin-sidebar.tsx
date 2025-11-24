@@ -12,9 +12,11 @@ import {
   FileText,
   MessageSquare,
   MessagesSquare,
+  Mail,
   CreditCard,
   Receipt,
   FileCheck,
+  AlertOctagon,
   Palette,
   Shield,
   Settings,
@@ -60,6 +62,7 @@ const navSections: NavSection[] = [
     items: [
       { title: "Conversations", href: "/admin/conversations", icon: MessageSquare },
       { title: "Messages", href: "/admin/messages", icon: MessagesSquare },
+      { title: "Emails", href: "/admin/emails", icon: Mail },
     ],
   },
   {
@@ -67,6 +70,7 @@ const navSections: NavSection[] = [
     items: [
       { title: "Subscriptions", href: "/admin/subscriptions", icon: CreditCard },
       { title: "Transactions", href: "/admin/billing/transactions", icon: Receipt },
+      { title: "Disputes", href: "/admin/billing/disputes", icon: AlertOctagon },
       { title: "Billing Info", href: "/admin/billing/info", icon: FileCheck },
     ],
   },

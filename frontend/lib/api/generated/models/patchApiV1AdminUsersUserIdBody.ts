@@ -3,5 +3,6 @@
 
 export type PatchApiV1AdminUsersUserIdBody = {
   fullName?: string;
+  email?: string;
   isAdmin?: boolean;
 };

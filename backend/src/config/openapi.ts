@@ -89,6 +89,18 @@ export function generateOpenAPIDocument() {
         name: 'Health',
         description: 'System health check operations',
       },
+      {
+        name: 'Config',
+        description: 'Public configuration endpoints',
+      },
+      {
+        name: 'Admin - Emails',
+        description: 'Admin email log management operations',
+      },
+      {
+        name: 'Admin - Audit',
+        description: 'Admin audit log operations',
+      },
     ],
   });
 }

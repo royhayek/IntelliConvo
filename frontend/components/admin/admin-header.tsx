@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import {
   Settings,
   LogOut,
@@ -20,19 +19,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useAuthStore } from "@/lib/store";
+import { useLogout } from "@/lib/hooks/useAuth";
 
 interface AdminHeaderProps {
   onMenuClick?: () => void;
 }
 
 export function AdminHeader({ onMenuClick }: AdminHeaderProps) {
-  const router = useRouter();
-  const { user, logout } = useAuthStore();
-
-  const handleLogout = async () => {
-    logout();
-    router.push("/auth/login");
-  };
+  const user = useAuthStore((state) => state.user);
+  const handleLogout = useLogout();
 
   return (
     <header className="h-16 border-b border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-between px-6">

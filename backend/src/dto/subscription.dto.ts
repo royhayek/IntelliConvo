@@ -18,6 +18,7 @@ export interface SubscriptionDTO {
   currentPeriodStart: string;
   currentPeriodEnd: string;
   cancelledAt: string | null;
+  cancelAtPeriodEnd: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -47,6 +48,7 @@ export interface CreateSubscriptionRequest {
   siteId: string;
   planType: PlanType;
   paymentMethodId?: string;
+  returnUrl?: string;
 }
 
 /**
@@ -67,8 +69,10 @@ export interface SubscriptionPlanDTO {
   name: string;
   description: string;
   price: number;
+  currency: string;
   interval: 'monthly' | 'annual';
   features: string[];
+  trialDays?: number;
 }
 
 /**
@@ -76,4 +80,41 @@ export interface SubscriptionPlanDTO {
  */
 export interface CustomerPortalResponse {
   url: string;
+}
+
+/**
+ * Request for changing subscription plan
+ */
+export interface ChangePlanRequest {
+  newPlanType: PlanType;
+}
+
+/**
+ * Proration preview for plan change
+ */
+export interface ProrationPreviewDTO {
+  currentPlan: {
+    id: string;
+    name: string;
+    price: number;
+  };
+  newPlan: {
+    id: string;
+    name: string;
+    price: number;
+  };
+  prorationAmount: number;
+  creditAmount: number;
+  amountDue: number;
+  currency: string;
+  effectiveDate: string;
+  billingCycleAnchor: string;
+}
+
+/**
+ * Response for changing subscription plan
+ */
+export interface ChangePlanResponse {
+  subscription: SubscriptionDTO;
+  proration: ProrationPreviewDTO;
 }
