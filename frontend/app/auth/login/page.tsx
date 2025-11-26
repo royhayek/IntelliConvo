@@ -99,8 +99,8 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-950 dark:to-indigo-950 p-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 p-4">
+      <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="space-y-1 text-center">
           <div className="flex justify-center mb-4">
             <BrandLogo size="lg" showText={false} href={null} animated={false} />
@@ -169,7 +169,7 @@ export default function LoginPage() {
                 )}
               />
 
-              <Button type="submit" disabled={loading} className="w-full">
+              <Button type="submit" disabled={loading} className="w-full bg-indigo-600 hover:bg-indigo-700">
                 {loading ? "Signing in..." : "Sign in"}
               </Button>
 
