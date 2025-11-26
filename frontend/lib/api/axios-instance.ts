@@ -13,8 +13,67 @@ interface ApiErrorResponse {
     message: string;
     correlationId?: string;
     stack?: string;
+    details?: {
+      resource?: string;
+      identifier?: string;
+      [key: string]: any;
+    };
   };
   timestamp: string;
+}
+
+/**
+ * Check if error indicates a deleted/not found user
+ * This happens when a user is deleted but their token is still valid
+ */
+function isDeletedUserError(error: AxiosError<ApiErrorResponse>): boolean {
+  return (
+    error.response?.status === 404 &&
+    error.response?.data?.error?.code === 'NOT_FOUND' &&
+    error.response?.data?.error?.details?.resource === 'User'
+  );
+}
+
+/**
+ * Check if error indicates a site was not found
+ * This happens when a site is deleted or user tries to access a non-existent site
+ */
+function isSiteNotFoundError(error: AxiosError<ApiErrorResponse>): boolean {
+  return (
+    error.response?.status === 404 &&
+    error.response?.data?.error?.code === 'NOT_FOUND' &&
+    error.response?.data?.error?.details?.resource === 'Site'
+  );
+}
+
+/**
+ * Handle site not found by redirecting to dashboard
+ */
+function handleSiteNotFound(): void {
+  toast.error('This site is no longer available.');
+
+  // Redirect to dashboard after a brief delay
+  setTimeout(() => {
+    window.location.href = '/dashboard';
+  }, 500);
+}
+
+/**
+ * Clear all authentication data and redirect to login
+ */
+function signOutUser(message: string = 'Your session has expired. Please log in again.'): void {
+  // Clear all auth data
+  localStorage.removeItem('accessToken');
+  localStorage.removeItem('refreshToken');
+  localStorage.removeItem('auth-storage');
+
+  // Show notification
+  toast.error(message);
+
+  // Redirect to login
+  setTimeout(() => {
+    window.location.href = '/auth/login';
+  }, 500);
 }
 
 /**
@@ -76,6 +135,20 @@ AXIOS_INSTANCE.interceptors.response.use(
   async (error: AxiosError<ApiErrorResponse>) => {
     const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
 
+    // Handle deleted/not found user - check this FIRST before token refresh
+    // This happens when a user is deleted but their token is still valid
+    if (isDeletedUserError(error)) {
+      signOutUser('Your account is no longer available. Please log in again.');
+      return Promise.reject(error);
+    }
+
+    // Handle site not found - redirect to dashboard
+    // This happens when a site is deleted or user tries to access non-existent site
+    if (isSiteNotFoundError(error)) {
+      handleSiteNotFound();
+      return Promise.reject(error);
+    }
+
     // Handle 401 - Token refresh
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
@@ -99,12 +172,8 @@ AXIOS_INSTANCE.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
         return AXIOS_INSTANCE(originalRequest);
       } catch (refreshError) {
-        // Refresh failed, clear all auth data and redirect to login
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        // Clear persisted zustand auth state to prevent infinite loop
-        localStorage.removeItem('auth-storage');
-        window.location.href = '/auth/login';
+        // Refresh failed, sign out user with appropriate message
+        signOutUser('Your session has expired. Please log in again.');
         return Promise.reject(refreshError);
       }
     }
@@ -115,9 +184,16 @@ AXIOS_INSTANCE.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    // Don't show toast for cancelled requests, 401 (which redirects), or 403 (which redirects)
+    // Don't show toast for cancelled requests, 401 (which redirects), 403 (which redirects), deleted user, or site not found (custom messages)
     const isCancelled = Axios.isCancel(error) || error.message === 'canceled';
-    if (!isCancelled && error.response?.status !== 401 && error.response?.status !== 403) {
+    const shouldShowToast =
+      !isCancelled &&
+      error.response?.status !== 401 &&
+      error.response?.status !== 403 &&
+      !isDeletedUserError(error) &&
+      !isSiteNotFoundError(error);
+
+    if (shouldShowToast) {
       const errorMessage = getErrorMessage(error);
       toast.error(errorMessage);
     }

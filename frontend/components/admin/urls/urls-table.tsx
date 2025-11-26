@@ -28,16 +28,26 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { TimeAgo } from "@/components/ui/time-ago";
+import { TablePagination } from "@/components/ui/table-pagination";
 import { getEmbeddingStatusBadgeConfig } from "@/lib/utils/badge-helpers";
 import type { SiteUrlExtended } from "@/lib/types/admin-urls";
 
+interface Pagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
 interface UrlsTableProps {
   urls: SiteUrlExtended[];
+  pagination?: Pagination;
+  onPageChange?: (page: number) => void;
   onDelete: (url: SiteUrlExtended) => void;
   onToggleActive: (urlId: string, currentStatus: boolean) => void;
 }
 
-export function UrlsTable({ urls, onDelete, onToggleActive }: UrlsTableProps) {
+export function UrlsTable({ urls, pagination, onPageChange, onDelete, onToggleActive }: UrlsTableProps) {
   const getEmbeddingStatusBadge = (status: string) => {
     const config = getEmbeddingStatusBadgeConfig(status);
     return (
@@ -182,6 +192,18 @@ export function UrlsTable({ urls, onDelete, onToggleActive }: UrlsTableProps) {
           ))}
         </TableBody>
       </Table>
+      {pagination && onPageChange && (
+        <div className="px-6 pb-4">
+          <TablePagination
+            page={pagination.page}
+            limit={pagination.limit}
+            total={pagination.total}
+            totalPages={pagination.pages}
+            onPageChange={onPageChange}
+            itemName="URLs"
+          />
+        </div>
+      )}
     </div>
   );
 }

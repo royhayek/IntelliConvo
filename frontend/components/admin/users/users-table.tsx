@@ -20,19 +20,29 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { TimeAgo } from "@/components/ui/time-ago";
+import { TablePagination } from "@/components/ui/table-pagination";
 import {
   getAuthProviderBadgeConfig,
   getUserRoleBadgeConfig,
 } from "@/lib/utils/badge-helpers";
 import type { AdminUser } from "@/lib/api/generated/models";
 
+interface Pagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
 interface UsersTableProps {
   users: AdminUser[];
+  pagination?: Pagination;
+  onPageChange?: (page: number) => void;
   onForceLogout: (userId: string) => void;
   onDelete: (user: AdminUser) => void;
 }
 
-export function UsersTable({ users, onForceLogout, onDelete }: UsersTableProps) {
+export function UsersTable({ users, pagination, onPageChange, onForceLogout, onDelete }: UsersTableProps) {
   const renderAuthProviderBadge = (provider: string) => {
     const config = getAuthProviderBadgeConfig(provider);
     return (
@@ -145,6 +155,18 @@ export function UsersTable({ users, onForceLogout, onDelete }: UsersTableProps) 
           )}
         </TableBody>
       </Table>
+      {pagination && onPageChange && (
+        <div className="px-6 pb-4">
+          <TablePagination
+            page={pagination.page}
+            limit={pagination.limit}
+            total={pagination.total}
+            totalPages={pagination.pages}
+            onPageChange={onPageChange}
+            itemName="users"
+          />
+        </div>
+      )}
     </div>
   );
 }

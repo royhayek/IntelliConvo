@@ -15,7 +15,8 @@ import {
 } from "@/lib/api/generated/queries/subscriptions/subscriptions";
 import { useGetApiV1SitesSiteId } from "@/lib/api/generated/queries/sites/sites";
 import { getBackLinkConfig } from "@/lib/utils/navigation";
-import { AccountPageHeader, NoSiteSelected } from "@/components/account";
+import { NoSiteSelected } from "@/components/account";
+import { DashboardHeader } from "@/components/layout/dashboard-header";
 import type { Subscription } from "@/lib/api/generated/models";
 import {
   CurrentSubscriptionCard,
@@ -112,7 +113,13 @@ function SubscriptionsPageContent() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-slate-950">
-      <AccountPageHeader backLink={backLink} userEmail={user.email} />
+      <DashboardHeader
+        variant="dashboard"
+        showBackButton={true}
+        backHref={backLink.href}
+        showQuickActions={true}
+        showNavigationSettings={false}
+      />
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-8">

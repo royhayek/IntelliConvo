@@ -151,9 +151,11 @@ export function getAllowedOrigins(): string[] {
       'http://127.0.0.1:3000',
       'http://127.0.0.1:5500',
       'http://localhost:5500',
+      'http://172.20.10.2:3000', // Example local network IP for mobile testing
       // Backend server origin (needed for Swagger UI)
       `http://localhost:${cfg.PORT}`,
-      `http://127.0.0.1:${cfg.PORT}`
+      `http://127.0.0.1:${cfg.PORT}`,
+      `http://172.20.10.2:${cfg.PORT}`
     );
   }
 

@@ -57,6 +57,7 @@ import {
 
 // Import generated types
 import type { GetApiV1AdminWidgetsParams } from "@/lib/api/generated/models";
+import { TablePagination } from "@/components/ui/table-pagination";
 
 // Extended widget interface to include additional fields from API response
 // The generated types may not include all fields returned by the API
@@ -89,7 +90,9 @@ export default function AdminWidgetsPage() {
   const queryClient = useQueryClient();
 
   const [search, setSearch] = useState(searchParams.get("search") || "");
-  const [searchInput, setSearchInput] = useState(searchParams.get("search") || "");
+  const [searchInput, setSearchInput] = useState(
+    searchParams.get("search") || ""
+  );
   const [theme, setTheme] = useState(searchParams.get("theme") || "all");
   const [page, setPage] = useState(parseInt(searchParams.get("page") || "1"));
   const [deleteWidget, setDeleteWidget] = useState<Widget | null>(null);
@@ -117,10 +120,14 @@ export default function AdminWidgetsPage() {
         setDeleteWidget(null);
         setMutationError(null);
         // Invalidate widgets query to refetch
-        queryClient.invalidateQueries({ queryKey: getGetApiV1AdminWidgetsQueryKey(queryParams) });
+        queryClient.invalidateQueries({
+          queryKey: getGetApiV1AdminWidgetsQueryKey(queryParams),
+        });
       },
       onError: (error) => {
-        setMutationError(error instanceof Error ? error.message : "Failed to delete widget");
+        setMutationError(
+          error instanceof Error ? error.message : "Failed to delete widget"
+        );
       },
     },
   });
@@ -131,24 +138,30 @@ export default function AdminWidgetsPage() {
       onSuccess: () => {
         setMutationError(null);
         // Invalidate widgets query to refetch
-        queryClient.invalidateQueries({ queryKey: getGetApiV1AdminWidgetsQueryKey(queryParams) });
+        queryClient.invalidateQueries({
+          queryKey: getGetApiV1AdminWidgetsQueryKey(queryParams),
+        });
       },
       onError: (error) => {
-        setMutationError(error instanceof Error ? error.message : "Failed to reset widget");
+        setMutationError(
+          error instanceof Error ? error.message : "Failed to reset widget"
+        );
       },
     },
   });
 
   // Extract data from response - cast to extended Widget type
-  const data = widgetsResponse?.data as {
-    widgets: Widget[];
-    pagination: {
-      page: number;
-      limit: number;
-      total: number;
-      totalPages: number;
-    };
-  } | undefined;
+  const data = widgetsResponse?.data as
+    | {
+        widgets: Widget[];
+        pagination: {
+          page: number;
+          limit: number;
+          total: number;
+          totalPages: number;
+        };
+      }
+    | undefined;
 
   const handleSearch = () => {
     setSearch(searchInput);
@@ -166,7 +179,9 @@ export default function AdminWidgetsPage() {
 
   // Compute error message
   const error = widgetsError
-    ? (widgetsError instanceof Error ? widgetsError.message : "An error occurred")
+    ? widgetsError instanceof Error
+      ? widgetsError.message
+      : "An error occurred"
     : mutationError;
 
   const getThemeBadge = (widgetTheme: string) => {
@@ -242,7 +257,13 @@ export default function AdminWidgetsPage() {
           </div>
           <Button onClick={handleSearch}>Search</Button>
         </div>
-        <Select value={theme} onValueChange={(v) => { setTheme(v); setPage(1); }}>
+        <Select
+          value={theme}
+          onValueChange={(v) => {
+            setTheme(v);
+            setPage(1);
+          }}
+        >
           <SelectTrigger className="w-[150px]">
             <SelectValue placeholder="Theme" />
           </SelectTrigger>
@@ -269,125 +290,138 @@ export default function AdminWidgetsPage() {
           <LoadingSpinner size="lg" />
         </div>
       ) : data ? (
-        <>
-          <div className="border rounded-lg dark:border-slate-700">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-gray-50 dark:bg-slate-800">
-                  <TableHead>Site</TableHead>
-                  <TableHead>Color</TableHead>
-                  <TableHead>Theme</TableHead>
-                  <TableHead>Position</TableHead>
-                  <TableHead>Bot Name</TableHead>
-                  <TableHead>Updated</TableHead>
-                  <TableHead className="w-[70px]">Actions</TableHead>
+        <div className="border rounded-lg dark:border-slate-700">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-gray-50 dark:bg-slate-800">
+                <TableHead>Site</TableHead>
+                <TableHead>Color</TableHead>
+                <TableHead>Theme</TableHead>
+                <TableHead>Position</TableHead>
+                <TableHead>Bot Name</TableHead>
+                <TableHead>Updated</TableHead>
+                <TableHead className="w-[70px]">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {data.widgets.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={7}
+                    className="text-center py-8 text-gray-500"
+                  >
+                    No widget settings found
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {data.widgets.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8 text-gray-500">
-                      No widget settings found
+              ) : (
+                data.widgets.map((widget) => (
+                  <TableRow key={widget.id}>
+                    <TableCell>
+                      <Link
+                        href={`/admin/sites/${widget.site.id}`}
+                        className="hover:underline"
+                      >
+                        <p className="font-medium">{widget.site.siteName}</p>
+                        <p className="text-sm text-gray-500 truncate max-w-[200px]">
+                          {widget.site.siteUrl}
+                        </p>
+                      </Link>
+                      <Link
+                        href={`/admin/users/${widget.site.user.id}`}
+                        className="text-xs text-gray-400 hover:underline"
+                      >
+                        {widget.site.user.email}
+                      </Link>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="w-6 h-6 rounded-full border border-gray-200"
+                          style={{ backgroundColor: widget.primaryColor }}
+                        />
+                        <span className="font-mono text-xs text-gray-500">
+                          {widget.primaryColor}
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell>{getThemeBadge(widget.theme)}</TableCell>
+                    <TableCell>
+                      {getPositionBadge(widget.launcherPosition)}
+                    </TableCell>
+                    <TableCell>
+                      <p className="font-medium">{widget.botName}</p>
+                      <p className="text-xs text-gray-500">
+                        {widget.headerTitle}
+                      </p>
+                    </TableCell>
+                    <TableCell>
+                      <TimeAgo date={widget.updatedAt} />
+                    </TableCell>
+                    <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            disabled={
+                              resetMutation.isPending &&
+                              resetMutation.variables?.widgetId === widget.id
+                            }
+                          >
+                            {resetMutation.isPending &&
+                            resetMutation.variables?.widgetId === widget.id ? (
+                              <LoadingSpinner size="sm" />
+                            ) : (
+                              <MoreHorizontal className="h-4 w-4" />
+                            )}
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem asChild>
+                            <Link href={`/admin/widgets/${widget.id}`}>
+                              <Eye className="h-4 w-4 mr-2" />
+                              View Details
+                            </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            onClick={() => handleReset(widget)}
+                            className="text-orange-600"
+                          >
+                            <RotateCcw className="h-4 w-4 mr-2" />
+                            Reset to Defaults
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            onClick={() => setDeleteWidget(widget)}
+                            className="text-red-600 dark:text-red-400"
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </TableCell>
                   </TableRow>
-                ) : (
-                  data.widgets.map((widget) => (
-                    <TableRow key={widget.id}>
-                      <TableCell>
-                        <Link
-                          href={`/admin/sites/${widget.site.id}`}
-                          className="hover:underline"
-                        >
-                          <p className="font-medium">{widget.site.siteName}</p>
-                          <p className="text-sm text-gray-500 truncate max-w-[200px]">
-                            {widget.site.siteUrl}
-                          </p>
-                        </Link>
-                        <Link
-                          href={`/admin/users/${widget.site.user.id}`}
-                          className="text-xs text-gray-400 hover:underline"
-                        >
-                          {widget.site.user.email}
-                        </Link>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <div
-                            className="w-6 h-6 rounded-full border border-gray-200"
-                            style={{ backgroundColor: widget.primaryColor }}
-                          />
-                          <span className="font-mono text-xs text-gray-500">
-                            {widget.primaryColor}
-                          </span>
-                        </div>
-                      </TableCell>
-                      <TableCell>{getThemeBadge(widget.theme)}</TableCell>
-                      <TableCell>{getPositionBadge(widget.launcherPosition)}</TableCell>
-                      <TableCell>
-                        <p className="font-medium">{widget.botName}</p>
-                        <p className="text-xs text-gray-500">{widget.headerTitle}</p>
-                      </TableCell>
-                      <TableCell>
-                        <TimeAgo date={widget.updatedAt} />
-                      </TableCell>
-                      <TableCell>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm" disabled={resetMutation.isPending && resetMutation.variables?.widgetId === widget.id}>
-                              {resetMutation.isPending && resetMutation.variables?.widgetId === widget.id ? (
-                                <LoadingSpinner size="sm" />
-                              ) : (
-                                <MoreHorizontal className="h-4 w-4" />
-                              )}
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem asChild>
-                              <Link href={`/admin/widgets/${widget.id}`}>
-                                <Eye className="h-4 w-4 mr-2" />
-                                View Details
-                              </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              onClick={() => handleReset(widget)}
-                              className="text-orange-600"
-                            >
-                              <RotateCcw className="h-4 w-4 mr-2" />
-                              Reset to Defaults
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              onClick={() => setDeleteWidget(widget)}
-                              className="text-red-600 dark:text-red-400"
-                            >
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
+                ))
+              )}
+            </TableBody>
+          </Table>
 
           {/* Pagination */}
-          {data.pagination.totalPages > 1 && (
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-gray-500">
-                Showing {((page - 1) * 20) + 1} to {Math.min(page * 20, data.pagination.total)} of {data.pagination.total} widgets
-              </p>
-              <Pagination
-                currentPage={page}
-                totalPages={data.pagination.totalPages}
+          {data.pagination && (
+            <div className="px-6 pb-4">
+              <TablePagination
+                page={page}
+                limit={data.pagination.limit}
+                total={data.pagination.total}
+                totalPages={data.pagination.pages}
                 onPageChange={setPage}
+                itemName="messages"
               />
             </div>
           )}
-        </>
+        </div>
       ) : null}
 
       {/* Delete Confirmation Dialog */}

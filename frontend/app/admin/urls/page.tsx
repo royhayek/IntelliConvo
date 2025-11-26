@@ -23,9 +23,15 @@ export default function AdminUrlsPage() {
   const queryClient = useQueryClient();
 
   const [search, setSearch] = useState(searchParams.get("search") || "");
-  const [isActive, setIsActive] = useState(searchParams.get("isActive") || "all");
-  const [hasEmbeddings, setHasEmbeddings] = useState(searchParams.get("hasEmbeddings") || "all");
-  const [siteId, setSiteId] = useState<string | null>(searchParams.get("siteId") || null);
+  const [isActive, setIsActive] = useState(
+    searchParams.get("isActive") || "all"
+  );
+  const [hasEmbeddings, setHasEmbeddings] = useState(
+    searchParams.get("hasEmbeddings") || "all"
+  );
+  const [siteId, setSiteId] = useState<string | null>(
+    searchParams.get("siteId") || null
+  );
   const [page, setPage] = useState(parseInt(searchParams.get("page") || "1"));
   const [deleteUrl, setDeleteUrl] = useState<SiteUrlExtended | null>(null);
   const [searchInput, setSearchInput] = useState(search);
@@ -45,7 +51,9 @@ export default function AdminUrlsPage() {
     mutation: {
       onSuccess: () => {
         setDeleteUrl(null);
-        queryClient.invalidateQueries({ queryKey: getGetApiV1AdminUrlsQueryKey(queryParams) });
+        queryClient.invalidateQueries({
+          queryKey: getGetApiV1AdminUrlsQueryKey(queryParams),
+        });
       },
     },
   });
@@ -53,7 +61,9 @@ export default function AdminUrlsPage() {
   const updateMutation = usePatchApiV1AdminUrlsUrlId({
     mutation: {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: getGetApiV1AdminUrlsQueryKey(queryParams) });
+        queryClient.invalidateQueries({
+          queryKey: getGetApiV1AdminUrlsQueryKey(queryParams),
+        });
       },
     },
   });
@@ -77,7 +87,10 @@ export default function AdminUrlsPage() {
 
   const urls = (data?.data?.urls || []) as unknown as SiteUrlExtended[];
   const pagination = data?.data?.pagination;
-  const errorMessage = error?.message || deleteMutation.error?.message || updateMutation.error?.message;
+  const errorMessage =
+    error?.message ||
+    deleteMutation.error?.message ||
+    updateMutation.error?.message;
 
   return (
     <div className="space-y-6">
@@ -98,11 +111,20 @@ export default function AdminUrlsPage() {
         onSearchInputChange={setSearchInput}
         onSearch={handleSearch}
         siteId={siteId}
-        onSiteChange={(id) => { setSiteId(id); setPage(1); }}
+        onSiteChange={(id) => {
+          setSiteId(id);
+          setPage(1);
+        }}
         isActive={isActive}
-        onIsActiveChange={(v) => { setIsActive(v); setPage(1); }}
+        onIsActiveChange={(v) => {
+          setIsActive(v);
+          setPage(1);
+        }}
         hasEmbeddings={hasEmbeddings}
-        onHasEmbeddingsChange={(v) => { setHasEmbeddings(v); setPage(1); }}
+        onHasEmbeddingsChange={(v) => {
+          setHasEmbeddings(v);
+          setPage(1);
+        }}
       />
 
       {errorMessage && (
@@ -117,26 +139,11 @@ export default function AdminUrlsPage() {
           <LoadingSpinner size="lg" />
         </div>
       ) : data?.data ? (
-        <>
-          <UrlsTable
-            urls={urls}
-            onDelete={setDeleteUrl}
-            onToggleActive={handleToggleActive}
-          />
-
-          {pagination && pagination.totalPages > 1 && (
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-gray-500">
-                Showing {((page - 1) * 20) + 1} to {Math.min(page * 20, pagination.total)} of {pagination.total} URLs
-              </p>
-              <Pagination
-                currentPage={page}
-                totalPages={pagination.totalPages}
-                onPageChange={setPage}
-              />
-            </div>
-          )}
-        </>
+        <UrlsTable
+          urls={urls}
+          onDelete={setDeleteUrl}
+          onToggleActive={handleToggleActive}
+        />
       ) : null}
 
       <DeleteConfirmationDialog
@@ -145,7 +152,9 @@ export default function AdminUrlsPage() {
         onConfirm={handleDelete}
         isDeleting={deleteMutation.isPending}
         title="Delete URL"
-        description={`Are you sure you want to delete this URL and its ${deleteUrl?.embeddingsCount || 0} embeddings? This action cannot be undone.`}
+        description={`Are you sure you want to delete this URL and its ${
+          deleteUrl?.embeddingsCount || 0
+        } embeddings? This action cannot be undone.`}
       />
     </div>
   );

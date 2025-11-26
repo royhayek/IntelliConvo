@@ -115,6 +115,90 @@ export class VoiceHandler {
   }
 
   /**
+   * Handles voice input with custom result handler
+   * @param onResult - Custom callback for handling speech results
+   */
+  public handleVoiceInputWithCallback(onResult: (transcript: string) => void): void {
+    try {
+      if (!('webkitSpeechRecognition' in window)) {
+        throw new WidgetError('Speech recognition not supported in this browser', WIDGET_ERRORS.SPEECH_NOT_SUPPORTED);
+      }
+
+      // Stop any existing recognition
+      if (this.speechRecognition) {
+        this.speechRecognition.stop();
+      }
+
+      this.speechRecognition = new window.webkitSpeechRecognition();
+      this.speechRecognition.continuous = false;
+      this.speechRecognition.interimResults = false;
+      this.speechRecognition.lang = this.dependencies.settings?.voiceInputLanguage || 'en-US';
+
+      this.speechRecognition.onstart = () => {
+        const micBtn = document.getElementById('intelligentconvo-mic');
+        const speakBtn = document.getElementById('intelligentconvo-speak-btn');
+        const btn = speakBtn || micBtn;
+        if (btn) {
+          btn.classList.add('listening');
+          btn.setAttribute('aria-label', 'Listening...');
+        }
+      };
+
+      this.speechRecognition.onresult = (event: SpeechRecognitionEvent) => {
+        try {
+          const transcript = event.results[0][0].transcript;
+          if (transcript.trim()) {
+            onResult(transcript);
+          }
+        } catch (error) {
+          console.error('Failed to process speech recognition result:', error);
+          if (this.dependencies.onError) {
+            this.dependencies.onError(
+              error instanceof WidgetError ? error : new WidgetError('Failed to process speech recognition result', WIDGET_ERRORS.SPEECH_NOT_SUPPORTED)
+            );
+          }
+        }
+      };
+
+      this.speechRecognition.onend = () => {
+        const micBtn = document.getElementById('intelligentconvo-mic');
+        const speakBtn = document.getElementById('intelligentconvo-speak-btn');
+        const btn = speakBtn || micBtn;
+        if (btn) {
+          btn.classList.remove('listening');
+          btn.setAttribute('aria-label', 'Start voice input');
+        }
+        this.speechRecognition = null;
+      };
+
+      this.speechRecognition.onerror = (event: { error: string; message?: string }) => {
+        const error = new WidgetError(`Speech recognition error: ${event.error}`, WIDGET_ERRORS.SPEECH_NOT_SUPPORTED);
+        console.error(error);
+
+        if (this.dependencies.onError) {
+          this.dependencies.onError(error);
+        }
+
+        const micBtn = document.getElementById('intelligentconvo-mic');
+        const speakBtn = document.getElementById('intelligentconvo-speak-btn');
+        const btn = speakBtn || micBtn;
+        if (btn) {
+          btn.classList.remove('listening');
+        }
+      };
+
+      this.speechRecognition.start();
+    } catch (error) {
+      const err = error instanceof WidgetError ? error : new WidgetError('Voice input failed', WIDGET_ERRORS.SPEECH_NOT_SUPPORTED);
+      console.error(err);
+
+      if (this.dependencies.onError) {
+        this.dependencies.onError(err);
+      }
+    }
+  }
+
+  /**
    * Cleanup method to stop recognition
    */
   public cleanup(): void {

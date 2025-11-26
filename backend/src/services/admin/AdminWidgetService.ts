@@ -113,7 +113,7 @@ class AdminWidgetService {
             siteName: true,
             siteUrl: true,
             siteDescription: true,
-            welcomeMessage: true,
+            startersHeadline: true,
             createdAt: true,
             user: {
               select: {
@@ -301,7 +301,7 @@ class AdminWidgetService {
       showTypingIndicator: true,
       enableSoundNotifications: false,
       enableVoiceInput: true,
-      showPoweredBy: true,
+      showPoweredBy: false,
     };
 
     const updated = await prisma.widgetSettings.update({

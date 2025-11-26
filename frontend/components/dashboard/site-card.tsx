@@ -7,6 +7,11 @@ import { Badge } from "@/components/ui/badge";
 import { SiteAvatar } from "@/components/site/site-avatar";
 import { type SiteResponse } from "@/lib/api/generated/models";
 
+// Helper function to display clean site name (removes www.)
+function getDisplayName(siteName: string): string {
+  return siteName.startsWith('www.') ? siteName.substring(4) : siteName;
+}
+
 interface SiteCardProps {
   site: SiteResponse;
   index?: number;
@@ -19,12 +24,12 @@ export function SiteCard({ site, index = 0, animated = true }: SiteCardProps) {
   const content = (
     <Card className="h-full hover:shadow-md transition-shadow">
       <CardContent className="p-6">
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center space-x-4">
-            <SiteAvatar siteName={site.siteName} imageUrl={site.faviconUrl ?? undefined} size="lg" animated={false} />
-            <div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-indigo-700 dark:group-hover:text-indigo-400 transition-colors">
-                {site.siteName}
+        <div className="flex items-start justify-between gap-3 mb-4">
+          <div className="flex items-center space-x-4 min-w-0 flex-1">
+            <SiteAvatar siteName={site.siteName} imageUrl={site.faviconUrl ?? undefined} size="md" animated={false} />
+            <div className="min-w-0 flex-1">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-indigo-700 dark:group-hover:text-indigo-400 transition-colors truncate">
+                {getDisplayName(site.siteName)}
               </h3>
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 {site.urlCount} URLs indexed
@@ -33,7 +38,7 @@ export function SiteCard({ site, index = 0, animated = true }: SiteCardProps) {
           </div>
           <Badge
             variant={displayStatus.variant}
-            className={`flex items-center space-x-2 -mt-1 ${displayStatus.badgeClass}`}
+            className={`flex items-center space-x-2 flex-shrink-0 whitespace-nowrap ${displayStatus.badgeClass}`}
           >
             <motion.div
               animate={{

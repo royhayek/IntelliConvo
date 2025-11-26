@@ -9,6 +9,7 @@ import { asyncHandler } from '../middleware/errorHandler';
 import { validateBody, validateParams } from '../middleware/validate';
 import { messageResponse } from '../utils/response';
 import { siteService } from '../services';
+import { settings } from '../lib/settings';
 import {
   createSiteSchema,
   updateSiteSchema,
@@ -676,31 +677,45 @@ router.get(
   authenticate,
   validateParams(siteParamsSchema),
   asyncHandler(async (req, res) => {
-    const { checkTrialStatus, getTrialLimitsFromSettings, getSitePlanLimits } = await import('../config/planLimits');
+    const { getSitePlanLimits } = await import('../config/planLimits');
 
-    // Verify site ownership
+    // Verify site ownership and get subscription
     const site = await prisma.site.findFirst({
       where: { id: req.params.siteId, userId: req.user!.id },
+      include: {
+        subscription: {
+          select: {
+            status: true,
+            trialEndsAt: true,
+          },
+        },
+      },
     });
 
     if (!site) {
       return res.status(404).json({ error: 'Site not found' });
     }
 
-    const [trialStatus, trialLimits, planLimits] = await Promise.all([
-      checkTrialStatus(req.params.siteId),
-      getTrialLimitsFromSettings(),
+    const [trialDays, planLimits] = await Promise.all([
+      settings.getTrialDays(),
       getSitePlanLimits(req.params.siteId),
     ]);
 
+    // Calculate days remaining if in trial
+    let daysRemaining: number | undefined;
+    if (site.subscription?.status === 'TRIAL' && site.subscription.trialEndsAt) {
+      const now = new Date();
+      const trialEnd = new Date(site.subscription.trialEndsAt);
+      daysRemaining = Math.max(0, Math.ceil((trialEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+    }
+
     res.json({
-      ...trialStatus,
+      isInTrial: site.subscription?.status === 'TRIAL',
+      trialExpired: site.subscription?.status === 'EXPIRED' || site.subscription?.status === 'CANCELLED',
+      daysRemaining,
       limits: {
-        maxDays: trialLimits.days,
-        maxConversations: trialLimits.maxConversations,
-        maxMessages: trialLimits.maxMessages,
+        maxDays: trialDays,
         maxUrls: planLimits.maxUrls,
-        trialEnabled: trialLimits.enabled,
       },
     });
   })

@@ -30,7 +30,7 @@ interface UpdateSiteData {
   siteDescription?: string;
   siteIndustry?: string;
   specialInstructions?: string;
-  welcomeMessage?: string;
+  startersHeadline?: string;
   crawlStatus?: CrawlStatus;
 }
 
@@ -213,7 +213,7 @@ class AdminSiteService {
         ...(data.siteDescription !== undefined && { siteDescription: data.siteDescription }),
         ...(data.siteIndustry !== undefined && { siteIndustry: data.siteIndustry }),
         ...(data.specialInstructions !== undefined && { specialInstructions: data.specialInstructions }),
-        ...(data.welcomeMessage !== undefined && { welcomeMessage: data.welcomeMessage }),
+        ...(data.startersHeadline !== undefined && { startersHeadline: data.startersHeadline }),
         ...(data.crawlStatus !== undefined && { crawlStatus: data.crawlStatus }),
       },
       include: {

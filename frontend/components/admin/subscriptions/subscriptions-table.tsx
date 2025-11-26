@@ -28,11 +28,21 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { TimeAgo } from "@/components/ui/time-ago";
+import { TablePagination } from "@/components/ui/table-pagination";
 import { getSubscriptionStatusBadgeConfig } from "@/lib/utils/badge-helpers";
 import type { AdminSubscription } from "@/lib/api/generated/models";
 
+interface Pagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
 interface SubscriptionsTableProps {
   subscriptions: AdminSubscription[];
+  pagination?: Pagination;
+  onPageChange?: (page: number) => void;
   actionLoadingId: string | null;
   onCancel: (subscription: AdminSubscription) => void;
   onReactivate: (subscription: AdminSubscription) => void;
@@ -41,6 +51,8 @@ interface SubscriptionsTableProps {
 
 export function SubscriptionsTable({
   subscriptions,
+  pagination,
+  onPageChange,
   actionLoadingId,
   onCancel,
   onReactivate,
@@ -180,6 +192,18 @@ export function SubscriptionsTable({
           )}
         </TableBody>
       </Table>
+      {pagination && onPageChange && (
+        <div className="px-6 pb-4">
+          <TablePagination
+            page={pagination.page}
+            limit={pagination.limit}
+            total={pagination.total}
+            totalPages={pagination.pages}
+            onPageChange={onPageChange}
+            itemName="subscriptions"
+          />
+        </div>
+      )}
     </div>
   );
 }

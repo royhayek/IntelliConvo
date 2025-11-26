@@ -18,11 +18,21 @@ export const SettingKeys = {
   SUPPORT_EMAIL: 'general.supportEmail',
   MAINTENANCE_MODE: 'general.maintenanceMode',
 
-  // AI
+  // AI Models
   AI_DEFAULT_MODEL: 'ai.defaultModel',
   AI_EMBEDDING_MODEL: 'ai.embeddingModel',
-  AI_MAX_TOKENS: 'ai.maxTokens',
   AI_TEMPERATURE: 'ai.temperature',
+
+  // AI Optimization
+  AI_MAX_TOKENS: 'ai.maxTokens',
+  AI_MAX_RESPONSE_TOKENS: 'ai.maxResponseTokens',
+  AI_MAX_HISTORY_TOKENS: 'ai.maxHistoryTokens',
+  AI_MAX_CONTENT_CHUNK_TOKENS: 'ai.maxContentChunkTokens',
+  AI_MAX_TOTAL_INPUT_TOKENS: 'ai.maxTotalInputTokens',
+  AI_VECTOR_SEARCH_TOP_K: 'ai.vectorSearchTopK',
+  AI_EMBEDDING_CHUNK_SIZE: 'ai.embeddingChunkSize',
+  AI_SYSTEM_PROMPT_DESCRIPTION_LIMIT: 'ai.systemPromptDescriptionLimit',
+  AI_SYSTEM_PROMPT_INSTRUCTIONS_LIMIT: 'ai.systemPromptInstructionsLimit',
 
   // Security
   SESSION_TIMEOUT_DAYS: 'security.sessionTimeoutDays',
@@ -48,10 +58,7 @@ export const SettingKeys = {
   EMAIL_VERIFICATION_ENABLED: 'email.verificationEnabled',
 
   // Billing
-  BILLING_TRIAL_ENABLED: 'billing.trialEnabled',
   BILLING_TRIAL_DAYS: 'billing.trialDays',
-  BILLING_TRIAL_MAX_CONVERSATIONS: 'billing.trialMaxConversations',
-  BILLING_TRIAL_MAX_MESSAGES: 'billing.trialMaxMessages',
   BILLING_MAX_URLS_PER_SITE: 'billing.maxUrlsPerSite',
   BILLING_CURRENCY: 'billing.currency',
 
@@ -84,10 +91,7 @@ const ENV_FALLBACKS: Record<string, string | undefined> = {
   [SettingKeys.EMAIL_FROM_NAME]: process.env.EMAIL_FROM_NAME || process.env.FROM_NAME,
   [SettingKeys.EMAIL_PROVIDER]: process.env.EMAIL_PROVIDER,
   [SettingKeys.EMAIL_VERIFICATION_ENABLED]: process.env.EMAIL_VERIFICATION_ENABLED,
-  [SettingKeys.BILLING_TRIAL_ENABLED]: process.env.TRIAL_ENABLED,
   [SettingKeys.BILLING_TRIAL_DAYS]: process.env.TRIAL_DAYS,
-  [SettingKeys.BILLING_TRIAL_MAX_CONVERSATIONS]: process.env.TRIAL_MAX_CONVERSATIONS,
-  [SettingKeys.BILLING_TRIAL_MAX_MESSAGES]: process.env.TRIAL_MAX_MESSAGES,
   [SettingKeys.BILLING_MAX_URLS_PER_SITE]: process.env.MAX_URLS_PER_SITE,
   [SettingKeys.BILLING_CURRENCY]: process.env.BILLING_CURRENCY,
   [SettingKeys.STORAGE_MAX_FILE_SIZE_MB]: process.env.MAX_FILE_SIZE?.replace('mb', ''),
@@ -99,10 +103,18 @@ const DEFAULTS: Record<string, unknown> = {
   [SettingKeys.PLATFORM_NAME]: 'IntelligentConvo',
   [SettingKeys.SUPPORT_EMAIL]: 'support@intelligentconvo.com',
   [SettingKeys.MAINTENANCE_MODE]: false,
-  [SettingKeys.AI_DEFAULT_MODEL]: 'gpt-4-turbo-preview',
+  [SettingKeys.AI_DEFAULT_MODEL]: 'gpt-4o-mini',
   [SettingKeys.AI_EMBEDDING_MODEL]: 'text-embedding-3-small',
-  [SettingKeys.AI_MAX_TOKENS]: 4096,
   [SettingKeys.AI_TEMPERATURE]: 0.7,
+  [SettingKeys.AI_MAX_TOKENS]: 4096,
+  [SettingKeys.AI_MAX_RESPONSE_TOKENS]: 500,
+  [SettingKeys.AI_MAX_HISTORY_TOKENS]: 1000,
+  [SettingKeys.AI_MAX_CONTENT_CHUNK_TOKENS]: 400,
+  [SettingKeys.AI_MAX_TOTAL_INPUT_TOKENS]: 3000,
+  [SettingKeys.AI_VECTOR_SEARCH_TOP_K]: 3,
+  [SettingKeys.AI_EMBEDDING_CHUNK_SIZE]: 500,
+  [SettingKeys.AI_SYSTEM_PROMPT_DESCRIPTION_LIMIT]: 200,
+  [SettingKeys.AI_SYSTEM_PROMPT_INSTRUCTIONS_LIMIT]: 150,
   [SettingKeys.SESSION_TIMEOUT_DAYS]: 7,
   [SettingKeys.REFRESH_TOKEN_DAYS]: 30,
   [SettingKeys.MAX_LOGIN_ATTEMPTS]: 5,
@@ -118,10 +130,7 @@ const DEFAULTS: Record<string, unknown> = {
   [SettingKeys.EMAIL_FROM_NAME]: 'IntelligentConvo',
   [SettingKeys.EMAIL_PROVIDER]: 'auto',
   [SettingKeys.EMAIL_VERIFICATION_ENABLED]: false,
-  [SettingKeys.BILLING_TRIAL_ENABLED]: false,
-  [SettingKeys.BILLING_TRIAL_DAYS]: 1,
-  [SettingKeys.BILLING_TRIAL_MAX_CONVERSATIONS]: 5,
-  [SettingKeys.BILLING_TRIAL_MAX_MESSAGES]: 20,
+  [SettingKeys.BILLING_TRIAL_DAYS]: 2,
   [SettingKeys.BILLING_MAX_URLS_PER_SITE]: 500,
   [SettingKeys.BILLING_CURRENCY]: 'USD',
   [SettingKeys.STORAGE_MAX_FILE_SIZE_MB]: 10,
@@ -272,6 +281,38 @@ export const settings = {
     return getSetting<number>(SettingKeys.AI_TEMPERATURE);
   },
 
+  async getAIMaxResponseTokens(): Promise<number> {
+    return getSetting<number>(SettingKeys.AI_MAX_RESPONSE_TOKENS);
+  },
+
+  async getAIMaxHistoryTokens(): Promise<number> {
+    return getSetting<number>(SettingKeys.AI_MAX_HISTORY_TOKENS);
+  },
+
+  async getAIMaxContentChunkTokens(): Promise<number> {
+    return getSetting<number>(SettingKeys.AI_MAX_CONTENT_CHUNK_TOKENS);
+  },
+
+  async getAIMaxTotalInputTokens(): Promise<number> {
+    return getSetting<number>(SettingKeys.AI_MAX_TOTAL_INPUT_TOKENS);
+  },
+
+  async getAIVectorSearchTopK(): Promise<number> {
+    return getSetting<number>(SettingKeys.AI_VECTOR_SEARCH_TOP_K);
+  },
+
+  async getAIEmbeddingChunkSize(): Promise<number> {
+    return getSetting<number>(SettingKeys.AI_EMBEDDING_CHUNK_SIZE);
+  },
+
+  async getAISystemPromptDescriptionLimit(): Promise<number> {
+    return getSetting<number>(SettingKeys.AI_SYSTEM_PROMPT_DESCRIPTION_LIMIT);
+  },
+
+  async getAISystemPromptInstructionsLimit(): Promise<number> {
+    return getSetting<number>(SettingKeys.AI_SYSTEM_PROMPT_INSTRUCTIONS_LIMIT);
+  },
+
   // Security Settings
   async getSessionTimeoutDays(): Promise<number> {
     return getSetting<number>(SettingKeys.SESSION_TIMEOUT_DAYS);
@@ -320,20 +361,8 @@ export const settings = {
   },
 
   // Billing & Trial
-  async isTrialEnabled(): Promise<boolean> {
-    return getSetting<boolean>(SettingKeys.BILLING_TRIAL_ENABLED);
-  },
-
   async getTrialDays(): Promise<number> {
     return getSetting<number>(SettingKeys.BILLING_TRIAL_DAYS);
-  },
-
-  async getTrialMaxConversations(): Promise<number> {
-    return getSetting<number>(SettingKeys.BILLING_TRIAL_MAX_CONVERSATIONS);
-  },
-
-  async getTrialMaxMessages(): Promise<number> {
-    return getSetting<number>(SettingKeys.BILLING_TRIAL_MAX_MESSAGES);
   },
 
   async getMaxUrlsPerSite(): Promise<number> {
@@ -342,21 +371,6 @@ export const settings = {
 
   async getCurrency(): Promise<string> {
     return getSetting<string>(SettingKeys.BILLING_CURRENCY);
-  },
-
-  async getTrialLimits(): Promise<{
-    enabled: boolean;
-    days: number;
-    maxConversations: number;
-    maxMessages: number;
-  }> {
-    const [enabled, days, maxConversations, maxMessages] = await Promise.all([
-      getSetting<boolean>(SettingKeys.BILLING_TRIAL_ENABLED),
-      getSetting<number>(SettingKeys.BILLING_TRIAL_DAYS),
-      getSetting<number>(SettingKeys.BILLING_TRIAL_MAX_CONVERSATIONS),
-      getSetting<number>(SettingKeys.BILLING_TRIAL_MAX_MESSAGES),
-    ]);
-    return { enabled, days, maxConversations, maxMessages };
   },
 
   // Storage

@@ -5,7 +5,7 @@ import crypto from 'crypto';
 import { JSDOM } from 'jsdom';
 import { Readability } from '@mozilla/readability';
 import { prisma } from '../lib/prisma';
-import { CrawlStatus, UrlEmbeddingStatus } from '@prisma/client';
+import { CrawlStatus, UrlEmbeddingStatus, Site } from '@prisma/client';
 import { logger } from '../utils/logger';
 import { getIO } from './socket';
 import { cacheService, CacheNamespace } from './cache';
@@ -514,6 +514,7 @@ async function batchSaveUrlsToDatabase(siteId: string, results: CrawlResult[]): 
           lastCrawledAt: now,
           embeddingStatus: UrlEmbeddingStatus.SCRAPED,
         })),
+        skipDuplicates: true,
       });
     }
 
@@ -560,14 +561,16 @@ export async function crawlWebsite(
   // Disable Crawlee's default storage to avoid file system clutter
   Configuration.getGlobalConfig().set('persistStorage', false);
 
+  // Initialize counters outside try block so they're accessible in catch
+  const crawlResults: CrawlResult[] = [];
+  let crawledCount = 0;
+  let failedCount = 0;
+  let site: Site | undefined;
+
   try {
-    const site = await initializeCrawl(siteId);
+    site = await initializeCrawl(siteId);
     const baseUrl = `https://${site.siteUrl}`;
 
-    // Collect results for batch saving
-    const crawlResults: CrawlResult[] = [];
-    let crawledCount = 0;
-    let failedCount = 0;
     const visited = new Set<string>();
 
     // Get URLs from sitemap
@@ -732,8 +735,14 @@ export async function crawlWebsite(
 
             // Batch save every 10 results
             if (crawlResults.length >= 10) {
-              await batchSaveUrlsToDatabase(siteId, crawlResults);
-              crawlResults.length = 0;
+              try {
+                await batchSaveUrlsToDatabase(siteId, crawlResults);
+                crawlResults.length = 0;
+              } catch (error) {
+                logger.error(`Error saving batch:`, error);
+                // Continue crawling even if batch save fails
+                crawlResults.length = 0;
+              }
             }
 
             logger.debug(`Crawled ${normalizedUrl} (${content.length} chars)`);
@@ -750,7 +759,7 @@ export async function crawlWebsite(
                 const linkUrl = normalizeUrl(req.url);
 
                 // Skip if already visited or should skip
-                if (visited.has(linkUrl) || shouldSkipUrl(req.url) || !isValidUrl(req.url, site.siteUrl)) {
+                if (visited.has(linkUrl) || shouldSkipUrl(req.url) || !isValidUrl(req.url, site!.siteUrl)) {
                   return false;
                 }
 
@@ -783,13 +792,29 @@ export async function crawlWebsite(
 
     // Save any remaining results
     if (crawlResults.length > 0) {
-      await batchSaveUrlsToDatabase(siteId, crawlResults);
+      try {
+        await batchSaveUrlsToDatabase(siteId, crawlResults);
+      } catch (error) {
+        logger.error(`Error saving final batch:`, error);
+        // Continue to finalize even if final batch save fails
+      }
     }
 
     await finalizeCrawl(siteId, site.siteUrl, crawledCount, failedCount);
   } catch (error) {
-    await handleCrawlError(siteId, error);
-    throw error;
+    logger.error(`Crawl error for site ${siteId}:`, error);
+
+    // Only mark as failed if no pages were successfully crawled
+    if (crawledCount === 0) {
+      await handleCrawlError(siteId, error);
+      throw error;
+    } else {
+      // Some pages were crawled successfully, finalize normally
+      logger.info(`Partial success: ${crawledCount} pages crawled despite errors`);
+      // Use site.siteUrl if available, otherwise fallback to siteId
+      const siteUrl = site?.siteUrl || siteId;
+      await finalizeCrawl(siteId, siteUrl, crawledCount, failedCount);
+    }
   }
 }
 
@@ -1183,7 +1208,13 @@ export async function crawlSingleUrl(siteId: string, urlToCrawl: string): Promis
 
   const crawlResult = resultHolder.result;
   if (crawlResult) {
-    await batchSaveUrlsToDatabase(siteId, [crawlResult]);
+    try {
+      await batchSaveUrlsToDatabase(siteId, [crawlResult]);
+    } catch (error) {
+      logger.error(`Error saving single URL result:`, error);
+      // Re-throw to indicate failure to caller
+      throw new Error(`Failed to save crawl result: ${error instanceof Error ? error.message : String(error)}`);
+    }
 
     const siteUrl = await prisma.siteUrl.findFirst({
       where: { siteId, url: crawlResult.url },
@@ -1319,16 +1350,21 @@ export async function crawlSelectiveUrls(
   // Disable Crawlee's default storage
   Configuration.getGlobalConfig().set('persistStorage', false);
 
-  try {
-    const site = await initializeCrawl(siteId);
+  // Initialize counters outside try block so they're accessible in catch
+  const crawlResults: CrawlResult[] = [];
+  let crawledCount = 0;  // Successfully crawled
+  let failedCount = 0;   // Failed to crawl
+  let processedCount = 0; // Total processed (for accurate progress)
+  const totalUrls = urlsToCrawl.length;
+  let site;
 
-    const crawlResults: CrawlResult[] = [];
-    let crawledCount = 0;  // Successfully crawled
-    let failedCount = 0;   // Failed to crawl
-    let processedCount = 0; // Total processed (for accurate progress)
-    const totalUrls = urlsToCrawl.length;
+  try {
+    site = await initializeCrawl(siteId);
 
     logger.info(`Starting selective crawl for site ${site.siteUrl} with ${totalUrls} URLs`);
+
+    // Create a unique ID for this crawl to prevent deduplication across crawls
+    const crawlId = `${siteId}-${Date.now()}`;
 
     // Create the Playwright crawler
     const crawler = new PlaywrightCrawler({
@@ -1447,8 +1483,14 @@ export async function crawlSelectiveUrls(
 
             // Batch save every 10 results
             if (crawlResults.length >= 10) {
-              await batchSaveUrlsToDatabase(siteId, crawlResults);
-              crawlResults.length = 0;
+              try {
+                await batchSaveUrlsToDatabase(siteId, crawlResults);
+                crawlResults.length = 0;
+              } catch (error) {
+                logger.error(`[Selective] Error saving batch:`, error);
+                // Continue crawling even if batch save fails
+                crawlResults.length = 0;
+              }
             }
 
             logger.debug(`[Selective] Crawled ${normalizedUrl} (${content.length} chars) [${processedCount}/${totalUrls}]`);
@@ -1544,19 +1586,50 @@ export async function crawlSelectiveUrls(
     // Store start time for ETA calculation
     (crawler as { _startTime?: number })._startTime = Date.now();
 
-    // Run the crawler with selected URLs only
-    await crawler.run(urlsToCrawl);
+    // Ensure all URLs are absolute with protocol
+    const absoluteUrls = urlsToCrawl.map(url => {
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        return `https://${url}`;
+      }
+      return url;
+    });
+
+    // Create Request objects with unique keys to bypass Crawlee's deduplication
+    // This ensures each crawl job processes URLs independently even if they were crawled before
+    const requests = absoluteUrls.map(url => ({
+      url,
+      uniqueKey: `${url}#crawl-${crawlId}`, // Add unique identifier to bypass dedup
+    }));
+
+    // Run the crawler with unique request objects
+    const stats = await crawler.run(requests);
 
     // Save any remaining results
     if (crawlResults.length > 0) {
-      await batchSaveUrlsToDatabase(siteId, crawlResults);
+      try {
+        await batchSaveUrlsToDatabase(siteId, crawlResults);
+      } catch (error) {
+        logger.error(`[Selective] Error saving final batch:`, error);
+        // Continue to finalize even if final batch save fails
+      }
     }
 
     await finalizeCrawl(siteId, site.siteUrl, crawledCount, failedCount);
 
     logger.info(`[Selective] Completed crawl for site ${site.siteUrl}. Processed ${processedCount}/${totalUrls} pages (${crawledCount} success, ${failedCount} failed).`);
   } catch (error) {
-    await handleCrawlError(siteId, error);
-    throw error;
+    logger.error(`[Selective] Crawl error for site ${siteId}:`, error);
+
+    // Only mark as failed if no pages were successfully crawled
+    if (crawledCount === 0) {
+      await handleCrawlError(siteId, error);
+      throw error;
+    } else {
+      // Some pages were crawled successfully, finalize normally
+      logger.info(`[Selective] Partial success: ${crawledCount} pages crawled despite errors`);
+      // Use site.siteUrl if available, otherwise fallback to siteId
+      const siteUrl = site?.siteUrl || siteId;
+      await finalizeCrawl(siteId, siteUrl, crawledCount, failedCount);
+    }
   }
 }

@@ -1,7 +1,7 @@
 import { Message, MessageHandlerDependencies, MessageData } from '../types';
 import { WidgetError } from '../core/WidgetError';
 import { WIDGET_ERRORS } from '../constants';
-import { sanitizeHtml, sanitizeHtmlWithConfig } from '../utils/sanitization';
+import { sanitizeHtml, sanitizeHtmlWithConfig, markdownToHtml } from '../utils/sanitization';
 
 export class MessageHandler {
   private dependencies: MessageHandlerDependencies;
@@ -219,16 +219,22 @@ export class MessageHandler {
       if (lastMessage) {
         const contentDiv = lastMessage.querySelector('.intelligentconvo-message-content');
         if (contentDiv) {
-          // Use textContent to prevent HTML injection
-          contentDiv.textContent += chunk;
-        }
+          // First, update the message content in the messages array (raw markdown)
+          const messageId = lastMessage.getAttribute('data-message-id');
+          let fullContent = '';
 
-        // Also update the message content in the messages array
-        const messageId = lastMessage.getAttribute('data-message-id');
-        if (messageId) {
-          const messageObj = this.dependencies.messages.find(m => m.id === messageId);
-          if (messageObj) {
-            messageObj.content += chunk;
+          if (messageId) {
+            const messageObj = this.dependencies.messages.find(m => m.id === messageId);
+            if (messageObj) {
+              messageObj.content += chunk;
+              fullContent = messageObj.content;
+            }
+          }
+
+          // Convert the accumulated markdown to HTML and render it
+          if (fullContent) {
+            const htmlContent = markdownToHtml(fullContent);
+            contentDiv.innerHTML = htmlContent;
           }
         }
 

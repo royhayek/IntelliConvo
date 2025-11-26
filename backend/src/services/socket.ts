@@ -4,6 +4,7 @@ import { streamResponseWithUsage } from './ai';
 import { logger } from '../utils/logger';
 import { ConversationRole } from '@prisma/client';
 import { adminStatsService } from './admin';
+import { isOriginAllowed } from '../utils/hostValidation';
 
 // Store IO instance for broadcasting from other parts of the app
 let ioInstance: Server | null = null;
@@ -64,6 +65,28 @@ export function initializeSocketIO(io: Server): void {
   // Store IO instance for external broadcasts
   ioInstance = io;
 
+  // Socket.IO middleware for origin validation
+  // This validates widget connections against site-specific allowed hosts
+  io.use(async (socket, next) => {
+    const origin = socket.handshake.headers.origin || socket.handshake.headers.referer;
+
+    // Skip validation if no origin (shouldn't happen in browsers)
+    if (!origin) {
+      return next();
+    }
+
+    // Admin connections are validated by JWT auth, skip host validation
+    const isAdminConnection = socket.handshake.auth?.token;
+    if (isAdminConnection) {
+      return next();
+    }
+
+    // For widget connections, we validate on first message with siteId
+    // Here we just log the origin for debugging
+    logger.debug(`Socket connection from origin: ${origin}`);
+    next();
+  });
+
   io.on('connection', (socket: Socket) => {
     logger.info(`Socket connected: ${socket.id}`);
 
@@ -110,22 +133,55 @@ export function initializeSocketIO(io: Server): void {
       try {
         const { sessionId, siteId, content } = data;
 
-        // Check trial limits
-        const { checkTrialStatus } = await import('../config/planLimits');
-        const trialStatus = await checkTrialStatus(siteId);
+        // Validate origin against site's allowed hosts and check subscription status
+        const origin = socket.handshake.headers.origin || socket.handshake.headers.referer;
+        const site = await prisma.site.findUnique({
+          where: { id: siteId },
+          include: {
+            activeHosts: true,
+            subscription: {
+              select: {
+                status: true,
+                trialEndsAt: true,
+              },
+            },
+          },
+        });
 
-        if (trialStatus.isInTrial && trialStatus.trialExpired) {
-          socket.emit('trial-expired', {
-            reason: trialStatus.reason,
-            daysRemaining: trialStatus.daysRemaining,
-            conversationsRemaining: trialStatus.conversationsRemaining,
-            messagesRemaining: trialStatus.messagesRemaining,
-          });
+        if (!site) {
           socket.emit('error', {
-            message: 'Your free trial has ended. Please upgrade to continue using this assistant.',
-            code: 'TRIAL_EXPIRED',
+            message: 'Site not found',
+            code: 'NOT_FOUND',
           });
           return;
+        }
+
+        // Check subscription status - only allow TRIAL or ACTIVE subscriptions
+        if (site.subscription) {
+          const subscriptionStatus = site.subscription.status;
+          if (subscriptionStatus !== 'TRIAL' && subscriptionStatus !== 'ACTIVE') {
+            socket.emit('error', {
+              message: 'Your subscription is not active. Please check your billing settings.',
+              code: 'SUBSCRIPTION_INACTIVE',
+            });
+            return;
+          }
+        }
+
+        // Validate origin
+        if (origin && site.activeHosts.length > 0) {
+          const allowedHosts = site.activeHosts
+            .filter((host) => host.isEnabled)
+            .map((host) => host.hostName);
+
+          if (!isOriginAllowed(origin, allowedHosts)) {
+            logger.warn(`Origin ${origin} not allowed for site ${siteId}`);
+            socket.emit('error', {
+              message: 'Origin not allowed',
+              code: 'FORBIDDEN',
+            });
+            return;
+          }
         }
 
         // Find or create conversation

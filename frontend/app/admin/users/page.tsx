@@ -4,11 +4,9 @@ import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { Users, AlertTriangle } from "lucide-react";
-import { Pagination } from "@/components/ui/pagination";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
-import { getPaginationText } from "@/lib/utils/pagination";
 
 import { UsersTable } from "@/components/admin/users/users-table";
 import { UsersFilters } from "@/components/admin/users/users-filters";
@@ -165,30 +163,13 @@ export default function AdminUsersPage() {
           <LoadingSpinner size="lg" />
         </div>
       ) : data ? (
-        <>
-          <UsersTable
-            users={data.users}
-            onForceLogout={handleForceLogout}
-            onDelete={setDeleteUser}
-          />
-
-          {/* Pagination */}
-          {data.pagination.totalPages > 1 && (
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-gray-500">
-                {getPaginationText(
-                  { page, limit: 20, total: data.pagination.total },
-                  "users"
-                )}
-              </p>
-              <Pagination
-                currentPage={page}
-                totalPages={data.pagination.totalPages}
-                onPageChange={setPage}
-              />
-            </div>
-          )}
-        </>
+        <UsersTable
+          users={data.users}
+          pagination={data.pagination}
+          onPageChange={setPage}
+          onForceLogout={handleForceLogout}
+          onDelete={setDeleteUser}
+        />
       ) : null}
 
       {/* Delete Confirmation Dialog */}

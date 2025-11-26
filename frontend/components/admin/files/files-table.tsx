@@ -28,17 +28,27 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { TimeAgo } from "@/components/ui/time-ago";
+import { TablePagination } from "@/components/ui/table-pagination";
 import { formatBytes } from "@/lib/utils";
 import type { AdminFile } from "@/lib/api/generated/models";
 
+interface Pagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
 interface FilesTableProps {
   files: AdminFile[];
+  pagination?: Pagination;
+  onPageChange?: (page: number) => void;
   onReprocess: (fileId: string) => void;
   onDelete: (file: AdminFile) => void;
   isReprocessing: boolean;
 }
 
-export function FilesTable({ files, onReprocess, onDelete, isReprocessing }: FilesTableProps) {
+export function FilesTable({ files, pagination, onPageChange, onReprocess, onDelete, isReprocessing }: FilesTableProps) {
   const getStatusBadge = (fileStatus: string) => {
     switch (fileStatus) {
       case "COMPLETED":
@@ -152,6 +162,18 @@ export function FilesTable({ files, onReprocess, onDelete, isReprocessing }: Fil
           )}
         </TableBody>
       </Table>
+      {pagination && onPageChange && (
+        <div className="px-6 pb-4">
+          <TablePagination
+            page={pagination.page}
+            limit={pagination.limit}
+            total={pagination.total}
+            totalPages={pagination.pages}
+            onPageChange={onPageChange}
+            itemName="files"
+          />
+        </div>
+      )}
     </div>
   );
 }

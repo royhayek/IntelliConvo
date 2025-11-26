@@ -29,7 +29,7 @@ export function SiteNavigationSidebar({
       className="w-full"
     >
       <div className="sticky top-24">
-        <div className="bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-xl p-2 shadow-sm border border-gray-200/50 dark:border-slate-700/50">
+        <div className="py-2 px-4">
           <nav className="flex flex-col gap-1">
             {tabs.map((tab, index) => {
               const Icon = tab.icon;

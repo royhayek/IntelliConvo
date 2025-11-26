@@ -56,8 +56,11 @@ export default function AdminEmbeddingsPage() {
   const queryClient = useQueryClient();
 
   const [page, setPage] = useState(parseInt(searchParams.get("page") || "1"));
-  const [siteId, setSiteId] = useState<string | null>(searchParams.get("siteId") || null);
-  const [deleteEmbedding, setDeleteEmbedding] = useState<EmbeddingWithDetails | null>(null);
+  const [siteId, setSiteId] = useState<string | null>(
+    searchParams.get("siteId") || null
+  );
+  const [deleteEmbedding, setDeleteEmbedding] =
+    useState<EmbeddingWithDetails | null>(null);
 
   const siteUrlId = searchParams.get("siteUrlId");
 
@@ -90,7 +93,8 @@ export default function AdminEmbeddingsPage() {
     },
   });
 
-  const embeddings = (embeddingsResponse?.data?.embeddings ?? []) as unknown as EmbeddingWithDetails[];
+  const embeddings = (embeddingsResponse?.data?.embeddings ??
+    []) as unknown as EmbeddingWithDetails[];
   const pagination = embeddingsResponse?.data?.pagination;
   const stats = statsResponse?.data as EmbeddingStats | undefined;
 
@@ -151,7 +155,10 @@ export default function AdminEmbeddingsPage() {
       <div className="flex gap-2 flex-wrap">
         <SiteFilter
           value={siteId}
-          onChange={(id) => { setSiteId(id); setPage(1); }}
+          onChange={(id) => {
+            setSiteId(id);
+            setPage(1);
+          }}
           placeholder="All Sites"
         />
       </div>
@@ -168,25 +175,12 @@ export default function AdminEmbeddingsPage() {
           <LoadingSpinner size="lg" />
         </div>
       ) : embeddings ? (
-        <>
-          <EmbeddingsTable
-            embeddings={embeddings}
-            onDelete={setDeleteEmbedding}
-          />
-
-          {pagination && pagination.totalPages > 1 && (
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-gray-500">
-                Showing {((page - 1) * 20) + 1} to {Math.min(page * 20, pagination.total)} of {pagination.total} embeddings
-              </p>
-              <Pagination
-                currentPage={page}
-                totalPages={pagination.totalPages}
-                onPageChange={setPage}
-              />
-            </div>
-          )}
-        </>
+        <EmbeddingsTable
+          embeddings={embeddings}
+          pagination={pagination}
+          onPageChange={setPage}
+          onDelete={setDeleteEmbedding}
+        />
       ) : null}
 
       <DeleteConfirmationDialog

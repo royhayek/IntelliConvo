@@ -79,7 +79,7 @@ export function PlaygroundTab({ site }: PlaygroundTabProps) {
     });
 
     // Handle complete response
-    socketRef.current.on("response", (data: { content: string; tokensUsed?: number }) => {
+    socketRef.current.on("complete", (data: { messageId: string; content: string }) => {
       setIsLoading(false);
       streamingMessageRef.current = '';
 
@@ -91,7 +91,7 @@ export function PlaygroundTab({ site }: PlaygroundTabProps) {
             ...prev.slice(0, -1),
             {
               ...lastMessage,
-              id: Date.now().toString(), // Replace streaming ID with permanent ID
+              id: data.messageId, // Use the actual message ID from backend
               content: data.content
             }
           ];
@@ -102,9 +102,7 @@ export function PlaygroundTab({ site }: PlaygroundTabProps) {
 
     // Handle typing indicator
     socketRef.current.on("typing", (data: { isTyping: boolean }) => {
-      if (data.isTyping) {
-        setIsLoading(true);
-      }
+      setIsLoading(data.isTyping);
     });
 
     // Handle errors

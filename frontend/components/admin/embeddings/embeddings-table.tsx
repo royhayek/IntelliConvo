@@ -19,6 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { TimeAgo } from "@/components/ui/time-ago";
+import { TablePagination } from "@/components/ui/table-pagination";
 
 interface EmbeddingWithDetails {
   id: string;
@@ -42,8 +43,17 @@ interface EmbeddingWithDetails {
   };
 }
 
+interface Pagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
 interface EmbeddingsTableProps {
   embeddings: EmbeddingWithDetails[];
+  pagination?: Pagination;
+  onPageChange?: (page: number) => void;
   onDelete: (embedding: EmbeddingWithDetails) => void;
 }
 
@@ -52,7 +62,7 @@ function truncateText(text: string, maxLength: number = 150) {
   return text.substring(0, maxLength) + "...";
 }
 
-export function EmbeddingsTable({ embeddings, onDelete }: EmbeddingsTableProps) {
+export function EmbeddingsTable({ embeddings, pagination, onPageChange, onDelete }: EmbeddingsTableProps) {
   if (embeddings.length === 0) {
     return (
       <div className="border rounded-lg dark:border-slate-700">
@@ -161,6 +171,18 @@ export function EmbeddingsTable({ embeddings, onDelete }: EmbeddingsTableProps) 
           ))}
         </TableBody>
       </Table>
+      {pagination && onPageChange && (
+        <div className="px-6 pb-4">
+          <TablePagination
+            page={pagination.page}
+            limit={pagination.limit}
+            total={pagination.total}
+            totalPages={pagination.pages}
+            onPageChange={onPageChange}
+            itemName="embeddings"
+          />
+        </div>
+      )}
     </div>
   );
 }

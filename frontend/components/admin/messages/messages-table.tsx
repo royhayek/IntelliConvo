@@ -20,6 +20,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { TimeAgo } from "@/components/ui/time-ago";
+import { TablePagination } from "@/components/ui/table-pagination";
 import { formatCents } from "@/lib/utils";
 
 interface Message {
@@ -44,8 +45,17 @@ interface Message {
   };
 }
 
+interface Pagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
 interface MessagesTableProps {
   messages: Message[];
+  pagination?: Pagination;
+  onPageChange?: (page: number) => void;
   onDelete: (message: Message) => void;
 }
 
@@ -71,7 +81,7 @@ function getRoleBadge(role: string) {
   );
 }
 
-export function MessagesTable({ messages, onDelete }: MessagesTableProps) {
+export function MessagesTable({ messages, pagination, onPageChange, onDelete }: MessagesTableProps) {
   if (messages.length === 0) {
     return (
       <div className="border rounded-lg dark:border-slate-700">
@@ -183,6 +193,18 @@ export function MessagesTable({ messages, onDelete }: MessagesTableProps) {
           ))}
         </TableBody>
       </Table>
+      {pagination && onPageChange && (
+        <div className="px-6 pb-4">
+          <TablePagination
+            page={pagination.page}
+            limit={pagination.limit}
+            total={pagination.total}
+            totalPages={pagination.pages}
+            onPageChange={onPageChange}
+            itemName="messages"
+          />
+        </div>
+      )}
     </div>
   );
 }

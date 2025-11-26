@@ -4,11 +4,9 @@ import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { Globe, AlertTriangle } from "lucide-react";
-import { Pagination } from "@/components/ui/pagination";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
-import { getPaginationText } from "@/lib/utils/pagination";
 
 import { SitesTable } from "@/components/admin/sites/sites-table";
 import { SitesFilters } from "@/components/admin/sites/sites-filters";
@@ -183,33 +181,16 @@ export default function AdminSitesPage() {
           <LoadingSpinner size="lg" />
         </div>
       ) : data ? (
-        <>
-          <SitesTable
-            sites={data.sites}
-            onRecrawl={handleRecrawl}
-            onClearCache={handleClearCache}
-            onDelete={setDeleteSite}
-            isRecrawling={recrawlMutation.isPending}
-            isClearingCache={clearCacheMutation.isPending}
-          />
-
-          {/* Pagination */}
-          {data.pagination.totalPages > 1 && (
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-gray-500">
-                {getPaginationText(
-                  { page, limit: 20, total: data.pagination.total },
-                  "sites"
-                )}
-              </p>
-              <Pagination
-                currentPage={page}
-                totalPages={data.pagination.totalPages}
-                onPageChange={setPage}
-              />
-            </div>
-          )}
-        </>
+        <SitesTable
+          sites={data.sites}
+          pagination={data.pagination}
+          onPageChange={setPage}
+          onRecrawl={handleRecrawl}
+          onClearCache={handleClearCache}
+          onDelete={setDeleteSite}
+          isRecrawling={recrawlMutation.isPending}
+          isClearingCache={clearCacheMutation.isPending}
+        />
       ) : null}
 
       {/* Delete Confirmation Dialog */}

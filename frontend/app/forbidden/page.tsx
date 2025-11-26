@@ -63,8 +63,9 @@ export default function Forbidden() {
           {isAuthenticated ? (
             <Link href="/dashboard" className="w-full sm:w-auto">
               <Button variant="gradient" className="w-full">
-                <Home className="mr-2 h-4 w-4" />
-                Back to Dashboard
+                <Home className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Back to Dashboard</span>
+                <span className="sm:hidden">Dashboard</span>
               </Button>
             </Link>
           ) : (

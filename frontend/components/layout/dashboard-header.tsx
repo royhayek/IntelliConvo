@@ -34,6 +34,7 @@ interface DashboardHeaderProps {
   siteName?: string;
   siteId?: string;
   showBackButton?: boolean;
+  backHref?: string;
   showNavigation?: boolean;
   showQuickActions?: boolean;
   showNavigationSettings?: boolean;
@@ -44,6 +45,7 @@ export function DashboardHeader({
   siteName,
   siteId,
   showBackButton = false,
+  backHref = "/dashboard",
   showNavigation = true,
   showQuickActions = true,
   showNavigationSettings = false,
@@ -65,10 +67,10 @@ export function DashboardHeader({
         <div className="flex justify-between items-center h-16">
           {/* Brand & Navigation */}
           <div className="flex items-center space-x-4">
-            {/* Back Button (Site Dashboard) */}
+            {/* Back Button */}
             {showBackButton && (
               <>
-                <Link href="/dashboard">
+                <Link href={backHref}>
                   <motion.div
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
@@ -78,8 +80,8 @@ export function DashboardHeader({
                       size="sm"
                       className="text-gray-600 hover:text-gray-900 hover:bg-white/60 dark:text-gray-400 dark:hover:text-gray-100 dark:hover:bg-slate-700/40"
                     >
-                      <ArrowLeft className="h-4 w-4 mr-2" />
-                      Back to Dashboard
+                      <ArrowLeft className="h-4 w-4 sm:mr-2" />
+                      <span className="hidden sm:inline">Back to Dashboard</span>
                     </Button>
                   </motion.div>
                 </Link>
@@ -106,18 +108,32 @@ export function DashboardHeader({
               </motion.div>
             )}
 
-            {/* Navigation Settings (Site view) */}
+            {/* Site view actions */}
             {showNavigationSettings && variant === "site" && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.3 }}
-                className="hidden sm:flex items-center space-x-2"
-              >
-                <NotificationBell />
-                <NavigationSettingsDrawer variant="icon" />
-                <ThemeToggle />
-              </motion.div>
+              <>
+                {/* Mobile/Tablet - Show only notifications and theme toggle */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.3 }}
+                  className="flex lg:hidden items-center space-x-2"
+                >
+                  <NotificationBell />
+                  <ThemeToggle />
+                </motion.div>
+
+                {/* Desktop - Show all including navigation settings */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.3 }}
+                  className="hidden lg:flex items-center space-x-2"
+                >
+                  <NotificationBell />
+                  <NavigationSettingsDrawer variant="icon" />
+                  <ThemeToggle />
+                </motion.div>
+              </>
             )}
 
             {/* Profile Dropdown */}

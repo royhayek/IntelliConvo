@@ -52,7 +52,6 @@ export const AnalyzingStep = memo(function AnalyzingStep({
   const hasFailed = site?.crawlStatus === "FAILED";
   const isCompleted = site?.crawlStatus === "AWAITING_PAYMENT" || site?.crawlStatus === "READY";
   const isPaused = site?.crawlStatus === "PAUSED";
-  const isEmbedding = crawlProgress?.phase === 'embedding' || site?.crawlStatus === "PROCESSING";
 
   // Calculate progress percentage
   const progressPercent = useMemo(() => {
@@ -71,20 +70,13 @@ export const AnalyzingStep = memo(function AnalyzingStep({
       >
         <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
           <div className="space-y-4">
-            {/* Phase Indicator */}
-            <div className="flex items-center justify-center gap-6 text-xs">
-              <div className={`flex items-center gap-1.5 ${isEmbedding ? 'text-green-600 dark:text-green-400' : 'text-indigo-600 dark:text-indigo-400'}`}>
-                <div className={`h-5 w-5 rounded-full flex items-center justify-center ${isEmbedding ? 'bg-green-100 dark:bg-green-900/30' : 'bg-indigo-100 dark:bg-indigo-900/30'}`}>
-                  {isEmbedding ? <CheckCircle className="h-3 w-3" /> : <FileText className="h-3 w-3" />}
+            {/* Phase Indicator - Onboarding only shows crawling phase */}
+            <div className="flex items-center justify-center text-xs">
+              <div className="flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400">
+                <div className="h-5 w-5 rounded-full flex items-center justify-center bg-indigo-100 dark:bg-indigo-900/30">
+                  <FileText className="h-3 w-3" />
                 </div>
-                <span className="font-medium">Crawling</span>
-              </div>
-              <div className="h-px w-6 bg-gray-300 dark:bg-gray-600" />
-              <div className={`flex items-center gap-1.5 ${isEmbedding ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-400 dark:text-gray-500'}`}>
-                <div className={`h-5 w-5 rounded-full flex items-center justify-center ${isEmbedding ? 'bg-indigo-100 dark:bg-indigo-900/30' : 'bg-gray-100 dark:bg-gray-700'}`}>
-                  <Zap className="h-3 w-3" />
-                </div>
-                <span className={isEmbedding ? 'font-medium' : ''}>Embedding</span>
+                <span className="font-medium">Crawling Pages</span>
               </div>
             </div>
 
@@ -108,8 +100,8 @@ export const AnalyzingStep = memo(function AnalyzingStep({
               <div className="space-y-2">
                 <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
                   <span className="flex items-center gap-1">
-                    {isEmbedding ? <Zap className="h-3 w-3" /> : <FileText className="h-3 w-3" />}
-                    {isEmbedding ? 'Generating embeddings...' : 'Crawling pages...'}
+                    <FileText className="h-3 w-3" />
+                    Crawling pages...
                   </span>
                   <span className="font-medium">
                     {crawlProgress.crawled} / {crawlProgress.total}

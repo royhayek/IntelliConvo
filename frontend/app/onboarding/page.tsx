@@ -47,6 +47,16 @@ import {
   DiscoveryResult,
 } from "./components";
 
+// Helper function to extract clean site name from URL (removes www.)
+function extractSiteName(url: string): string {
+  try {
+    const hostname = new URL(url).hostname;
+    return hostname.startsWith('www.') ? hostname.substring(4) : hostname;
+  } catch {
+    return url;
+  }
+}
+
 // Form schema
 const siteUrlSchema = z.object({
   siteUrl: z
@@ -239,7 +249,7 @@ function OnboardingContent() {
         const newSite = await createSiteMutation.mutateAsync({
           data: {
             siteUrl: pendingSiteUrl,
-            siteName: new URL(pendingSiteUrl).hostname,
+            siteName: extractSiteName(pendingSiteUrl),
           },
         });
 
@@ -696,7 +706,7 @@ function OnboardingContent() {
 
   // Show loading state while auth is hydrating
   if (isAuthLoading) {
-    return <AuthLoading message="Verifying authentication" />;
+    return <AuthLoading />;
   }
 
   if (!isAuthenticated) {
@@ -756,6 +766,7 @@ function OnboardingContent() {
               siteUrl={site?.siteUrl || pendingSiteUrl || ""}
               discovery={discovery}
               isDiscovering={isDiscovering}
+              isLoading={isLoading}
               onStartDiscovery={startDiscovery}
               onUpdateSelections={updateSelections}
               onBulkSelect={bulkSelect}

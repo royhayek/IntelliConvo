@@ -45,13 +45,13 @@ export default function DashboardPage() {
 
   // Show loading state while auth is hydrating
   if (isAuthLoading) {
-    return <AuthLoading message="Verifying authentication" />;
+    return <AuthLoading />;
   }
 
   // If not authenticated, useRequireUser will redirect to login
   // Don't show dashboard UI while redirecting
   if (!isAuthenticated) {
-    return <AuthLoading message="Redirecting to login" />;
+    return <AuthLoading />;
   }
 
   if (isSitesLoading) {

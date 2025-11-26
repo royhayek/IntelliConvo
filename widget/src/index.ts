@@ -19,6 +19,7 @@ import {
   throttle,
   RateLimiter,
   FocusTrap,
+  markdownToHtml,
 } from './utils';
 
 // Import constants
@@ -52,6 +53,7 @@ import { MessageHandler } from './handlers/MessageHandler';
 import { FileHandler } from './handlers/FileHandler';
 import { VoiceHandler } from './handlers/VoiceHandler';
 import { KeyboardHandler } from './handlers/KeyboardHandler';
+import { TextToSpeechHandler } from './handlers/TextToSpeechHandler';
 
 // Import renderers
 import { LauncherRenderer } from './renderers/LauncherRenderer';
@@ -107,6 +109,7 @@ class IntelligentconvoWidget {
   private fileHandler: FileHandler;
   private voiceHandler: VoiceHandler;
   private keyboardHandler: KeyboardHandler;
+  private textToSpeechHandler: TextToSpeechHandler;
 
   // Renderers
   private launcherRenderer: LauncherRenderer;
@@ -217,12 +220,24 @@ class IntelligentconvoWidget {
         onComplete: (content: string, quickReplies?: string[]) => {
           this.setTyping(false);
 
-          // Play notification sound and show desktop notification
-          this.playNotificationSound();
-          this.showDesktopNotification(
-            this.settings?.botName || 'Assistant',
-            content.substring(0, NOTIFICATION_PREVIEW_LENGTH) + (content.length > NOTIFICATION_PREVIEW_LENGTH ? '...' : '')
-          );
+          // If in speak mode, speak the response and add to transcript
+          if (this.stateManager.getState().currentMode === 'speak') {
+            this.addToSpeakTranscript('assistant', content);
+            this.updateSpeakStatus('Speaking...');
+            this.textToSpeechHandler.speak(content, { interrupt: true });
+
+            // Update status when speech ends
+            setTimeout(() => {
+              this.updateSpeakStatus('Tap the microphone to continue');
+            }, 500);
+          } else {
+            // Play notification sound and show desktop notification for chat mode
+            this.playNotificationSound();
+            this.showDesktopNotification(
+              this.settings?.botName || 'Assistant',
+              content.substring(0, NOTIFICATION_PREVIEW_LENGTH) + (content.length > NOTIFICATION_PREVIEW_LENGTH ? '...' : '')
+            );
+          }
 
           // Track message received
           this.trackAnalyticsEvent('message_received', { length: content.length });
@@ -235,8 +250,8 @@ class IntelligentconvoWidget {
             this.markAllMessagesAsRead();
           }
 
-          // Render quick replies if provided
-          if (quickReplies && quickReplies.length > 0) {
+          // Render quick replies if provided (only in chat mode)
+          if (this.stateManager.getState().currentMode === 'chat' && quickReplies && quickReplies.length > 0) {
             this.renderQuickReplies(quickReplies);
           }
         },
@@ -257,11 +272,6 @@ class IntelligentconvoWidget {
             ),
             'connect'
           );
-        },
-        onTrialExpired: (data) => {
-          this.setTyping(false);
-          this.displayTrialExpiredMessage(data.reason);
-          this.trackAnalyticsEvent('trial_expired', { reason: data.reason });
         }
       }
     );
@@ -313,6 +323,11 @@ class IntelligentconvoWidget {
 
     // Initialize keyboard handler
     this.keyboardHandler = new KeyboardHandler({
+      settings: this.settings,
+    });
+
+    // Initialize text-to-speech handler
+    this.textToSpeechHandler = new TextToSpeechHandler({
       settings: this.settings,
     });
 
@@ -515,6 +530,7 @@ class IntelligentconvoWidget {
     // Cleanup handlers
     this.voiceHandler.cleanup();
     this.keyboardHandler.cleanup();
+    this.textToSpeechHandler.cleanup();
 
     // Cleanup state manager
     this.stateManager.cleanup();
@@ -596,6 +612,14 @@ class IntelligentconvoWidget {
       chatWindow.innerHTML = this.getChatWindowHTML();
       const windowElement = chatWindow.firstElementChild as HTMLElement;
       document.body.appendChild(windowElement);
+
+      // Inject speak mode HTML into content area
+      const contentArea = windowElement.querySelector('.intelligentconvo-content');
+      if (contentArea) {
+        const speakModeDiv = document.createElement('div');
+        speakModeDiv.innerHTML = this.chatWindowRenderer.getSpeakModeHTML();
+        contentArea.appendChild(speakModeDiv.firstElementChild as HTMLElement);
+      }
 
       this.setupEventListeners();
 
@@ -776,6 +800,30 @@ class IntelligentconvoWidget {
       });
     });
 
+    // Speak mode buttons
+    const speakBtn = document.getElementById('intelligentconvo-speak-btn');
+    const stopSpeakBtn = document.getElementById('intelligentconvo-speak-stop-btn');
+
+    if (speakBtn) {
+      speakBtn.addEventListener('click', () => this.handleSpeakModeInput());
+      speakBtn.addEventListener('keydown', (e: KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          this.handleSpeakModeInput();
+        }
+      });
+    }
+
+    if (stopSpeakBtn) {
+      stopSpeakBtn.addEventListener('click', () => this.stopSpeaking());
+      stopSpeakBtn.addEventListener('keydown', (e: KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          this.stopSpeaking();
+        }
+      });
+    }
+
     // Escape key to close chat
     this.escapeKeyHandler = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && this.stateManager.getState().isOpen) {
@@ -801,8 +849,45 @@ class IntelligentconvoWidget {
 
       this.stateManager.setMode(mode);
 
-      // Could implement mode-specific functionality here
-      console.log(`Switched to ${mode} mode`);
+      // Toggle between chat and speak mode UI
+      this.toggleModeUI(mode);
+
+      // Track mode switch
+      this.trackAnalyticsEvent('mode_switched', { mode });
+    }
+  }
+
+  private toggleModeUI(mode: WidgetMode): void {
+    const messagesContainer = document.getElementById('intelligentconvo-messages');
+    const inputArea = document.querySelector('.intelligentconvo-input') as HTMLElement;
+    const startersContainer = document.getElementById('intelligentconvo-starters');
+    const typingIndicator = document.getElementById('intelligentconvo-typing');
+    const speakMode = document.getElementById('intelligentconvo-speak-mode');
+    const speakTranscript = document.getElementById('intelligentconvo-speak-transcript');
+
+    if (mode === 'chat') {
+      // Show chat UI
+      if (messagesContainer) messagesContainer.style.display = '';
+      if (inputArea) inputArea.style.display = '';
+      if (startersContainer) startersContainer.style.display = '';
+      if (typingIndicator && this.stateManager.getState().isTyping) typingIndicator.style.display = '';
+      if (speakMode) speakMode.style.display = 'none';
+
+      // Stop any ongoing speech
+      this.textToSpeechHandler.stop();
+    } else if (mode === 'speak') {
+      // Show speak UI
+      if (messagesContainer) messagesContainer.style.display = 'none';
+      if (inputArea) inputArea.style.display = 'none';
+      if (startersContainer) startersContainer.style.display = 'none';
+      if (typingIndicator) typingIndicator.style.display = 'none';
+      if (speakMode) speakMode.style.display = 'flex';
+
+      // Hide transcript initially (will show on first message)
+      if (speakTranscript) speakTranscript.classList.remove('visible');
+
+      // Initialize speak mode status
+      this.updateSpeakStatus('Ready to listen');
     }
   }
 
@@ -871,9 +956,13 @@ class IntelligentconvoWidget {
   private setTyping(typing: boolean): void {
     this.stateManager.setTyping(typing);
     const typingIndicator = document.getElementById('intelligentconvo-typing');
+    const currentMode = this.stateManager.getState().currentMode;
 
-    if (typingIndicator) {
+    // Only show typing indicator in chat mode
+    if (typingIndicator && currentMode === 'chat') {
       typingIndicator.style.display = typing ? 'flex' : 'none';
+    } else if (typingIndicator) {
+      typingIndicator.style.display = 'none';
     }
   }
 
@@ -1068,14 +1157,15 @@ class IntelligentconvoWidget {
       </div>
     ` : '';
 
-    const sanitizedContent = msg.role === 'assistant'
-      ? this.sanitizeHtml(msg.content)
+    // Convert markdown to HTML for assistant messages, sanitize user messages
+    const processedContent = msg.role === 'assistant'
+      ? markdownToHtml(msg.content)
       : this.sanitizeHtml(msg.content);
 
     messageDiv.innerHTML = `
       ${avatarHtml}
       <div class="intelligentconvo-message-wrapper">
-        <div class="intelligentconvo-message-content">${sanitizedContent || ''}</div>
+        <div class="intelligentconvo-message-content">${processedContent || ''}</div>
         ${showTimestamp ? `<div class="intelligentconvo-message-time">${formattedTime}</div>` : ''}
       </div>
     `;
@@ -1134,10 +1224,14 @@ class IntelligentconvoWidget {
       messageDiv.className = `intelligentconvo-message intelligentconvo-${msg.role}`;
       messageDiv.setAttribute('data-message-id', msg.id);
 
-      const sanitizedContent = this.sanitizeHtml(msg.content);
+      // Convert markdown to HTML for assistant messages, sanitize user messages
+      const processedContent = msg.role === 'assistant'
+        ? markdownToHtml(msg.content)
+        : this.sanitizeHtml(msg.content);
+
       messageDiv.innerHTML = `
         <div class="intelligentconvo-message-wrapper">
-          <div class="intelligentconvo-message-content">${sanitizedContent}</div>
+          <div class="intelligentconvo-message-content">${processedContent}</div>
         </div>
       `;
 
@@ -1150,6 +1244,106 @@ class IntelligentconvoWidget {
 
     // Maintain scroll position
     messagesContainer.scrollTop = messagesContainer.scrollHeight - previousScrollHeight;
+  }
+
+  // Speak Mode Methods
+  private handleSpeakModeInput(): void {
+    if (!this.voiceHandler.isSupported()) {
+      this.updateSpeakStatus('Voice input not supported in this browser');
+      return;
+    }
+
+    // Update UI to show listening state
+    this.updateSpeakStatus('Listening...');
+    this.toggleWaveform(true);
+
+    // Use voice handler with custom callback for speak mode
+    this.voiceHandler.handleVoiceInputWithCallback(async (transcript: string) => {
+      try {
+        // Add user's speech to transcript
+        this.addToSpeakTranscript('user', transcript);
+        this.updateSpeakStatus('Thinking...');
+        this.toggleWaveform(false);
+
+        // Send message and wait for response
+        await this.sendMessageInSpeakMode(transcript);
+      } catch (error) {
+        console.error('Failed to process speech:', error);
+        this.updateSpeakStatus('Error processing speech');
+        this.toggleWaveform(false);
+      }
+    });
+  }
+
+  private async sendMessageInSpeakMode(text: string): Promise<void> {
+    // Send message through message handler
+    await this.messageHandler.sendMessage(text);
+
+    // The response will be handled by the socket manager's onComplete callback
+    // We need to intercept it to speak it out loud
+  }
+
+  private addToSpeakTranscript(role: 'user' | 'assistant', content: string): void {
+    const transcriptContainer = document.getElementById('intelligentconvo-transcript-messages');
+    if (!transcriptContainer) return;
+
+    // Show transcript section on first message
+    const transcriptSection = document.getElementById('intelligentconvo-speak-transcript');
+    if (transcriptSection && !transcriptSection.classList.contains('visible')) {
+      transcriptSection.classList.add('visible');
+    }
+
+    // Hide empty state on first message
+    const emptyState = transcriptContainer.querySelector('.intelligentconvo-transcript-empty');
+    if (emptyState) {
+      emptyState.remove();
+    }
+
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `intelligentconvo-transcript-message intelligentconvo-transcript-${role}`;
+
+    const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    // Use markdown for assistant messages, sanitize for user messages
+    const processedContent = role === 'assistant'
+      ? markdownToHtml(content)
+      : this.sanitizeHtml(content);
+
+    messageDiv.innerHTML = `
+      <div class="intelligentconvo-transcript-content">${processedContent}</div>
+      <div class="intelligentconvo-transcript-time">${timeStr}</div>
+    `;
+
+    transcriptContainer.appendChild(messageDiv);
+    transcriptContainer.scrollTop = transcriptContainer.scrollHeight;
+  }
+
+  private updateSpeakStatus(status: string): void {
+    const statusElement = document.getElementById('intelligentconvo-speak-status');
+    if (statusElement) {
+      const statusText = statusElement.querySelector('.intelligentconvo-status-text');
+      if (statusText) {
+        statusText.textContent = status;
+      }
+    }
+  }
+
+  private toggleWaveform(active: boolean): void {
+    const waveform = document.getElementById('intelligentconvo-speak-waveform');
+    if (waveform) {
+      if (active) {
+        waveform.classList.add('active');
+      } else {
+        waveform.classList.remove('active');
+      }
+    }
+  }
+
+  private stopSpeaking(): void {
+    this.textToSpeechHandler.stop();
+    this.voiceHandler.stopVoiceInput();
+    this.toggleWaveform(false);
+    this.updateSpeakStatus('Stopped');
   }
 
 }

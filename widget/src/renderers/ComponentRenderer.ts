@@ -33,15 +33,16 @@ export class ComponentRenderer {
       return;
     }
 
-    // Sanitize welcome message - use settings welcomeMessage if available
-    const welcomeMessage = this.settings?.welcomeMessage || data.welcomeMessage;
-    const sanitizedWelcome = sanitizeHtml(welcomeMessage);
+    // Sanitize starters headline - use settings welcomeMessage if available for backwards compatibility
+    // Note: settings.welcomeMessage is the bot's greeting, but can also serve as starters headline
+    const startersHeadline = this.settings?.welcomeMessage || data.startersHeadline;
+    const sanitizedHeadline = sanitizeHtml(startersHeadline);
 
     // Get starters title
     const startersTitle = this.settings?.startersTitle || 'Suggested questions';
 
     container.innerHTML = `
-      <div class="intelligentconvo-welcome" role="heading" aria-level="3">${sanitizedWelcome}</div>
+      <div class="intelligentconvo-welcome" role="heading" aria-level="3">${sanitizedHeadline}</div>
       ${data.starters.length > 0 ? `
         <div class="intelligentconvo-starters-title">${startersTitle}</div>
         <div class="intelligentconvo-starter-buttons" role="group" aria-label="Conversation starters">

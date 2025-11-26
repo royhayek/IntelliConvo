@@ -11,6 +11,6 @@ export interface Message {
 }
 
 export interface ConversationStarters {
-  welcomeMessage: string;
+  startersHeadline: string;
   starters: { starterText: string }[];
 }

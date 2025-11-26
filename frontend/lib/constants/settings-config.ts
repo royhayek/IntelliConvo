@@ -6,6 +6,9 @@ import {
   Mail,
   CreditCard,
   HardDrive,
+  Key,
+  Zap,
+  Brain,
 } from "lucide-react";
 
 export const SETTING_CONFIG: Record<string, {
@@ -45,8 +48,10 @@ export const SETTING_CONFIG: Record<string, {
 
 export const CATEGORY_ICONS = {
   GENERAL: Globe,
-  AI: Bot,
+  AUTHENTICATION: Key,
   SECURITY: Shield,
+  AI_MODELS: Brain,
+  AI_OPTIMIZATION: Zap,
   RATE_LIMIT: Clock,
   EMAIL: Mail,
   BILLING: CreditCard,
@@ -55,8 +60,10 @@ export const CATEGORY_ICONS = {
 
 export const CATEGORY_NAMES: Record<string, string> = {
   GENERAL: 'General',
-  AI: 'AI',
+  AUTHENTICATION: 'Authentication',
   SECURITY: 'Security',
+  AI_MODELS: 'AI Models',
+  AI_OPTIMIZATION: 'AI Optimization',
   RATE_LIMIT: 'Rate Limiting',
   EMAIL: 'Email',
   BILLING: 'Billing',

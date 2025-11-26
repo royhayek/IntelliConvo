@@ -61,8 +61,8 @@ export function SubscriptionBlockedMessage({
           </Link>
           <Link href="/dashboard">
             <Button variant="outline" size="lg">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Dashboard
+              <ArrowLeft className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Back to Dashboard</span>
             </Button>
           </Link>
         </div>

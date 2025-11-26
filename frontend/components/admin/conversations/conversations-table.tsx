@@ -26,14 +26,24 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { TimeAgo } from "@/components/ui/time-ago";
+import { TablePagination } from "@/components/ui/table-pagination";
 import type { AdminConversation } from "@/lib/api/generated/models";
+
+interface Pagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
 
 interface ConversationsTableProps {
   conversations: AdminConversation[];
+  pagination?: Pagination;
+  onPageChange?: (page: number) => void;
   onDelete: (conversation: AdminConversation) => void;
 }
 
-export function ConversationsTable({ conversations, onDelete }: ConversationsTableProps) {
+export function ConversationsTable({ conversations, pagination, onPageChange, onDelete }: ConversationsTableProps) {
   if (conversations.length === 0) {
     return (
       <div className="border rounded-lg dark:border-slate-700">
@@ -142,6 +152,18 @@ export function ConversationsTable({ conversations, onDelete }: ConversationsTab
           ))}
         </TableBody>
       </Table>
+      {pagination && onPageChange && (
+        <div className="px-6 pb-4">
+          <TablePagination
+            page={pagination.page}
+            limit={pagination.limit}
+            total={pagination.total}
+            totalPages={pagination.pages}
+            onPageChange={onPageChange}
+            itemName="conversations"
+          />
+        </div>
+      )}
     </div>
   );
 }

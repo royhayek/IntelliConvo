@@ -387,18 +387,18 @@ export function SitemapTab({ site }: SitemapTabProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
             Sitemap & URLs
           </h2>
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
             Manage the URLs that Intelligentconvo knows about
           </p>
         </div>
         <Button
           onClick={() => setShowAddModal(true)}
-          className="bg-indigo-600 hover:bg-indigo-700"
+          className="bg-indigo-600 hover:bg-indigo-700 w-full sm:w-auto"
         >
           <Plus className="h-4 w-4 mr-2" />
           New URL
@@ -408,18 +408,20 @@ export function SitemapTab({ site }: SitemapTabProps) {
       {/* Search and Filter */}
       <Card>
         <CardContent className="pt-6">
-          <div className="flex flex-col sm:flex-row gap-4">
-            <SearchBar
-              value={searchTerm}
-              onChange={setSearchTerm}
-              placeholder="Search URLs..."
-            />
-            <div className="flex items-center space-x-4">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+            <div className="flex-1">
+              <SearchBar
+                value={searchTerm}
+                onChange={setSearchTerm}
+                placeholder="Search URLs..."
+              />
+            </div>
+            <div className="flex items-center">
               <Select
                 value={statusFilter}
                 onValueChange={(value) => setStatusFilter(value as any)}
               >
-                <SelectTrigger className="w-[180px]">
+                <SelectTrigger className="w-full sm:w-[180px]">
                   <SelectValue placeholder="Filter by status" />
                 </SelectTrigger>
                 <SelectContent>
@@ -438,7 +440,7 @@ export function SitemapTab({ site }: SitemapTabProps) {
         <CardHeader>
           <CardTitle>URLs ({filteredUrls.length})</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0 sm:p-6">
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="h-6 w-6 animate-spin text-indigo-600" />
@@ -451,34 +453,36 @@ export function SitemapTab({ site }: SitemapTabProps) {
               <p className="text-gray-600 dark:text-gray-400">No URLs found</p>
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Status</TableHead>
-                  <TableHead>URL</TableHead>
-                  <TableHead>Last Crawled</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredUrls.map((url) => (
-                  <UrlTableRow
-                    key={url.id}
-                    url={url}
-                    onPreview={openPreviewModal}
-                    onRecrawl={(urlId) =>
-                      crawlUrlMutation.mutate({
-                        siteId: site.id,
-                        urlId,
-                      })
-                    }
-                    onToggleStatus={toggleUrlStatus}
-                    onDelete={setUrlToDelete}
-                    isRecrawling={crawlUrlMutation.isPending}
-                  />
-                ))}
-              </TableBody>
-            </Table>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="min-w-[100px]">Status</TableHead>
+                    <TableHead className="min-w-[200px]">URL</TableHead>
+                    <TableHead className="min-w-[120px] hidden sm:table-cell">Last Crawled</TableHead>
+                    <TableHead className="text-right min-w-[120px]">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredUrls.map((url) => (
+                    <UrlTableRow
+                      key={url.id}
+                      url={url}
+                      onPreview={openPreviewModal}
+                      onRecrawl={(urlId) =>
+                        crawlUrlMutation.mutate({
+                          siteId: site.id,
+                          urlId,
+                        })
+                      }
+                      onToggleStatus={toggleUrlStatus}
+                      onDelete={setUrlToDelete}
+                      isRecrawling={crawlUrlMutation.isPending}
+                    />
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           )}
         </CardContent>
       </Card>
@@ -612,14 +616,14 @@ export function SitemapTab({ site }: SitemapTabProps) {
         open={!!selectedUrlId}
         onOpenChange={(open) => !open && closePreviewModal()}
       >
-        <DialogContent className="max-w-4xl max-h-[90vh] min-h-[600px] flex flex-col p-0">
-          <div className="p-6 border-b dark:border-gray-600">
-            <div className="flex items-center gap-4">
+        <DialogContent className="max-w-4xl max-h-[90vh] min-h-[400px] sm:min-h-[600px] flex flex-col p-0 w-[95vw] sm:w-full">
+          <div className="p-4 sm:p-6 border-b dark:border-gray-600">
+            <div className="flex items-center gap-2 sm:gap-4">
               <div className="flex-1 min-w-0">
-                <h3 className="text-lg font-semibold truncate text-gray-900 dark:text-white">
+                <h3 className="text-base sm:text-lg font-semibold truncate text-gray-900 dark:text-white">
                   {selectedUrlData?.title || "Loading..."}
                 </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 truncate">
                   {selectedUrlData?.url}
                 </p>
               </div>
@@ -628,12 +632,10 @@ export function SitemapTab({ site }: SitemapTabProps) {
 
           <div className="flex-1 overflow-hidden flex flex-col min-h-0">
             {/* Action Buttons Header */}
-            <div className="flex justify-between px-6 py-3 border-b dark:border-gray-600 bg-gray-50 dark:bg-slate-800/50">
-              <div className="flex items-center justify-end">
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  {selectedUrlData?.content?.length.toLocaleString()} characters
-                  | {selectedUrlData?.embeddingsCount} chunks
-                </div>
+            <div className="flex flex-col sm:flex-row justify-between gap-2 px-4 sm:px-6 py-2 sm:py-3 border-b dark:border-gray-600 bg-gray-50 dark:bg-slate-800/50">
+              <div className="flex items-center text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+                {selectedUrlData?.content?.length.toLocaleString()} characters
+                <span className="hidden sm:inline"> | {selectedUrlData?.embeddingsCount} chunks</span>
               </div>
 
               <div className="flex items-center justify-end space-x-2">

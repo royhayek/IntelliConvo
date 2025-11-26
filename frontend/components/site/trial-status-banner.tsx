@@ -62,7 +62,7 @@ function TrialStatusBannerComponent({ siteId, onUpgrade, className }: TrialStatu
   const isNearLimit = usage.daysPercent >= 75 || usage.conversationsPercent >= 75 || usage.messagesPercent >= 75;
 
   return (
-    <Card className={cn(isNearLimit ? "border-amber-500 bg-amber-50/50 dark:bg-amber-950/20" : "border-primary/20 bg-primary/5", className)}>
+    <Card className={cn(isNearLimit ? "border-amber-500 bg-amber-50/50 dark:bg-amber-950/20" : "border-primary/20 bg-primary/5", "mb-6", className)}>
       <CardContent className="p-4">
         <div className="flex items-start justify-between gap-4 mb-4">
           <div className="flex items-center gap-2">

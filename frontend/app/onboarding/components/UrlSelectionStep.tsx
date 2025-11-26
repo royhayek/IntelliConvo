@@ -58,6 +58,7 @@ interface UrlSelectionStepProps {
   siteUrl: string;
   discovery: DiscoveryResult | null;
   isDiscovering: boolean;
+  isLoading?: boolean; // Added to handle site creation state
   onStartDiscovery: () => void;
   onUpdateSelections: (selections: { url: string; selected: boolean }[]) => void;
   onBulkSelect: (action: "select" | "deselect", category?: string) => void;
@@ -92,6 +93,7 @@ export function UrlSelectionStep({
   siteUrl,
   discovery,
   isDiscovering,
+  isLoading = false,
   onStartDiscovery,
   onUpdateSelections,
   onBulkSelect,
@@ -231,8 +233,8 @@ export function UrlSelectionStep({
     });
   }, []);
 
-  // Discovery in progress
-  if (isDiscovering) {
+  // Discovery in progress or site being created
+  if (isDiscovering || isLoading) {
     return (
       <motion.div
         initial={{ opacity: 0, y: 10 }}

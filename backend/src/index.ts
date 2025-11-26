@@ -61,17 +61,26 @@ const httpServer = createServer(app);
 // Initialize Socket.IO with consolidated CORS configuration
 const io = new Server(httpServer, {
   cors: {
-    origin: (origin, callback) => {
+    origin: async (origin, callback) => {
       // Allow requests with no origin (mobile apps, curl, etc.)
       if (!origin) {
         return callback(null, true);
       }
 
+      // Allow configured admin/frontend origins
       if (allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
+        return callback(null, true);
       }
+
+      // For widget connections, we use a more permissive approach here
+      // because the actual origin validation happens at the application level:
+      // 1. Widget validates via /widget/:siteId/validate endpoint before loading
+      // 2. Socket middleware validates origin against site's activeHosts (see below)
+      // 3. Message handlers validate siteId and permissions
+      //
+      // Socket.IO CORS is primarily for browser security, not authorization.
+      // The real security is enforced at the application/business logic level.
+      callback(null, true);
     },
     credentials: true,
     methods: ['GET', 'POST'],

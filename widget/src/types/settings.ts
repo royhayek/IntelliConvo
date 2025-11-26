@@ -98,6 +98,12 @@ export interface WidgetSettings {
   enableDesktopNotifications: boolean;
   enableVoiceInput: boolean;
   voiceInputLanguage: string;
+  enableVoiceOutput: boolean;
+  voiceOutputLanguage: string;
+  voiceOutputRate: number;
+  voiceOutputPitch: number;
+  voiceOutputVolume: number;
+  voiceOutputVoice?: string;
   enableFileAttachments: boolean;
   allowedFileTypes: string[];
   maxFileSizeMB: number;

@@ -22,7 +22,10 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
 import { UserFilter } from "@/components/admin/user-filter";
-import { TransactionsStatsCards, TransactionsTable } from "@/components/admin/transactions";
+import {
+  TransactionsStatsCards,
+  TransactionsTable,
+} from "@/components/admin/transactions";
 import {
   useGetApiV1AdminBillingTransactions,
   useDeleteApiV1AdminBillingTransactionsTransactionId,
@@ -48,7 +51,8 @@ export default function AdminTransactionsPage() {
   const [status, setStatus] = useState("all");
   const [userId, setUserId] = useState<string | null>(null);
   const [page, setPage] = useState(1);
-  const [deleteTransaction, setDeleteTransaction] = useState<AdminTransaction | null>(null);
+  const [deleteTransaction, setDeleteTransaction] =
+    useState<AdminTransaction | null>(null);
   const [exportError, setExportError] = useState<string | null>(null);
 
   const queryParams: GetApiV1AdminBillingTransactionsParams = {
@@ -75,16 +79,24 @@ export default function AdminTransactionsPage() {
         });
       },
       onError: (error) => {
-        setExportError(error instanceof Error ? error.message : "Failed to delete transaction");
+        setExportError(
+          error instanceof Error
+            ? error.message
+            : "Failed to delete transaction"
+        );
       },
     },
   });
 
   const data = transactionsResponse?.data;
   const stats = statsResponse?.data as BillingStats | undefined;
-  const error = transactionsError ? "Failed to fetch transactions" : exportError;
+  const error = transactionsError
+    ? "Failed to fetch transactions"
+    : exportError;
 
-  const handleExport = async (format: GetApiV1AdminBillingTransactionsExportFormat) => {
+  const handleExport = async (
+    format: GetApiV1AdminBillingTransactionsExportFormat
+  ) => {
     try {
       setExportError(null);
       const params = {
@@ -106,7 +118,9 @@ export default function AdminTransactionsPage() {
         window.URL.revokeObjectURL(url);
       } else {
         const jsonData = response as unknown as { data: unknown };
-        const blob = new Blob([JSON.stringify(jsonData.data, null, 2)], { type: "application/json" });
+        const blob = new Blob([JSON.stringify(jsonData.data, null, 2)], {
+          type: "application/json",
+        });
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
@@ -159,10 +173,19 @@ export default function AdminTransactionsPage() {
       <div className="flex gap-4 flex-wrap">
         <UserFilter
           value={userId}
-          onChange={(id) => { setUserId(id); setPage(1); }}
+          onChange={(id) => {
+            setUserId(id);
+            setPage(1);
+          }}
           placeholder="All Users"
         />
-        <Select value={status} onValueChange={(v) => { setStatus(v); setPage(1); }}>
+        <Select
+          value={status}
+          onValueChange={(v) => {
+            setStatus(v);
+            setPage(1);
+          }}
+        >
           <SelectTrigger className="w-[150px]">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
@@ -188,25 +211,10 @@ export default function AdminTransactionsPage() {
           <LoadingSpinner size="lg" />
         </div>
       ) : data ? (
-        <>
-          <TransactionsTable
-            transactions={data.transactions}
-            onDelete={setDeleteTransaction}
-          />
-
-          {data.pagination.totalPages > 1 && (
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-gray-500">
-                Showing {((page - 1) * 20) + 1} to {Math.min(page * 20, data.pagination.total)} of {data.pagination.total} transactions
-              </p>
-              <Pagination
-                currentPage={page}
-                totalPages={data.pagination.totalPages}
-                onPageChange={setPage}
-              />
-            </div>
-          )}
-        </>
+        <TransactionsTable
+          transactions={data.transactions}
+          onDelete={setDeleteTransaction}
+        />
       ) : null}
 
       <DeleteConfirmationDialog

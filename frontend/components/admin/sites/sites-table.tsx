@@ -29,14 +29,24 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { TimeAgo } from "@/components/ui/time-ago";
+import { TablePagination } from "@/components/ui/table-pagination";
 import {
   getCrawlStatusBadgeConfig,
   getSubscriptionBadgeConfig,
 } from "@/lib/utils/badge-helpers";
 import type { AdminSite } from "@/lib/api/generated/models";
 
+interface Pagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
 interface SitesTableProps {
   sites: AdminSite[];
+  pagination?: Pagination;
+  onPageChange?: (page: number) => void;
   onRecrawl: (siteId: string) => void;
   onClearCache: (siteId: string) => void;
   onDelete: (site: AdminSite) => void;
@@ -46,6 +56,8 @@ interface SitesTableProps {
 
 export function SitesTable({
   sites,
+  pagination,
+  onPageChange,
   onRecrawl,
   onClearCache,
   onDelete,
@@ -201,6 +213,18 @@ export function SitesTable({
           )}
         </TableBody>
       </Table>
+      {pagination && onPageChange && (
+        <div className="px-6 pb-4">
+          <TablePagination
+            page={pagination.page}
+            limit={pagination.limit}
+            total={pagination.total}
+            totalPages={pagination.pages}
+            onPageChange={onPageChange}
+            itemName="sites"
+          />
+        </div>
+      )}
     </div>
   );
 }

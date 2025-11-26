@@ -139,7 +139,7 @@ model Site {
   siteDescription       String?
   siteIndustry          String?
   specialInstructions   String?
-  welcomeMessage        String                @default("Welcome! How can I help you today?")
+  startersHeadline      String                @default("Welcome! How can I help you today?")
 
   crawlStatus           CrawlStatus           @default(PENDING)
   lastCrawledAt         DateTime?
@@ -369,7 +369,7 @@ model WidgetSettings {
   startersTitle             String      @default("Suggested questions")
 
   // Branding
-  showPoweredBy             Boolean     @default(true)
+  showPoweredBy             Boolean     @default(false)
   poweredByText             String      @default("Powered by Intelligentconvo")
   poweredByUrl              String      @default("https://intelligentconvo.com")
 
@@ -706,8 +706,10 @@ enum SettingType {
 
 enum SettingCategory {
   GENERAL
-  AI
+  AUTHENTICATION
   SECURITY
+  AI_MODELS
+  AI_OPTIMIZATION
   RATE_LIMIT
   EMAIL
   BILLING

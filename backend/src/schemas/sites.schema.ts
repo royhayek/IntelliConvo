@@ -55,9 +55,9 @@ export const updateSiteSchema = registry.register(
       description: 'Special instructions for the AI chatbot',
       example: 'Always be friendly and helpful',
     }),
-    welcomeMessage: z.string().optional().openapi({
-      description: 'Welcome message for visitors',
-      example: 'Hello! How can I help you today?',
+    startersHeadline: z.string().optional().openapi({
+      description: 'Headline text displayed above conversation starter buttons',
+      example: 'How can I help you today?',
     }),
   }).openapi({
     description: 'Update site information',
@@ -68,9 +68,9 @@ export const updateSiteSchema = registry.register(
 export const updateStartersSchema = registry.register(
   'UpdateStartersRequest',
   z.object({
-    welcomeMessage: z.string().nullable().optional().openapi({
-      description: 'Welcome message for the chat widget',
-      example: 'Welcome! How can I help you today?',
+    startersHeadline: z.string().nullable().optional().openapi({
+      description: 'Headline text displayed above conversation starter buttons',
+      example: 'How can I help you today?',
     }),
     starters: z.array(z.string()).openapi({
       description: 'Array of conversation starter texts',
@@ -86,7 +86,7 @@ export const addHostSchema = registry.register(
   'AddHostRequest',
   z.object({
     hostName: z.string().min(1, 'Hostname is required').openapi({
-      description: 'Hostname (e.g., example.com)',
+      description: 'Hostname or pattern for allowed widget origins. Supports: regular domains (example.com), wildcards (*.example.com), localhost with ports (localhost:3000), and IP addresses with ports (192.168.1.1:8080)',
       example: 'example.com',
     }),
     isEnabled: z.boolean().default(true).openapi({
@@ -94,7 +94,7 @@ export const addHostSchema = registry.register(
       example: true,
     }),
   }).openapi({
-    description: 'Add an active host for widget deployment',
+    description: 'Add an active host for widget deployment. The hostname can be a regular domain, wildcard pattern, localhost with port, or IP address with port.',
   })
 );
 
@@ -149,7 +149,7 @@ export const siteResponseSchema = registry.register(
     siteDescription: z.string().nullable().openapi({ description: 'Website description' }),
     siteIndustry: z.string().nullable().openapi({ description: 'Website industry' }),
     specialInstructions: z.string().nullable().openapi({ description: 'AI instructions' }),
-    welcomeMessage: z.string().openapi({ description: 'Welcome message' }),
+    startersHeadline: z.string().openapi({ description: 'Headline for conversation starters' }),
     crawlStatus: z.enum(['PENDING', 'CRAWLING', 'COMPLETED', 'FAILED', 'AWAITING_PAYMENT', 'PROCESSING', 'READY', 'PARTIAL']).openapi({ description: 'Crawl status' }),
     lastCrawledAt: z.string().nullable().openapi({ description: 'Last crawl timestamp' }),
     createdAt: z.string().openapi({ description: 'Creation timestamp' }),
@@ -170,7 +170,7 @@ export const siteResponseSchema = registry.register(
 export const startersResponseSchema = registry.register(
   'StartersResponse',
   z.object({
-    welcomeMessage: z.string().nullable().openapi({ description: 'Welcome message' }),
+    startersHeadline: z.string().nullable().openapi({ description: 'Headline for conversation starters' }),
     starters: z.array(z.object({
       id: z.string().uuid().openapi({ description: 'Starter ID' }),
       starterText: z.string().openapi({ description: 'Starter text' }),

@@ -29,7 +29,7 @@ CREATE TYPE "FileStatus" AS ENUM ('PENDING', 'COMPLETED', 'FAILED');
 CREATE TYPE "SettingType" AS ENUM ('STRING', 'NUMBER', 'BOOLEAN', 'JSON');
 
 -- CreateEnum
-CREATE TYPE "SettingCategory" AS ENUM ('GENERAL', 'AI', 'SECURITY', 'RATE_LIMIT', 'EMAIL', 'BILLING', 'STORAGE');
+CREATE TYPE "SettingCategory" AS ENUM ('GENERAL', 'AUTHENTICATION', 'SECURITY', 'AI_MODELS', 'AI_OPTIMIZATION', 'RATE_LIMIT', 'EMAIL', 'BILLING', 'STORAGE');
 
 -- CreateEnum
 CREATE TYPE "AuditAction" AS ENUM ('CREATE', 'UPDATE', 'DELETE', 'VIEW', 'LOGIN', 'LOGOUT', 'FORCE_LOGOUT', 'EXTEND_TRIAL', 'RECRAWL', 'REPROCESS', 'CLEANUP', 'EXPORT', 'BULK_UPDATE', 'BULK_DELETE');
@@ -94,7 +94,7 @@ CREATE TABLE "Site" (
     "siteDescription" TEXT,
     "siteIndustry" TEXT,
     "specialInstructions" TEXT,
-    "welcomeMessage" TEXT NOT NULL DEFAULT 'Welcome! How can I help you today?',
+    "startersHeadline" TEXT NOT NULL DEFAULT 'Welcome! How can I help you today?',
     "crawlStatus" "CrawlStatus" NOT NULL DEFAULT 'PENDING',
     "lastCrawledAt" TIMESTAMP(3),
     "discoveryStatus" "DiscoveryStatus" NOT NULL DEFAULT 'PENDING',
@@ -225,7 +225,7 @@ CREATE TABLE "WidgetSettings" (
     "minimizeButtonAriaLabel" TEXT NOT NULL DEFAULT 'Minimize chat',
     "showConversationStarters" BOOLEAN NOT NULL DEFAULT true,
     "startersTitle" TEXT NOT NULL DEFAULT 'Suggested questions',
-    "showPoweredBy" BOOLEAN NOT NULL DEFAULT true,
+    "showPoweredBy" BOOLEAN NOT NULL DEFAULT false,
     "poweredByText" TEXT NOT NULL DEFAULT 'Powered by Intelligentconvo',
     "poweredByUrl" TEXT NOT NULL DEFAULT 'https://intelligentconvo.com',
     "mobileBreakpoint" INTEGER NOT NULL DEFAULT 768,

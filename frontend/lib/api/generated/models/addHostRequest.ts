@@ -2,11 +2,11 @@
 // Do not edit manually
 
 /**
- * Add an active host for widget deployment
+ * Add an active host for widget deployment. The hostname can be a regular domain, wildcard pattern, localhost with port, or IP address with port.
  */
 export interface AddHostRequest {
   /**
-   * Hostname (e.g., example.com)
+   * Hostname or pattern for allowed widget origins. Supports: regular domains (example.com), wildcards (*.example.com), localhost with ports (localhost:3000), and IP addresses with ports (192.168.1.1:8080)
    * @minLength 1
    */
   hostName: string;

@@ -437,31 +437,34 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: var(--ic-message-area-padding, 16px);
   overflow: hidden;
   background: var(--ic-message-area-bg, #f8fafc);
+  padding-left: var(--ic-message-area-padding, 16px);
 }
 
 /* Messages */
 .intelligentconvo-messages {
   flex: 1;
   overflow-y: auto;
-  padding-right: 4px;
+  padding: var(--ic-message-area-padding, 16px) var(--ic-message-area-padding, 16px) var(--ic-message-area-padding, 16px) 0;
   scrollbar-width: thin;
   scrollbar-color: #cbd5e1 transparent;
 }
 
 .intelligentconvo-messages::-webkit-scrollbar {
-  width: 4px;
+  width: 6px;
 }
 
 .intelligentconvo-messages::-webkit-scrollbar-track {
   background: transparent;
+  margin: 8px 0;
 }
 
 .intelligentconvo-messages::-webkit-scrollbar-thumb {
   background: #cbd5e1;
-  border-radius: 2px;
+  border-radius: 3px;
+  border: 1px solid transparent;
+  background-clip: padding-box;
 }
 
 .intelligentconvo-message {
@@ -560,7 +563,7 @@
 
 /* Conversation Starters */
 .intelligentconvo-starters {
-  padding: 8px 0;
+  padding: 8px var(--ic-message-area-padding, 16px) 8px 0;
 }
 
 .intelligentconvo-welcome {
@@ -1286,4 +1289,526 @@ body.ic-mobile-fullscreen .intelligentconvo-widget-container {
   color: var(--ic-text-muted);
   cursor: not-allowed;
   opacity: 0.6;
+}
+
+
+/* ===================================
+   Speak Mode Styles - Professional Design
+   =================================== */
+
+.intelligentconvo-speak-mode {
+  display: none;
+  flex-direction: column;
+  height: 100%;
+  background: var(--ic-bg-primary);
+  overflow: hidden;
+  position: relative;
+}
+
+/* Header Section */
+.intelligentconvo-speak-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 20px 16px;
+  background: linear-gradient(135deg, var(--ic-bg-primary) 0%, var(--ic-bg-secondary) 100%);
+  border-bottom: 1px solid var(--ic-border-color);
+  flex-shrink: 0;
+}
+
+.intelligentconvo-speak-avatar-wrapper {
+  position: relative;
+}
+
+.intelligentconvo-speak-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid var(--ic-primary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  position: relative;
+  z-index: 2;
+}
+
+.intelligentconvo-speak-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.intelligentconvo-speak-avatar-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--ic-primary), var(--ic-secondary, var(--ic-primary)));
+  color: white;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.intelligentconvo-speak-pulse {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid var(--ic-primary);
+  opacity: 0.6;
+  animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse-ring {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0;
+  }
+}
+
+.intelligentconvo-speak-status-wrapper {
+  flex: 1;
+  min-width: 0;
+}
+
+.intelligentconvo-speak-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ic-text-primary);
+  line-height: 1.3;
+}
+
+.intelligentconvo-speak-status {
+  display: flex;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.intelligentconvo-status-text {
+  font-size: 13px;
+  color: var(--ic-text-secondary);
+  font-weight: 500;
+}
+
+/* Waveform Section */
+.intelligentconvo-speak-waveform-container {
+  padding: 16px 20px;
+  background: var(--ic-bg-secondary);
+  border-bottom: 1px solid var(--ic-border-color);
+  flex-shrink: 0;
+}
+
+.intelligentconvo-speak-waveform {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 48px;
+  opacity: 0.3;
+  transition: opacity 0.3s ease;
+}
+
+.intelligentconvo-speak-waveform.active {
+  opacity: 1;
+}
+
+.intelligentconvo-wave-bar {
+  width: 5px;
+  height: 16px;
+  background: var(--ic-primary);
+  border-radius: 3px;
+  transition: all 0.1s ease;
+}
+
+.intelligentconvo-speak-waveform.active .intelligentconvo-wave-bar {
+  animation: wave 1.2s ease-in-out infinite;
+}
+
+.intelligentconvo-speak-waveform.active .intelligentconvo-wave-bar:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.intelligentconvo-speak-waveform.active .intelligentconvo-wave-bar:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.intelligentconvo-speak-waveform.active .intelligentconvo-wave-bar:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.intelligentconvo-speak-waveform.active .intelligentconvo-wave-bar:nth-child(4) {
+  animation-delay: 0.3s;
+}
+
+.intelligentconvo-speak-waveform.active .intelligentconvo-wave-bar:nth-child(5) {
+  animation-delay: 0.4s;
+}
+
+@keyframes wave {
+  0%, 100% {
+    height: 16px;
+  }
+  50% {
+    height: 48px;
+  }
+}
+
+/* Transcript Section */
+.intelligentconvo-speak-transcript {
+  flex: 1;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--ic-bg-primary);
+}
+
+.intelligentconvo-speak-transcript.visible {
+  display: flex;
+}
+
+.intelligentconvo-transcript-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 20px 12px;
+  color: var(--ic-text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+.intelligentconvo-transcript-header svg {
+  opacity: 0.7;
+}
+
+.intelligentconvo-transcript-messages {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.intelligentconvo-transcript-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  color: var(--ic-text-secondary);
+  padding: 40px 20px;
+}
+
+.intelligentconvo-transcript-empty svg {
+  opacity: 0.4;
+  margin-bottom: 16px;
+}
+
+.intelligentconvo-transcript-empty p {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ic-text-primary);
+}
+
+.intelligentconvo-transcript-empty small {
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+.intelligentconvo-transcript-message {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 85%;
+  animation: messageSlideIn 0.3s ease-out;
+}
+
+@keyframes messageSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.intelligentconvo-transcript-user {
+  align-self: flex-end;
+}
+
+.intelligentconvo-transcript-assistant {
+  align-self: flex-start;
+}
+
+.intelligentconvo-transcript-content {
+  padding: 12px 16px;
+  border-radius: 16px;
+  font-size: 14px;
+  line-height: 1.5;
+  word-wrap: break-word;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.intelligentconvo-transcript-user .intelligentconvo-transcript-content {
+  background: var(--ic-primary);
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.intelligentconvo-transcript-assistant .intelligentconvo-transcript-content {
+  background: var(--ic-bg-secondary);
+  color: var(--ic-text-primary);
+  border: 1px solid var(--ic-border-color);
+  border-bottom-left-radius: 4px;
+}
+
+/* Style markdown content in assistant messages */
+.intelligentconvo-transcript-assistant .intelligentconvo-transcript-content p {
+  margin: 0 0 8px;
+}
+
+.intelligentconvo-transcript-assistant .intelligentconvo-transcript-content p:last-child {
+  margin-bottom: 0;
+}
+
+.intelligentconvo-transcript-assistant .intelligentconvo-transcript-content code {
+  background: var(--ic-bg-primary);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 13px;
+  border: 1px solid var(--ic-border-color);
+}
+
+.intelligentconvo-transcript-assistant .intelligentconvo-transcript-content pre {
+  background: var(--ic-bg-primary);
+  padding: 12px;
+  border-radius: 8px;
+  overflow-x: auto;
+  border: 1px solid var(--ic-border-color);
+}
+
+.intelligentconvo-transcript-assistant .intelligentconvo-transcript-content ul,
+.intelligentconvo-transcript-assistant .intelligentconvo-transcript-content ol {
+  margin: 8px 0;
+  padding-left: 20px;
+}
+
+.intelligentconvo-transcript-assistant .intelligentconvo-transcript-content li {
+  margin: 4px 0;
+}
+
+.intelligentconvo-transcript-time {
+  font-size: 11px;
+  color: var(--ic-text-secondary);
+  opacity: 0.7;
+  padding: 0 4px;
+  align-self: flex-end;
+}
+
+/* Controls Section */
+.intelligentconvo-speak-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 20px;
+  background: var(--ic-bg-primary);
+  border-top: 1px solid var(--ic-border-color);
+  flex-shrink: 0;
+}
+
+.intelligentconvo-speak-btn {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, var(--ic-primary), var(--ic-secondary, var(--ic-primary)));
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12), 0 0 0 0 var(--ic-primary);
+  position: relative;
+}
+
+.intelligentconvo-speak-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.16), 0 0 0 0 var(--ic-primary);
+}
+
+.intelligentconvo-speak-btn:active {
+  transform: scale(0.95);
+}
+
+.intelligentconvo-speak-btn.listening {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  animation: pulse-button 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-button {
+  0%, 100% {
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3), 0 0 0 0 rgba(239, 68, 68, 0.7);
+  }
+  50% {
+    box-shadow: 0 4px 20px rgba(239, 68, 68, 0.4), 0 0 0 12px rgba(239, 68, 68, 0);
+  }
+}
+
+.intelligentconvo-speak-btn.speaking {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.intelligentconvo-speak-stop-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  background: #ef4444;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+}
+
+.intelligentconvo-speak-stop-btn:hover {
+  background: #dc2626;
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
+/* Speaking Indicator */
+.intelligentconvo-speaking-indicator {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px 20px;
+  background: var(--ic-bg-secondary);
+  border-radius: 24px;
+  position: absolute;
+  bottom: 90px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  border: 1px solid var(--ic-border-color);
+  backdrop-filter: blur(8px);
+}
+
+.intelligentconvo-speaking-animation {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.intelligentconvo-speaking-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ic-primary);
+  animation: speaking-bounce 1.4s ease-in-out infinite;
+}
+
+.intelligentconvo-speaking-dot:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.intelligentconvo-speaking-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.intelligentconvo-speaking-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes speaking-bounce {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.7;
+  }
+  30% {
+    transform: translateY(-8px);
+    opacity: 1;
+  }
+}
+
+.intelligentconvo-speaking-indicator span {
+  font-size: 13px;
+  color: var(--ic-text-primary);
+  font-weight: 500;
+}
+
+/* Mobile Responsive */
+@media (max-width: 640px) {
+  .intelligentconvo-speak-header {
+    padding: 20px 16px 12px;
+    gap: 12px;
+  }
+
+  .intelligentconvo-speak-avatar {
+    width: 48px;
+    height: 48px;
+  }
+
+  .intelligentconvo-speak-title {
+    font-size: 15px;
+  }
+
+  .intelligentconvo-speak-waveform-container {
+    padding: 12px 16px;
+  }
+
+  .intelligentconvo-speak-waveform {
+    height: 40px;
+  }
+
+  .intelligentconvo-transcript-header {
+    padding: 12px 16px 8px;
+  }
+
+  .intelligentconvo-transcript-messages {
+    padding: 0 16px 16px;
+    gap: 12px;
+  }
+
+  .intelligentconvo-transcript-content {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+
+  .intelligentconvo-speak-controls {
+    padding: 16px;
+  }
+
+  .intelligentconvo-speak-btn {
+    width: 56px;
+    height: 56px;
+  }
+
+  .intelligentconvo-speak-stop-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .intelligentconvo-speaking-indicator {
+    bottom: 80px;
+    padding: 10px 16px;
+  }
 }

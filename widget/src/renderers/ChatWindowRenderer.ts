@@ -264,6 +264,101 @@ export class ChatWindowRenderer {
   }
 
   /**
+   * Gets the speak mode HTML
+   * @returns HTML string for the speak mode panel
+   */
+  public getSpeakModeHTML(): string {
+    const speakTitle = this.settings?.botName || 'AI Assistant';
+
+    return `
+      <div class="intelligentconvo-speak-mode" id="intelligentconvo-speak-mode" style="display: none;">
+        <div class="intelligentconvo-speak-header">
+          <div class="intelligentconvo-speak-avatar-wrapper">
+            <div class="intelligentconvo-speak-avatar">
+              ${this.settings?.botAvatarUrl
+                ? `<img src="${this.settings.botAvatarUrl}" alt="${speakTitle}" />`
+                : `<div class="intelligentconvo-speak-avatar-fallback">${this.settings?.botAvatarFallback || 'AI'}</div>`
+              }
+              <div class="intelligentconvo-speak-pulse"></div>
+            </div>
+          </div>
+          <div class="intelligentconvo-speak-status-wrapper">
+            <h3 class="intelligentconvo-speak-title">${speakTitle}</h3>
+            <div class="intelligentconvo-speak-status" id="intelligentconvo-speak-status">
+              <span class="intelligentconvo-status-text">Ready to listen</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="intelligentconvo-speak-waveform-container">
+          <div class="intelligentconvo-speak-waveform" id="intelligentconvo-speak-waveform">
+            <div class="intelligentconvo-wave-bar"></div>
+            <div class="intelligentconvo-wave-bar"></div>
+            <div class="intelligentconvo-wave-bar"></div>
+            <div class="intelligentconvo-wave-bar"></div>
+            <div class="intelligentconvo-wave-bar"></div>
+          </div>
+        </div>
+
+        <div class="intelligentconvo-speak-transcript" id="intelligentconvo-speak-transcript">
+          <div class="intelligentconvo-transcript-header">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+            <span>Conversation</span>
+          </div>
+          <div class="intelligentconvo-transcript-messages" id="intelligentconvo-transcript-messages">
+            <div class="intelligentconvo-transcript-empty">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                <line x1="12" y1="19" x2="12" y2="22"></line>
+              </svg>
+              <p>Start a voice conversation</p>
+              <small>Tap the microphone to speak</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="intelligentconvo-speak-controls">
+          <button
+            class="intelligentconvo-speak-btn"
+            id="intelligentconvo-speak-btn"
+            aria-label="Start speaking"
+            title="Tap to speak"
+          >
+            <svg class="intelligentconvo-mic-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+              <line x1="12" y1="19" x2="12" y2="22"></line>
+            </svg>
+          </button>
+          <button
+            class="intelligentconvo-speak-stop-btn"
+            id="intelligentconvo-speak-stop-btn"
+            aria-label="Stop speaking"
+            title="Stop"
+            style="display: none;"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <rect x="6" y="6" width="12" height="12" rx="2"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="intelligentconvo-speaking-indicator" id="intelligentconvo-speaking-indicator" style="display: none;">
+          <div class="intelligentconvo-speaking-animation">
+            <div class="intelligentconvo-speaking-dot"></div>
+            <div class="intelligentconvo-speaking-dot"></div>
+            <div class="intelligentconvo-speaking-dot"></div>
+          </div>
+          <span>AI is speaking...</span>
+        </div>
+      </div>
+    `;
+  }
+
+  /**
    * Updates the internal settings reference
    * @param settings - New widget settings
    */

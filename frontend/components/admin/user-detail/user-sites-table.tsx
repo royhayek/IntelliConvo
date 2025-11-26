@@ -14,6 +14,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { TimeAgo } from "@/components/ui/time-ago";
+import { TablePagination } from "@/components/ui/table-pagination";
 import { getCrawlStatusBadgeConfig } from "@/lib/utils/badge-helpers";
 
 interface Site {
@@ -28,11 +29,20 @@ interface Site {
   };
 }
 
-interface UserSitesTableProps {
-  sites: Site[];
+interface Pagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
 }
 
-export function UserSitesTable({ sites }: UserSitesTableProps) {
+interface UserSitesTableProps {
+  sites: Site[];
+  pagination?: Pagination;
+  onPageChange?: (page: number) => void;
+}
+
+export function UserSitesTable({ sites, pagination, onPageChange }: UserSitesTableProps) {
   return (
     <Card>
       <CardHeader>
@@ -105,6 +115,16 @@ export function UserSitesTable({ sites }: UserSitesTableProps) {
               })}
             </TableBody>
           </Table>
+        )}
+        {pagination && onPageChange && sites.length > 0 && (
+          <TablePagination
+            page={pagination.page}
+            limit={pagination.limit}
+            total={pagination.total}
+            totalPages={pagination.pages}
+            onPageChange={onPageChange}
+            itemName="sites"
+          />
         )}
       </CardContent>
     </Card>

@@ -115,7 +115,7 @@ export const defaultWidgetSettings: Omit<Prisma.WidgetSettingsCreateInput, 'site
   minimizeButtonAriaLabel: 'Minimize chat',
   showConversationStarters: true,
   startersTitle: 'Suggested questions',
-  showPoweredBy: true,
+  showPoweredBy: false,
   poweredByText: 'Powered by Intelligentconvo',
   poweredByUrl: 'https://intelligentconvo.com',
 

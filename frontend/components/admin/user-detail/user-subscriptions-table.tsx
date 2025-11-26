@@ -12,6 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { TablePagination } from "@/components/ui/table-pagination";
 import { getSubscriptionStatusBadgeConfig } from "@/lib/utils/badge-helpers";
 
 interface Subscription {
@@ -26,11 +27,20 @@ interface Subscription {
   } | null;
 }
 
-interface UserSubscriptionsTableProps {
-  subscriptions: Subscription[];
+interface Pagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
 }
 
-export function UserSubscriptionsTable({ subscriptions }: UserSubscriptionsTableProps) {
+interface UserSubscriptionsTableProps {
+  subscriptions: Subscription[];
+  pagination?: Pagination;
+  onPageChange?: (page: number) => void;
+}
+
+export function UserSubscriptionsTable({ subscriptions, pagination, onPageChange }: UserSubscriptionsTableProps) {
   return (
     <Card>
       <CardHeader>
@@ -93,6 +103,16 @@ export function UserSubscriptionsTable({ subscriptions }: UserSubscriptionsTable
               })}
             </TableBody>
           </Table>
+        )}
+        {pagination && onPageChange && subscriptions.length > 0 && (
+          <TablePagination
+            page={pagination.page}
+            limit={pagination.limit}
+            total={pagination.total}
+            totalPages={pagination.pages}
+            onPageChange={onPageChange}
+            itemName="subscriptions"
+          />
         )}
       </CardContent>
     </Card>

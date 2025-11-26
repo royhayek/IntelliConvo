@@ -63,7 +63,9 @@ export default function AdminMessagesPage() {
   const queryParams: GetApiV1AdminMessagesParams = {
     page: page.toString(),
     limit: "20",
-    ...(role !== "all" && { role: role.toUpperCase() as GetApiV1AdminMessagesRole }),
+    ...(role !== "all" && {
+      role: role.toUpperCase() as GetApiV1AdminMessagesRole,
+    }),
     ...(conversationId && { conversationId }),
     ...(siteId && { siteId }),
   };
@@ -90,17 +92,24 @@ export default function AdminMessagesPage() {
     deleteMutation.mutate({ messageId: deleteMessage.id });
   };
 
-  const data = response?.data as {
-    messages: Message[];
-    pagination: {
-      page: number;
-      limit: number;
-      total: number;
-      totalPages: number;
-    };
-  } | undefined;
+  const data = response?.data as
+    | {
+        messages: Message[];
+        pagination: {
+          page: number;
+          limit: number;
+          total: number;
+          totalPages: number;
+        };
+      }
+    | undefined;
 
-  const errorMessage = error instanceof Error ? error.message : deleteMutation.error ? "Failed to delete message" : null;
+  const errorMessage =
+    error instanceof Error
+      ? error.message
+      : deleteMutation.error
+      ? "Failed to delete message"
+      : null;
 
   return (
     <div className="space-y-6">
@@ -122,7 +131,13 @@ export default function AdminMessagesPage() {
       </div>
 
       <div className="flex gap-4">
-        <Select value={role} onValueChange={(v) => { setRole(v); setPage(1); }}>
+        <Select
+          value={role}
+          onValueChange={(v) => {
+            setRole(v);
+            setPage(1);
+          }}
+        >
           <SelectTrigger className="w-[150px]">
             <SelectValue placeholder="Role" />
           </SelectTrigger>
@@ -146,25 +161,7 @@ export default function AdminMessagesPage() {
           <LoadingSpinner size="lg" />
         </div>
       ) : data ? (
-        <>
-          <MessagesTable
-            messages={data.messages}
-            onDelete={setDeleteMessage}
-          />
-
-          {data.pagination.totalPages > 1 && (
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-gray-500">
-                Showing {((page - 1) * 20) + 1} to {Math.min(page * 20, data.pagination.total)} of {data.pagination.total} messages
-              </p>
-              <Pagination
-                currentPage={page}
-                totalPages={data.pagination.totalPages}
-                onPageChange={setPage}
-              />
-            </div>
-          )}
-        </>
+        <MessagesTable messages={data.messages} onDelete={setDeleteMessage} />
       ) : null}
 
       <DeleteConfirmationDialog

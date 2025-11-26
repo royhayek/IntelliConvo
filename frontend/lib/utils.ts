@@ -34,6 +34,8 @@ export function formatCents(cents: number, currency: string = "USD") {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 6, // Show up to 6 decimal places for precision
   }).format(cents / 100); // Convert cents to dollars
 }
 

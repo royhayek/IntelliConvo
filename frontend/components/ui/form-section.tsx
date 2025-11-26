@@ -25,25 +25,25 @@ export function FormSection({
 }: FormSectionProps) {
   const header = (
     <div className={cn("space-y-2", !asCard && "mb-6")}>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
           {Icon && (
-            <div className="h-10 w-10 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center">
-              <Icon className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+            <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center flex-shrink-0">
+              <Icon className="h-4 w-4 sm:h-5 sm:w-5 text-indigo-600 dark:text-indigo-400" />
             </div>
           )}
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+          <div className="min-w-0 flex-1">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
               {title}
             </h3>
             {description && (
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-0.5 sm:mt-1">
                 {description}
               </p>
             )}
           </div>
         </div>
-        {action && <div className="flex-shrink-0">{action}</div>}
+        {action && <div className="flex-shrink-0 w-full sm:w-auto">{action}</div>}
       </div>
       {!asCard && <Separator />}
     </div>
@@ -55,19 +55,19 @@ export function FormSection({
     return (
       <Card className={className}>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
               {Icon && (
-                <div className="h-10 w-10 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center">
-                  <Icon className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center flex-shrink-0">
+                  <Icon className="h-4 w-4 sm:h-5 sm:w-5 text-indigo-600 dark:text-indigo-400" />
                 </div>
               )}
-              <div>
-                <CardTitle>{title}</CardTitle>
-                {description && <CardDescription>{description}</CardDescription>}
+              <div className="min-w-0 flex-1">
+                <CardTitle className="text-base sm:text-lg">{title}</CardTitle>
+                {description && <CardDescription className="text-xs sm:text-sm">{description}</CardDescription>}
               </div>
             </div>
-            {action}
+            {action && <div className="w-full sm:w-auto">{action}</div>}
           </div>
         </CardHeader>
         <CardContent>{content}</CardContent>

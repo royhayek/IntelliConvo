@@ -5,7 +5,6 @@ import { useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { CreditCard, AlertTriangle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Pagination } from "@/components/ui/pagination";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
 
@@ -153,29 +152,15 @@ export default function AdminSubscriptionsPage() {
           <LoadingSpinner size="lg" />
         </div>
       ) : data ? (
-        <>
-          <SubscriptionsTable
-            subscriptions={data.subscriptions}
-            actionLoadingId={actionLoadingId}
-            onCancel={handleCancel}
-            onReactivate={handleReactivate}
-            onDelete={setDeleteSubscription}
-          />
-
-          {data.pagination.totalPages > 1 && (
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-gray-500">
-                Showing {(page - 1) * 20 + 1} to {Math.min(page * 20, data.pagination.total)} of{" "}
-                {data.pagination.total} subscriptions
-              </p>
-              <Pagination
-                currentPage={page}
-                totalPages={data.pagination.totalPages}
-                onPageChange={setPage}
-              />
-            </div>
-          )}
-        </>
+        <SubscriptionsTable
+          subscriptions={data.subscriptions}
+          pagination={data.pagination}
+          onPageChange={setPage}
+          actionLoadingId={actionLoadingId}
+          onCancel={handleCancel}
+          onReactivate={handleReactivate}
+          onDelete={setDeleteSubscription}
+        />
       ) : null}
 
       <DeleteConfirmationDialog

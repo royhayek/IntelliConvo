@@ -76,7 +76,9 @@ export async function generateEmbeddings(siteUrlId: string, content: string): Pr
     // First, delete any existing embeddings for this URL to avoid unique constraint violations
     await deleteEmbeddings(siteUrlId);
 
-    const chunks = chunkText(content);
+    // Get chunk size from settings
+    const chunkSize = await settings.getAIEmbeddingChunkSize();
+    const chunks = chunkText(content, chunkSize);
 
     for (let i = 0; i < chunks.length; i++) {
       const chunk = chunks[i];
@@ -144,7 +146,9 @@ export async function generateBatchEmbeddings(siteUrlId: string, content: string
     // First, delete any existing embeddings for this URL
     await deleteEmbeddings(siteUrlId);
 
-    const chunks = chunkText(content);
+    // Get chunk size from settings
+    const chunkSize = await settings.getAIEmbeddingChunkSize();
+    const chunks = chunkText(content, chunkSize);
     if (chunks.length === 0) {
       return 0;
     }
@@ -330,7 +334,7 @@ export async function processSiteEmbeddingsParallel(
 export async function searchContent(
   siteId: string,
   query: string,
-  topK: number = 5
+  topK: number = 3
 ): Promise<string[]> {
   try {
     // Generate embedding for query

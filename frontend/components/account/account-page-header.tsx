@@ -22,14 +22,14 @@ export function AccountPageHeader({ backLink, userEmail }: AccountPageHeaderProp
                 size="sm"
                 className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
               >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                {backLink.text}
+                <ArrowLeft className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">{backLink.text}</span>
               </Button>
             </Link>
             <div className="h-6 border-l border-gray-300 dark:border-gray-600"></div>
             <div className="flex items-center space-x-3">
               <div className="h-8 w-8 rounded-lg bg-indigo-600"></div>
-              <span className="text-xl font-bold text-gray-900 dark:text-white">
+              <span className="hidden sm:inline text-xl font-bold text-gray-900 dark:text-white">
                 Intelligentconvo
               </span>
             </div>

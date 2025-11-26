@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,30 +26,53 @@ import { SectionHeader } from "@/components/ui/section-header";
 import { FormSection } from "@/components/ui/form-section";
 import { StarterFieldItem } from "@/components/site/starter-field-item";
 import { DangerZoneCard } from "@/components/site/danger-zone-card";
+import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
 import {
   usePatchApiV1SitesSiteId,
   useGetApiV1SitesSiteIdStarters,
   usePutApiV1SitesSiteIdStarters,
+  useDeleteApiV1SitesSiteId,
   getGetApiV1SitesSiteIdQueryKey,
   getGetApiV1SitesSiteIdStartersQueryKey,
+  getGetApiV1SitesQueryKey,
 } from "@/lib/api/generated/queries/sites/sites";
 import { type SiteResponse } from "@/lib/api/generated/models";
 
 // Validation schemas
 const siteInfoSchema = z.object({
-  siteName: z.string().min(1, "Site name is required").max(100, "Site name must be less than 100 characters"),
-  siteDescription: z.string().min(1, "Site description is required").max(500, "Description must be less than 500 characters"),
-  specialInstructions: z.string().max(1000, "Instructions must be less than 1000 characters").optional(),
-  siteIndustry: z.string().max(100, "Industry must be less than 100 characters").optional(),
+  siteName: z
+    .string()
+    .min(1, "Site name is required")
+    .max(100, "Site name must be less than 100 characters"),
+  siteDescription: z
+    .string()
+    .min(1, "Site description is required")
+    .max(500, "Description must be less than 500 characters"),
+  specialInstructions: z
+    .string()
+    .max(1000, "Instructions must be less than 1000 characters")
+    .optional(),
+  siteIndustry: z
+    .string()
+    .max(100, "Industry must be less than 100 characters")
+    .optional(),
 });
 
 const conversationStartersSchema = z.object({
-  welcomeMessage: z.string().max(200, "Welcome message must be less than 200 characters").optional(),
-  starters: z.array(
-    z.object({
-      text: z.string().min(1, "Starter text is required").max(150, "Starter must be less than 150 characters"),
-    })
-  ).max(10, "Maximum 10 conversation starters allowed"),
+  startersHeadline: z
+    .string()
+    .max(200, "Starters headline must be less than 200 characters")
+    .optional(),
+  starters: z
+    .array(
+      z.object({
+        text: z
+          .string()
+          .min(1, "Starter text is required")
+          .max(150, "Starter must be less than 150 characters"),
+      })
+    )
+    .max(10, "Maximum 10 conversation starters allowed"),
 });
 
 type SiteInfoFormData = z.infer<typeof siteInfoSchema>;
@@ -59,7 +83,9 @@ interface PreferencesTabProps {
 }
 
 export function PreferencesTab({ site }: PreferencesTabProps) {
+  const router = useRouter();
   const queryClient = useQueryClient();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   // Site Info Form
   const siteInfoForm = useForm<SiteInfoFormData>({
@@ -79,7 +105,7 @@ export function PreferencesTab({ site }: PreferencesTabProps) {
   const startersForm = useForm<ConversationStartersFormData>({
     resolver: zodResolver(conversationStartersSchema),
     defaultValues: {
-      welcomeMessage: "",
+      startersHeadline: "",
       starters: [],
     },
   });
@@ -93,8 +119,11 @@ export function PreferencesTab({ site }: PreferencesTabProps) {
   useEffect(() => {
     if (starters) {
       startersForm.reset({
-        welcomeMessage: starters.welcomeMessage || "",
-        starters: starters.starters?.map(s => ({ text: s.starterText || "" })).filter(s => s.text) || [],
+        startersHeadline: starters.startersHeadline || "",
+        starters:
+          starters.starters
+            ?.map((s) => ({ text: s.starterText || "" }))
+            .filter((s) => s.text) || [],
       });
     }
   }, [starters, startersForm]);
@@ -102,7 +131,9 @@ export function PreferencesTab({ site }: PreferencesTabProps) {
   const updateSiteMutation = usePatchApiV1SitesSiteId({
     mutation: {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: getGetApiV1SitesSiteIdQueryKey(site.id) });
+        queryClient.invalidateQueries({
+          queryKey: getGetApiV1SitesSiteIdQueryKey(site.id),
+        });
       },
     },
   });
@@ -110,10 +141,29 @@ export function PreferencesTab({ site }: PreferencesTabProps) {
   const updateStartersMutation = usePutApiV1SitesSiteIdStarters({
     mutation: {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: getGetApiV1SitesSiteIdStartersQueryKey(site.id) });
+        queryClient.invalidateQueries({
+          queryKey: getGetApiV1SitesSiteIdStartersQueryKey(site.id),
+        });
       },
     },
   });
+
+  const deleteSiteMutation = useDeleteApiV1SitesSiteId({
+    mutation: {
+      onSuccess: () => {
+        setDeleteDialogOpen(false);
+        // Invalidate the sites list query so dashboard updates
+        queryClient.invalidateQueries({
+          queryKey: getGetApiV1SitesQueryKey(),
+        });
+        router.push("/dashboard");
+      },
+    },
+  });
+
+  const handleDeleteSite = () => {
+    deleteSiteMutation.mutate({ siteId: site.id });
+  };
 
   const onSaveSiteInfo = (data: SiteInfoFormData) => {
     updateSiteMutation.mutate({
@@ -131,8 +181,8 @@ export function PreferencesTab({ site }: PreferencesTabProps) {
     updateStartersMutation.mutate({
       siteId: site.id,
       data: {
-        welcomeMessage: data.welcomeMessage,
-        starters: data.starters.map(s => s.text),
+        startersHeadline: data.startersHeadline,
+        starters: data.starters.map((s) => s.text),
       },
     });
   };
@@ -145,12 +195,34 @@ export function PreferencesTab({ site }: PreferencesTabProps) {
       />
 
       <Tabs defaultValue="site-info" className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="site-info">Site Info</TabsTrigger>
-          <TabsTrigger value="conversation-starters">Conversation Starters</TabsTrigger>
-          <TabsTrigger value="active-hosts">Active Host Names</TabsTrigger>
-          <TabsTrigger value="danger-zone">Danger Zone</TabsTrigger>
-        </TabsList>
+        <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+          <TabsList className="inline-flex w-auto min-w-full sm:min-w-0">
+            <TabsTrigger
+              value="site-info"
+              className="whitespace-nowrap text-xs sm:text-sm"
+            >
+              Site Info
+            </TabsTrigger>
+            <TabsTrigger
+              value="conversation-starters"
+              className="whitespace-nowrap text-xs sm:text-sm"
+            >
+              Conversation Starters
+            </TabsTrigger>
+            <TabsTrigger
+              value="active-hosts"
+              className="whitespace-nowrap text-xs sm:text-sm"
+            >
+              Active Host Names
+            </TabsTrigger>
+            <TabsTrigger
+              value="danger-zone"
+              className="whitespace-nowrap text-xs sm:text-sm"
+            >
+              Danger Zone
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="site-info" className="space-y-6">
           <FormSection
@@ -160,83 +232,93 @@ export function PreferencesTab({ site }: PreferencesTabProps) {
             action={
               <Button
                 onClick={siteInfoForm.handleSubmit(onSaveSiteInfo)}
-                disabled={updateSiteMutation.isPending || !siteInfoForm.formState.isDirty}
+                disabled={
+                  updateSiteMutation.isPending ||
+                  !siteInfoForm.formState.isDirty
+                }
+                className="w-full sm:w-auto"
               >
                 <Save className="h-4 w-4 mr-2" />
-                {updateSiteMutation.isPending ? "Saving..." : "Update Site Info"}
+                {updateSiteMutation.isPending
+                  ? "Saving..."
+                  : "Update Site Info"}
               </Button>
             }
           >
             <Form {...siteInfoForm}>
-              <form onSubmit={siteInfoForm.handleSubmit(onSaveSiteInfo)} className="space-y-4">
-                  <FormField
-                    control={siteInfoForm.control}
-                    name="siteName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Site Name *</FormLabel>
-                        <FormControl>
-                          <Input placeholder="My Awesome Site" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+              <form
+                onSubmit={siteInfoForm.handleSubmit(onSaveSiteInfo)}
+                className="space-y-4"
+              >
+                <FormField
+                  control={siteInfoForm.control}
+                  name="siteName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Site Name *</FormLabel>
+                      <FormControl>
+                        <Input placeholder="My Awesome Site" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                  <FormField
-                    control={siteInfoForm.control}
-                    name="siteDescription"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Site Description *</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            placeholder="Mojo is a digital wallet platform in Lebanon..."
-                            rows={3}
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                <FormField
+                  control={siteInfoForm.control}
+                  name="siteDescription"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Site Description *</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Describe your site in a few sentences"
+                          rows={3}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                  <FormField
-                    control={siteInfoForm.control}
-                    name="specialInstructions"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Special Instructions</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            placeholder="Enter special site instructions"
-                            rows={3}
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          Optional instructions for how the AI should handle conversations
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                <FormField
+                  control={siteInfoForm.control}
+                  name="specialInstructions"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Special Instructions</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Enter special site instructions"
+                          rows={3}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Optional instructions for how the AI should handle
+                        conversations
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                  <FormField
-                    control={siteInfoForm.control}
-                    name="siteIndustry"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Industry</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Digital Payments" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </form>
-              </Form>
+                <FormField
+                  control={siteInfoForm.control}
+                  name="siteIndustry"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Industry</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Digital Payments" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </form>
+            </Form>
           </FormSection>
         </TabsContent>
 
@@ -245,14 +327,14 @@ export function PreferencesTab({ site }: PreferencesTabProps) {
             title={`Conversation Starters (Total ${fields.length})`}
             asCard={true}
             action={
-              <div className="flex space-x-2">
-                <Button variant="outline" size="sm">
-                  <Eye className="h-4 w-4 mr-2" />
-                  Preview
-                </Button>
+              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                 <Button
                   onClick={startersForm.handleSubmit(onSaveStarters)}
-                  disabled={updateStartersMutation.isPending || !startersForm.formState.isDirty}
+                  disabled={
+                    updateStartersMutation.isPending ||
+                    !startersForm.formState.isDirty
+                  }
+                  className="w-full sm:w-auto"
                 >
                   <Save className="h-4 w-4 mr-2" />
                   {updateStartersMutation.isPending ? "Saving..." : "Save"}
@@ -261,19 +343,22 @@ export function PreferencesTab({ site }: PreferencesTabProps) {
             }
           >
             <Form {...startersForm}>
-              <form onSubmit={startersForm.handleSubmit(onSaveStarters)} className="space-y-6">
+              <form
+                onSubmit={startersForm.handleSubmit(onSaveStarters)}
+                className="space-y-6"
+              >
                 <FormField
                   control={startersForm.control}
-                  name="welcomeMessage"
+                  name="startersHeadline"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Welcome Message</FormLabel>
+                      <FormLabel>Starters Headline</FormLabel>
                       <FormDescription>
-                        Use this headline to prompt the user to start a conversation.
+                        Headline text displayed above the conversation starter buttons.
                       </FormDescription>
                       <FormControl>
                         <Input
-                          placeholder="Welcome to Mojo, how can I help you today?"
+                          placeholder="How can I help you today?"
                           {...field}
                         />
                       </FormControl>
@@ -287,7 +372,8 @@ export function PreferencesTab({ site }: PreferencesTabProps) {
                     <div>
                       <Label>Conversation Starters</Label>
                       <p className="text-sm text-gray-600 dark:text-gray-400">
-                        Help users get a conversation started with these prompts.
+                        Help users get a conversation started with these
+                        prompts.
                       </p>
                     </div>
                     <Button
@@ -303,7 +389,8 @@ export function PreferencesTab({ site }: PreferencesTabProps) {
 
                   {fields.length === 0 && (
                     <div className="text-center py-8 text-gray-500 dark:text-gray-400 border-2 border-dashed rounded-lg">
-                      No conversation starters yet. Click "Add Starter" to create one.
+                      No conversation starters yet. Click "Add Starter" to
+                      create one.
                     </div>
                   )}
 
@@ -341,7 +428,9 @@ export function PreferencesTab({ site }: PreferencesTabProps) {
             <CardContent>
               <div className="space-y-4">
                 <div className="flex items-center justify-between p-4 border dark:border-gray-600 rounded-lg">
-                  <span className="font-medium text-gray-900 dark:text-white">{site.siteUrl}</span>
+                  <span className="font-medium text-gray-900 dark:text-white">
+                    {site.siteUrl}
+                  </span>
                   <span className="text-green-600 text-sm">✓ Enabled</span>
                 </div>
               </div>
@@ -353,17 +442,28 @@ export function PreferencesTab({ site }: PreferencesTabProps) {
           <DangerZoneCard
             siteUrl={site.siteUrl}
             hasActiveSubscription={
-              site.subscription?.status === 'ACTIVE' ||
-              site.subscription?.status === 'TRIAL' ||
+              site.subscription?.status === "ACTIVE" ||
+              site.subscription?.status === "TRIAL" ||
               false
             }
-            onDelete={() => {
-              // TODO: Implement site deletion
-              console.log("Delete site:", site.id);
-            }}
+            onDelete={() => setDeleteDialogOpen(true)}
+            isDeleting={deleteSiteMutation.isPending}
           />
         </TabsContent>
       </Tabs>
+
+      <DeleteConfirmationDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={handleDeleteSite}
+        title="Delete Site"
+        description="This will permanently delete your site and all associated data including conversations, messages, embeddings, and settings."
+        itemName={site.siteName}
+        itemDetails={site.siteUrl}
+        warningMessage="This action cannot be undone. All data will be permanently deleted from our servers."
+        isDeleting={deleteSiteMutation.isPending}
+        confirmText="Delete Site"
+      />
     </div>
   );
 }

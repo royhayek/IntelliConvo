@@ -2,11 +2,11 @@
 
 import { Moon, Sun } from "lucide-react";
 import { motion } from "framer-motion";
-import { useThemeStore } from "@/lib/store";
+import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 
 export function ThemeToggle() {
-  const { theme, setTheme } = useThemeStore();
+  const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   // Avoid hydration mismatch

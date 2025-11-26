@@ -17,8 +17,8 @@ import {
   ProfileFormCard,
   SecurityFormCard,
   DeleteAccountCard,
-  AccountPageHeader,
 } from "@/components/account";
+import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { getBackLinkConfig } from "@/lib/utils/navigation";
 
 function AccountSettingsPageContent() {
@@ -83,7 +83,13 @@ function AccountSettingsPageContent() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-slate-950">
-      <AccountPageHeader backLink={backLink} userEmail={user.email} />
+      <DashboardHeader
+        variant="dashboard"
+        showBackButton={true}
+        backHref={backLink.href}
+        showQuickActions={true}
+        showNavigationSettings={false}
+      />
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-8">

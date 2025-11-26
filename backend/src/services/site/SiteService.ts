@@ -12,6 +12,7 @@ import { CrawlStatus, NotificationType } from '@prisma/client';
 import { cacheService, CacheNamespace, CacheTTL } from '../cache';
 import { deleteSiteEmbeddings } from '../embeddings';
 import { fetchFavicon } from '../../utils/favicon';
+import { normalizeHostname as normalizeHost } from '../../utils/hostValidation';
 import {
   SiteWithMetaDTO,
   SiteListResponse,
@@ -76,7 +77,7 @@ export class SiteService {
       siteDescription: site.siteDescription,
       siteIndustry: site.siteIndustry,
       specialInstructions: site.specialInstructions,
-      welcomeMessage: site.welcomeMessage,
+      startersHeadline: site.startersHeadline,
       crawlStatus: site.crawlStatus,
       lastCrawledAt: site.lastCrawledAt?.toISOString() || null,
       createdAt: site.createdAt.toISOString(),
@@ -146,7 +147,7 @@ export class SiteService {
       siteDescription: site.siteDescription,
       siteIndustry: site.siteIndustry,
       specialInstructions: site.specialInstructions,
-      welcomeMessage: site.welcomeMessage,
+      startersHeadline: site.startersHeadline,
       crawlStatus: site.crawlStatus,
       lastCrawledAt: toISOString(site.lastCrawledAt),
       createdAt: toISOString(site.createdAt) || new Date().toISOString(),
@@ -388,7 +389,7 @@ export class SiteService {
         userId,
       },
       select: {
-        welcomeMessage: true,
+        startersHeadline: true,
       },
     });
 
@@ -417,7 +418,7 @@ export class SiteService {
     }));
 
     return {
-      welcomeMessage: site.welcomeMessage,
+      startersHeadline: site.startersHeadline,
       starters: starterDTOs,
     };
   }
@@ -446,11 +447,11 @@ export class SiteService {
       throw new NotFoundError('Site', siteId);
     }
 
-    // Update welcome message if provided
-    if (data.welcomeMessage !== undefined) {
+    // Update starters headline if provided
+    if (data.startersHeadline !== undefined) {
       await prisma.site.update({
         where: { id: siteId },
-        data: { welcomeMessage: data.welcomeMessage ?? undefined },
+        data: { startersHeadline: data.startersHeadline ?? undefined },
       });
     }
 
@@ -701,13 +702,10 @@ export class SiteService {
 
   /**
    * Normalize hostname
+   * Now uses shared utility function for consistency
    */
   private normalizeHostname(hostname: string): string {
-    let normalized = hostname.toLowerCase();
-    normalized = normalized.replace(/^https?:\/\//, '');
-    normalized = normalized.replace(/\/$/, '');
-    normalized = normalized.replace(/^www\./, '');
-    return normalized;
+    return normalizeHost(hostname);
   }
 
   /**
@@ -722,7 +720,7 @@ export class SiteService {
       siteDescription: site.siteDescription,
       siteIndustry: site.siteIndustry,
       specialInstructions: site.specialInstructions,
-      welcomeMessage: site.welcomeMessage,
+      startersHeadline: site.startersHeadline,
       crawlStatus: site.crawlStatus,
       lastCrawledAt: toISOString(site.lastCrawledAt),
       createdAt: toISOString(site.createdAt) || new Date().toISOString(),

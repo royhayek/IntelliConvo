@@ -33,18 +33,14 @@ export function DeleteAccountCard({
         <CardTitle className="text-red-600">Danger Zone</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="p-4 border border-red-200 dark:border-red-800/50 rounded-lg bg-red-50 dark:bg-red-900/20">
-          <div className="flex items-start justify-between">
-            <div>
+        <div className="p-4 border border-red-200 dark:border-red-800/50 rounded-lg bg-red-50 dark:bg-red-900/20 space-y-3">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex-1 min-w-0">
               <h4 className="font-medium text-red-900 dark:text-red-300">
                 Delete Account
               </h4>
-              <p className="text-sm text-red-700 dark:text-red-400 mt-1">
-                Permanently delete your account and all associated data. This action
-                cannot be undone.
-              </p>
             </div>
-            <div className="ml-4 flex-shrink-0">
+            <div className="flex-shrink-0">
               {!showConfirm ? (
                 <Button variant="destructive" onClick={handleDelete}>
                   <Trash2 className="h-4 w-4 mr-2" />
@@ -74,6 +70,10 @@ export function DeleteAccountCard({
               )}
             </div>
           </div>
+          <p className="text-xs sm:text-sm text-red-700 dark:text-red-400">
+            Permanently delete your account and all associated data. This action
+            cannot be undone.
+          </p>
         </div>
 
         {isError && (

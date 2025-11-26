@@ -26,7 +26,7 @@ export function DateRangeFilter({
   className,
 }: DateRangeFilterProps) {
   return (
-    <div className={cn("flex items-center gap-2", className)}>
+    <div className={cn("flex items-center gap-1.5 sm:gap-2", className)}>
       {options.map((option) => (
         <Button
           key={option.value}
@@ -34,7 +34,7 @@ export function DateRangeFilter({
           size="sm"
           onClick={() => onChange(option.value)}
           className={cn(
-            "transition-colors",
+            "transition-colors text-xs sm:text-sm px-2.5 sm:px-3 py-1.5 sm:py-2 h-auto whitespace-nowrap",
             value === option.value &&
               "bg-indigo-50 dark:bg-indigo-900/30 border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300"
           )}

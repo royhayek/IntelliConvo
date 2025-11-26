@@ -1,38 +1,9 @@
 "use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useState, useEffect } from "react";
+import { ThemeProvider } from "next-themes";
+import { useState } from "react";
 import { Toaster } from "sonner";
-import { useThemeStore } from "@/lib/store";
-
-function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const { theme } = useThemeStore();
-
-  useEffect(() => {
-    const root = window.document.documentElement;
-
-    const applyTheme = (isDark: boolean) => {
-      if (isDark) {
-        root.classList.add("dark");
-      } else {
-        root.classList.remove("dark");
-      }
-    };
-
-    if (theme === "system") {
-      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-      applyTheme(mediaQuery.matches);
-
-      const handler = (e: MediaQueryListEvent) => applyTheme(e.matches);
-      mediaQuery.addEventListener("change", handler);
-      return () => mediaQuery.removeEventListener("change", handler);
-    } else {
-      applyTheme(theme === "dark");
-    }
-  }, [theme]);
-
-  return <>{children}</>;
-}
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -52,7 +23,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        enableSystem
+        disableTransitionOnChange
+      >
         {children}
         <Toaster richColors position="top-right" />
       </ThemeProvider>

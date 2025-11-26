@@ -69,16 +69,17 @@ async function fetchFaviconFromHtml(baseUrl: string): Promise<string | null> {
     const $ = cheerio.load(html);
 
     // Look for various favicon link tags (in order of preference)
+    // Standard favicons are prioritized over apple-touch-icons
     const selectors = [
+      'link[rel="icon"][type="image/svg+xml"]', // SVG favicons (scalable)
       'link[rel="icon"][sizes="192x192"]',
       'link[rel="icon"][sizes="128x128"]',
       'link[rel="icon"][sizes="96x96"]',
-      'link[rel="apple-touch-icon"]',
-      'link[rel="apple-touch-icon-precomposed"]',
       'link[rel="icon"][type="image/png"]',
-      'link[rel="icon"][type="image/svg+xml"]',
-      'link[rel="icon"]',
-      'link[rel="shortcut icon"]',
+      'link[rel="icon"]', // Standard favicon
+      'link[rel="shortcut icon"]', // Legacy favicon
+      'link[rel="apple-touch-icon"]', // iOS-specific (lower priority)
+      'link[rel="apple-touch-icon-precomposed"]',
     ];
 
     for (const selector of selectors) {

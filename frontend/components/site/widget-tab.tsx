@@ -27,9 +27,8 @@ import {
   usePutApiV1WidgetSiteIdSettingsReset,
   getGetApiV1WidgetSiteIdSettingsAdminQueryKey,
 } from "@/lib/api/generated/queries/widget/widget";
-import { type SiteResponse } from "@/lib/api/generated/models";
 import { useToast } from "@/hooks/use-toast";
-import { Input } from "../ui/input";
+import { SiteResponse } from "@/lib/api/generated/models";
 
 interface WidgetTabProps {
   site: SiteResponse;
@@ -198,7 +197,7 @@ const defaultSettings: WidgetSettings = {
   errorMessage: "Something went wrong. Please try again.",
   showConversationStarters: true,
   startersTitle: "Suggested questions",
-  showPoweredBy: true,
+  showPoweredBy: false,
   poweredByText: "Powered by Intelligentconvo",
 
   // Responsive
@@ -335,15 +334,17 @@ function CollapsibleSection({ title, children, defaultOpen = false }: { title: s
 
   return (
     <div className="border dark:border-gray-600 rounded-lg">
-      <Button
-        variant="ghost"
+      <button
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center w-full p-3 text-left font-medium text-sm hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-900 dark:text-white h-auto justify-start"
+        className={`flex items-center w-full p-3 text-left font-medium text-sm hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-900 dark:text-white transition-colors ${
+          isOpen ? 'rounded-t-lg' : 'rounded-lg'
+        }`}
       >
-        {title}
-        {isOpen ? <ChevronDown className="h-4 w-4 ml-auto" /> : <ChevronRight className="h-4 w-4 ml-auto" />}
-      </Button>
-      {isOpen && <div className="p-4 pt-0 space-y-4">{children}</div>}
+        <span className="flex-1">{title}</span>
+        {isOpen ? <ChevronDown className="h-4 w-4 flex-shrink-0" /> : <ChevronRight className="h-4 w-4 flex-shrink-0" />}
+      </button>
+      {isOpen && <div className="p-4 space-y-4">{children}</div>}
     </div>
   );
 }
@@ -463,13 +464,13 @@ export function WidgetTab({ site }: WidgetTabProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSaveSettings)} className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Widget Customization</h2>
-            <p className="text-gray-600 dark:text-gray-400">Customize every aspect of your chat widget</p>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">Widget Customization</h2>
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">Customize every aspect of your chat widget</p>
           </div>
-          <div className="flex items-center gap-2">
-            <Button type="button" variant="outline" size="sm" onClick={resetSettings}>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+            <Button type="button" variant="outline" size="sm" onClick={resetSettings} className="w-full sm:w-auto">
               <RotateCcw className="h-4 w-4 mr-2" />
               Reset
             </Button>
@@ -477,6 +478,7 @@ export function WidgetTab({ site }: WidgetTabProps) {
               type="submit"
               size="sm"
               disabled={!hasChanges || isSaving}
+              className="w-full sm:w-auto"
             >
               <Save className="h-4 w-4 mr-2" />
               {isSaving ? "Saving..." : "Save Changes"}
@@ -491,36 +493,38 @@ export function WidgetTab({ site }: WidgetTabProps) {
       <Card>
         <CardContent className="p-0">
           <Tabs defaultValue="appearance" className="w-full">
-            <TabsList className="w-full justify-start rounded-none border-b bg-transparent p-0 flex-wrap">
-              <TabsTrigger value="appearance" className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:bg-transparent">
-                <Palette className="h-4 w-4 mr-2" />
-                Appearance
-              </TabsTrigger>
-              <TabsTrigger value="launcher" className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:bg-transparent">
-                <MessageSquare className="h-4 w-4 mr-2" />
-                Launcher
-              </TabsTrigger>
-              <TabsTrigger value="window" className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:bg-transparent">
-                <Layout className="h-4 w-4 mr-2" />
-                Window
-              </TabsTrigger>
-              <TabsTrigger value="behavior" className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:bg-transparent">
-                <Zap className="h-4 w-4 mr-2" />
-                Behavior
-              </TabsTrigger>
-              <TabsTrigger value="content" className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:bg-transparent">
-                <FileText className="h-4 w-4 mr-2" />
-                Content
-              </TabsTrigger>
-              <TabsTrigger value="responsive" className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:bg-transparent">
-                <Smartphone className="h-4 w-4 mr-2" />
-                Mobile
-              </TabsTrigger>
-              <TabsTrigger value="advanced" className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:bg-transparent">
-                <Sliders className="h-4 w-4 mr-2" />
-                Advanced
-              </TabsTrigger>
-            </TabsList>
+            <div className="overflow-x-auto">
+              <TabsList className="w-full justify-start rounded-none border-b bg-transparent p-0 flex-nowrap sm:flex-wrap min-w-max sm:min-w-0">
+                <TabsTrigger value="appearance" className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:bg-transparent whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4">
+                  <Palette className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                  Appearance
+                </TabsTrigger>
+                <TabsTrigger value="launcher" className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:bg-transparent whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4">
+                  <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                  Launcher
+                </TabsTrigger>
+                <TabsTrigger value="window" className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:bg-transparent whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4">
+                  <Layout className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                  Window
+                </TabsTrigger>
+                <TabsTrigger value="behavior" className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:bg-transparent whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4">
+                  <Zap className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                  Behavior
+                </TabsTrigger>
+                <TabsTrigger value="content" className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:bg-transparent whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4">
+                  <FileText className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                  Content
+                </TabsTrigger>
+                <TabsTrigger value="responsive" className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:bg-transparent whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4">
+                  <Smartphone className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                  Mobile
+                </TabsTrigger>
+                <TabsTrigger value="advanced" className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:bg-transparent whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4">
+                  <Sliders className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                  Advanced
+                </TabsTrigger>
+              </TabsList>
+            </div>
 
                 {/* Appearance Tab */}
                 <TabsContent value="appearance" className="p-4 space-y-4">

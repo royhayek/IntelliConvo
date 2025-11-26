@@ -15,28 +15,28 @@ export function SectionHeader({
   className,
 }: SectionHeaderProps) {
   return (
-    <div className={cn("space-y-2", className)}>
+    <div className={cn("space-y-3", className)}>
       {action ? (
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="flex-1 min-w-0">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
               {title}
             </h2>
             {description && (
-              <p className="text-gray-600 dark:text-gray-400 mt-1">
+              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1">
                 {description}
               </p>
             )}
           </div>
-          {action}
+          <div className="flex-shrink-0">{action}</div>
         </div>
       ) : (
         <>
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
             {title}
           </h2>
           {description && (
-            <p className="text-gray-600 dark:text-gray-400">{description}</p>
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">{description}</p>
           )}
         </>
       )}

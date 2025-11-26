@@ -455,12 +455,12 @@ const adminConversationDetailSchema = registry.register(
       content: z.string(),
       timestamp: z.string(),
       tokensUsed: z.number().int().nullable(),
-      costInCents: z.number().int().nullable(),
+      costInCents: z.number().nullable(),
     })),
     stats: z.object({
       messagesCount: z.number().int(),
       totalTokens: z.number().int(),
-      totalCostCents: z.number().int(),
+      totalCostCents: z.number(),
     }),
   }).openapi({ description: 'Detailed admin conversation information with messages' })
 );

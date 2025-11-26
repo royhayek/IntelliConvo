@@ -14,6 +14,7 @@ import {
   validateWidgetSettings as validateSettings,
   defaultWidgetSettings,
 } from '../widgetSettings';
+import { isOriginAllowed } from '../../utils/hostValidation';
 
 /**
  * DTO Interfaces
@@ -22,7 +23,7 @@ export interface SiteConfigDTO {
   id: string;
   siteName: string;
   siteUrl: string;
-  welcomeMessage: string | null;
+  startersHeadline: string | null;
 }
 
 export interface SiteValidationDTO {
@@ -32,7 +33,7 @@ export interface SiteValidationDTO {
 }
 
 export interface StartersDTO {
-  welcomeMessage: string | null;
+  startersHeadline: string | null;
   starters: ConversationStarterDTO[];
 }
 
@@ -163,7 +164,7 @@ export class WidgetService {
         id: true,
         siteName: true,
         siteUrl: true,
-        welcomeMessage: true,
+        startersHeadline: true,
       },
     });
 
@@ -205,20 +206,11 @@ export class WidgetService {
 
     // Check if origin is allowed
     if (origin && site.activeHosts.length > 0) {
-      const originHost = new URL(origin).hostname;
       const allowedHosts = site.activeHosts
         .filter((host) => host.isEnabled)
         .map((host) => host.hostName);
 
-      const isAllowed = allowedHosts.some((host) => {
-        return (
-          originHost === host ||
-          originHost === `www.${host}` ||
-          `www.${originHost}` === host
-        );
-      });
-
-      if (!isAllowed) {
+      if (!isOriginAllowed(origin, allowedHosts)) {
         throw new AppError(403, ErrorCode.FORBIDDEN, 'Origin not allowed');
       }
     }

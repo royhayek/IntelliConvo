@@ -20,6 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { TablePagination } from "@/components/ui/table-pagination";
 import { EMAIL_TYPE_LABELS, EMAIL_TYPE_COLORS, EMAIL_STATUS_COLORS } from "@/lib/utils/email-helpers";
 
 interface EmailLog {
@@ -155,32 +156,16 @@ export function EmailLogsTable({
           </TableBody>
         </Table>
 
-        {pagination && pagination.totalPages > 1 && (
-          <div className="flex items-center justify-between mt-4 pt-4 border-t">
-            <p className="text-sm text-gray-500">
-              Showing {(pagination.page - 1) * pagination.limit + 1} to{" "}
-              {Math.min(pagination.page * pagination.limit, pagination.total)} of{" "}
-              {pagination.total} emails
-            </p>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => onPageChange(Math.max(1, page - 1))}
-                disabled={page === 1}
-              >
-                Previous
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => onPageChange(page + 1)}
-                disabled={page >= pagination.totalPages}
-              >
-                Next
-              </Button>
-            </div>
-          </div>
+        {pagination && (
+          <TablePagination
+            page={pagination.page}
+            limit={pagination.limit}
+            total={pagination.total}
+            totalPages={pagination.pages}
+            onPageChange={onPageChange}
+            itemName="emails"
+            showPageNumbers={false}
+          />
         )}
       </CardContent>
     </Card>

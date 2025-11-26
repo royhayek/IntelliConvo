@@ -9,10 +9,7 @@ import { LoadingCard } from "@/components/ui/loading-card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { FileUploadArea } from "@/components/ui/file-upload-area";
 import { KnowledgeFileItem } from "@/components/site/knowledge-file-item";
-import {
-  Dialog,
-  DialogContent,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import {
   useGetApiV1SitesSiteIdFiles,
@@ -33,7 +30,8 @@ export function KnowledgeTab({ site }: KnowledgeTabProps) {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [selectedFileId, setSelectedFileId] = useState<string | null>(null);
 
-  const { data: filesData, isLoading: isLoadingFiles } = useGetApiV1SitesSiteIdFiles(site.id);
+  const { data: filesData, isLoading: isLoadingFiles } =
+    useGetApiV1SitesSiteIdFiles(site.id);
 
   // Query for fetching single file with content
   const { data: selectedFileData, isLoading: isLoadingContent } =
@@ -45,7 +43,9 @@ export function KnowledgeTab({ site }: KnowledgeTabProps) {
   const uploadMutation = usePostApiV1SitesSiteIdFiles({
     mutation: {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: getGetApiV1SitesSiteIdFilesQueryKey(site.id) });
+        queryClient.invalidateQueries({
+          queryKey: getGetApiV1SitesSiteIdFilesQueryKey(site.id),
+        });
         toast.success("File uploaded successfully!");
         setUploadProgress(0);
       },
@@ -59,7 +59,9 @@ export function KnowledgeTab({ site }: KnowledgeTabProps) {
   const deleteMutation = useDeleteApiV1SitesSiteIdFilesFileId({
     mutation: {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: getGetApiV1SitesSiteIdFilesQueryKey(site.id) });
+        queryClient.invalidateQueries({
+          queryKey: getGetApiV1SitesSiteIdFilesQueryKey(site.id),
+        });
         toast.success("File deleted successfully!");
       },
       onError: (error: any) => {
@@ -71,42 +73,53 @@ export function KnowledgeTab({ site }: KnowledgeTabProps) {
   const reprocessMutation = usePostApiV1SitesSiteIdFilesFileIdReprocess({
     mutation: {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: getGetApiV1SitesSiteIdFilesQueryKey(site.id) });
+        queryClient.invalidateQueries({
+          queryKey: getGetApiV1SitesSiteIdFilesQueryKey(site.id),
+        });
         toast.success("File reprocessing started!");
       },
       onError: (error: any) => {
-        toast.error(error.response?.data?.message || "Failed to reprocess file");
+        toast.error(
+          error.response?.data?.message || "Failed to reprocess file"
+        );
       },
     },
   });
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    const file = acceptedFiles[0];
-    if (file) {
-      // Validate file type and size
-      const allowedTypes = ['application/pdf', 'text/plain'];
-      const maxSize = 10 * 1024 * 1024; // 10MB
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      const file = acceptedFiles[0];
+      if (file) {
+        // Validate file type and size
+        const allowedTypes = ["application/pdf", "text/plain"];
+        const maxSize = 10 * 1024 * 1024; // 10MB
 
-      if (!allowedTypes.includes(file.type)) {
-        toast.error("Only PDF and TXT files are allowed");
-        return;
+        if (!allowedTypes.includes(file.type)) {
+          toast.error("Only PDF and TXT files are allowed");
+          return;
+        }
+
+        if (file.size > maxSize) {
+          toast.error("File size must be less than 10MB");
+          return;
+        }
+
+        setUploadProgress(0);
+        uploadMutation.mutate({ siteId: site.id, data: { file } });
       }
-
-      if (file.size > maxSize) {
-        toast.error("File size must be less than 10MB");
-        return;
-      }
-
-      setUploadProgress(0);
-      uploadMutation.mutate({ siteId: site.id, data: { file } });
-    }
-  }, [uploadMutation, site.id]);
+    },
+    [uploadMutation, site.id]
+  );
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white">PDFs & Knowledge</h2>
-        <p className="text-gray-600 dark:text-gray-400">Upload additional documents to enhance your AI's knowledge</p>
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+          PDFs & Knowledge
+        </h2>
+        <p className="text-gray-600 dark:text-gray-400">
+          Upload additional documents to enhance your AI's knowledge
+        </p>
       </div>
 
       {/* Upload Area */}
@@ -115,13 +128,17 @@ export function KnowledgeTab({ site }: KnowledgeTabProps) {
           <FileUploadArea
             onDrop={onDrop}
             accept={{
-              'application/pdf': ['.pdf'],
-              'text/plain': ['.txt'],
+              "application/pdf": [".pdf"],
+              "text/plain": [".txt"],
             }}
             maxFiles={1}
             maxSize={10 * 1024 * 1024}
             isUploading={uploadMutation.isPending}
-            title={files && files.length > 0 ? "Upload Another File" : "Upload Your First File"}
+            title={
+              files && files.length > 0
+                ? "Upload Another File"
+                : "Upload Your First File"
+            }
             description="Drag and drop PDF or TXT files, or click to select"
           />
 
@@ -145,7 +162,9 @@ export function KnowledgeTab({ site }: KnowledgeTabProps) {
       ) : files && files.length > 0 ? (
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg font-semibold">Uploaded Files</CardTitle>
+            <CardTitle className="text-lg font-semibold">
+              Uploaded Files
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -157,18 +176,24 @@ export function KnowledgeTab({ site }: KnowledgeTabProps) {
                   fileType={file.fileType || "Unknown"}
                   embeddingStatus={(file.embeddingStatus as any) ?? "PENDING"}
                   onPreview={
-                    file.id
-                      ? () => setSelectedFileId(file.id!)
-                      : undefined
+                    file.id ? () => setSelectedFileId(file.id!) : undefined
                   }
                   onRetry={
                     file.id
-                      ? () => reprocessMutation.mutate({ siteId: site.id, fileId: file.id! })
+                      ? () =>
+                          reprocessMutation.mutate({
+                            siteId: site.id,
+                            fileId: file.id!,
+                          })
                       : undefined
                   }
                   onDelete={
                     file.id
-                      ? () => deleteMutation.mutate({ siteId: site.id, fileId: file.id! })
+                      ? () =>
+                          deleteMutation.mutate({
+                            siteId: site.id,
+                            fileId: file.id!,
+                          })
                       : undefined
                   }
                   isRetrying={reprocessMutation.isPending}
@@ -177,11 +202,14 @@ export function KnowledgeTab({ site }: KnowledgeTabProps) {
               ))}
             </div>
 
-            {files.some(f => (f.embeddingStatus as string) === 'PROCESSING') && (
+            {files.some(
+              (f) => (f.embeddingStatus as string) === "PROCESSING"
+            ) && (
               <Alert className="mt-4">
                 <Clock className="h-4 w-4" />
                 <AlertDescription>
-                  Files are being processed and will be available for conversations once completed.
+                  Files are being processed and will be available for
+                  conversations once completed.
                 </AlertDescription>
               </Alert>
             )}
@@ -194,8 +222,12 @@ export function KnowledgeTab({ site }: KnowledgeTabProps) {
               <div className="h-16 w-16 bg-gray-100 dark:bg-slate-700 rounded-2xl mx-auto mb-4 flex items-center justify-center">
                 <FileText className="h-8 w-8 text-gray-400" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No Files Uploaded</h3>
-              <p className="text-gray-600 dark:text-gray-400">Upload your first file to get started</p>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                No Files Uploaded
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400">
+                Upload your first file to get started
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -214,11 +246,14 @@ export function KnowledgeTab({ site }: KnowledgeTabProps) {
               </div>
               <div className="flex-1 min-w-0">
                 <h3 className="text-lg font-semibold truncate text-gray-900 dark:text-white">
-                  {selectedFileData?.fileName || selectedFileData?.originalName || "Loading..."}
+                  {selectedFileData?.fileName ||
+                    selectedFileData?.originalName ||
+                    "Loading..."}
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   {selectedFileData?.fileType || ""}
-                  {selectedFileData?.fileSize && ` • ${formatFileSize(Number(selectedFileData.fileSize))}`}
+                  {selectedFileData?.fileSize &&
+                    ` • ${formatFileSize(Number(selectedFileData.fileSize))}`}
                 </p>
               </div>
             </div>
@@ -228,8 +263,15 @@ export function KnowledgeTab({ site }: KnowledgeTabProps) {
             {/* Info Header */}
             <div className="flex justify-between px-6 py-3 border-b dark:border-gray-600 bg-gray-50 dark:bg-slate-800/50">
               <div className="text-sm text-gray-500 dark:text-gray-400">
-                {(selectedFileData as any)?.content?.length?.toLocaleString() || 0} characters
-                {(selectedFileData as any)?.chunks !== undefined && ` | ${(selectedFileData as any).chunks} chunks`}
+                {(selectedFileData as any)?.content?.length?.toLocaleString() ||
+                  0}{" "}
+                characters
+                {(selectedFileData as any)?.chunks !== undefined &&
+                  ` | ${
+                    (selectedFileData as any).chunks === 1
+                      ? "1 chunk"
+                      : `${(selectedFileData as any).chunks} chunks`
+                  }`}
               </div>
             </div>
 
@@ -242,7 +284,8 @@ export function KnowledgeTab({ site }: KnowledgeTabProps) {
               ) : !(selectedFileData as any)?.content ? (
                 <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400 p-6">
                   <p>
-                    No content available. This file may not have been processed yet.
+                    No content available. This file may not have been processed
+                    yet.
                   </p>
                 </div>
               ) : (

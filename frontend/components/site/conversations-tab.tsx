@@ -10,6 +10,7 @@ import {
   Loader2,
   User,
   Bot,
+  ArrowLeft,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { AnalyticsMetricCard } from "@/components/ui/analytics-metric-card";
@@ -17,7 +18,6 @@ import { DateRangeFilter, type DateRange } from "@/components/ui/date-range-filt
 import { Input } from "@/components/ui/input";
 import { SectionHeader } from "@/components/ui/section-header";
 import { TopSiteItem } from "@/components/site/top-site-item";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import {
   ChartContainer,
@@ -45,6 +45,7 @@ export function ConversationsTab({ site }: ConversationsTabProps) {
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [dateFilter, setDateFilter] = useState<DateRange>("7d");
+  const [showMessages, setShowMessages] = useState(false); // Toggle for mobile view
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   // Map dateFilter to API period (API supports 7d, 30d, 90d, 1y)
@@ -101,18 +102,30 @@ export function ConversationsTab({ site }: ConversationsTabProps) {
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
-    const viewport = scrollAreaRef.current?.querySelector('[data-radix-scroll-area-viewport]');
-    if (viewport) {
-      viewport.scrollTop = viewport.scrollHeight;
+    if (scrollAreaRef.current) {
+      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
     }
   }, [selectedConversationData?.messages]);
 
-  // Auto-select first conversation if none selected
+  // Auto-select first conversation if none selected (desktop only)
   useEffect(() => {
-    if (!selectedConversation && filteredConversations.length > 0) {
+    if (!selectedConversation && filteredConversations.length > 0 && window.innerWidth >= 640) {
       setSelectedConversation(filteredConversations[0].id || null);
     }
   }, [filteredConversations, selectedConversation]);
+
+  // Handle conversation selection on mobile
+  const handleConversationSelect = (conversationId: string) => {
+    setSelectedConversation(conversationId);
+    if (window.innerWidth < 640) {
+      setShowMessages(true);
+    }
+  };
+
+  // Handle back button on mobile
+  const handleBack = () => {
+    setShowMessages(false);
+  };
 
   const isLoading = analyticsLoading || conversationsLoading;
 
@@ -302,24 +315,27 @@ export function ConversationsTab({ site }: ConversationsTabProps) {
 
       {/* Chat Interface */}
       <Card className="overflow-hidden">
-        <div className="flex h-[600px]">
+        <div className="flex flex-col sm:flex-row h-[600px]">
           {/* Conversations List - Left Side */}
-          <div className="w-80 border-r border-gray-200 dark:border-gray-700 flex flex-col">
+          <div className={cn(
+            "w-full sm:w-80 border-b sm:border-b-0 sm:border-r border-gray-200 dark:border-gray-700 flex flex-col min-h-0",
+            showMessages && "hidden sm:flex"
+          )}>
             {/* Search Header */}
-            <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+            <div className="p-3 sm:p-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-400" />
                 <Input
                   placeholder="Search conversations..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
+                  className="pl-9 sm:pl-10 text-sm h-9"
                 />
               </div>
             </div>
 
             {/* Conversations List */}
-            <ScrollArea className="flex-1">
+            <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
               {isLoading ? (
                 <div className="flex items-center justify-center py-8">
                   <Loader2 className="h-6 w-6 animate-spin text-indigo-600" />
@@ -341,21 +357,21 @@ export function ConversationsTab({ site }: ConversationsTabProps) {
                     return (
                       <button
                         key={conversation.id}
-                        onClick={() => conversation.id && setSelectedConversation(conversation.id)}
+                        onClick={() => conversation.id && handleConversationSelect(conversation.id)}
                         className={cn(
-                          "w-full p-4 text-left transition-colors hover:bg-gray-50 dark:hover:bg-gray-800",
+                          "w-full p-2.5 sm:p-4 text-left transition-colors hover:bg-gray-50 dark:hover:bg-gray-800",
                           isSelected && "bg-indigo-50 dark:bg-indigo-900/30 border-l-2 border-l-indigo-600"
                         )}
                       >
-                        <div className="flex items-start gap-3">
+                        <div className="flex items-start gap-2 sm:gap-3">
                           <div className={cn(
-                            "h-10 w-10 rounded-full flex items-center justify-center flex-shrink-0",
+                            "h-8 w-8 sm:h-10 sm:w-10 rounded-full flex items-center justify-center flex-shrink-0",
                             isSelected
                               ? "bg-indigo-100 dark:bg-indigo-900"
                               : "bg-gray-100 dark:bg-gray-700"
                           )}>
                             <span className={cn(
-                              "text-sm font-medium",
+                              "text-xs sm:text-sm font-medium",
                               isSelected
                                 ? "text-indigo-700 dark:text-indigo-300"
                                 : "text-gray-700 dark:text-gray-300"
@@ -364,20 +380,20 @@ export function ConversationsTab({ site }: ConversationsTabProps) {
                             </span>
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between mb-1">
+                            <div className="flex items-center justify-between mb-0.5 sm:mb-1">
                               <p className={cn(
-                                "text-sm font-medium truncate",
+                                "text-xs sm:text-sm font-medium truncate",
                                 isSelected
                                   ? "text-indigo-900 dark:text-indigo-100"
                                   : "text-gray-900 dark:text-white"
                               )}>
                                 {displayName}
                               </p>
-                              <span className="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0 ml-2">
+                              <span className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 flex-shrink-0 ml-2">
                                 {formatConversationDate(conversation.startedAt)}
                               </span>
                             </div>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                            <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">
                               {conversation.messageCount ?? 0} messages
                             </p>
                           </div>
@@ -387,31 +403,41 @@ export function ConversationsTab({ site }: ConversationsTabProps) {
                   })}
                 </div>
               )}
-            </ScrollArea>
+            </div>
           </div>
 
           {/* Messages Panel - Right Side */}
-          <div className="flex-1 flex flex-col bg-gray-50 dark:bg-gray-900/50">
+          <div className={cn(
+            "flex-1 flex flex-col bg-gray-50 dark:bg-gray-900/50 min-h-0",
+            !showMessages && "hidden sm:flex"
+          )}>
             {selectedConversation && selectedConversationData ? (
               <>
                 {/* Conversation Header */}
-                <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center">
-                      <span className="text-sm font-medium text-indigo-700 dark:text-indigo-300">
+                <div className="p-3 sm:p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 flex-shrink-0">
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    {/* Back button for mobile */}
+                    <button
+                      onClick={handleBack}
+                      className="sm:hidden flex items-center justify-center h-8 w-8 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                    >
+                      <ArrowLeft className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+                    </button>
+                    <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center">
+                      <span className="text-xs sm:text-sm font-medium text-indigo-700 dark:text-indigo-300">
                         {(selectedConversationData.userIdentifier || "A").charAt(0).toUpperCase()}
                       </span>
                     </div>
-                    <div>
-                      <h3 className="font-medium text-gray-900 dark:text-white">
+                    <div className="min-w-0 flex-1">
+                      <h3 className="text-sm sm:text-base font-medium text-gray-900 dark:text-white truncate">
                         {selectedConversationData.userIdentifier || "Anonymous User"}
                       </h3>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                      <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 truncate">
                         Started {selectedConversationData.startedAt
                           ? new Date(selectedConversationData.startedAt).toLocaleDateString([], {
                               month: "short",
                               day: "numeric",
-                              year: "numeric",
+                              year: window.innerWidth < 640 ? undefined : "numeric",
                               hour: "2-digit",
                               minute: "2-digit"
                             })
@@ -423,7 +449,7 @@ export function ConversationsTab({ site }: ConversationsTabProps) {
                 </div>
 
                 {/* Messages Area */}
-                <ScrollArea ref={scrollAreaRef} className="flex-1 p-4">
+                <div className="flex-1 min-h-0 overflow-y-auto p-3 sm:p-4 overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }} ref={scrollAreaRef as any}>
                   {messagesLoading ? (
                     <div className="flex items-center justify-center h-full">
                       <Loader2 className="h-6 w-6 animate-spin text-indigo-600" />
@@ -436,27 +462,27 @@ export function ConversationsTab({ site }: ConversationsTabProps) {
                           <div
                             key={message.id}
                             className={cn(
-                              "flex items-end gap-2",
+                              "flex items-end gap-1.5 sm:gap-2",
                               isUser ? "flex-row" : "flex-row-reverse"
                             )}
                           >
                             <div className={cn(
-                              "h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0",
+                              "h-6 w-6 sm:h-8 sm:w-8 rounded-full flex items-center justify-center flex-shrink-0",
                               isUser
                                 ? "bg-gray-200 dark:bg-gray-700"
                                 : "bg-indigo-600"
                             )}>
                               {isUser ? (
-                                <User className="h-4 w-4 text-gray-600 dark:text-gray-300" />
+                                <User className="h-3 w-3 sm:h-4 sm:w-4 text-gray-600 dark:text-gray-300" />
                               ) : (
-                                <Bot className="h-4 w-4 text-white" />
+                                <Bot className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
                               )}
                             </div>
                             <div className={cn(
-                              "max-w-[70%] group"
+                              "max-w-[75%] sm:max-w-[70%] group"
                             )}>
                               <div className={cn(
-                                "px-4 py-2.5 rounded-2xl text-sm",
+                                "px-3 py-2 sm:px-4 sm:py-2.5 rounded-2xl text-xs sm:text-sm",
                                 isUser
                                   ? "bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-bl-md shadow-sm border border-gray-200 dark:border-gray-700"
                                   : "bg-indigo-600 text-white rounded-br-md"
@@ -464,7 +490,7 @@ export function ConversationsTab({ site }: ConversationsTabProps) {
                                 <p className="whitespace-pre-wrap break-words">{message.content}</p>
                               </div>
                               <p className={cn(
-                                "text-[10px] mt-1 opacity-0 group-hover:opacity-100 transition-opacity",
+                                "text-[9px] sm:text-[10px] mt-0.5 sm:mt-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity",
                                 isUser ? "text-left" : "text-right",
                                 "text-gray-500 dark:text-gray-400"
                               )}>
@@ -480,7 +506,7 @@ export function ConversationsTab({ site }: ConversationsTabProps) {
                       <p className="text-sm text-gray-500 dark:text-gray-400">No messages in this conversation</p>
                     </div>
                   )}
-                </ScrollArea>
+                </div>
               </>
             ) : (
               <div className="flex-1 flex items-center justify-center">

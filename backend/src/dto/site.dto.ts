@@ -17,7 +17,7 @@ export interface SiteDTO {
   siteDescription: string | null;
   siteIndustry: string | null;
   specialInstructions: string | null;
-  welcomeMessage: string;
+  startersHeadline: string;
   crawlStatus: CrawlStatus;
   lastCrawledAt: string | null;
   createdAt: string;
@@ -81,7 +81,7 @@ export interface UpdateSiteRequest {
   siteDescription?: string;
   siteIndustry?: string;
   specialInstructions?: string;
-  welcomeMessage?: string;
+  startersHeadline?: string;
 }
 
 /**
@@ -101,7 +101,7 @@ export interface ConversationStarterDTO {
  * Starters response
  */
 export interface StartersResponse {
-  welcomeMessage: string | null;
+  startersHeadline: string | null;
   starters: ConversationStarterDTO[];
 }
 
@@ -109,7 +109,7 @@ export interface StartersResponse {
  * Update starters request
  */
 export interface UpdateStartersRequest {
-  welcomeMessage?: string | null;
+  startersHeadline?: string | null;
   starters: string[];
 }
 
