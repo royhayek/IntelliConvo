@@ -7,7 +7,7 @@ import type { GetApiV1WidgetSiteIdStarters200AllOfStartersItem } from './getApiV
  */
 export type GetApiV1WidgetSiteIdStarters200AllOf = {
   /** Welcome message for the widget */
-  welcomeMessage?: string;
+  welcomeMessage: string;
   /** Array of conversation starters */
-  starters?: GetApiV1WidgetSiteIdStarters200AllOfStartersItem[];
+  starters: GetApiV1WidgetSiteIdStarters200AllOfStartersItem[];
 };

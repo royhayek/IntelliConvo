@@ -121,7 +121,7 @@ export function UserSitesTable({ sites, pagination, onPageChange }: UserSitesTab
             page={pagination.page}
             limit={pagination.limit}
             total={pagination.total}
-            totalPages={pagination.pages}
+            totalPages={pagination.totalPages}
             onPageChange={onPageChange}
             itemName="sites"
           />

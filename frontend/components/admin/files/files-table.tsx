@@ -168,7 +168,7 @@ export function FilesTable({ files, pagination, onPageChange, onReprocess, onDel
             page={pagination.page}
             limit={pagination.limit}
             total={pagination.total}
-            totalPages={pagination.pages}
+            totalPages={pagination.totalPages}
             onPageChange={onPageChange}
             itemName="files"
           />

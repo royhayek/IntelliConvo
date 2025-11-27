@@ -16,6 +16,6 @@ export interface UpdateSiteRequest {
   siteIndustry?: string;
   /** Special instructions for the AI chatbot */
   specialInstructions?: string;
-  /** Welcome message for visitors */
-  welcomeMessage?: string;
+  /** Headline text displayed above conversation starter buttons */
+  startersHeadline?: string;
 }

@@ -444,7 +444,7 @@ class IntelligentconvoWidget {
     }
   }
 
-  private displayTrialExpiredMessage(reason: string): void {
+  private displayTrialExpiredMessage(_reason: string): void {
     const messagesContainer = document.getElementById('intelligentconvo-messages');
     if (messagesContainer) {
       const trialDiv = document.createElement('div');

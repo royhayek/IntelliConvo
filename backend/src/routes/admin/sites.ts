@@ -210,14 +210,14 @@ router.patch(
   '/:siteId',
   asyncHandler(async (req, res) => {
     const { siteId } = req.params;
-    const { siteName, siteDescription, siteIndustry, specialInstructions, welcomeMessage, crawlStatus } = req.body;
+    const { siteName, siteDescription, siteIndustry, specialInstructions, startersHeadline, crawlStatus } = req.body;
 
     const updatedSite = await adminSiteService.updateSite(siteId, {
       siteName,
       siteDescription,
       siteIndustry,
       specialInstructions,
-      welcomeMessage,
+      startersHeadline,
       crawlStatus,
     });
 

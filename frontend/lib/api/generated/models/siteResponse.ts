@@ -36,8 +36,8 @@ export interface SiteResponse {
    * @nullable
    */
   specialInstructions: string | null;
-  /** Welcome message */
-  welcomeMessage: string;
+  /** Headline for conversation starters */
+  startersHeadline: string;
   /** Crawl status */
   crawlStatus: SiteResponseCrawlStatus;
   /**

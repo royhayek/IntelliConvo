@@ -124,7 +124,7 @@ export function calculatePagination(
     page: pageNumber,
     limit: limitNumber,
     total,
-    pages: totalPages,
+    totalPages,
   };
 }
 

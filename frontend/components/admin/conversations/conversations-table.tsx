@@ -158,7 +158,7 @@ export function ConversationsTable({ conversations, pagination, onPageChange, on
             page={pagination.page}
             limit={pagination.limit}
             total={pagination.total}
-            totalPages={pagination.pages}
+            totalPages={pagination.totalPages}
             onPageChange={onPageChange}
             itemName="conversations"
           />

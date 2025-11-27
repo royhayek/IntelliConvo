@@ -6,10 +6,10 @@
  */
 export interface UpdateStartersRequest {
   /**
-   * Welcome message for the chat widget
+   * Headline text displayed above conversation starter buttons
    * @nullable
    */
-  welcomeMessage?: string | null;
+  startersHeadline?: string | null;
   /** Array of conversation starter texts */
   starters: string[];
 }

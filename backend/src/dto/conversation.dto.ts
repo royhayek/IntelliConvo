@@ -63,7 +63,7 @@ export interface ConversationListResponse {
     page: number;
     limit: number;
     total: number;
-    pages: number;
+    totalPages: number;
   };
 }
 

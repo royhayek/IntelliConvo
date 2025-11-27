@@ -198,7 +198,7 @@ export function UrlsTable({ urls, pagination, onPageChange, onDelete, onToggleAc
             page={pagination.page}
             limit={pagination.limit}
             total={pagination.total}
-            totalPages={pagination.pages}
+            totalPages={pagination.totalPages}
             onPageChange={onPageChange}
             itemName="URLs"
           />

@@ -198,7 +198,7 @@ export function SubscriptionsTable({
             page={pagination.page}
             limit={pagination.limit}
             total={pagination.total}
-            totalPages={pagination.pages}
+            totalPages={pagination.totalPages}
             onPageChange={onPageChange}
             itemName="subscriptions"
           />

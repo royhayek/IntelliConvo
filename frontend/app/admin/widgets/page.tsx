@@ -415,7 +415,7 @@ export default function AdminWidgetsPage() {
                 page={page}
                 limit={data.pagination.limit}
                 total={data.pagination.total}
-                totalPages={data.pagination.pages}
+                totalPages={data.pagination.totalPages}
                 onPageChange={setPage}
                 itemName="messages"
               />

@@ -142,7 +142,7 @@ export class WidgetService {
     }
 
     return {
-      welcomeMessage: site.welcomeMessage,
+      startersHeadline: site.startersHeadline,
       starters: site.conversationStarters.map((s) => ({
         id: s.id,
         starterText: s.starterText,

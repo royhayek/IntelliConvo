@@ -199,7 +199,7 @@ export function MessagesTable({ messages, pagination, onPageChange, onDelete }: 
             page={pagination.page}
             limit={pagination.limit}
             total={pagination.total}
-            totalPages={pagination.pages}
+            totalPages={pagination.totalPages}
             onPageChange={onPageChange}
             itemName="messages"
           />

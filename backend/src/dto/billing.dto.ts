@@ -56,7 +56,7 @@ export interface BillingHistoryResponse {
     page: number;
     limit: number;
     total: number;
-    pages: number;
+    totalPages: number;
   };
   summary: BillingSummaryDTO;
 }

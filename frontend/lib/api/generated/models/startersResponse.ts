@@ -7,10 +7,10 @@ import type { StartersResponseStartersItem } from './startersResponseStartersIte
  */
 export interface StartersResponse {
   /**
-   * Welcome message
+   * Headline for conversation starters
    * @nullable
    */
-  welcomeMessage: string | null;
+  startersHeadline: string | null;
   /** Conversation starters */
   starters: StartersResponseStartersItem[];
 }
