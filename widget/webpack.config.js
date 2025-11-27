@@ -19,7 +19,7 @@ module.exports = (env, argv) => {
     entry: './src/index.ts',
     output: {
       path: path.resolve(__dirname, 'dist'),
-      filename: isProduction ? 'widget.[contenthash].js' : 'widget.js',
+      filename: 'widget.js',
       library: 'IntelligentconvoWidget',
       libraryTarget: 'umd',
       globalObject: 'this',
@@ -131,16 +131,8 @@ module.exports = (env, argv) => {
         }),
         new CssMinimizerPlugin(),
       ],
-      splitChunks: isProduction ? {
-        chunks: 'all',
-        cacheGroups: {
-          vendor: {
-            test: /[\\/]node_modules[\\/]/,
-            name: 'vendors',
-            chunks: 'all',
-          },
-        },
-      } : undefined,
+      // Disable code splitting to ensure single widget.js file
+      splitChunks: false,
     },
     devtool: isDevelopment ? 'eval-source-map' : false,
     performance: {
