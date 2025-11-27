@@ -102,8 +102,8 @@ export function UrlsTable({ urls, pagination, onPageChange, onDelete, onToggleAc
           {urls.map((url) => (
             <TableRow key={url.id}>
               <TableCell>
-                <div className="max-w-md">
-                  <p className="font-medium text-gray-900 dark:text-white truncate">
+                <div className="max-w-[300px]">
+                  <p className="font-medium text-gray-900 dark:text-white truncate" title={url.title || "Untitled"}>
                     {url.title || "Untitled"}
                   </p>
                   <a
@@ -111,6 +111,7 @@ export function UrlsTable({ urls, pagination, onPageChange, onDelete, onToggleAc
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-sm text-blue-600 hover:underline flex items-center gap-1 truncate"
+                    title={url.url}
                   >
                     {url.url}
                     <ExternalLink className="h-3 w-3 flex-shrink-0" />

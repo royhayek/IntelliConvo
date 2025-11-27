@@ -223,6 +223,58 @@ export class WidgetService {
   }
 
   /**
+   * Get conversation history by session ID
+   * @param siteId - Site ID
+   * @param sessionId - Session ID
+   * @returns Conversation with messages
+   */
+  async getConversationHistory(siteId: string, sessionId: string): Promise<{ messages: Array<{ id: string; role: string; content: string; createdAt: Date }> }> {
+    // Verify site exists
+    const site = await prisma.site.findUnique({
+      where: { id: siteId },
+    });
+
+    if (!site) {
+      throw new NotFoundError('Site', siteId);
+    }
+
+    // Find conversation by sessionId and siteId
+    const conversation = await prisma.conversation.findFirst({
+      where: {
+        sessionId,
+        siteId,
+      },
+      include: {
+        messages: {
+          orderBy: {
+            createdAt: 'asc',
+          },
+          select: {
+            id: true,
+            role: true,
+            content: true,
+            createdAt: true,
+          },
+        },
+      },
+    });
+
+    // If no conversation found, return empty messages array
+    if (!conversation) {
+      return { messages: [] };
+    }
+
+    return {
+      messages: conversation.messages.map((msg) => ({
+        id: msg.id,
+        role: msg.role.toLowerCase(),
+        content: msg.content,
+        createdAt: msg.createdAt,
+      })),
+    };
+  }
+
+  /**
    * Get public widget settings
    * @param siteId - Site ID
    * @returns Public widget settings

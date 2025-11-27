@@ -153,7 +153,7 @@ class IntelligentconvoWidget {
     );
 
     // Initialize managers
-    this.storageManager = new StorageManager(this.config.siteId);
+    this.storageManager = new StorageManager(this.config.siteId, this.config.apiUrl);
     this.sessionId = this.storageManager.getOrCreateSession();
 
     // Create a simple state object that will be kept in sync
@@ -630,7 +630,7 @@ class IntelligentconvoWidget {
       this.setupLazyLoading();
 
       // Load persisted conversation if enabled
-      this.loadPersistedConversation();
+      await this.loadPersistedConversation();
 
       // If preloadWidget was false, connect now
       if (this.settings?.preloadWidget === false && !this.socketManager.isConnected()) {
@@ -1094,8 +1094,8 @@ class IntelligentconvoWidget {
     this.storageManager.saveConversation(this.messages, this.sessionId, this.settings);
   }
 
-  private loadPersistedConversation(): void {
-    const data = this.storageManager.loadPersistedConversation(this.settings);
+  private async loadPersistedConversation(): Promise<void> {
+    const data = await this.storageManager.loadPersistedConversation(this.settings, this.sessionId);
 
     if (data && data.messages.length > 0) {
       // Push loaded messages to existing array (don't reassign to maintain MessageHandler reference)

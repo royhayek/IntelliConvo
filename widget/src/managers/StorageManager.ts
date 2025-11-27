@@ -1,11 +1,14 @@
 import { Message, WidgetSettings } from '../types';
 import { generateSessionId } from '../utils';
-import { STORAGE_KEYS, MS_PER_SECOND } from '../constants';
+import { STORAGE_KEYS, MS_PER_SECOND, DEFAULT_API_URL } from '../constants';
 
 export class StorageManager {
   private conversationLoaded: boolean = false;
+  private apiUrl: string;
 
-  constructor(private siteId: string) {}
+  constructor(private siteId: string, apiUrl?: string) {
+    this.apiUrl = apiUrl || DEFAULT_API_URL;
+  }
 
   getOrCreateSession(): string {
     let sessionId = localStorage.getItem(STORAGE_KEYS.SESSION);
@@ -48,14 +51,30 @@ export class StorageManager {
     this.conversationLoaded = false;
   }
 
-  loadPersistedConversation(
-    settings: WidgetSettings | null
-  ): { messages: Message[]; sessionId?: string } | null {
+  /**
+   * Load conversation from backend API first, fallback to localStorage
+   */
+  async loadPersistedConversation(
+    settings: WidgetSettings | null,
+    sessionId: string
+  ): Promise<{ messages: Message[]; sessionId?: string } | null> {
     if (!settings?.persistConversation || this.conversationLoaded) {
       return null;
     }
 
     try {
+      // First, try to load from backend API
+      const backendConversation = await this.loadConversationFromBackend(sessionId);
+
+      if (backendConversation && backendConversation.messages.length > 0) {
+        this.conversationLoaded = true;
+        return {
+          messages: backendConversation.messages,
+          sessionId,
+        };
+      }
+
+      // Fallback to localStorage if API fails or returns no messages
       const stored = localStorage.getItem(`${STORAGE_KEYS.CONVERSATION_PREFIX}${this.siteId}`);
       if (!stored) return null;
 
@@ -76,6 +95,40 @@ export class StorageManager {
       };
     } catch (e) {
       console.warn('Failed to load conversation:', e);
+      return null;
+    }
+  }
+
+  /**
+   * Load conversation from backend API
+   */
+  private async loadConversationFromBackend(sessionId: string): Promise<{ messages: Message[] } | null> {
+    try {
+      const response = await fetch(`${this.apiUrl}/api/v1/widget/${this.siteId}/conversation/${sessionId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        console.warn('Failed to load conversation from backend:', response.status);
+        return null;
+      }
+
+      const data = await response.json();
+
+      // Transform backend messages to widget message format
+      const messages: Message[] = data.messages.map((msg: any) => ({
+        id: msg.id,
+        role: msg.role,
+        content: msg.content,
+        timestamp: new Date(msg.createdAt).getTime(),
+      }));
+
+      return { messages };
+    } catch (error) {
+      console.warn('Error loading conversation from backend:', error);
       return null;
     }
   }

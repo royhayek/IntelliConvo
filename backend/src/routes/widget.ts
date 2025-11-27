@@ -22,6 +22,11 @@ const categoryParamsSchema = z.object({
   category: z.string().min(1, 'Category is required'),
 });
 
+const conversationParamsSchema = z.object({
+  siteId: z.string().min(1, 'Site ID is required'),
+  sessionId: z.string().min(1, 'Session ID is required'),
+});
+
 // ============================================
 // Public Widget Endpoints (No Auth)
 // ============================================
@@ -96,6 +101,24 @@ router.get(
 
     const settings = await widgetService.getPublicSettings(siteId);
     res.json(settings);
+  })
+);
+
+/**
+ * @swagger
+ * /api/v1/widget/{siteId}/conversation/{sessionId}:
+ *   get:
+ *     summary: Get conversation history by session ID (public)
+ *     tags: [Widget]
+ */
+router.get(
+  '/:siteId/conversation/:sessionId',
+  validateParams(conversationParamsSchema),
+  asyncHandler(async (req, res) => {
+    const { siteId, sessionId } = req.params;
+
+    const conversation = await widgetService.getConversationHistory(siteId, sessionId);
+    res.json(conversation);
   })
 );
 

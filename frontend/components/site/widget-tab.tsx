@@ -249,7 +249,7 @@ const widgetSettingsSchema = z.object({
   launcherOffsetX: z.number().min(0).max(100),
   launcherOffsetY: z.number().min(0).max(100),
   launcherShape: z.enum(["circle", "rounded-square", "square"]),
-  launcherBackgroundColor: z.string(),
+  launcherBackgroundColor: z.string().or(z.literal("")).optional(),
   launcherIconColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
   launcherTooltip: z.string().max(50),
   launcherShowTooltip: z.boolean(),
@@ -261,13 +261,13 @@ const widgetSettingsSchema = z.object({
   chatWindowWidth: z.number().min(300).max(800),
   chatWindowHeight: z.number().min(400).max(1000),
   headerTitle: z.string().min(1).max(50),
-  headerSubtitle: z.string().max(100),
+  headerSubtitle: z.string().max(100).or(z.literal("")).optional(),
   headerShowAvatar: z.boolean(),
-  headerAvatarUrl: z.string().url().or(z.literal("")),
+  headerAvatarUrl: z.string().url().or(z.literal("")).optional(),
   headerShowStatus: z.boolean(),
   headerShowCloseButton: z.boolean(),
   headerShowMinimizeButton: z.boolean(),
-  userBubbleBackgroundColor: z.string(),
+  userBubbleBackgroundColor: z.string().or(z.literal("")).optional(),
   userBubbleTextColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
   assistantBubbleBackgroundColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
   assistantBubbleTextColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
@@ -313,7 +313,7 @@ const widgetSettingsSchema = z.object({
   enableHighContrast: z.boolean(),
   respectReducedMotion: z.boolean(),
   enableKeyboardNavigation: z.boolean(),
-  customCss: z.string().max(10000),
+  customCss: z.string().max(10000).or(z.literal("")).optional(),
   enableAnalytics: z.boolean(),
 
   // Dark Mode Colors
@@ -364,10 +364,23 @@ export function WidgetTab({ site }: WidgetTabProps) {
   // Load settings from API
   const { data: loadedSettings, isLoading } = useGetApiV1WidgetSiteIdSettingsAdmin(site.id);
 
+  // Helper function to transform null values to empty strings
+  const transformNullToEmpty = (obj: any): any => {
+    if (!obj) return obj;
+    const transformed = { ...obj };
+    Object.keys(transformed).forEach(key => {
+      if (transformed[key] === null) {
+        transformed[key] = "";
+      }
+    });
+    return transformed;
+  };
+
   // Update form when settings are loaded
   useEffect(() => {
     if (loadedSettings) {
-      form.reset({ ...defaultSettings, ...loadedSettings as unknown as WidgetSettings });
+      const transformedSettings = transformNullToEmpty(loadedSettings);
+      form.reset({ ...defaultSettings, ...transformedSettings as unknown as WidgetSettings });
     }
   }, [loadedSettings, form]);
 
@@ -425,6 +438,7 @@ export function WidgetTab({ site }: WidgetTabProps) {
 
   const isSaving = saveMutation.isPending;
   const hasChanges = form.formState.isDirty;
+  console.log('errors', form.formState.errors);
   const settings = form.watch(); // Get current form values for preview
 
   const copyToClipboard = async (text: string, type: string) => {
