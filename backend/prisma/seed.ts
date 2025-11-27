@@ -351,6 +351,19 @@ async function seedSystemSettings() {
 async function main() {
   console.log('Starting database seed...');
 
+  // Production safety check
+  const isProduction = process.env.NODE_ENV === 'production';
+  if (isProduction) {
+    console.log('⚠️  PRODUCTION ENVIRONMENT DETECTED');
+    console.log('');
+    if (!process.env.ADMIN_EMAIL || !process.env.ADMIN_PASSWORD) {
+      console.error('❌ ERROR: ADMIN_EMAIL and ADMIN_PASSWORD must be set in production!');
+      console.error('Set these environment variables before running seed in production.');
+      process.exit(1);
+    }
+    console.log('✅ Admin credentials provided via environment variables');
+  }
+
   // Create initial admin user
   const adminEmail = process.env.ADMIN_EMAIL || 'admin@intelligentconvo.com';
   const adminPassword = process.env.ADMIN_PASSWORD || 'Admin123!@#';

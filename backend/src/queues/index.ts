@@ -510,27 +510,43 @@ export async function queueCrawl(siteId: string, type: 'full' | 'single' = 'full
   const jobData: { type: string; siteId: string; url?: string } = { type, siteId };
   if (url) jobData.url = url;
 
+  // Use jobId to prevent duplicate jobs for the same site and type
+  // For single URL crawls, include the URL in the jobId
+  const jobId = type === 'single' && url
+    ? `crawl-${type}-${siteId}-${Buffer.from(url).toString('base64').substring(0, 32)}`
+    : `crawl-${type}-${siteId}`;
+
   await crawlQueue.add('crawl-site', jobData, {
+    jobId, // Prevents duplicate jobs
     attempts: 3,
     backoff: {
       type: 'exponential',
       delay: 2000,
     },
+    removeOnComplete: true, // Clean up completed jobs
+    removeOnFail: false, // Keep failed jobs for debugging
   });
 }
 
 // Export function to add selective crawl jobs to queue
 export async function queueSelectiveCrawl(siteId: string, urls: string[]) {
+  // Use jobId to prevent duplicate jobs for the same site
+  // This ensures only one selective crawl runs at a time per site
+  const jobId = `selective-crawl-${siteId}`;
+
   await crawlQueue.add('crawl-site', {
     type: 'selective',
     siteId,
     urls,
   }, {
+    jobId, // Prevents duplicate jobs - if a job with this ID exists, it won't be added again
     attempts: 3,
     backoff: {
       type: 'exponential',
       delay: 2000,
     },
+    removeOnComplete: true, // Clean up completed jobs to prevent accumulation
+    removeOnFail: false, // Keep failed jobs for debugging
   });
 
   logger.info(`Queued selective crawl for site ${siteId} with ${urls.length} URLs`);

@@ -2,7 +2,7 @@ import { PlaywrightCrawler, Configuration, purgeDefaultStorages } from 'crawlee'
 import * as cheerio from 'cheerio';
 import { URL } from 'url';
 import crypto from 'crypto';
-import { JSDOM } from 'jsdom';
+import { JSDOM, VirtualConsole } from 'jsdom';
 import { Readability } from '@mozilla/readability';
 import { prisma } from '../lib/prisma';
 import { CrawlStatus, UrlEmbeddingStatus, Site } from '@prisma/client';
@@ -250,7 +250,19 @@ function getRandomUserAgent(): string {
  */
 function extractWithReadability(html: string, url: string): { title: string; content: string; htmlContent: string } {
   try {
-    const dom = new JSDOM(html, { url });
+    // Configure JSDOM to skip CSS parsing and resource loading to avoid "Could not parse CSS stylesheet" errors
+    const virtualConsole = new VirtualConsole();
+    // Suppress CSS parsing errors that clutter production logs
+    virtualConsole.sendTo(console, { omitJSDOMErrors: true });
+
+    const dom = new JSDOM(html, {
+      url,
+      // Disable CSS parsing and external resource loading
+      resources: 'usable',
+      runScripts: undefined,
+      virtualConsole,
+    });
+
     const reader = new Readability(dom.window.document, {
       charThreshold: 50,    // Lowered threshold to capture more content
       keepClasses: false,
