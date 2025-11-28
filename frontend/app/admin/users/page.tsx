@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { useQueryClient } from "@tanstack/react-query";
-import { Users, AlertTriangle } from "lucide-react";
+import { Users, AlertTriangle, UserPlus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
@@ -133,6 +135,12 @@ export default function AdminUsersPage() {
             Manage platform users and their access
           </p>
         </div>
+        <Button asChild>
+          <Link href="/admin/users/new">
+            <UserPlus className="h-4 w-4 mr-2" />
+            Create User
+          </Link>
+        </Button>
       </div>
 
       {/* Stats Cards */}

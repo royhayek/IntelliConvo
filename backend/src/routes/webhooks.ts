@@ -657,7 +657,7 @@ async function handleTrialWillEnd(subscription: Stripe.Subscription) {
         userId: dbSubscription.userId,
         type: NotificationType.WARNING,
         title: 'Trial Ending Soon',
-        message: `Your trial for ${dbSubscription.site.siteName} ends in ${daysRemaining} day${daysRemaining === 1 ? '' : 's'} (${expiresAtFormatted}). Add a payment method to continue using your assistant.`,
+        message: `Your trial for ${dbSubscription.site.siteName} ends in ${daysRemaining} day${daysRemaining === 1 ? '' : 's'} (${expiresAtFormatted}). You will be automatically charged unless you cancel.`,
         siteId: dbSubscription.siteId,
         link: `/account/subscriptions?siteId=${dbSubscription.siteId}`,
       }, delayMs);

@@ -4,13 +4,19 @@
  */
 
 import { Router } from 'express';
+import multer from 'multer';
 import { authenticate } from '../middleware/auth';
 import { asyncHandler } from '../middleware/errorHandler';
 import { validateParams } from '../middleware/validate';
 import { widgetService } from '../services/widget/WidgetService';
+import { widgetCorsMiddleware } from '../middleware/widgetCors';
+import { AppError, ErrorCode } from '../middleware/errors';
 import { z } from 'zod';
 
 const router = Router();
+
+// Apply custom CORS middleware to all widget routes
+router.use(widgetCorsMiddleware);
 
 // Validation schemas
 const siteParamsSchema = z.object({
@@ -25,6 +31,28 @@ const categoryParamsSchema = z.object({
 const conversationParamsSchema = z.object({
   siteId: z.string().min(1, 'Site ID is required'),
   sessionId: z.string().min(1, 'Session ID is required'),
+});
+
+// Configure multer for logo upload
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 2 * 1024 * 1024, // 2MB max for logo images
+    files: 1,
+  },
+  fileFilter: (req, file, cb) => {
+    const allowedMimeTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/svg+xml', 'image/webp'];
+    if (!allowedMimeTypes.includes(file.mimetype)) {
+      return cb(
+        new AppError(
+          400,
+          ErrorCode.VALIDATION_ERROR,
+          'File type not supported. Allowed types: PNG, JPEG, SVG, WebP'
+        )
+      );
+    }
+    cb(null, true);
+  },
 });
 
 // ============================================
@@ -242,6 +270,62 @@ router.put(
 
     const settings = await widgetService.resetSettings(siteId, req.user!.id);
     res.json(settings);
+  })
+);
+
+/**
+ * @swagger
+ * /api/v1/widget/{siteId}/logo:
+ *   post:
+ *     summary: Upload a custom launcher logo
+ *     tags: [Widget]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.post(
+  '/:siteId/logo',
+  authenticate,
+  validateParams(siteParamsSchema),
+  upload.single('logo'),
+  asyncHandler(async (req, res) => {
+    const { siteId } = req.params;
+
+    if (!req.file) {
+      throw new AppError(400, ErrorCode.VALIDATION_ERROR, 'No logo file provided');
+    }
+
+    const logoUrl = await widgetService.uploadLogo(siteId, req.user!.id, req.file);
+
+    res.json({
+      success: true,
+      logoUrl,
+      message: 'Logo uploaded successfully',
+    });
+  })
+);
+
+/**
+ * @swagger
+ * /api/v1/widget/{siteId}/logo:
+ *   delete:
+ *     summary: Delete custom launcher logo
+ *     tags: [Widget]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.delete(
+  '/:siteId/logo',
+  authenticate,
+  validateParams(siteParamsSchema),
+  asyncHandler(async (req, res) => {
+    const { siteId } = req.params;
+
+    await widgetService.deleteLogo(siteId, req.user!.id);
+
+    res.json({
+      success: true,
+      message: 'Logo deleted successfully',
+    });
   })
 );
 

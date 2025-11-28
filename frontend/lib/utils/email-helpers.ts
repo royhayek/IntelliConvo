@@ -8,6 +8,7 @@ export const EMAIL_TYPE_LABELS: Record<string, string> = {
   PAYMENT_FAILED: "Payment Failed",
   PAYMENT_RECEIPT: "Payment Receipt",
   SITE_READY: "Site Ready",
+  SITE_DELETED: "Site Deleted",
   SUBSCRIPTION_CANCELLED: "Subscription Cancelled",
 };
 
@@ -20,8 +21,9 @@ export const EMAIL_TYPE_COLORS: Record<string, string> = {
   TRIAL_EXPIRED: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
   PAYMENT_FAILED: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
   PAYMENT_RECEIPT: "bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-200",
-  SITE_READY: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200",
-  SUBSCRIPTION_CANCELLED: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200",
+  SITE_READY: "bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200",
+  SITE_DELETED: "bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-200",
+  SUBSCRIPTION_CANCELLED: "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200",
 };
 
 export const EMAIL_STATUS_COLORS: Record<string, string> = {

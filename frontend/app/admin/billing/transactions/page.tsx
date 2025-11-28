@@ -17,7 +17,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Pagination } from "@/components/ui/pagination";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
@@ -213,6 +212,8 @@ export default function AdminTransactionsPage() {
       ) : data ? (
         <TransactionsTable
           transactions={data.transactions}
+          pagination={data.pagination}
+          onPageChange={setPage}
           onDelete={setDeleteTransaction}
         />
       ) : null}

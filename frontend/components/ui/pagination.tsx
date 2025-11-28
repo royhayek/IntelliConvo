@@ -19,37 +19,42 @@ export function Pagination({
   maxVisible = 5,
   className,
 }: PaginationProps) {
+  // Validate inputs to prevent showing invalid pages
+  // Convert to number and default to 1 if invalid (handles undefined, null, NaN, etc.)
+  const validTotalPages = Math.max(1, Math.floor(Number(totalPages) || 1));
+  const validCurrentPage = Math.max(1, Math.min(Math.floor(Number(currentPage) || 1), validTotalPages));
+
   const getPageNumbers = () => {
     const pages: (number | string)[] = [];
 
-    if (totalPages <= maxVisible) {
-      for (let i = 1; i <= totalPages; i++) {
+    if (validTotalPages <= maxVisible) {
+      for (let i = 1; i <= validTotalPages; i++) {
         pages.push(i);
       }
     } else {
       const leftSide = Math.floor(maxVisible / 2);
       const rightSide = maxVisible - leftSide - 1;
 
-      if (currentPage <= leftSide + 1) {
+      if (validCurrentPage <= leftSide + 1) {
         for (let i = 1; i <= maxVisible - 1; i++) {
           pages.push(i);
         }
         pages.push("...");
-        pages.push(totalPages);
-      } else if (currentPage >= totalPages - rightSide) {
+        pages.push(validTotalPages);
+      } else if (validCurrentPage >= validTotalPages - rightSide) {
         pages.push(1);
         pages.push("...");
-        for (let i = totalPages - maxVisible + 2; i <= totalPages; i++) {
+        for (let i = validTotalPages - maxVisible + 2; i <= validTotalPages; i++) {
           pages.push(i);
         }
       } else {
         pages.push(1);
         pages.push("...");
-        for (let i = currentPage - leftSide + 1; i <= currentPage + rightSide - 1; i++) {
+        for (let i = validCurrentPage - leftSide + 1; i <= validCurrentPage + rightSide - 1; i++) {
           pages.push(i);
         }
         pages.push("...");
-        pages.push(totalPages);
+        pages.push(validTotalPages);
       }
     }
 
@@ -68,7 +73,7 @@ export function Pagination({
           variant="outline"
           size="sm"
           onClick={() => onPageChange(1)}
-          disabled={currentPage === 1}
+          disabled={validCurrentPage === 1}
           aria-label="First page"
         >
           <ChevronsLeft className="h-4 w-4" />
@@ -78,8 +83,8 @@ export function Pagination({
       <Button
         variant="outline"
         size="sm"
-        onClick={() => onPageChange(currentPage - 1)}
-        disabled={currentPage === 1}
+        onClick={() => onPageChange(validCurrentPage - 1)}
+        disabled={validCurrentPage === 1}
         aria-label="Previous page"
       >
         <ChevronLeft className="h-4 w-4" />
@@ -100,13 +105,13 @@ export function Pagination({
         return (
           <Button
             key={page}
-            variant={currentPage === page ? "default" : "outline"}
+            variant={validCurrentPage === page ? "default" : "outline"}
             size="sm"
             onClick={() => onPageChange(page as number)}
             aria-label={`Page ${page}`}
-            aria-current={currentPage === page ? "page" : undefined}
+            aria-current={validCurrentPage === page ? "page" : undefined}
             className={cn(
-              currentPage === page && "bg-indigo-600 hover:bg-indigo-700"
+              validCurrentPage === page && "bg-indigo-600 hover:bg-indigo-700"
             )}
           >
             {page}
@@ -117,8 +122,8 @@ export function Pagination({
       <Button
         variant="outline"
         size="sm"
-        onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage === totalPages}
+        onClick={() => onPageChange(validCurrentPage + 1)}
+        disabled={validCurrentPage === validTotalPages}
         aria-label="Next page"
       >
         <ChevronRight className="h-4 w-4" />
@@ -128,8 +133,8 @@ export function Pagination({
         <Button
           variant="outline"
           size="sm"
-          onClick={() => onPageChange(totalPages)}
-          disabled={currentPage === totalPages}
+          onClick={() => onPageChange(validTotalPages)}
+          disabled={validCurrentPage === validTotalPages}
           aria-label="Last page"
         >
           <ChevronsRight className="h-4 w-4" />

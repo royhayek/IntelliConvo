@@ -1,11 +1,10 @@
-import fs from 'fs/promises';
-import path from 'path';
 import crypto from 'crypto';
 import pdf from 'pdf-parse';
 import { prisma } from '../lib/prisma';
 import { generateEmbeddings } from './embeddings';
 import { logger } from '../utils/logger';
 import { settings } from '../lib/settings';
+import { saveFile as saveFileToStorage, deleteFile, FileType } from '../utils/fileStorage';
 import {
   AppError,
   ValidationError,
@@ -57,9 +56,15 @@ export async function processUploadedFile(
       throw new ValidationError('File content is too short or could not be extracted.');
     }
 
-    // Create file storage path
+    // Save file using organized storage
     const fileHash = crypto.createHash('md5').update(file.buffer).digest('hex');
-    const storagePath = await saveFile(file.buffer, file.originalname, fileHash);
+    const storagePath = await saveFileToStorage({
+      fileType: FileType.KNOWLEDGE,
+      siteId,
+      buffer: file.buffer,
+      originalName: file.originalname,
+      fileHash,
+    });
 
     // Save file record to database
     const knowledgeFile = await prisma.knowledgeFile.create({
@@ -177,34 +182,6 @@ async function extractPDFText(buffer: Buffer): Promise<string> {
   }
 }
 
-async function saveFile(
-  buffer: Buffer,
-  originalName: string,
-  fileHash: string
-): Promise<string> {
-  try {
-    // Get upload directory from settings
-    const uploadDir = await settings.getUploadDir();
-
-    // Create uploads directory if it doesn't exist
-    const uploadsDir = path.join(process.cwd(), uploadDir);
-    await fs.mkdir(uploadsDir, { recursive: true });
-
-    // Generate unique filename
-    const ext = path.extname(originalName);
-    const fileName = `${fileHash}${ext}`;
-    const filePath = path.join(uploadsDir, fileName);
-
-    // Save file
-    await fs.writeFile(filePath, buffer);
-
-    // Return relative path for storage
-    return `/${uploadDir}/${fileName}`;
-  } catch (error) {
-    logger.error('File save failed:', error);
-    throw new InternalError('Failed to save file to storage.');
-  }
-}
 
 export async function deleteKnowledgeFile(fileId: string, siteId: string): Promise<void> {
   try {
@@ -240,15 +217,9 @@ export async function deleteKnowledgeFile(fileId: string, siteId: string): Promi
       });
     }
 
-    // Delete file from storage
+    // Delete file from storage using utility
     if (file.fileUrl) {
-      // File URLs are stored as /{uploadDir}/{filename}
-      const filePath = path.join(process.cwd(), file.fileUrl);
-      try {
-        await fs.unlink(filePath);
-      } catch (error) {
-        logger.warn(`Failed to delete file from storage: ${filePath}`, error);
-      }
+      await deleteFile(file.fileUrl);
     }
 
     // Delete file record

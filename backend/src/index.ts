@@ -112,24 +112,35 @@ app.use(helmet({
 }));
 
 // CORS middleware (consolidated configuration)
-app.use(cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin
-    if (!origin) {
-      return callback(null, true);
-    }
+// Note: Widget routes have their own CORS middleware that validates against site's activeHosts
+app.use((req, res, next) => {
+  const origin = req.get('Origin');
 
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Correlation-ID'],
-  exposedHeaders: ['X-Correlation-ID'],
-}));
+  // Skip global CORS for widget routes - they have custom CORS middleware
+  if (req.path.startsWith('/api/v1/widget') || req.path.startsWith('/api/widget')) {
+    return next();
+  }
+
+  // Apply standard CORS for non-widget routes
+  cors({
+    origin: (requestOrigin, callback) => {
+      // Allow requests with no origin
+      if (!requestOrigin) {
+        return callback(null, true);
+      }
+
+      if (allowedOrigins.includes(requestOrigin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Correlation-ID'],
+    exposedHeaders: ['X-Correlation-ID'],
+  })(req, res, next);
+});
 
 // Request tracking and performance middleware (AFTER Swagger to avoid res.end conflicts)
 app.use(correlationIdMiddleware);

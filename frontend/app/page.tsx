@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { useAuthStore } from "@/lib/store";
+import { useAuthRedirect } from "@/lib/hooks/useAuth";
+import { AuthLoading } from "@/components/auth/auth-loading";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -113,14 +112,13 @@ const testimonials = [
 ];
 
 export default function Home() {
-  const router = useRouter();
-  const { isAuthenticated } = useAuthStore();
+  // Redirect authenticated users: admins to /admin, regular users to /dashboard
+  const { isLoading } = useAuthRedirect();
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      router.push("/dashboard");
-    }
-  }, [isAuthenticated, router]);
+  // Show loading state while auth is hydrating
+  if (isLoading) {
+    return <AuthLoading message="Loading..." />;
+  }
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950">

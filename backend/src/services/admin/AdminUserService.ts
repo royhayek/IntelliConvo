@@ -4,6 +4,7 @@ import { AuthProvider } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import { deleteSiteEmbeddings } from '../embeddings';
 import { emitForceLogout } from '../socket';
+import { deleteUserFiles } from '../../utils/fileStorage';
 
 interface UserListParams {
   page: number;
@@ -255,6 +256,9 @@ class AdminUserService {
     for (const site of userSites) {
       await deleteSiteEmbeddings(site.id);
     }
+
+    // Delete all uploaded files for user's sites (knowledge files, widget logos)
+    await deleteUserFiles(userId);
 
     // Invalidate all sessions
     await prisma.refreshToken.deleteMany({

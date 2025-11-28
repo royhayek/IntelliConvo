@@ -28,12 +28,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Pagination } from "@/components/ui/pagination";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { TimeAgo } from "@/components/ui/time-ago";
 import { formatAddress } from "@/lib/utils";
-import { getPaginationText } from "@/lib/utils/pagination";
+import { TablePagination } from "@/components/ui/table-pagination";
 import { useGetApiV1AdminBillingInfo } from "@/lib/api/generated/queries/admin-billing/admin-billing";
 import type { BillingInfo, BillingInfoResponse } from "@/lib/types/billing";
 
@@ -42,13 +41,15 @@ export default function AdminBillingInfoPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
 
-  const { data: response, isLoading, error } = useGetApiV1AdminBillingInfo<BillingInfoResponse>(
-    {
-      page: page.toString(),
-      limit: "20",
-      ...(searchQuery && { search: searchQuery }),
-    }
-  );
+  const {
+    data: response,
+    isLoading,
+    error,
+  } = useGetApiV1AdminBillingInfo<BillingInfoResponse>({
+    page: page.toString(),
+    limit: "20",
+    ...(searchQuery && { search: searchQuery }),
+  });
 
   const data = response?.data;
 
@@ -90,7 +91,9 @@ export default function AdminBillingInfoPage() {
         <Alert variant="destructive">
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription>
-            {error instanceof Error ? error.message : "Failed to fetch billing info"}
+            {error instanceof Error
+              ? error.message
+              : "Failed to fetch billing info"}
           </AlertDescription>
         </Alert>
       )}
@@ -116,7 +119,10 @@ export default function AdminBillingInfoPage() {
               <TableBody>
                 {data.billingInfos.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8 text-gray-500">
+                    <TableCell
+                      colSpan={5}
+                      className="text-center py-8 text-gray-500"
+                    >
                       No billing info found
                     </TableCell>
                   </TableRow>
@@ -124,12 +130,19 @@ export default function AdminBillingInfoPage() {
                   data.billingInfos.map((info) => (
                     <TableRow key={info.id}>
                       <TableCell>
-                        <Link href={`/admin/users/${info.user.id}`} className="hover:underline">
+                        <Link
+                          href={`/admin/users/${info.user.id}`}
+                          className="hover:underline"
+                        >
                           <div className="flex items-center gap-2">
                             <User className="h-4 w-4 text-gray-400" />
                             <div>
-                              <p className="font-medium">{info.user.fullName || info.user.email}</p>
-                              <p className="text-sm text-gray-500">{info.user.email}</p>
+                              <p className="font-medium">
+                                {info.user.fullName || info.user.email}
+                              </p>
+                              <p className="text-sm text-gray-500">
+                                {info.user.email}
+                              </p>
                             </div>
                           </div>
                         </Link>
@@ -143,7 +156,9 @@ export default function AdminBillingInfoPage() {
                       <TableCell>
                         <div className="flex items-center gap-2 max-w-xs">
                           <MapPin className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                          <span className="truncate text-sm">{formatAddress(info)}</span>
+                          <span className="truncate text-sm">
+                            {formatAddress(info)}
+                          </span>
                         </div>
                       </TableCell>
                       <TableCell>
@@ -171,24 +186,21 @@ export default function AdminBillingInfoPage() {
                 )}
               </TableBody>
             </Table>
-          </div>
 
-          {/* Pagination */}
-          {data.pagination.pages > 1 && (
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-gray-500">
-                {getPaginationText(
-                  { page, limit: 20, total: data.pagination.total },
-                  "records"
-                )}
-              </p>
-              <Pagination
-                currentPage={page}
-                totalPages={data.pagination.pages}
-                onPageChange={setPage}
-              />
-            </div>
-          )}
+            {/* Pagination */}
+            {data.pagination && (
+              <div className="px-6 pb-4">
+                <TablePagination
+                  page={page}
+                  limit={20}
+                  total={data.pagination.total}
+                  totalPages={data.pagination.pages}
+                  onPageChange={setPage}
+                  itemName="records"
+                />
+              </div>
+            )}
+          </div>
         </>
       ) : null}
     </div>

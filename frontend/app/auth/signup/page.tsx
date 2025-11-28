@@ -175,13 +175,13 @@ export default function SignupPage() {
 
               <p className="text-xs text-muted-foreground">
                 By creating an account, you agree to our{" "}
-                <a href="#" className="text-primary hover:underline">
+                <Link href="/terms" className="text-primary hover:underline">
                   Terms of Service
-                </a>{" "}
+                </Link>{" "}
                 and{" "}
-                <a href="#" className="text-primary hover:underline">
+                <Link href="/privacy" className="text-primary hover:underline">
                   Privacy Policy
-                </a>
+                </Link>
                 .
               </p>
 

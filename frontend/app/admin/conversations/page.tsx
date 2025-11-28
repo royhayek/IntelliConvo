@@ -5,9 +5,9 @@ import { useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { MessageSquare, AlertTriangle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Pagination } from "@/components/ui/pagination";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
+import { TablePagination } from "@/components/ui/table-pagination";
 
 import {
   useGetApiV1AdminConversations,
@@ -137,22 +137,10 @@ export default function AdminConversationsPage() {
         <>
           <ConversationsTable
             conversations={data.conversations}
+            pagination={data.pagination}
+            onPageChange={setPage}
             onDelete={setDeleteConversation}
           />
-
-          {data.pagination.totalPages > 1 && (
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-gray-500">
-                Showing {(page - 1) * 20 + 1} to {Math.min(page * 20, data.pagination.total)} of{" "}
-                {data.pagination.total} conversations
-              </p>
-              <Pagination
-                currentPage={page}
-                totalPages={data.pagination.totalPages}
-                onPageChange={setPage}
-              />
-            </div>
-          )}
         </>
       ) : null}
 

@@ -28,7 +28,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Pagination } from "@/components/ui/pagination";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { formatCurrency, formatTimestamp } from "@/lib/utils";
@@ -36,17 +35,13 @@ import {
   getDisputeStatusBadgeConfig,
   getDisputeReasonLabel,
 } from "@/lib/utils/badge-helpers";
-import { getPaginationText } from "@/lib/utils/pagination";
+import { TablePagination } from "@/components/ui/table-pagination";
 
 // Import generated hooks
-import {
-  useGetApiV1AdminBillingDisputes,
-} from "@/lib/api/generated/queries/admin-billing/admin-billing";
+import { useGetApiV1AdminBillingDisputes } from "@/lib/api/generated/queries/admin-billing/admin-billing";
 
 // Import generated types
-import type {
-  GetApiV1AdminBillingDisputesParams,
-} from "@/lib/api/generated/models";
+import type { GetApiV1AdminBillingDisputesParams } from "@/lib/api/generated/models";
 
 export default function AdminDisputesPage() {
   const searchParams = useSearchParams();
@@ -81,7 +76,10 @@ export default function AdminDisputesPage() {
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
-            <Link href="/admin/billing" className="hover:text-gray-700 dark:hover:text-gray-300">
+            <Link
+              href="/admin/billing"
+              className="hover:text-gray-700 dark:hover:text-gray-300"
+            >
               Billing
             </Link>
             <ChevronRight className="h-4 w-4" />
@@ -104,7 +102,13 @@ export default function AdminDisputesPage() {
 
       {/* Filters */}
       <div className="flex gap-4">
-        <Select value={status} onValueChange={(v) => { setStatus(v); setPage(1); }}>
+        <Select
+          value={status}
+          onValueChange={(v) => {
+            setStatus(v);
+            setPage(1);
+          }}
+        >
           <SelectTrigger className="w-[200px]">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
@@ -114,7 +118,9 @@ export default function AdminDisputesPage() {
             <SelectItem value="under_review">Under Review</SelectItem>
             <SelectItem value="won">Won</SelectItem>
             <SelectItem value="lost">Lost</SelectItem>
-            <SelectItem value="warning_needs_response">Warning - Needs Response</SelectItem>
+            <SelectItem value="warning_needs_response">
+              Warning - Needs Response
+            </SelectItem>
             <SelectItem value="charge_refunded">Charge Refunded</SelectItem>
           </SelectContent>
         </Select>
@@ -170,7 +176,10 @@ export default function AdminDisputesPage() {
               <TableBody>
                 {data.disputes.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center py-8 text-gray-500">
+                    <TableCell
+                      colSpan={8}
+                      className="text-center py-8 text-gray-500"
+                    >
                       No disputes found
                     </TableCell>
                   </TableRow>
@@ -212,9 +221,14 @@ export default function AdminDisputesPage() {
                       </TableCell>
                       <TableCell>
                         {(() => {
-                          const config = getDisputeStatusBadgeConfig(dispute.status);
+                          const config = getDisputeStatusBadgeConfig(
+                            dispute.status
+                          );
                           return (
-                            <Badge variant={config.variant} className={config.className}>
+                            <Badge
+                              variant={config.variant}
+                              className={config.className}
+                            >
                               {config.label}
                             </Badge>
                           );
@@ -236,11 +250,7 @@ export default function AdminDisputesPage() {
                         </span>
                       </TableCell>
                       <TableCell>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          asChild
-                        >
+                        <Button variant="outline" size="sm" asChild>
                           <a
                             href={`https://dashboard.stripe.com/disputes/${dispute.id}`}
                             target="_blank"
@@ -256,24 +266,21 @@ export default function AdminDisputesPage() {
                 )}
               </TableBody>
             </Table>
-          </div>
 
-          {/* Pagination */}
-          {data.pagination.totalPages > 1 && (
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-gray-500">
-                {getPaginationText(
-                  { page, limit: 20, total: data.pagination.total },
-                  "disputes"
-                )}
-              </p>
-              <Pagination
-                currentPage={page}
-                totalPages={data.pagination.totalPages}
-                onPageChange={setPage}
-              />
-            </div>
-          )}
+            {/* Pagination */}
+            {data.pagination && data.pagination.totalPages > 1 && (
+              <div className="px-6 pb-4">
+                <TablePagination
+                  page={page}
+                  limit={data.pagination.limit}
+                  total={data.pagination.total}
+                  totalPages={data.pagination.totalPages}
+                  onPageChange={setPage}
+                  itemName="disputes"
+                />
+              </div>
+            )}
+          </div>
         </>
       ) : null}
     </div>

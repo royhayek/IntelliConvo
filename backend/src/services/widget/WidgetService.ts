@@ -15,6 +15,7 @@ import {
   defaultWidgetSettings,
 } from '../widgetSettings';
 import { isOriginAllowed } from '../../utils/hostValidation';
+import { saveFile, deleteFile, FileType } from '../../utils/fileStorage';
 
 /**
  * DTO Interfaces
@@ -247,13 +248,7 @@ export class WidgetService {
       include: {
         messages: {
           orderBy: {
-            createdAt: 'asc',
-          },
-          select: {
-            id: true,
-            role: true,
-            content: true,
-            createdAt: true,
+            timestamp: 'asc',
           },
         },
       },
@@ -269,7 +264,7 @@ export class WidgetService {
         id: msg.id,
         role: msg.role.toLowerCase(),
         content: msg.content,
-        createdAt: msg.createdAt,
+        createdAt: msg.timestamp,
       })),
     };
   }
@@ -419,6 +414,58 @@ export class WidgetService {
   async resetSettings(siteId: string, userId: string): Promise<WidgetSettings> {
     await this.verifySiteOwnership(siteId, userId);
     return resetSettings(siteId);
+  }
+
+  /**
+   * Upload a custom launcher logo
+   * @param siteId - Site ID
+   * @param userId - User ID (for authorization)
+   * @param file - Logo file
+   * @returns Logo URL
+   */
+  async uploadLogo(
+    siteId: string,
+    userId: string,
+    file: Express.Multer.File
+  ): Promise<string> {
+    await this.verifySiteOwnership(siteId, userId);
+
+    // Save file using organized storage
+    const logoUrl = await saveFile({
+      fileType: FileType.LOGO,
+      siteId,
+      buffer: file.buffer,
+      originalName: file.originalname,
+    });
+
+    // Update widget settings with logo URL
+    await updateSettings(siteId, {
+      launcherCustomIconUrl: logoUrl,
+    });
+
+    return logoUrl;
+  }
+
+  /**
+   * Delete custom launcher logo
+   * @param siteId - Site ID
+   * @param userId - User ID (for authorization)
+   */
+  async deleteLogo(siteId: string, userId: string): Promise<void> {
+    await this.verifySiteOwnership(siteId, userId);
+
+    // Get current settings
+    const widgetSettings = await getOrCreateWidgetSettings(siteId);
+
+    if (widgetSettings.launcherCustomIconUrl) {
+      // Delete file from storage using utility
+      await deleteFile(widgetSettings.launcherCustomIconUrl);
+
+      // Remove logo URL from settings
+      await updateSettings(siteId, {
+        launcherCustomIconUrl: null,
+      });
+    }
   }
 
   // ============================================

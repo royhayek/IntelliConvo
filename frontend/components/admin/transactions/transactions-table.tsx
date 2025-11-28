@@ -19,11 +19,21 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { TimeAgo } from "@/components/ui/time-ago";
+import { TablePagination } from "@/components/ui/table-pagination";
 import { formatCurrency } from "@/lib/utils";
 import type { AdminTransaction } from "@/lib/api/generated/models";
 
+interface Pagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
 interface TransactionsTableProps {
   transactions: AdminTransaction[];
+  pagination?: Pagination;
+  onPageChange?: (page: number) => void;
   onDelete: (transaction: AdminTransaction) => void;
 }
 
@@ -62,7 +72,7 @@ function getStatusBadge(status: string) {
   }
 }
 
-export function TransactionsTable({ transactions, onDelete }: TransactionsTableProps) {
+export function TransactionsTable({ transactions, pagination, onPageChange, onDelete }: TransactionsTableProps) {
   if (transactions.length === 0) {
     return (
       <div className="border rounded-lg dark:border-slate-700">
@@ -159,6 +169,18 @@ export function TransactionsTable({ transactions, onDelete }: TransactionsTableP
           ))}
         </TableBody>
       </Table>
+      {pagination && onPageChange && (
+        <div className="px-6 pb-4">
+          <TablePagination
+            page={pagination.page}
+            limit={pagination.limit}
+            total={pagination.total}
+            totalPages={pagination.totalPages}
+            onPageChange={onPageChange}
+            itemName="transactions"
+          />
+        </div>
+      )}
     </div>
   );
 }

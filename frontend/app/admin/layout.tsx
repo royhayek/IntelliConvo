@@ -33,14 +33,12 @@ export default function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-950 flex flex-col">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-950">
       <AdminHeader onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
-      <div className="flex flex-1 overflow-hidden">
-        <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-        <main className="flex-1 overflow-y-auto p-4 md:p-6">
-          {children}
-        </main>
-      </div>
+      <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <main className="min-h-screen pt-20 pb-6 px-4 md:px-6 lg:pl-72">
+        {children}
+      </main>
     </div>
   );
 }

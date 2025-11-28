@@ -24,6 +24,7 @@ import {
   ClipboardList,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { BrandLogo } from "@/components/ui/brand-logo";
 
 interface NavItem {
   title: string;
@@ -120,24 +121,17 @@ export function AdminSidebar({ isOpen = false, onClose }: AdminSidebarProps) {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed lg:static inset-y-0 left-0 z-50 w-64 flex-shrink-0 bg-white dark:bg-slate-900 border-r border-gray-200 dark:border-slate-700 h-full overflow-y-auto transition-transform duration-300 ease-in-out",
+          "fixed top-16 bottom-0 left-0 z-40 w-64 bg-white dark:bg-slate-900 border-r border-gray-200 dark:border-slate-700 overflow-y-auto transition-transform duration-300 ease-in-out",
           "lg:translate-x-0",
           isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
         <div className="p-4">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center space-x-2">
-              <div className="h-8 w-8 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center">
-                <Shield className="h-4 w-4 text-white" />
-              </div>
-              <span className="font-semibold text-lg text-gray-900 dark:text-white">Admin Portal</span>
-            </div>
-            {/* Close button for mobile */}
+          {/* Close button for mobile */}
+          <div className="flex justify-end mb-4 lg:hidden">
             <Button
               variant="ghost"
               size="sm"
-              className="lg:hidden"
               onClick={onClose}
             >
               <X className="h-5 w-5" />

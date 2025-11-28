@@ -5,7 +5,6 @@ import { useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { Brain, AlertTriangle, TrendingUp, LinkIcon, Hash } from "lucide-react";
 import { StatCard } from "@/components/ui/stat-card";
-import { Pagination } from "@/components/ui/pagination";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";

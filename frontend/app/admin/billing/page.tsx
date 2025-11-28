@@ -12,12 +12,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Pagination } from "@/components/ui/pagination";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
 import { formatCurrency } from "@/lib/utils";
 import { toast } from "sonner";
+import { TablePagination } from "@/components/ui/table-pagination";
 
 import { TransactionsTable } from "@/components/admin/billing/transactions-table";
 import { RefundDialog } from "@/components/admin/billing/refund-dialog";
@@ -186,16 +186,14 @@ export default function AdminBillingPage() {
 
           {/* Pagination */}
           {data.pagination.totalPages > 1 && (
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-gray-500">
-                Showing {(page - 1) * 20 + 1} to{" "}
-                {Math.min(page * 20, data.pagination.total)} of{" "}
-                {data.pagination.total} transactions
-              </p>
-              <Pagination
-                currentPage={page}
+            <div className="px-6 pb-4">
+              <TablePagination
+                page={page}
+                limit={data.pagination.limit}
+                total={data.pagination.total}
                 totalPages={data.pagination.totalPages}
                 onPageChange={setPage}
+                itemName="transactions"
               />
             </div>
           )}

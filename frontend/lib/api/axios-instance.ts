@@ -150,7 +150,12 @@ AXIOS_INSTANCE.interceptors.response.use(
     }
 
     // Handle 401 - Token refresh
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // Skip token refresh for auth endpoints (login, signup, etc.)
+    const isAuthEndpoint = originalRequest.url?.includes('/auth/login') ||
+                           originalRequest.url?.includes('/auth/signup') ||
+                           originalRequest.url?.includes('/auth/refresh');
+
+    if (error.response?.status === 401 && !originalRequest._retry && !isAuthEndpoint) {
       originalRequest._retry = true;
 
       try {
@@ -185,13 +190,15 @@ AXIOS_INSTANCE.interceptors.response.use(
     }
 
     // Don't show toast for cancelled requests, 401 (which redirects), 403 (which redirects), deleted user, or site not found (custom messages)
+    // Also don't show toast for auth endpoint errors (they handle their own error display)
     const isCancelled = Axios.isCancel(error) || error.message === 'canceled';
     const shouldShowToast =
       !isCancelled &&
       error.response?.status !== 401 &&
       error.response?.status !== 403 &&
       !isDeletedUserError(error) &&
-      !isSiteNotFoundError(error);
+      !isSiteNotFoundError(error) &&
+      !isAuthEndpoint;
 
     if (shouldShowToast) {
       const errorMessage = getErrorMessage(error);

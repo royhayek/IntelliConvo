@@ -26,6 +26,7 @@ import {
   ActiveHostDTO,
   AddHostRequest,
 } from '../../dto/site.dto';
+import { deleteSiteFiles } from '../../utils/fileStorage';
 
 /**
  * Helper function to safely convert date to ISO string
@@ -308,6 +309,9 @@ export class SiteService {
 
     // Delete embeddings from Pinecone first (before cascade deletes DB records)
     await deleteSiteEmbeddings(siteId);
+
+    // Delete uploaded files (knowledge files, widget logo)
+    await deleteSiteFiles(siteId);
 
     // Clear all site-specific caches before deletion
     await this.clearAllSiteCaches(siteId, userId);

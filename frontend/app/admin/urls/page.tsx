@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link2, AlertTriangle } from "lucide-react";
-import { Pagination } from "@/components/ui/pagination";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
@@ -141,6 +140,8 @@ export default function AdminUrlsPage() {
       ) : data?.data ? (
         <UrlsTable
           urls={urls}
+          pagination={pagination}
+          onPageChange={setPage}
           onDelete={setDeleteUrl}
           onToggleActive={handleToggleActive}
         />

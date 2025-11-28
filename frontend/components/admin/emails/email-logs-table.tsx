@@ -11,7 +11,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -60,34 +59,11 @@ export function EmailLogsTable({
   onRetry,
   isRetrying,
 }: EmailLogsTableProps) {
-  if (logs.length === 0) {
-    return (
-      <Card>
-        <CardContent className="pt-6">
-          <div className="text-center text-gray-500 py-8">
-            <Mail className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-            <p className="text-lg font-medium mb-2">No Email Logs Found</p>
-            <p className="text-sm max-w-md mx-auto">
-              Email activity will be logged here. Send a test email to verify your configuration.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-lg flex items-center gap-2">
-          <Mail className="h-5 w-5" />
-          Email Log Entries
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Table>
+    <div className="border rounded-lg dark:border-slate-700">
+      <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="bg-gray-50 dark:bg-slate-800">
               <TableHead>Timestamp</TableHead>
               <TableHead>Recipient</TableHead>
               <TableHead>Type</TableHead>
@@ -98,7 +74,18 @@ export function EmailLogsTable({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {logs.map((log) => (
+            {logs.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={7} className="text-center py-8 text-gray-500">
+                  <Mail className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                  <p className="text-lg font-medium mb-2">No Email Logs Found</p>
+                  <p className="text-sm max-w-md mx-auto">
+                    Email activity will be logged here. Send a test email to verify your configuration.
+                  </p>
+                </TableCell>
+              </TableRow>
+            ) : (
+              logs.map((log) => (
               <TableRow key={log.id}>
                 <TableCell>
                   <div className="flex items-center gap-1 text-sm text-gray-500">
@@ -152,11 +139,12 @@ export function EmailLogsTable({
                   )}
                 </TableCell>
               </TableRow>
-            ))}
+              ))
+            )}
           </TableBody>
         </Table>
-
-        {pagination && (
+      {pagination && onPageChange && (
+        <div className="px-6 pb-4">
           <TablePagination
             page={pagination.page}
             limit={pagination.limit}
@@ -164,10 +152,9 @@ export function EmailLogsTable({
             totalPages={pagination.totalPages}
             onPageChange={onPageChange}
             itemName="emails"
-            showPageNumbers={false}
           />
-        )}
-      </CardContent>
-    </Card>
+        </div>
+      )}
+    </div>
   );
 }

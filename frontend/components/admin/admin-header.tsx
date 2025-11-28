@@ -18,6 +18,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { BrandLogo } from "@/components/ui/brand-logo";
 import { useAuthStore } from "@/lib/store";
 import { useLogout } from "@/lib/hooks/useAuth";
 
@@ -30,8 +31,8 @@ export function AdminHeader({ onMenuClick }: AdminHeaderProps) {
   const handleLogout = useLogout();
 
   return (
-    <header className="h-16 border-b border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-between px-6">
-      {/* Left side - Menu button */}
+    <header className="fixed top-0 left-0 right-0 h-16 border-b border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-between px-6 z-50">
+      {/* Left side - Menu button and Logo */}
       <div className="flex items-center space-x-2 md:space-x-4">
         {/* Mobile menu button */}
         <Button
@@ -43,9 +44,7 @@ export function AdminHeader({ onMenuClick }: AdminHeaderProps) {
           <Menu className="h-5 w-5" />
         </Button>
 
-        <span className="hidden sm:block text-lg font-semibold text-gray-900 dark:text-white">
-          Admin Portal
-        </span>
+        <BrandLogo size="sm" showText={true} href="/admin" animated={false} />
       </div>
 
       {/* Right side - User menu */}

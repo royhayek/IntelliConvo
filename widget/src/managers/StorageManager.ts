@@ -2,6 +2,13 @@ import { Message, WidgetSettings } from '../types';
 import { generateSessionId } from '../utils';
 import { STORAGE_KEYS, MS_PER_SECOND, DEFAULT_API_URL } from '../constants';
 
+interface BackendMessage {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  createdAt: string;
+}
+
 export class StorageManager {
   private conversationLoaded: boolean = false;
   private apiUrl: string;
@@ -119,7 +126,7 @@ export class StorageManager {
       const data = await response.json();
 
       // Transform backend messages to widget message format
-      const messages: Message[] = data.messages.map((msg: any) => ({
+      const messages: Message[] = data.messages.map((msg: BackendMessage) => ({
         id: msg.id,
         role: msg.role,
         content: msg.content,

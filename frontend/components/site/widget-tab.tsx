@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Copy, Check, Palette, MessageSquare, Layout, Zap, FileText, Smartphone, Sliders, Save, RotateCcw, ChevronDown, ChevronRight } from "lucide-react";
+import { Copy, Check, Palette, MessageSquare, Layout, Zap, FileText, Smartphone, Sliders, Save, RotateCcw, ChevronDown, ChevronRight, Upload, X, Image as ImageIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -29,6 +29,7 @@ import {
 } from "@/lib/api/generated/queries/widget/widget";
 import { useToast } from "@/hooks/use-toast";
 import { SiteResponse } from "@/lib/api/generated/models";
+import { uploadWidgetLogo, deleteWidgetLogo } from "@/lib/api/widget-logo";
 
 interface WidgetTabProps {
   site: SiteResponse;
@@ -49,6 +50,7 @@ interface WidgetSettings {
 
   // Launcher
   launcherIcon: "chat" | "message" | "help" | "support";
+  launcherCustomIconUrl?: string;
   launcherSize: "small" | "medium" | "large";
   launcherPosition: "bottom-right" | "bottom-left" | "top-right" | "top-left";
   launcherOffsetX: number;
@@ -244,6 +246,7 @@ const widgetSettingsSchema = z.object({
 
   // Launcher
   launcherIcon: z.enum(["chat", "message", "help", "support"]),
+  launcherCustomIconUrl: z.string().url().or(z.literal("")).optional(),
   launcherSize: z.enum(["small", "medium", "large"]),
   launcherPosition: z.enum(["bottom-right", "bottom-left", "top-right", "top-left"]),
   launcherOffsetX: z.number().min(0).max(100),
@@ -352,6 +355,7 @@ function CollapsibleSection({ title, children, defaultOpen = false }: { title: s
 export function WidgetTab({ site }: WidgetTabProps) {
   const queryClient = useQueryClient();
   const [copied, setCopied] = useState<string | null>(null);
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
   const { toast } = useToast();
 
   // React Hook Form
@@ -436,9 +440,67 @@ export function WidgetTab({ site }: WidgetTabProps) {
     resetMutation.mutate({ siteId: site.id });
   };
 
+  // Handle logo upload
+  const handleLogoUpload = async (files: File[]) => {
+    if (!files || files.length === 0) return;
+
+    const file = files[0];
+    setIsUploadingLogo(true);
+
+    try {
+      const response = await uploadWidgetLogo(site.id, file);
+
+      // Update form with new logo URL
+      form.setValue('launcherCustomIconUrl', response.logoUrl, { shouldDirty: true });
+
+      // Invalidate query to refresh settings
+      queryClient.invalidateQueries({ queryKey: getGetApiV1WidgetSiteIdSettingsAdminQueryKey(site.id) });
+
+      toast({
+        title: "Logo uploaded",
+        description: "Your launcher logo has been uploaded successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to upload logo. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploadingLogo(false);
+    }
+  };
+
+  // Handle logo removal
+  const handleLogoRemove = async () => {
+    setIsUploadingLogo(true);
+
+    try {
+      await deleteWidgetLogo(site.id);
+
+      // Clear logo URL from form
+      form.setValue('launcherCustomIconUrl', '', { shouldDirty: true });
+
+      // Invalidate query to refresh settings
+      queryClient.invalidateQueries({ queryKey: getGetApiV1WidgetSiteIdSettingsAdminQueryKey(site.id) });
+
+      toast({
+        title: "Logo removed",
+        description: "Your launcher logo has been removed.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to remove logo. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploadingLogo(false);
+    }
+  };
+
   const isSaving = saveMutation.isPending;
   const hasChanges = form.formState.isDirty;
-  console.log('errors', form.formState.errors);
   const settings = form.watch(); // Get current form values for preview
 
   const copyToClipboard = async (text: string, type: string) => {
@@ -626,6 +688,77 @@ export function WidgetTab({ site }: WidgetTabProps) {
                       ]} />
                     <FormColorPicker name="launcherBackgroundColor" label="Background Color" control={form.control} description="Leave empty to use primary color" />
                     <FormColorPicker name="launcherIconColor" label="Icon Color" control={form.control} />
+                  </CollapsibleSection>
+
+                  <CollapsibleSection title="Custom Logo">
+                    <div className="space-y-4">
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        Upload a custom logo to display in the launcher. If not set, the selected icon above will be used.
+                      </p>
+
+                      {settings.launcherCustomIconUrl && (
+                        <div className="flex items-center gap-4 p-4 border dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800">
+                          <div className="h-16 w-16 rounded-lg bg-white dark:bg-gray-900 border dark:border-gray-600 flex items-center justify-center overflow-hidden">
+                            <img
+                              src={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api/v1'}${settings.launcherCustomIconUrl}`}
+                              alt="Current logo"
+                              className="h-full w-full object-contain"
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-sm font-medium text-gray-900 dark:text-white">Current Logo</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                              {settings.launcherCustomIconUrl.split('/').pop()}
+                            </p>
+                          </div>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={handleLogoRemove}
+                            disabled={isUploadingLogo}
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                          >
+                            <X className="h-4 w-4 mr-2" />
+                            Remove
+                          </Button>
+                        </div>
+                      )}
+
+                      <div className="border-2 border-dashed dark:border-gray-600 rounded-lg p-6 text-center">
+                        <input
+                          type="file"
+                          id="logo-upload"
+                          accept="image/png,image/jpeg,image/jpg,image/svg+xml,image/webp"
+                          onChange={(e) => {
+                            const files = Array.from(e.target.files || []);
+                            if (files.length > 0) {
+                              handleLogoUpload(files);
+                            }
+                          }}
+                          disabled={isUploadingLogo}
+                          className="hidden"
+                        />
+                        <label
+                          htmlFor="logo-upload"
+                          className={`cursor-pointer ${isUploadingLogo ? 'opacity-60 cursor-not-allowed' : ''}`}
+                        >
+                          <div className="h-12 w-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl mx-auto mb-3 flex items-center justify-center">
+                            {isUploadingLogo ? (
+                              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600" />
+                            ) : (
+                              <ImageIcon className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
+                            )}
+                          </div>
+                          <p className="text-sm font-medium text-gray-900 dark:text-white mb-1">
+                            {isUploadingLogo ? 'Uploading...' : settings.launcherCustomIconUrl ? 'Replace Logo' : 'Upload Logo'}
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            PNG, JPEG, SVG, WebP (max 2MB)
+                          </p>
+                        </label>
+                      </div>
+                    </div>
                   </CollapsibleSection>
 
                   <CollapsibleSection title="Tooltip & Animation">
