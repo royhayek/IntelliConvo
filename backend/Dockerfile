@@ -50,6 +50,9 @@ RUN npx prisma generate
 # Copy source code
 COPY . .
 
+# Copy entrypoint script (needs to be in builder for runner to access)
+COPY docker-entrypoint.sh ./docker-entrypoint.sh
+
 # Build TypeScript
 RUN npm run build
 
@@ -112,8 +115,8 @@ RUN mkdir -p uploads && chown -R nodejs:nodejs uploads
 RUN npx playwright install chromium && \
     chown -R nodejs:nodejs /root/.cache || true
 
-# Copy entrypoint script
-COPY docker-entrypoint.sh /usr/local/bin/
+# Copy entrypoint script from builder stage
+COPY --from=builder /app/docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # Switch to non-root user
