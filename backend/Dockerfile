@@ -47,11 +47,11 @@ COPY prisma ./prisma/
 # Regenerate Prisma client in builder context
 RUN npx prisma generate
 
-# Copy source code
+# Copy source code (includes docker-entrypoint.sh)
 COPY . .
 
-# Copy entrypoint script (needs to be in builder for runner to access)
-COPY docker-entrypoint.sh ./docker-entrypoint.sh
+# Verify docker-entrypoint.sh was copied
+RUN ls -la docker-entrypoint.sh
 
 # Build TypeScript
 RUN npm run build
