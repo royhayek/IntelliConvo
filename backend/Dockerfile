@@ -5,11 +5,15 @@
 # Stage 2: Builder
 # Stage 3: Production Runtime
 # ==========================================
+# NOTE: This Dockerfile expects the build context to be the
+# repository root, not the backend directory. All COPY paths
+# are prefixed with "backend/" accordingly.
+# ==========================================
 
 # ==========================================
 # Stage 1: Dependencies
 # ==========================================
-# Cache bust: 2025-11-30-v1
+# Cache bust: 2025-11-30-v2
 FROM node:20-slim AS deps
 
 WORKDIR /app
@@ -17,9 +21,9 @@ WORKDIR /app
 # Install OpenSSL for Prisma
 RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 
-# Copy package files
-COPY package*.json ./
-COPY prisma ./prisma/
+# Copy package files from backend directory
+COPY backend/package*.json ./
+COPY backend/prisma ./prisma/
 
 # Install dependencies
 RUN npm ci
@@ -30,7 +34,6 @@ RUN npx prisma generate
 # ==========================================
 # Stage 2: Builder
 # ==========================================
-# Cache bust: v2
 FROM node:20-slim AS builder
 
 WORKDIR /app
@@ -43,16 +46,13 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/package*.json ./
 
 # Copy prisma schema first (needed for build)
-COPY prisma ./prisma/
+COPY backend/prisma ./prisma/
 
 # Regenerate Prisma client in builder context
 RUN npx prisma generate
 
-# Copy source code (includes docker-entrypoint.sh)
-COPY . .
-
-# Verify docker-entrypoint.sh was copied
-RUN ls -la docker-entrypoint.sh
+# Copy source code from backend directory
+COPY backend/ .
 
 # Build TypeScript
 RUN npm run build
