@@ -118,13 +118,8 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 # Switch to non-root user
 USER nodejs
 
-# Expose port (Railway will override with PORT env var)
-EXPOSE ${PORT:-5000}
+# Expose port
+EXPOSE 5000
 
-# Health check - use PORT env var that Railway provides
-HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:${PORT:-5000}/health || exit 1
-
-# Start application
-ENTRYPOINT ["docker-entrypoint.sh"]
+# Start application directly - Railway handles migrations via start command
 CMD ["node", "dist/index.js"]
