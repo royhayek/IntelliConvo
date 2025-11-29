@@ -48,7 +48,9 @@ widget/.env.production
 # Keep example files tracked (they have placeholders only)
 !.env.example
 !**/.env.example
-!.env.docker.example
+
+# Exclude docker-specific env example (not needed for Railway)
+.env.docker.example
 
 *token.json*
 *credentials.json*
