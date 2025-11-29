@@ -53,21 +53,27 @@ const format = winston.format.combine(
   }),
 );
 
-const isDevelopment = process.env.NODE_ENV !== 'production';
+const isProduction = process.env.NODE_ENV === 'production';
+const isDocker = process.env.DOCKER === 'true' || process.env.RAILWAY_ENVIRONMENT !== undefined;
 
 const transports: winston.transport[] = [
   new winston.transports.Console(),
 ];
 
-// Only add file transports in development
-if (isDevelopment) {
-  transports.push(
-    new winston.transports.File({
-      filename: 'logs/error.log',
-      level: 'error',
-    }),
-    new winston.transports.File({ filename: 'logs/all.log' })
-  );
+// Only add file transports in local development (not in Docker/Railway)
+if (!isProduction && !isDocker) {
+  try {
+    transports.push(
+      new winston.transports.File({
+        filename: 'logs/error.log',
+        level: 'error',
+      }),
+      new winston.transports.File({ filename: 'logs/all.log' })
+    );
+  } catch (error) {
+    // Silently skip file logging if directory can't be created
+    console.warn('File logging disabled: could not create logs directory');
+  }
 }
 
 export const logger = winston.createLogger({
