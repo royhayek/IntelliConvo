@@ -53,14 +53,22 @@ const format = winston.format.combine(
   }),
 );
 
-const transports = [
+const isDevelopment = process.env.NODE_ENV !== 'production';
+
+const transports: winston.transport[] = [
   new winston.transports.Console(),
-  new winston.transports.File({
-    filename: 'logs/error.log',
-    level: 'error',
-  }),
-  new winston.transports.File({ filename: 'logs/all.log' }),
 ];
+
+// Only add file transports in development
+if (isDevelopment) {
+  transports.push(
+    new winston.transports.File({
+      filename: 'logs/error.log',
+      level: 'error',
+    }),
+    new winston.transports.File({ filename: 'logs/all.log' })
+  );
+}
 
 export const logger = winston.createLogger({
   level: level(),

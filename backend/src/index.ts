@@ -1,13 +1,3 @@
-// Debug: Log startup immediately
-console.log('=== APP STARTING ===');
-console.log('Node version:', process.version);
-console.log('DATABASE_URL exists:', !!process.env.DATABASE_URL);
-console.log('JWT_SECRET length:', process.env.JWT_SECRET?.length || 0);
-console.log('OPENAI_API_KEY exists:', !!process.env.OPENAI_API_KEY);
-console.log('PINECONE_API_KEY exists:', !!process.env.PINECONE_API_KEY);
-console.log('REDIS_HOST:', process.env.REDIS_HOST || 'not set');
-console.log('PORT:', process.env.PORT || 'not set');
-
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';

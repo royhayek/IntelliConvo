@@ -1,0 +1,115 @@
+OPENAI_API_KEY exists: true
+PINECONE_API_KEY exists: true
+REDIS_HOST: redis.railway.internal
+PORT: 5001
+Mounting volume on: /var/lib/containers/railwayapp/bind-mounts/7e27b6f7-de15-4c19-ae95-9fe2f3a25db6/vol_1nb6lau2tziv5ogf
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+node:fs:1372
+  const result = binding.mkdir(
+                         ^
+Error: EACCES: permission denied, mkdir 'logs'
+    at Object.mkdirSync (node:fs:1372:26)
+    at File._createLogDirIfNotExist (/app/node_modules/winston/lib/winston/transports/file.js:759:10)
+    at new File (/app/node_modules/winston/lib/winston/transports/file.js:94:28)
+    at Object.<anonymous> (/app/dist/utils/logger.js:50:5)
+    at Module._compile (node:internal/modules/cjs/loader:1521:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
+    at Module.load (node:internal/modules/cjs/loader:1266:32)
+    at Module._load (node:internal/modules/cjs/loader:1091:12)
+    at Module.require (node:internal/modules/cjs/loader:1289:19)
+    at require (node:internal/modules/helpers:182:18) {
+  errno: -13,
+  code: 'EACCES',
+  syscall: 'mkdir',
+  path: 'logs'
+}
+Node.js v20.19.6
+Node.js v20.19.6
+    at require (node:internal/modules/helpers:182:18) {
+  errno: -13,
+  code: 'EACCES',
+}
+  syscall: 'mkdir',
+  path: 'logs'
+=== APP STARTING ===
+Node version: v20.19.6
+DATABASE_URL exists: true
+JWT_SECRET length: 44
+OPENAI_API_KEY exists: true
+PINECONE_API_KEY exists: true
+REDIS_HOST: redis.railway.internal
+PORT: 5001
+[dotenv@17.2.3] injecting env (0) from .env -- tip: 👥 sync secrets across teammates & machines: https://dotenvx.com/ops
+node:fs:1372
+  const result = binding.mkdir(
+                         ^
+Error: EACCES: permission denied, mkdir 'logs'
+    at Object.mkdirSync (node:fs:1372:26)
+    at File._createLogDirIfNotExist (/app/node_modules/winston/lib/winston/transports/file.js:759:10)
+    at new File (/app/node_modules/winston/lib/winston/transports/file.js:94:28)
+    at Object.<anonymous> (/app/dist/utils/logger.js:50:5)
+    at Module._compile (node:internal/modules/cjs/loader:1521:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
+    at Module.load (node:internal/modules/cjs/loader:1266:32)
+    at Module._load (node:internal/modules/cjs/loader:1091:12)
+    at Module.require (node:internal/modules/cjs/loader:1289:19)
+Mounting volume on: /var/lib/containers/railwayapp/bind-mounts/7e27b6f7-de15-4c19-ae95-9fe2f3a25db6/vol_1nb6lau2tziv5ogf
+PORT: 5001
+DATABASE_URL exists: true
+JWT_SECRET length: 44
+=== APP STARTING ===
+OPENAI_API_KEY exists: true
+Node version: v20.19.6
+PINECONE_API_KEY exists: true
+REDIS_HOST: redis.railway.internal
+[dotenv@17.2.3] injecting env (0) from .env -- tip: 🔐 prevent building .env in docker: https://dotenvx.com/prebuild
+}
+    at File._createLogDirIfNotExist (/app/node_modules/winston/lib/winston/transports/file.js:759:10)
+node:fs:1372
+    at new File (/app/node_modules/winston/lib/winston/transports/file.js:94:28)
+  const result = binding.mkdir(
+Node.js v20.19.6
+                         ^
+    at Object.<anonymous> (/app/dist/utils/logger.js:50:5)
+    at Module._compile (node:internal/modules/cjs/loader:1521:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
+Error: EACCES: permission denied, mkdir 'logs'
+    at Module.load (node:internal/modules/cjs/loader:1266:32)
+    at Object.mkdirSync (node:fs:1372:26)
+    at Module._load (node:internal/modules/cjs/loader:1091:12)
+    at Module.require (node:internal/modules/cjs/loader:1289:19)
+    at require (node:internal/modules/helpers:182:18) {
+  errno: -13,
+  code: 'EACCES',
+  syscall: 'mkdir',
+  path: 'logs'
+Mounting volume on: /var/lib/containers/railwayapp/bind-mounts/7e27b6f7-de15-4c19-ae95-9fe2f3a25db6/vol_1nb6lau2tziv5ogf
+=== APP STARTING ===
+Node version: v20.19.6
+DATABASE_URL exists: true
+JWT_SECRET length: 44
+OPENAI_API_KEY exists: true
+PINECONE_API_KEY exists: true
+REDIS_HOST: redis.railway.internal
+PORT: 5001
+[dotenv@17.2.3] injecting env (0) from .env -- tip: 👥 sync secrets across teammates & machines: https://dotenvx.com/ops
+node:fs:1372
+  const result = binding.mkdir(
+                         ^
+Error: EACCES: permission denied, mkdir 'logs'
+    at Object.mkdirSync (node:fs:1372:26)
+    at File._createLogDirIfNotExist (/app/node_modules/winston/lib/winston/transports/file.js:759:10)
+    at new File (/app/node_modules/winston/lib/winston/transports/file.js:94:28)
+    at Object.<anonymous> (/app/dist/utils/logger.js:50:5)
+    at Module._compile (node:internal/modules/cjs/loader:1521:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
+    at Module.load (node:internal/modules/cjs/loader:1266:32)
+    at Module._load (node:internal/modules/cjs/loader:1091:12)
+    at Module.require (node:internal/modules/cjs/loader:1289:19)
+    at require (node:internal/modules/helpers:182:18) {
+  errno: -13,
+  code: 'EACCES',
+  syscall: 'mkdir',
+  path: 'logs'
+}
+Node.js v20.19.6
