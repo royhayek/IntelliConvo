@@ -9,6 +9,7 @@
 # ==========================================
 # Stage 1: Dependencies
 # ==========================================
+# Cache bust: 2025-11-30-v1
 FROM node:20-slim AS deps
 
 WORKDIR /app
