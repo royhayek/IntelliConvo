@@ -145,7 +145,7 @@ export function NotificationBell() {
   const markAsReadMutation = usePatchNotificationsNotificationIdRead({
     mutation: {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: getGetNotificationsQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetNotificationsQueryKey({ limit: "50" }) });
       },
     },
   });
@@ -153,7 +153,7 @@ export function NotificationBell() {
   const markAllAsReadMutation = usePatchNotificationsReadAll({
     mutation: {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: getGetNotificationsQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetNotificationsQueryKey({ limit: "50" }) });
       },
     },
   });
@@ -161,7 +161,7 @@ export function NotificationBell() {
   const deleteNotificationMutation = useDeleteNotificationsNotificationId({
     mutation: {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: getGetNotificationsQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetNotificationsQueryKey({ limit: "50" }) });
       },
     },
   });

@@ -144,9 +144,19 @@ export function SitemapTab({ site }: SitemapTabProps) {
       if (update.siteId !== site.id) return;
 
       // Update all matching queries (regardless of search/filter params)
-      // Using base key without params - setQueriesData does prefix matching
+      // Using predicate function to match all queries that start with the base URL path
+      const baseQueryKey = `/sites/${site.id}/urls`;
       queryClient.setQueriesData<SiteUrl[]>(
-        { queryKey: getGetSitesSiteIdUrlsQueryKey(site.id) },
+        {
+          predicate: (query) => {
+            const key = query.queryKey;
+            return (
+              Array.isArray(key) &&
+              typeof key[0] === "string" &&
+              key[0] === baseQueryKey
+            );
+          },
+        },
         (oldData) => {
           if (!oldData) return oldData;
           return oldData.map((url) => {
@@ -213,11 +223,20 @@ export function SitemapTab({ site }: SitemapTabProps) {
     defaultValues: { content: "" },
   });
 
-  // Get URLs
-  const { data: urls = [], isLoading } = useGetSitesSiteIdUrls(site.id, {
-    search: searchTerm || undefined,
-    status: statusFilter === "all" ? undefined : statusFilter,
-  });
+  // Get URLs - refetchOnMount ensures fresh data when returning to this tab
+  const { data: urls = [], isLoading } = useGetSitesSiteIdUrls(
+    site.id,
+    {
+      search: searchTerm || undefined,
+      status: statusFilter === "all" ? undefined : statusFilter,
+    },
+    {
+      query: {
+        staleTime: 0,
+        refetchOnMount: "always",
+      },
+    }
+  );
 
   // Query for fetching single URL with content
   const { data: selectedUrlData, isLoading: isLoadingContent } =

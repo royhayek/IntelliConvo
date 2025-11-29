@@ -1,0 +1,24 @@
+# ==========================================
+# Widget Dockerfile - Development
+# ==========================================
+# Optimized for development with hot-reloading
+# ==========================================
+
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install all dependencies (including devDependencies)
+RUN npm install
+
+# Copy all source files
+COPY . .
+
+# Expose port
+EXPOSE 8080
+
+# Start Webpack dev server with hot-reloading
+CMD ["npm", "run", "serve"]

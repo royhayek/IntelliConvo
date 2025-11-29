@@ -1,0 +1,193 @@
+# ==========================================
+# IntelliConvo - Development Docker Compose
+# ==========================================
+# This configuration is optimized for local development.
+# It includes hot-reloading and volume mounts for live code changes.
+#
+# Usage:
+#   docker-compose -f docker-compose.dev.yml up -d
+#
+# For production, use docker-compose.yml instead.
+# ==========================================
+
+services:
+  # ==========================================
+  # PostgreSQL Database
+  # ==========================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: intelliconvo-postgres-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: intelliconvo
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d intelliconvo"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - intelliconvo-dev-network
+
+  # ==========================================
+  # Redis Cache & Queue
+  # ==========================================
+  redis:
+    image: redis:7-alpine
+    container_name: intelliconvo-redis-dev
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data_dev:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - intelliconvo-dev-network
+
+  # ==========================================
+  # Backend API Server (Development)
+  # ==========================================
+  # Hot-reload enabled via tsx watch
+  # ==========================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: intelliconvo-backend-dev
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      # Server
+      NODE_ENV: development
+      PORT: 5001
+
+      # Database
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/intelliconvo
+
+      # Redis
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ""
+
+      # JWT
+      JWT_SECRET: development-jwt-secret-minimum-32-characters
+
+      # OpenAI (required - add your key)
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+
+      # Pinecone (required - add your keys)
+      PINECONE_API_KEY: ${PINECONE_API_KEY:-}
+      PINECONE_INDEX_NAME: ${PINECONE_INDEX_NAME:-intelliconvo}
+      PINECONE_DIMENSIONS: ${PINECONE_DIMENSIONS:-512}
+
+      # URLs
+      FRONTEND_URL: http://localhost:3000
+      WIDGET_CDN_URL: http://localhost:8080
+
+      # Migrations
+      RUN_MIGRATIONS: "true"
+      RUN_SEED: "true"
+    volumes:
+      # Mount source code for hot-reloading
+      - ./backend/src:/app/src:ro
+      - ./backend/prisma:/app/prisma:ro
+      # Persist uploads
+      - ./backend/uploads:/app/uploads
+      # Exclude node_modules (use container's version)
+      - /app/node_modules
+    ports:
+      - "5001:5001"
+    networks:
+      - intelliconvo-dev-network
+
+  # ==========================================
+  # Frontend Next.js Server (Development)
+  # ==========================================
+  # Hot-reload enabled via Next.js dev server
+  # ==========================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: intelliconvo-frontend-dev
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      NODE_ENV: development
+      NEXT_PUBLIC_API_URL: http://localhost:5001/api/v1
+      NEXT_PUBLIC_WIDGET_URL: http://localhost:8080
+      # Disable Next.js telemetry
+      NEXT_TELEMETRY_DISABLED: 1
+    volumes:
+      # Mount source code for hot-reloading
+      - ./frontend/app:/app/app:ro
+      - ./frontend/components:/app/components:ro
+      - ./frontend/lib:/app/lib:ro
+      - ./frontend/public:/app/public:ro
+      - ./frontend/styles:/app/styles:ro
+      # Exclude node_modules and .next
+      - /app/node_modules
+      - /app/.next
+    ports:
+      - "3000:3000"
+    networks:
+      - intelliconvo-dev-network
+
+  # ==========================================
+  # Widget Dev Server (Development)
+  # ==========================================
+  # Hot-reload enabled via Webpack dev server
+  # ==========================================
+  widget:
+    build:
+      context: ./widget
+      dockerfile: Dockerfile.dev
+    container_name: intelliconvo-widget-dev
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      WIDGET_API_URL: http://localhost:5001
+    volumes:
+      # Mount source code for hot-reloading
+      - ./widget/src:/app/src:ro
+      - ./widget/public:/app/public:ro
+      # Exclude node_modules
+      - /app/node_modules
+    ports:
+      - "8080:8080"
+    networks:
+      - intelliconvo-dev-network
+
+# ==========================================
+# Volumes
+# ==========================================
+volumes:
+  postgres_data_dev:
+    driver: local
+  redis_data_dev:
+    driver: local
+
+# ==========================================
+# Networks
+# ==========================================
+networks:
+  intelliconvo-dev-network:
+    driver: bridge

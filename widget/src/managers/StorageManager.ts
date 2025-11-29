@@ -111,7 +111,7 @@ export class StorageManager {
    */
   private async loadConversationFromBackend(sessionId: string): Promise<{ messages: Message[] } | null> {
     try {
-      const response = await fetch(`${this.apiUrl}/api/v1/widget/${this.siteId}/conversation/${sessionId}`, {
+      const response = await fetch(`${this.apiUrl}/widget/${this.siteId}/conversation/${sessionId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

@@ -1,0 +1,2706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>IntelliConvo - Documentation</title>
+	<link rel="stylesheet" href="assets/blueprint-css/screen.css" type="text/css" media="screen, projection">
+	<link rel="stylesheet" href="assets/blueprint-css/print.css" type="text/css" media="print">
+	<!--[if lt IE 8]><link rel="stylesheet" href="assets/blueprint-css/ie.css" type="text/css" media="screen, projection"><![endif]-->
+	<link rel="stylesheet" href="assets/blueprint-css/plugins/fancy-type/screen.css" type="text/css" media="screen, projection">
+	<style type="text/css" media="screen">
+		p, table, hr, .box { margin-bottom:25px; }
+		.box p { margin-bottom:10px; }
+		code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: monospace; }
+		pre { background: #2d2d2d; color: #f8f8f2; padding: 15px; border-radius: 5px; overflow-x: auto; margin-bottom: 25px; }
+		pre code { background: none; padding: 0; color: inherit; }
+		.env-table { width: 100%; border-collapse: collapse; margin-bottom: 25px; }
+		.env-table th, .env-table td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+		.env-table th { background: #f5f5f5; }
+		.env-table code { font-size: 12px; }
+		.required { color: #e74c3c; font-weight: bold; }
+		.optional { color: #27ae60; }
+		.warning { background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin-bottom: 25px; }
+		.info { background: #d1ecf1; border-left: 4px solid #17a2b8; padding: 15px; margin-bottom: 25px; }
+		.success { background: #d4edda; border-left: 4px solid #28a745; padding: 15px; margin-bottom: 25px; }
+		.danger { background: #f8d7da; border-left: 4px solid #dc3545; padding: 15px; margin-bottom: 25px; }
+		h4 { margin-top: 20px; margin-bottom: 10px; color: #333; }
+		.step { background: #f8f9fa; border: 1px solid #e9ecef; padding: 15px; margin-bottom: 15px; border-radius: 5px; }
+		.step-number { display: inline-block; background: #007bff; color: white; width: 25px; height: 25px; text-align: center; border-radius: 50%; margin-right: 10px; font-weight: bold; }
+	</style>
+</head>
+
+<body>
+	<div class="container">
+
+		<h3 class="center alt">&ldquo;IntelliConvo&rdquo; Documentation v1.0</h3>
+
+		<hr>
+
+		<h1 class="center">IntelliConvo</h1>
+		<p class="center">AI-Powered Conversational Chat Widget SaaS Platform</p>
+
+		<div class="borderTop">
+			<div class="span-6 colborder info prepend-1">
+				<p class="prepend-top">
+					<strong>
+					Created: November 2025<br>
+					Version: 1.0.0<br>
+					Author: Roy Hayek<br>
+					Email: <a href="mailto:royhayek27@gmail.com">royhayek27@gmail.com</a>
+					</strong>
+				</p>
+			</div>
+
+			<div class="span-12 last">
+				<p class="prepend-top append-0">Thank you for purchasing IntelliConvo! This documentation will guide you through installation, configuration, and customization. If you have any questions beyond this documentation, please contact us through our CodeCanyon profile or email.</p>
+			</div>
+		</div>
+
+		<hr>
+
+		<!-- ============================================
+		     TABLE OF CONTENTS
+		     ============================================ -->
+		<h2 id="toc" class="alt">Table of Contents</h2>
+		<ol class="alpha">
+			<li><a href="#introduction">Introduction & Features</a></li>
+			<li><a href="#requirements">Server Requirements</a></li>
+			<li><a href="#installation-docker">Installation (Docker - Recommended)</a></li>
+			<li><a href="#local-development">Local Development Setup</a></li>
+			<li><a href="#installation-manual">Installation (Manual/Production)</a></li>
+			<li><a href="#cloud-deployment">Cloud Deployment (Railway & Vercel)</a></li>
+			<li><a href="#configuration">Configuration & Environment Variables</a></li>
+			<li><a href="#integrations">Third-Party Integrations</a>
+				<ul>
+					<li><a href="#openai">OpenAI Setup</a></li>
+					<li><a href="#pinecone">Pinecone Setup</a></li>
+					<li><a href="#stripe">Stripe Payments</a></li>
+					<li><a href="#email">Email Providers</a></li>
+					<li><a href="#oauth">OAuth Providers</a></li>
+					<li><a href="#s3">AWS S3 Storage</a></li>
+				</ul>
+			</li>
+			<li><a href="#admin-guide">Admin Configuration Guide</a></li>
+			<li><a href="#widget-customization">Widget Customization</a></li>
+			<li><a href="#user-guide">User Guide</a></li>
+			<li><a href="#api-reference">API Reference</a></li>
+			<li><a href="#troubleshooting">Troubleshooting & FAQ</a></li>
+			<li><a href="#updates">Updates & Changelog</a></li>
+			<li><a href="#rebranding">Rebranding Guide</a></li>
+			<li><a href="#credits">Credits & Licenses</a></li>
+		</ol>
+
+		<hr>
+
+		<!-- ============================================
+		     A) INTRODUCTION & FEATURES
+		     ============================================ -->
+		<h3 id="introduction"><strong>A) Introduction & Features</strong> - <a href="#toc">top</a></h3>
+
+		<p>IntelliConvo is a complete SaaS platform for creating AI-powered chat widgets that can be embedded on any website. It uses OpenAI's GPT models to provide intelligent, context-aware responses based on your website's content.</p>
+
+		<h4>Key Features</h4>
+		<ul>
+			<li><strong>AI-Powered Chat:</strong> Uses OpenAI GPT-4 and GPT-3.5 models for intelligent responses</li>
+			<li><strong>Website Crawling:</strong> Automatically crawls and indexes website content for context</li>
+			<li><strong>Vector Search:</strong> Semantic search using Pinecone for accurate content retrieval</li>
+			<li><strong>Customizable Widget:</strong> 100+ customization options for appearance and behavior</li>
+			<li><strong>Multi-tenant SaaS:</strong> Support for unlimited users with separate sites</li>
+			<li><strong>Subscription Billing:</strong> Stripe integration with trial support</li>
+			<li><strong>OAuth Authentication:</strong> Google, GitHub, and Microsoft login options</li>
+			<li><strong>Knowledge Base:</strong> Upload PDFs and documents for additional context</li>
+			<li><strong>Real-time Chat:</strong> Socket.io powered real-time messaging with streaming</li>
+			<li><strong>Analytics:</strong> Conversation tracking, usage metrics, and cost analysis</li>
+			<li><strong>Admin Dashboard:</strong> Complete admin panel for user and site management</li>
+		</ul>
+
+		<h4>Technology Stack</h4>
+		<ul>
+			<li><strong>Backend:</strong> Node.js, Express, TypeScript, Prisma ORM</li>
+			<li><strong>Frontend:</strong> Next.js 14, React 18, Tailwind CSS, Radix UI</li>
+			<li><strong>Widget:</strong> Vanilla TypeScript, Webpack (single embeddable file)</li>
+			<li><strong>Database:</strong> PostgreSQL</li>
+			<li><strong>Cache/Queue:</strong> Redis with BullMQ</li>
+			<li><strong>AI:</strong> OpenAI GPT-4/3.5, text-embedding-3-small</li>
+			<li><strong>Vector DB:</strong> Pinecone</li>
+			<li><strong>Payments:</strong> Stripe</li>
+		</ul>
+
+		<hr>
+
+		<!-- ============================================
+		     B) SERVER REQUIREMENTS
+		     ============================================ -->
+		<h3 id="requirements"><strong>B) Server Requirements</strong> - <a href="#toc">top</a></h3>
+
+		<h4>Minimum Requirements</h4>
+		<ul>
+			<li>CPU: 2 cores</li>
+			<li>RAM: 4GB (8GB recommended)</li>
+			<li>Storage: 20GB SSD</li>
+			<li>OS: Ubuntu 20.04+ / Debian 11+ / CentOS 8+</li>
+		</ul>
+
+		<h4>For Docker Installation</h4>
+		<ul>
+			<li>Docker >= 20.10</li>
+			<li>Docker Compose >= 2.0</li>
+		</ul>
+
+		<h4>For Manual Installation</h4>
+		<ul>
+			<li>Node.js >= 20.10 (LTS recommended)</li>
+			<li>PostgreSQL >= 14</li>
+			<li>Redis >= 7.0</li>
+			<li>npm >= 10.0</li>
+			<li>Git</li>
+		</ul>
+
+		<h4>Required External Services (API Keys)</h4>
+		<table class="env-table">
+			<tr>
+				<th>Service</th>
+				<th>Purpose</th>
+				<th>Required</th>
+				<th>Free Tier</th>
+			</tr>
+			<tr>
+				<td>OpenAI</td>
+				<td>AI responses & embeddings</td>
+				<td class="required">Yes</td>
+				<td>No (Pay as you go)</td>
+			</tr>
+			<tr>
+				<td>Pinecone</td>
+				<td>Vector database for semantic search</td>
+				<td class="required">Yes</td>
+				<td>Yes (limited)</td>
+			</tr>
+			<tr>
+				<td>Stripe</td>
+				<td>Payment processing</td>
+				<td class="optional">Optional</td>
+				<td>Yes (test mode)</td>
+			</tr>
+			<tr>
+				<td>Resend/SMTP</td>
+				<td>Email sending</td>
+				<td class="optional">Optional</td>
+				<td>Yes (3,000/month)</td>
+			</tr>
+			<tr>
+				<td>AWS S3</td>
+				<td>Cloud file storage</td>
+				<td class="optional">Optional</td>
+				<td>Yes (5GB)</td>
+			</tr>
+		</table>
+
+		<hr>
+
+		<!-- ============================================
+		     C) INSTALLATION (DOCKER)
+		     ============================================ -->
+		<h3 id="installation-docker"><strong>C) Installation (Docker - Recommended)</strong> - <a href="#toc">top</a></h3>
+
+		<div class="info">
+			<strong>Recommended:</strong> Docker installation is the easiest and most reliable method. It handles all dependencies automatically.
+		</div>
+
+		<h4>Step 1: Extract Files</h4>
+		<div class="step">
+			<span class="step-number">1</span>
+			Extract the downloaded ZIP file to your server:
+<pre><code># Upload and extract
+unzip intelliconvo.zip -d /var/www/
+cd /var/www/intelliconvo</code></pre>
+		</div>
+
+		<h4>Step 2: Configure Environment</h4>
+		<div class="step">
+			<span class="step-number">2</span>
+			Copy the environment template and configure your settings:
+<pre><code># Copy environment template
+cp .env.docker.example .env
+
+# Edit with your values
+nano .env</code></pre>
+			<p>At minimum, you must configure:</p>
+			<ul>
+				<li><code>JWT_SECRET</code> - A random 32+ character string</li>
+				<li><code>OPENAI_API_KEY</code> - Your OpenAI API key</li>
+				<li><code>PINECONE_API_KEY</code> - Your Pinecone API key</li>
+				<li><code>POSTGRES_PASSWORD</code> - Secure database password</li>
+			</ul>
+		</div>
+
+		<h4>Step 3: Start Services</h4>
+		<div class="step">
+			<span class="step-number">3</span>
+			Build and start all services:
+<pre><code># For production (with nginx reverse proxy)
+docker-compose -f docker-compose.prod.yml up -d --build
+
+# OR for simple setup (separate ports)
+docker-compose up -d --build</code></pre>
+		</div>
+
+		<h4>Step 4: Verify Installation</h4>
+		<div class="step">
+			<span class="step-number">4</span>
+			Check that all services are running:
+<pre><code># Check status
+docker-compose ps
+
+# View logs
+docker-compose logs -f</code></pre>
+		</div>
+
+		<h4>Step 5: Access Application</h4>
+		<div class="step">
+			<span class="step-number">5</span>
+			<p>Access the application:</p>
+			<table class="env-table">
+				<tr>
+					<th>Service</th>
+					<th>URL (Production with Nginx)</th>
+					<th>URL (Simple Setup)</th>
+				</tr>
+				<tr>
+					<td>Frontend Dashboard</td>
+					<td>http://yourdomain.com/</td>
+					<td>http://yourdomain.com:3000</td>
+				</tr>
+				<tr>
+					<td>Backend API</td>
+					<td>http://yourdomain.com/api/</td>
+					<td>http://yourdomain.com:5001</td>
+				</tr>
+				<tr>
+					<td>Widget</td>
+					<td>http://yourdomain.com/widget/</td>
+					<td>http://yourdomain.com:8080</td>
+				</tr>
+			</table>
+		</div>
+
+		<h4>Default Admin Credentials</h4>
+		<div class="warning">
+			<strong>Important:</strong> Change these credentials immediately after first login!
+			<ul>
+				<li><strong>Email:</strong> admin@intelliconvo.com</li>
+				<li><strong>Password:</strong> Admin123!@#</li>
+			</ul>
+			<p>You can set custom admin credentials by adding <code>ADMIN_EMAIL</code> and <code>ADMIN_PASSWORD</code> to your .env file before first run.</p>
+		</div>
+
+		<h4>Docker Commands Reference</h4>
+<pre><code># Start services
+docker-compose -f docker-compose.prod.yml up -d
+
+# Stop services
+docker-compose -f docker-compose.prod.yml down
+
+# View logs
+docker-compose -f docker-compose.prod.yml logs -f backend
+
+# Rebuild after updates
+docker-compose -f docker-compose.prod.yml up -d --build
+
+# Reset database (WARNING: deletes all data)
+docker-compose -f docker-compose.prod.yml down -v
+docker-compose -f docker-compose.prod.yml up -d --build
+
+# Access database
+docker exec -it intelliconvo-postgres psql -U postgres -d intelliconvo
+
+# Create database backup
+docker exec intelliconvo-postgres pg_dump -U postgres intelliconvo > backup.sql</code></pre>
+
+		<hr>
+
+		<!-- ============================================
+		     LOCAL DEVELOPMENT SETUP
+		     ============================================ -->
+		<h3 id="local-development"><strong>D) Local Development Setup</strong> - <a href="#toc">top</a></h3>
+
+		<div class="info">
+			<strong>For Developers:</strong> This section explains how to set up your local development environment for modifying and extending IntelliConvo.
+		</div>
+
+		<h4>Option 1: Docker Development (Recommended)</h4>
+		<p>The easiest way to develop locally with hot-reloading enabled. Works on macOS, Windows, and Linux.</p>
+
+		<div class="step">
+			<span class="step-number">1</span>
+			<strong>Install Docker Desktop:</strong>
+			<ul>
+				<li><strong>macOS:</strong> Download from <a href="https://www.docker.com/products/docker-desktop/" target="_blank">docker.com</a></li>
+				<li><strong>Windows:</strong> Download from <a href="https://www.docker.com/products/docker-desktop/" target="_blank">docker.com</a> (requires WSL2 backend)</li>
+				<li><strong>Linux:</strong> Follow <a href="https://docs.docker.com/engine/install/" target="_blank">official installation guide</a></li>
+			</ul>
+			<div class="info">
+				<strong>Windows Users:</strong> Docker Desktop requires WSL2. During installation, it will prompt you to enable it. After installation, make sure Docker Desktop is running (check system tray).
+			</div>
+		</div>
+
+		<div class="step">
+			<span class="step-number">2</span>
+			<strong>Clone and Configure:</strong>
+
+			<p><strong>macOS / Linux:</strong></p>
+<pre><code># Navigate to project directory
+cd intelliconvo
+
+# Copy environment template
+cp .env.docker.example .env
+
+# Edit .env and add your API keys
+nano .env</code></pre>
+
+			<p><strong>Windows (Command Prompt):</strong></p>
+<pre><code># Navigate to project directory
+cd intelliconvo
+
+# Copy environment template
+copy .env.docker.example .env
+
+# Edit .env with Notepad or VS Code
+notepad .env</code></pre>
+
+			<p><strong>Windows (PowerShell):</strong></p>
+<pre><code># Navigate to project directory
+cd intelliconvo
+
+# Copy environment template
+Copy-Item .env.docker.example .env
+
+# Edit .env with Notepad or VS Code
+code .env</code></pre>
+
+			<p>At minimum, add these to your .env file:</p>
+			<ul>
+				<li><code>OPENAI_API_KEY=sk-your-key</code></li>
+				<li><code>PINECONE_API_KEY=your-key</code></li>
+			</ul>
+		</div>
+
+		<div class="step">
+			<span class="step-number">3</span>
+			<strong>Start Development Environment:</strong>
+			<p>Run these commands in your terminal (same on all platforms):</p>
+<pre><code># Start all services with hot-reloading
+docker-compose -f docker-compose.dev.yml up -d
+
+# View logs (optional)
+docker-compose -f docker-compose.dev.yml logs -f</code></pre>
+			<div class="info">
+				<strong>Windows Tip:</strong> You can also use Docker Desktop's GUI to view running containers, logs, and manage services.
+			</div>
+		</div>
+
+		<div class="step">
+			<span class="step-number">4</span>
+			<strong>Access Development Servers:</strong>
+			<table class="env-table">
+				<tr>
+					<th>Service</th>
+					<th>URL</th>
+					<th>Hot Reload</th>
+				</tr>
+				<tr>
+					<td>Frontend (Next.js)</td>
+					<td><a href="http://localhost:3000">http://localhost:3000</a></td>
+					<td>Yes - changes reflect instantly</td>
+				</tr>
+				<tr>
+					<td>Backend (Express)</td>
+					<td><a href="http://localhost:5001">http://localhost:5001</a></td>
+					<td>Yes - restarts on file change</td>
+				</tr>
+				<tr>
+					<td>Widget (Webpack)</td>
+					<td><a href="http://localhost:8080">http://localhost:8080</a></td>
+					<td>Yes - rebuilds on file change</td>
+				</tr>
+				<tr>
+					<td>API Docs (Swagger)</td>
+					<td><a href="http://localhost:5001/api/docs">http://localhost:5001/api/docs</a></td>
+					<td>-</td>
+				</tr>
+			</table>
+		</div>
+
+		<div class="step">
+			<span class="step-number">5</span>
+			<strong>Development Workflow:</strong>
+			<ul>
+				<li>Edit files in <code>/frontend</code>, <code>/backend</code>, or <code>/widget</code></li>
+				<li>Changes are automatically detected and hot-reloaded</li>
+				<li>No need to restart containers for code changes</li>
+				<li>Database and Redis data persists between restarts</li>
+			</ul>
+		</div>
+
+		<h4>Option 2: Local Development (Without Docker)</h4>
+		<p>For developers who prefer running services directly on their machine.</p>
+
+		<h5>Prerequisites by Operating System</h5>
+
+		<div class="step">
+			<strong>macOS (using Homebrew):</strong>
+<pre><code># Install Homebrew if not installed
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# Install dependencies
+brew install node@20 postgresql@16 redis
+
+# Start services
+brew services start postgresql@16
+brew services start redis
+
+# Verify installations
+node --version    # Should be v20.x.x
+psql --version    # Should be 16.x
+redis-cli ping    # Should return PONG</code></pre>
+		</div>
+
+		<div class="step">
+			<strong>Windows:</strong>
+			<p>There are two options for Windows development:</p>
+
+			<p><strong>Option A: Native Windows Installation</strong></p>
+			<ol>
+				<li><strong>Install Node.js 20:</strong>
+					<ul>
+						<li>Download from <a href="https://nodejs.org/" target="_blank">nodejs.org</a> (LTS version)</li>
+						<li>Run the installer and follow the prompts</li>
+						<li>Restart your terminal after installation</li>
+					</ul>
+				</li>
+				<li><strong>Install PostgreSQL:</strong>
+					<ul>
+						<li>Download from <a href="https://www.postgresql.org/download/windows/" target="_blank">postgresql.org</a></li>
+						<li>Run the installer, remember the password you set for 'postgres' user</li>
+						<li>Add PostgreSQL bin to PATH: <code>C:\Program Files\PostgreSQL\16\bin</code></li>
+					</ul>
+				</li>
+				<li><strong>Install Redis:</strong>
+					<ul>
+						<li>Download from <a href="https://github.com/microsoftarchive/redis/releases" target="_blank">Microsoft Redis Archive</a></li>
+						<li>Or use Windows Subsystem for Linux (WSL) - see Option B</li>
+						<li>Alternative: Use <a href="https://memurai.com/" target="_blank">Memurai</a> (Redis-compatible for Windows)</li>
+					</ul>
+				</li>
+			</ol>
+<pre><code># Verify installations (PowerShell or Command Prompt)
+node --version
+npm --version
+psql --version
+
+# Start Redis (if using Windows Redis)
+redis-server</code></pre>
+
+			<p><strong>Option B: Windows with WSL2 (Recommended for Windows)</strong></p>
+			<p>WSL2 provides a better development experience on Windows.</p>
+<pre><code># 1. Install WSL2 (run PowerShell as Administrator)
+wsl --install
+
+# 2. Restart your computer
+
+# 3. Open Ubuntu from Start Menu and run:
+sudo apt update && sudo apt upgrade -y
+
+# 4. Install Node.js 20
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+# 5. Install PostgreSQL
+sudo apt-get install -y postgresql postgresql-contrib
+sudo service postgresql start
+
+# 6. Install Redis
+sudo apt-get install -y redis-server
+sudo service redis-server start
+
+# 7. Verify installations
+node --version
+psql --version
+redis-cli ping</code></pre>
+
+			<div class="info">
+				<strong>Tip:</strong> When using WSL2, you can access your Windows files at <code>/mnt/c/Users/YourUsername/</code>. We recommend cloning the project inside WSL for better performance.
+			</div>
+		</div>
+
+		<div class="step">
+			<strong>Linux (Ubuntu/Debian):</strong>
+<pre><code># Update package list
+sudo apt update
+
+# Install Node.js 20
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+# Install PostgreSQL
+sudo apt-get install -y postgresql postgresql-contrib
+sudo systemctl start postgresql
+sudo systemctl enable postgresql
+
+# Install Redis
+sudo apt-get install -y redis-server
+sudo systemctl start redis-server
+sudo systemctl enable redis-server
+
+# Verify installations
+node --version    # Should be v20.x.x
+npm --version     # Should be 10.x.x
+psql --version    # Should be 14+
+redis-cli ping    # Should return PONG</code></pre>
+		</div>
+
+		<h5>Create Database</h5>
+		<div class="step">
+			<strong>macOS / Linux / WSL:</strong>
+<pre><code># Access PostgreSQL
+sudo -u postgres psql
+
+# Create database
+CREATE DATABASE intelliconvo;
+\q</code></pre>
+
+			<strong>Windows (Native):</strong>
+<pre><code># Open Command Prompt or PowerShell
+psql -U postgres
+
+# Enter your password when prompted, then:
+CREATE DATABASE intelliconvo;
+\q</code></pre>
+
+			<strong>Using pgAdmin (Windows GUI alternative):</strong>
+			<ol>
+				<li>Open pgAdmin (installed with PostgreSQL)</li>
+				<li>Connect to your local server</li>
+				<li>Right-click "Databases" → "Create" → "Database"</li>
+				<li>Name it "intelliconvo" and save</li>
+			</ol>
+		</div>
+
+		<h5>Configure Environment Files</h5>
+		<div class="step">
+			<strong>macOS / Linux / WSL:</strong>
+<pre><code># Backend
+cp backend/.env.example backend/.env
+
+# Frontend
+cp frontend/.env.example frontend/.env
+
+# Widget
+cp widget/.env.example widget/.env</code></pre>
+
+			<strong>Windows (Command Prompt):</strong>
+<pre><code># Backend
+copy backend\.env.example backend\.env
+
+# Frontend
+copy frontend\.env.example frontend\.env
+
+# Widget
+copy widget\.env.example widget\.env</code></pre>
+
+			<strong>Windows (PowerShell):</strong>
+<pre><code># Backend
+Copy-Item backend\.env.example backend\.env
+
+# Frontend
+Copy-Item frontend\.env.example frontend\.env
+
+# Widget
+Copy-Item widget\.env.example widget\.env</code></pre>
+
+			<p>Now edit each <code>.env</code> file with your settings:</p>
+
+			<p><strong>backend/.env</strong> (required settings):</p>
+<pre><code>DATABASE_URL=postgresql://postgres:yourpassword@localhost:5432/intelliconvo
+REDIS_HOST=localhost
+REDIS_PORT=6379
+OPENAI_API_KEY=sk-your-openai-key
+PINECONE_API_KEY=your-pinecone-key
+PINECONE_INDEX_NAME=intelliconvo
+JWT_SECRET=development-secret-minimum-32-characters-long
+FRONTEND_URL=http://localhost:3000
+WIDGET_CDN_URL=http://localhost:8080</code></pre>
+
+			<p><strong>frontend/.env</strong>:</p>
+<pre><code>NEXT_PUBLIC_API_URL=http://localhost:5001/api/v1
+NEXT_PUBLIC_WIDGET_URL=http://localhost:8080</code></pre>
+
+			<p><strong>widget/.env</strong>:</p>
+<pre><code>WIDGET_API_URL=http://localhost:5001</code></pre>
+
+			<div class="info">
+				<strong>Windows Note:</strong> You can use Notepad, VS Code, or any text editor to edit .env files. In VS Code, just open the project folder and edit the files directly.
+			</div>
+		</div>
+
+		<h5>Install Dependencies & Setup Database</h5>
+		<div class="step">
+			<strong>All Platforms (macOS / Windows / Linux):</strong>
+<pre><code># Backend - Open terminal/command prompt in project folder
+cd backend
+npm install
+npx prisma generate
+npx prisma db push
+npx prisma db seed
+cd ..
+
+# Frontend
+cd frontend
+npm install
+cd ..
+
+# Widget
+cd widget
+npm install
+cd ..</code></pre>
+
+			<div class="warning">
+				<strong>Windows Note:</strong> If you encounter permission errors with npm, try running Command Prompt or PowerShell as Administrator, or use the Node.js Command Prompt that comes with Node.js installation.
+			</div>
+		</div>
+
+		<h5>Start Development Servers</h5>
+		<div class="step">
+			<p>Open 3 separate terminal/command prompt windows:</p>
+
+			<strong>All Platforms:</strong>
+<pre><code># Terminal 1: Backend
+cd backend
+npm run dev
+
+# Terminal 2: Frontend
+cd frontend
+npm run dev
+
+# Terminal 3: Widget
+cd widget
+npm run serve</code></pre>
+
+			<strong>Windows Tips:</strong>
+			<ul>
+				<li>You can use Command Prompt, PowerShell, or Windows Terminal</li>
+				<li>In VS Code, use the integrated terminal (Ctrl+`) and split it into 3 panels</li>
+				<li>Or right-click the project folders in File Explorer and select "Open in Terminal"</li>
+			</ul>
+
+			<strong>Alternative: Run all at once (using concurrently)</strong>
+<pre><code># From project root, install concurrently first
+npm install -g concurrently
+
+# Then run all services
+concurrently "cd backend && npm run dev" "cd frontend && npm run dev" "cd widget && npm run serve"</code></pre>
+		</div>
+
+		<h4>Development Commands Reference</h4>
+
+		<h5>Backend Commands</h5>
+		<table class="env-table">
+			<tr><th>Command</th><th>Description</th></tr>
+			<tr><td><code>npm run dev</code></td><td>Start development server with hot-reload</td></tr>
+			<tr><td><code>npm run build</code></td><td>Build TypeScript to JavaScript</td></tr>
+			<tr><td><code>npm run start</code></td><td>Start production server</td></tr>
+			<tr><td><code>npm test</code></td><td>Run tests</td></tr>
+			<tr><td><code>npx prisma generate</code></td><td>Generate Prisma client after schema changes</td></tr>
+			<tr><td><code>npx prisma db push</code></td><td>Push schema changes to database</td></tr>
+			<tr><td><code>npx prisma migrate dev</code></td><td>Create and apply migrations</td></tr>
+			<tr><td><code>npx prisma studio</code></td><td>Open visual database browser</td></tr>
+			<tr><td><code>npx prisma db seed</code></td><td>Seed database with initial data</td></tr>
+		</table>
+
+		<h5>Frontend Commands</h5>
+		<table class="env-table">
+			<tr><th>Command</th><th>Description</th></tr>
+			<tr><td><code>npm run dev</code></td><td>Start Next.js development server</td></tr>
+			<tr><td><code>npm run build</code></td><td>Build for production</td></tr>
+			<tr><td><code>npm run start</code></td><td>Start production server</td></tr>
+			<tr><td><code>npm run lint</code></td><td>Run ESLint</td></tr>
+			<tr><td><code>npm run type-check</code></td><td>Run TypeScript type checking</td></tr>
+			<tr><td><code>npm run generate:api</code></td><td>Generate API client from Swagger</td></tr>
+		</table>
+
+		<h5>Widget Commands</h5>
+		<table class="env-table">
+			<tr><th>Command</th><th>Description</th></tr>
+			<tr><td><code>npm run dev</code></td><td>Build in watch mode</td></tr>
+			<tr><td><code>npm run serve</code></td><td>Start webpack dev server with HMR</td></tr>
+			<tr><td><code>npm run build</code></td><td>Build for production</td></tr>
+			<tr><td><code>npm run lint</code></td><td>Run ESLint</td></tr>
+			<tr><td><code>npm run type-check</code></td><td>Run TypeScript type checking</td></tr>
+		</table>
+
+		<h4>Project Structure</h4>
+<pre><code>intelliconvo/
+├── backend/                 # Node.js + Express API
+│   ├── src/
+│   │   ├── index.ts        # Entry point
+│   │   ├── routes/         # API endpoints
+│   │   ├── services/       # Business logic
+│   │   ├── queues/         # Background jobs (BullMQ)
+│   │   ├── lib/            # External integrations
+│   │   ├── middleware/     # Express middleware
+│   │   └── utils/          # Utilities
+│   ├── prisma/
+│   │   ├── schema.prisma   # Database schema
+│   │   ├── migrations/     # Database migrations
+│   │   └── seed.ts         # Seed data
+│   └── package.json
+│
+├── frontend/                # Next.js 14 Dashboard
+│   ├── app/                # App Router pages
+│   ├── components/         # React components
+│   ├── lib/                # Utilities & API client
+│   └── package.json
+│
+├── widget/                  # Embeddable Chat Widget
+│   ├── src/
+│   │   ├── index.ts        # Entry point
+│   │   ├── ui/             # UI components
+│   │   └── managers/       # State managers
+│   ├── dist/               # Build output (widget.js)
+│   └── package.json
+│
+├── docker/                  # Docker configurations
+│   └── nginx/              # Nginx configs
+│
+├── documentation/           # This documentation
+│
+├── docker-compose.yml       # Production setup
+├── docker-compose.dev.yml   # Development setup
+├── docker-compose.prod.yml  # Production with nginx
+└── .env.docker.example      # Environment template</code></pre>
+
+		<h4>Making Code Changes</h4>
+
+		<h5>Adding a New API Endpoint</h5>
+<pre><code># 1. Create route file
+# backend/src/routes/myFeature.ts
+
+import { Router } from 'express';
+import { authenticate } from '../middleware/auth';
+
+const router = Router();
+
+router.get('/my-endpoint', authenticate, async (req, res) => {
+  // Your logic here
+  res.json({ success: true });
+});
+
+export default router;
+
+# 2. Register in backend/src/index.ts
+import myFeatureRoutes from './routes/myFeature';
+app.use('/api/v1/my-feature', myFeatureRoutes);</code></pre>
+
+		<h5>Modifying the Database Schema</h5>
+<pre><code># 1. Edit backend/prisma/schema.prisma
+model MyNewModel {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+}
+
+# 2. Push changes to database
+cd backend
+npx prisma db push
+
+# 3. Regenerate Prisma client
+npx prisma generate</code></pre>
+
+		<h5>Adding a New Frontend Page</h5>
+<pre><code># Create file: frontend/app/my-page/page.tsx
+
+export default function MyPage() {
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;My New Page&lt;/h1&gt;
+    &lt;/div&gt;
+  );
+}
+
+# Access at: http://localhost:3000/my-page</code></pre>
+
+		<h5>Customizing the Widget</h5>
+<pre><code># Edit widget/src/ui/components/
+# - ChatWindow.ts    (main chat interface)
+# - Launcher.ts      (floating button)
+# - MessageBubble.ts (chat messages)
+# - InputArea.ts     (message input)
+
+# After changes, rebuild:
+cd widget
+npm run build</code></pre>
+
+		<h4>Testing Your Changes</h4>
+
+		<div class="step">
+			<strong>Test the Widget Locally:</strong>
+			<ol>
+				<li>Start all development servers</li>
+				<li>Create a site in the dashboard</li>
+				<li>Open <code>widget/public/demo.html</code> in browser</li>
+				<li>Or use the test file: <code>test-widget.html</code> in project root</li>
+			</ol>
+		</div>
+
+		<div class="step">
+			<strong>Test API Endpoints:</strong>
+			<ol>
+				<li>Open Swagger UI at <a href="http://localhost:5001/api/docs">http://localhost:5001/api/docs</a></li>
+				<li>Authenticate with your JWT token</li>
+				<li>Test endpoints directly from the browser</li>
+			</ol>
+		</div>
+
+		<h4>Debugging Tips</h4>
+		<table class="env-table">
+			<tr><th>Issue</th><th>How to Debug</th></tr>
+			<tr>
+				<td>Backend Errors</td>
+				<td>
+					Check terminal running <code>npm run dev</code><br>
+					Docker: <code>docker-compose logs -f backend</code><br>
+					Windows Docker: View logs in Docker Desktop GUI
+				</td>
+			</tr>
+			<tr>
+				<td>Frontend Errors</td>
+				<td>
+					Open browser DevTools (F12 on all platforms, or Cmd+Option+I on Mac)<br>
+					Check Console tab for JavaScript errors<br>
+					Check Network tab for failed API requests
+				</td>
+			</tr>
+			<tr>
+				<td>Database Issues</td>
+				<td>
+					Use <code>npx prisma studio</code> to browse data visually (opens in browser)<br>
+					Windows: Use pgAdmin for a GUI database browser
+				</td>
+			</tr>
+			<tr>
+				<td>Redis/Queue Issues</td>
+				<td>
+					macOS/Linux: <code>redis-cli MONITOR</code><br>
+					Windows: Use Redis Commander or RedisInsight GUI<br>
+					Docker: <code>docker exec -it intelliconvo-redis redis-cli MONITOR</code>
+				</td>
+			</tr>
+			<tr>
+				<td>Widget Not Loading</td>
+				<td>
+					Check Network tab in browser DevTools for failed requests<br>
+					Verify CORS settings if testing on external domain<br>
+					Ensure site ID in embed code is correct
+				</td>
+			</tr>
+			<tr>
+				<td>Port Already in Use</td>
+				<td>
+					macOS/Linux: <code>lsof -i :5001</code> then <code>kill -9 PID</code><br>
+					Windows: <code>netstat -ano | findstr :5001</code> then <code>taskkill /PID XXXX /F</code>
+				</td>
+			</tr>
+		</table>
+
+		<h4>Resetting Development Environment</h4>
+<pre><code># Docker: Reset everything (deletes all data)
+docker-compose -f docker-compose.dev.yml down -v
+docker-compose -f docker-compose.dev.yml up -d --build
+
+# Local: Reset database
+cd backend
+npx prisma db push --force-reset
+npx prisma db seed</code></pre>
+
+		<hr>
+
+		<!-- ============================================
+		     E) INSTALLATION (MANUAL/PRODUCTION)
+		     ============================================ -->
+		<h3 id="installation-manual"><strong>E) Installation (Manual/Production)</strong> - <a href="#toc">top</a></h3>
+
+		<div class="info">
+			Manual installation for production servers without Docker. Requires more setup but gives full control.
+		</div>
+
+		<h4>Step 1: Install Prerequisites</h4>
+		<div class="step">
+			<span class="step-number">1</span>
+			Install Node.js 20, PostgreSQL, and Redis:
+<pre><code># Ubuntu/Debian
+# Install Node.js 20
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+# Install PostgreSQL
+sudo apt-get install -y postgresql postgresql-contrib
+
+# Install Redis
+sudo apt-get install -y redis-server
+
+# Verify installations
+node --version   # Should be v20.x.x
+npm --version    # Should be 10.x.x
+psql --version   # Should be 14+
+redis-cli ping   # Should return PONG</code></pre>
+		</div>
+
+		<h4>Step 2: Create Database</h4>
+		<div class="step">
+			<span class="step-number">2</span>
+			Create PostgreSQL database and user:
+<pre><code># Access PostgreSQL
+sudo -u postgres psql
+
+# Create database and user
+CREATE DATABASE intelliconvo;
+CREATE USER intelliconvo_user WITH ENCRYPTED PASSWORD 'your_secure_password';
+GRANT ALL PRIVILEGES ON DATABASE intelliconvo TO intelliconvo_user;
+\q</code></pre>
+		</div>
+
+		<h4>Step 3: Extract and Configure</h4>
+		<div class="step">
+			<span class="step-number">3</span>
+			Extract files and configure environment:
+<pre><code># Extract files
+unzip intelliconvo.zip -d /var/www/
+cd /var/www/intelliconvo
+
+# Configure backend
+cp backend/.env.example backend/.env
+nano backend/.env
+
+# Configure frontend
+cp frontend/.env.example frontend/.env
+nano frontend/.env
+
+# Configure widget
+cp widget/.env.example widget/.env
+nano widget/.env</code></pre>
+		</div>
+
+		<h4>Step 4: Install Dependencies</h4>
+		<div class="step">
+			<span class="step-number">4</span>
+			Install npm dependencies for all components:
+<pre><code># Install backend dependencies
+cd backend
+npm install
+npx prisma generate
+npx prisma db push
+npx prisma db seed
+cd ..
+
+# Install frontend dependencies
+cd frontend
+npm install
+cd ..
+
+# Install widget dependencies
+cd widget
+npm install
+cd ..</code></pre>
+		</div>
+
+		<h4>Step 5: Build for Production</h4>
+		<div class="step">
+			<span class="step-number">5</span>
+			Build all components:
+<pre><code># Build backend
+cd backend
+npm run build
+cd ..
+
+# Build frontend
+cd frontend
+npm run build
+cd ..
+
+# Build widget
+cd widget
+npm run build
+cd ..</code></pre>
+		</div>
+
+		<h4>Step 6: Start Services with PM2</h4>
+		<div class="step">
+			<span class="step-number">6</span>
+			Install PM2 and start services:
+<pre><code># Install PM2 globally
+npm install -g pm2
+
+# Start backend
+cd backend
+pm2 start dist/index.js --name intelliconvo-backend
+cd ..
+
+# Start frontend
+cd frontend
+pm2 start npm --name intelliconvo-frontend -- start
+cd ..
+
+# Save PM2 configuration
+pm2 save
+pm2 startup</code></pre>
+		</div>
+
+		<h4>Step 7: Configure Nginx (Optional but Recommended)</h4>
+		<div class="step">
+			<span class="step-number">7</span>
+			Configure Nginx as reverse proxy:
+<pre><code># Install Nginx
+sudo apt-get install -y nginx
+
+# Create configuration
+sudo nano /etc/nginx/sites-available/intelliconvo</code></pre>
+
+			<p>Add this configuration:</p>
+<pre><code>server {
+    listen 80;
+    server_name yourdomain.com;
+
+    # Frontend
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    # Backend API
+    location /api/ {
+        proxy_pass http://localhost:5001;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+
+    # Socket.io
+    location /socket.io/ {
+        proxy_pass http://localhost:5001;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+
+    # Widget
+    location /widget/ {
+        alias /var/www/intelliconvo/widget/dist/;
+        add_header Access-Control-Allow-Origin *;
+    }
+}</code></pre>
+
+<pre><code># Enable site
+sudo ln -s /etc/nginx/sites-available/intelliconvo /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl restart nginx</code></pre>
+		</div>
+
+		<h4>Step 8: Setup SSL (Recommended)</h4>
+		<div class="step">
+			<span class="step-number">8</span>
+			Install SSL certificate with Let's Encrypt:
+<pre><code># Install Certbot
+sudo apt-get install -y certbot python3-certbot-nginx
+
+# Get certificate
+sudo certbot --nginx -d yourdomain.com
+
+# Auto-renewal is configured automatically</code></pre>
+		</div>
+
+		<hr>
+
+		<!-- ============================================
+		     F) CLOUD DEPLOYMENT (RAILWAY & VERCEL)
+		     ============================================ -->
+		<h3 id="cloud-deployment"><strong>F) Cloud Deployment (Railway & Vercel)</strong> - <a href="#toc">top</a></h3>
+
+		<p>For a hassle-free deployment experience, we recommend using <strong>Railway</strong> for the backend and databases, and <strong>Vercel</strong> for the frontend and widget. This combination provides excellent performance, automatic scaling, and easy CI/CD.</p>
+
+		<h4>Deployment Architecture</h4>
+<pre><code>┌─────────────────────────────────────────────────────────────┐
+│                         VERCEL                               │
+│  ┌─────────────────┐  ┌─────────────────┐                   │
+│  │    Frontend     │  │     Widget      │                   │
+│  │    (Next.js)    │  │    (Static)     │                   │
+│  └────────┬────────┘  └─────────────────┘                   │
+└───────────┼─────────────────────────────────────────────────┘
+            │ API Calls
+            ▼
+┌─────────────────────────────────────────────────────────────┐
+│                        RAILWAY                               │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
+│  │   Backend   │  │ PostgreSQL  │  │    Redis    │         │
+│  │  (Express)  │  │  (Database) │  │   (Cache)   │         │
+│  └─────────────┘  └─────────────┘  └─────────────┘         │
+└─────────────────────────────────────────────────────────────┘</code></pre>
+
+		<div class="alert alert-warning">
+			<strong>Important - Monorepo Setup:</strong> This project is a monorepo containing <code>backend/</code>, <code>frontend/</code>, and <code>widget/</code> folders. When deploying from GitHub, you must manually select the correct <strong>Root Directory</strong> for each service. Both Railway and Vercel will prompt you to configure this after selecting the repository.
+		</div>
+
+		<h4>Step 1: Deploy Backend on Railway</h4>
+
+		<div class="step">
+			<strong>1.1: Create Railway Account</strong>
+			<ol>
+				<li>Go to <a href="https://railway.app" target="_blank">railway.app</a> and sign up</li>
+				<li>Connect your GitHub account</li>
+			</ol>
+		</div>
+
+		<div class="step">
+			<strong>1.2: Create New Project</strong>
+			<ol>
+				<li>Click "New Project" → "Deploy from GitHub repo"</li>
+				<li>Select your IntelliConvo repository</li>
+				<li><strong>Important:</strong> Railway will detect this is a monorepo. You'll need to configure the root directory in the next step.</li>
+			</ol>
+		</div>
+
+		<div class="step">
+			<strong>1.3: Add PostgreSQL Database</strong>
+			<ol>
+				<li>In your project, click "New" → "Database" → "Add PostgreSQL"</li>
+				<li>Railway will automatically provision the database</li>
+				<li>The <code>DATABASE_URL</code> will be automatically available to linked services</li>
+			</ol>
+			<p><strong>Manual Configuration:</strong> If the variable isn't automatically injected, click on the PostgreSQL service, go to "Connect" tab, copy the connection string, then add it manually to your backend service's Variables as <code>DATABASE_URL</code>.</p>
+		</div>
+
+		<div class="step">
+			<strong>1.4: Add Redis</strong>
+			<ol>
+				<li>Click "New" → "Database" → "Add Redis"</li>
+				<li>Railway will provision Redis automatically</li>
+				<li>The <code>REDIS_URL</code> will be automatically available to linked services</li>
+			</ol>
+			<p><strong>Manual Configuration:</strong> If the variable isn't automatically injected, click on the Redis service, go to "Connect" tab, copy the Redis URL, then add it manually to your backend service's Variables as <code>REDIS_URL</code>.</p>
+		</div>
+
+		<div class="step">
+			<strong>1.5: Configure Backend Service</strong>
+			<ol>
+				<li>Click on the backend service</li>
+				<li>Go to "Settings" tab</li>
+				<li>Set the following:
+					<ul>
+						<li><strong>Root Directory:</strong> Click "Edit" and select <code>backend</code></li>
+						<li><strong>Build Command:</strong> <code>npm install && npx prisma generate && npm run build</code></li>
+						<li><strong>Start Command:</strong> <code>npx prisma db push && npm start</code></li>
+					</ul>
+				</li>
+			</ol>
+		</div>
+
+		<div class="step">
+			<strong>1.6: Add Environment Variables</strong>
+			<p>Go to "Variables" tab and add:</p>
+			<table class="env-table">
+				<tr><th>Variable</th><th>Value</th></tr>
+				<tr><td><code>NODE_ENV</code></td><td><code>production</code></td></tr>
+				<tr><td><code>PORT</code></td><td><code>5001</code></td></tr>
+				<tr><td><code>JWT_SECRET</code></td><td>Your secure secret (32+ characters)</td></tr>
+				<tr><td><code>OPENAI_API_KEY</code></td><td>Your OpenAI API key</td></tr>
+				<tr><td><code>PINECONE_API_KEY</code></td><td>Your Pinecone API key</td></tr>
+				<tr><td><code>PINECONE_INDEX_NAME</code></td><td>Your Pinecone index name</td></tr>
+				<tr><td><code>FRONTEND_URL</code></td><td>Your Vercel frontend URL (add after deploying frontend)</td></tr>
+				<tr><td><code>WIDGET_CDN_URL</code></td><td>Your Vercel widget URL (add after deploying widget)</td></tr>
+			</table>
+			<p><strong>Note:</strong> <code>DATABASE_URL</code> and <code>REDIS_URL</code> are automatically injected by Railway when you link the databases.</p>
+		</div>
+
+		<div class="step">
+			<strong>1.7: Configure File Storage (Optional)</strong>
+			<p>For file uploads (logos, knowledge base documents), you have two options:</p>
+
+			<p><strong>Option A: Local Storage with Railway Volume</strong></p>
+			<ol>
+				<li>Go to your backend service → "Settings" → "Volumes"</li>
+				<li>Click "Add Volume"</li>
+				<li>Set Mount Path to <code>/app/uploads</code></li>
+				<li>This persists uploaded files across deployments</li>
+			</ol>
+
+			<p><strong>Option B: AWS S3 Storage (Recommended for Production)</strong></p>
+			<p>Add these environment variables to use S3:</p>
+			<table class="env-table">
+				<tr><th>Variable</th><th>Value</th></tr>
+				<tr><td><code>AWS_ACCESS_KEY_ID</code></td><td>Your AWS access key</td></tr>
+				<tr><td><code>AWS_SECRET_ACCESS_KEY</code></td><td>Your AWS secret key</td></tr>
+				<tr><td><code>AWS_REGION</code></td><td>Your S3 bucket region (e.g., <code>us-east-1</code>)</td></tr>
+				<tr><td><code>AWS_S3_BUCKET</code></td><td>Your S3 bucket name</td></tr>
+			</table>
+			<p>When S3 credentials are configured, files will automatically be stored in S3 instead of local storage.</p>
+		</div>
+
+		<div class="step">
+			<strong>1.8: Generate Domain</strong>
+			<ol>
+				<li>Go to "Settings" → "Networking"</li>
+				<li>Click "Generate Domain" to get a Railway subdomain</li>
+				<li>Or add your custom domain</li>
+				<li><strong>Save this URL</strong> - you'll need it for the frontend and widget configuration</li>
+			</ol>
+		</div>
+
+		<h4>Step 2: Deploy Frontend on Vercel</h4>
+
+		<div class="step">
+			<strong>2.1: Create Vercel Account</strong>
+			<ol>
+				<li>Go to <a href="https://vercel.com" target="_blank">vercel.com</a> and sign up</li>
+				<li>Connect your GitHub account</li>
+			</ol>
+		</div>
+
+		<div class="step">
+			<strong>2.2: Import Project (Monorepo)</strong>
+			<ol>
+				<li>Click "Add New" → "Project"</li>
+				<li>Select your IntelliConvo repository</li>
+				<li><strong>Important:</strong> Vercel will detect the monorepo structure</li>
+				<li>When prompted, click "Edit" next to Root Directory</li>
+				<li>Select <code>frontend</code> from the folder list</li>
+			</ol>
+		</div>
+
+		<div class="step">
+			<strong>2.3: Configure Build Settings</strong>
+			<p>Verify the following settings:</p>
+			<table class="env-table">
+				<tr><th>Setting</th><th>Value</th></tr>
+				<tr><td>Framework Preset</td><td>Next.js (auto-detected)</td></tr>
+				<tr><td>Root Directory</td><td><code>frontend</code></td></tr>
+				<tr><td>Build Command</td><td><code>npm run build</code> (default)</td></tr>
+				<tr><td>Output Directory</td><td>Leave as default</td></tr>
+			</table>
+		</div>
+
+		<div class="step">
+			<strong>2.4: Add Environment Variables</strong>
+			<p>In the "Environment Variables" section, add:</p>
+			<table class="env-table">
+				<tr><th>Variable</th><th>Value</th></tr>
+				<tr><td><code>NEXT_PUBLIC_API_URL</code></td><td><code>https://your-backend.railway.app/api/v1</code></td></tr>
+				<tr><td><code>NEXT_PUBLIC_SOCKET_URL</code></td><td><code>https://your-backend.railway.app</code></td></tr>
+				<tr><td><code>NEXT_PUBLIC_WIDGET_URL</code></td><td><code>https://your-widget.vercel.app</code> (add after deploying widget)</td></tr>
+			</table>
+		</div>
+
+		<div class="step">
+			<strong>2.5: Deploy</strong>
+			<ol>
+				<li>Click "Deploy"</li>
+				<li>Vercel will build and deploy your frontend</li>
+				<li>You'll get a <code>.vercel.app</code> subdomain automatically</li>
+				<li><strong>Save this URL</strong> - you'll need to add it to Railway's <code>FRONTEND_URL</code></li>
+			</ol>
+		</div>
+
+		<h4>Step 3: Deploy Widget on Vercel</h4>
+
+		<div class="step">
+			<strong>3.1: Create Another Vercel Project</strong>
+			<ol>
+				<li>Go back to your Vercel dashboard</li>
+				<li>Click "Add New" → "Project"</li>
+				<li>Select the <strong>same</strong> IntelliConvo repository again</li>
+			</ol>
+		</div>
+
+		<div class="step">
+			<strong>3.2: Configure for Widget (Monorepo)</strong>
+			<ol>
+				<li>When prompted, click "Edit" next to Root Directory</li>
+				<li>Select <code>widget</code> from the folder list</li>
+				<li>Set Framework Preset to <strong>"Other"</strong></li>
+			</ol>
+		</div>
+
+		<div class="step">
+			<strong>3.3: Configure Build Settings</strong>
+			<table class="env-table">
+				<tr><th>Setting</th><th>Value</th></tr>
+				<tr><td>Framework Preset</td><td>Other</td></tr>
+				<tr><td>Root Directory</td><td><code>widget</code></td></tr>
+				<tr><td>Build Command</td><td><code>npm install && npm run build</code></td></tr>
+				<tr><td>Output Directory</td><td><code>dist</code></td></tr>
+			</table>
+		</div>
+
+		<div class="step">
+			<strong>3.4: Add Environment Variables</strong>
+			<table class="env-table">
+				<tr><th>Variable</th><th>Value</th></tr>
+				<tr><td><code>WIDGET_API_URL</code></td><td><code>https://your-backend.railway.app</code></td></tr>
+			</table>
+		</div>
+
+		<div class="step">
+			<strong>3.5: Deploy</strong>
+			<ol>
+				<li>Click "Deploy"</li>
+				<li>Vercel will build and deploy the widget as static files</li>
+				<li><strong>Save this URL</strong> - this is your <code>WIDGET_CDN_URL</code></li>
+			</ol>
+		</div>
+
+		<h4>Step 4: Update Cross-Service URLs</h4>
+
+		<p>After deploying all three services, update the environment variables to connect them:</p>
+
+		<div class="step">
+			<strong>4.1: Update Railway Backend</strong>
+			<p>Go to Railway → Backend service → Variables, and update:</p>
+			<table class="env-table">
+				<tr><th>Variable</th><th>Update To</th></tr>
+				<tr><td><code>FRONTEND_URL</code></td><td><code>https://your-frontend.vercel.app</code></td></tr>
+				<tr><td><code>WIDGET_CDN_URL</code></td><td><code>https://your-widget.vercel.app</code></td></tr>
+			</table>
+		</div>
+
+		<div class="step">
+			<strong>4.2: Update Vercel Frontend</strong>
+			<p>Go to Vercel → Frontend project → Settings → Environment Variables, and update:</p>
+			<table class="env-table">
+				<tr><th>Variable</th><th>Update To</th></tr>
+				<tr><td><code>NEXT_PUBLIC_WIDGET_URL</code></td><td><code>https://your-widget.vercel.app</code></td></tr>
+			</table>
+			<p>Then redeploy the frontend for changes to take effect.</p>
+		</div>
+
+		<h4>Setting Up Custom Domains</h4>
+
+		<h5>Railway Custom Domain</h5>
+<pre><code># In Railway Dashboard:
+1. Go to your backend service → Settings → Networking
+2. Click "Custom Domain"
+3. Add your domain (e.g., api.yourdomain.com)
+4. Add the CNAME record to your DNS provider</code></pre>
+
+		<h5>Vercel Custom Domain</h5>
+<pre><code># In Vercel Dashboard:
+1. Go to your project → Settings → Domains
+2. Add your domain (e.g., app.yourdomain.com)
+3. Follow the DNS configuration instructions</code></pre>
+
+		<h4>CI/CD with GitHub</h4>
+		<p>Both Railway and Vercel automatically deploy when you push to your connected branch:</p>
+		<ul>
+			<li><strong>Push to main:</strong> Triggers production deployment</li>
+			<li><strong>Push to other branches:</strong> Creates preview deployments (Vercel)</li>
+			<li><strong>Pull Requests:</strong> Generate preview URLs for testing</li>
+		</ul>
+
+		<h4>Monitoring & Logs</h4>
+		<table class="env-table">
+			<tr><th>Platform</th><th>Where to Find Logs</th></tr>
+			<tr>
+				<td>Railway</td>
+				<td>Project → Service → "Deployments" or "Logs" tab</td>
+			</tr>
+			<tr>
+				<td>Vercel</td>
+				<td>Project → "Deployments" → Click deployment → "Functions" or "Runtime Logs"</td>
+			</tr>
+		</table>
+
+		<h4>Cost Estimation</h4>
+		<table class="env-table">
+			<tr><th>Service</th><th>Free Tier</th><th>Paid Plans</th></tr>
+			<tr>
+				<td>Railway</td>
+				<td>$5 free credit/month (trial)</td>
+				<td>Hobby: $5/month, Pro: Usage-based</td>
+			</tr>
+			<tr>
+				<td>Vercel</td>
+				<td>Generous free tier for personal projects</td>
+				<td>Pro: $20/user/month</td>
+			</tr>
+			<tr>
+				<td>PostgreSQL (Railway)</td>
+				<td>Included in Railway credits</td>
+				<td>Usage-based pricing</td>
+			</tr>
+			<tr>
+				<td>Redis (Railway)</td>
+				<td>Included in Railway credits</td>
+				<td>Usage-based pricing</td>
+			</tr>
+		</table>
+
+		<hr>
+
+		<!-- ============================================
+		     G) CONFIGURATION & ENVIRONMENT VARIABLES
+		     ============================================ -->
+		<h3 id="configuration"><strong>G) Configuration & Environment Variables</strong> - <a href="#toc">top</a></h3>
+
+		<h4>Backend Environment Variables (.env)</h4>
+		<table class="env-table">
+			<tr>
+				<th>Variable</th>
+				<th>Description</th>
+				<th>Required</th>
+				<th>Default</th>
+			</tr>
+			<tr>
+				<td><code>NODE_ENV</code></td>
+				<td>Environment mode</td>
+				<td>No</td>
+				<td>development</td>
+			</tr>
+			<tr>
+				<td><code>PORT</code></td>
+				<td>Backend server port</td>
+				<td>No</td>
+				<td>5001</td>
+			</tr>
+			<tr>
+				<td><code>DATABASE_URL</code></td>
+				<td>PostgreSQL connection string</td>
+				<td class="required">Yes</td>
+				<td>-</td>
+			</tr>
+			<tr>
+				<td><code>REDIS_HOST</code></td>
+				<td>Redis server host</td>
+				<td class="required">Yes</td>
+				<td>localhost</td>
+			</tr>
+			<tr>
+				<td><code>REDIS_PORT</code></td>
+				<td>Redis server port</td>
+				<td>No</td>
+				<td>6379</td>
+			</tr>
+			<tr>
+				<td><code>REDIS_PASSWORD</code></td>
+				<td>Redis password (if set)</td>
+				<td>No</td>
+				<td>-</td>
+			</tr>
+			<tr>
+				<td><code>JWT_SECRET</code></td>
+				<td>Secret for JWT tokens (min 32 chars)</td>
+				<td class="required">Yes</td>
+				<td>-</td>
+			</tr>
+			<tr>
+				<td><code>OPENAI_API_KEY</code></td>
+				<td>OpenAI API key</td>
+				<td class="required">Yes</td>
+				<td>-</td>
+			</tr>
+			<tr>
+				<td><code>PINECONE_API_KEY</code></td>
+				<td>Pinecone API key</td>
+				<td class="required">Yes</td>
+				<td>-</td>
+			</tr>
+			<tr>
+				<td><code>PINECONE_INDEX_NAME</code></td>
+				<td>Pinecone index name</td>
+				<td class="required">Yes</td>
+				<td>intelliconvo</td>
+			</tr>
+			<tr>
+				<td><code>PINECONE_DIMENSIONS</code></td>
+				<td>Vector dimensions</td>
+				<td>No</td>
+				<td>512</td>
+			</tr>
+			<tr>
+				<td><code>FRONTEND_URL</code></td>
+				<td>Frontend application URL</td>
+				<td class="required">Yes</td>
+				<td>http://localhost:3000</td>
+			</tr>
+			<tr>
+				<td><code>WIDGET_CDN_URL</code></td>
+				<td>Widget CDN/hosting URL</td>
+				<td class="required">Yes</td>
+				<td>http://localhost:8080</td>
+			</tr>
+		</table>
+
+		<h4>Frontend Environment Variables (.env)</h4>
+		<table class="env-table">
+			<tr>
+				<th>Variable</th>
+				<th>Description</th>
+				<th>Required</th>
+			</tr>
+			<tr>
+				<td><code>NEXT_PUBLIC_API_URL</code></td>
+				<td>Backend API URL (must include /api/v1)</td>
+				<td class="required">Yes</td>
+			</tr>
+			<tr>
+				<td><code>NEXT_PUBLIC_WIDGET_URL</code></td>
+				<td>Widget hosting URL</td>
+				<td class="required">Yes</td>
+			</tr>
+		</table>
+
+		<h4>Widget Environment Variables (.env)</h4>
+		<table class="env-table">
+			<tr>
+				<th>Variable</th>
+				<th>Description</th>
+				<th>Required</th>
+			</tr>
+			<tr>
+				<td><code>WIDGET_API_URL</code></td>
+				<td>Backend API URL (without /api/v1)</td>
+				<td class="required">Yes</td>
+			</tr>
+		</table>
+
+		<h4>Generate Secure JWT Secret</h4>
+<pre><code># Using OpenSSL
+openssl rand -base64 32
+
+# Using Node.js
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"</code></pre>
+
+		<hr>
+
+		<!-- ============================================
+		     F) THIRD-PARTY INTEGRATIONS
+		     ============================================ -->
+		<h3 id="integrations"><strong>H) Third-Party Integrations</strong> - <a href="#toc">top</a></h3>
+
+		<!-- OpenAI -->
+		<h4 id="openai">OpenAI Setup</h4>
+		<div class="step">
+			<p><strong>Purpose:</strong> Powers AI chat responses and generates embeddings for semantic search.</p>
+
+			<p><strong>Step 1:</strong> Create an account at <a href="https://platform.openai.com" target="_blank">platform.openai.com</a></p>
+
+			<p><strong>Step 2:</strong> Go to API Keys and create a new secret key</p>
+
+			<p><strong>Step 3:</strong> Add to your .env file:</p>
+<pre><code>OPENAI_API_KEY=sk-your-api-key-here</code></pre>
+
+			<p><strong>Supported Models:</strong></p>
+			<table class="env-table">
+				<tr>
+					<th>Model</th>
+					<th>Description</th>
+					<th>Cost (per 1M tokens)</th>
+				</tr>
+				<tr>
+					<td>gpt-4o</td>
+					<td>Most capable, best for complex tasks</td>
+					<td>$5 input / $15 output</td>
+				</tr>
+				<tr>
+					<td>gpt-4o-mini</td>
+					<td>Balanced performance & cost (default)</td>
+					<td>$0.15 input / $0.60 output</td>
+				</tr>
+				<tr>
+					<td>gpt-4-turbo</td>
+					<td>Previous generation GPT-4</td>
+					<td>$10 input / $30 output</td>
+				</tr>
+				<tr>
+					<td>gpt-3.5-turbo</td>
+					<td>Fast and economical</td>
+					<td>$0.50 input / $1.50 output</td>
+				</tr>
+			</table>
+
+			<div class="info">
+				<strong>Tip:</strong> You can change the default model in Admin Settings > AI Models after installation.
+			</div>
+		</div>
+
+		<!-- Pinecone -->
+		<h4 id="pinecone">Pinecone Setup</h4>
+		<div class="step">
+			<p><strong>Purpose:</strong> Vector database for semantic search through crawled content.</p>
+
+			<p><strong>Step 1:</strong> Create an account at <a href="https://app.pinecone.io" target="_blank">app.pinecone.io</a></p>
+
+			<p><strong>Step 2:</strong> Create a new index with these settings:</p>
+			<ul>
+				<li><strong>Name:</strong> intelliconvo (or your preferred name)</li>
+				<li><strong>Dimensions:</strong> 512</li>
+				<li><strong>Metric:</strong> cosine</li>
+				<li><strong>Pod Type:</strong> Starter (free) or p1.x1 (production)</li>
+			</ul>
+
+			<p><strong>Step 3:</strong> Copy your API key from the Pinecone dashboard</p>
+
+			<p><strong>Step 4:</strong> Add to your .env file:</p>
+<pre><code>PINECONE_API_KEY=your-pinecone-api-key
+PINECONE_INDEX_NAME=intelliconvo
+PINECONE_DIMENSIONS=512</code></pre>
+
+			<div class="warning">
+				<strong>Important:</strong> The dimensions must match the embedding model. Default is 512 for text-embedding-3-small with reduced dimensions.
+			</div>
+		</div>
+
+		<!-- Stripe -->
+		<h4 id="stripe">Stripe Payments Setup</h4>
+		<div class="step">
+			<p><strong>Purpose:</strong> Process subscription payments for your SaaS platform.</p>
+
+			<p><strong>Step 1:</strong> Create an account at <a href="https://dashboard.stripe.com" target="_blank">dashboard.stripe.com</a></p>
+
+			<p><strong>Step 2:</strong> Get your API keys from Developers > API Keys:</p>
+			<ul>
+				<li>Use <code>sk_test_...</code> keys for testing (no real charges)</li>
+				<li>Use <code>sk_live_...</code> keys for production</li>
+			</ul>
+
+			<p><strong>Step 3:</strong> Create Products and Prices in the Stripe Dashboard:</p>
+			<ol>
+				<li>Go to Products > Add Product</li>
+				<li>Create "Premium Monthly" with monthly recurring price (e.g., $29/month)</li>
+				<li>Create "Premium Annual" with yearly recurring price (e.g., $279/year)</li>
+				<li>Copy the Price IDs (start with <code>price_</code>)</li>
+			</ol>
+
+			<p><strong>Step 4:</strong> Setup Webhook:</p>
+			<ol>
+				<li>Go to Developers > Webhooks</li>
+				<li>Add endpoint: <code>https://yourdomain.com/api/v1/webhooks/stripe</code></li>
+				<li>Select events:
+					<ul>
+						<li>checkout.session.completed</li>
+						<li>customer.subscription.created</li>
+						<li>customer.subscription.updated</li>
+						<li>customer.subscription.deleted</li>
+						<li>invoice.paid</li>
+						<li>invoice.payment_failed</li>
+						<li>charge.refunded</li>
+						<li>charge.dispute.created</li>
+						<li>charge.dispute.closed</li>
+					</ul>
+				</li>
+				<li>Copy the webhook signing secret (<code>whsec_...</code>)</li>
+			</ol>
+
+			<p><strong>Step 5:</strong> Add to your .env file:</p>
+<pre><code>STRIPE_SECRET_KEY=sk_test_your-secret-key
+STRIPE_WEBHOOK_SECRET=whsec_your-webhook-secret
+STRIPE_PRICE_MONTHLY=price_monthly_id
+STRIPE_PRICE_ANNUAL=price_annual_id</code></pre>
+
+			<p><strong>Test Card for Development:</strong></p>
+<pre><code>Card Number: 4242 4242 4242 4242
+Expiry: Any future date (e.g., 12/34)
+CVC: Any 3 digits (e.g., 123)</code></pre>
+		</div>
+
+		<!-- Email -->
+		<h4 id="email">Email Providers</h4>
+		<div class="step">
+			<p><strong>Purpose:</strong> Send transactional emails (welcome, password reset, notifications).</p>
+
+			<p>IntelliConvo supports two email providers. Choose one:</p>
+
+			<h5>Option 1: Resend (Recommended)</h5>
+			<ol>
+				<li>Create account at <a href="https://resend.com" target="_blank">resend.com</a></li>
+				<li>Verify your domain</li>
+				<li>Create an API key</li>
+				<li>Add to .env:
+<pre><code>RESEND_API_KEY=re_your_api_key
+EMAIL_FROM_ADDRESS=noreply@yourdomain.com
+EMAIL_FROM_NAME=IntelliConvo</code></pre>
+				</li>
+			</ol>
+
+			<h5>Option 2: SMTP (Gmail, SendGrid, etc.)</h5>
+<pre><code># Gmail SMTP
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your-email@gmail.com
+SMTP_PASS=your-app-password
+EMAIL_FROM_ADDRESS=your-email@gmail.com
+EMAIL_FROM_NAME=IntelliConvo
+
+# SendGrid SMTP
+SMTP_HOST=smtp.sendgrid.net
+SMTP_PORT=587
+SMTP_USER=apikey
+SMTP_PASS=your-sendgrid-api-key
+EMAIL_FROM_ADDRESS=noreply@yourdomain.com
+EMAIL_FROM_NAME=IntelliConvo</code></pre>
+
+			<div class="info">
+				<strong>Note:</strong> For Gmail, you need to create an "App Password" in your Google Account security settings.
+			</div>
+
+			<p><strong>Email Types Sent:</strong></p>
+			<ul>
+				<li>Welcome email</li>
+				<li>Email verification</li>
+				<li>Password reset</li>
+				<li>Subscription activated</li>
+				<li>Trial expiring warning</li>
+				<li>Payment receipt</li>
+				<li>Payment failed notification</li>
+				<li>Site ready notification</li>
+			</ul>
+		</div>
+
+		<!-- OAuth -->
+		<h4 id="oauth">OAuth Providers (Social Login)</h4>
+		<div class="step">
+			<p><strong>Purpose:</strong> Allow users to sign in with Google, GitHub, or Microsoft accounts.</p>
+
+			<h5>Google OAuth</h5>
+			<ol>
+				<li>Go to <a href="https://console.cloud.google.com/apis/credentials" target="_blank">Google Cloud Console</a></li>
+				<li>Create a new project (or select existing)</li>
+				<li>Go to Credentials > Create Credentials > OAuth Client ID</li>
+				<li>Application type: Web application</li>
+				<li>Add authorized redirect URIs:
+					<ul>
+						<li><code>https://yourdomain.com/api/v1/auth/google/callback</code></li>
+					</ul>
+				</li>
+				<li>Copy Client ID and Client Secret</li>
+			</ol>
+<pre><code>GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your-client-secret</code></pre>
+
+			<h5>GitHub OAuth</h5>
+			<ol>
+				<li>Go to <a href="https://github.com/settings/developers" target="_blank">GitHub Developer Settings</a></li>
+				<li>New OAuth App</li>
+				<li>Set Authorization callback URL: <code>https://yourdomain.com/api/v1/auth/github/callback</code></li>
+				<li>Copy Client ID and generate Client Secret</li>
+			</ol>
+<pre><code>GITHUB_CLIENT_ID=your-client-id
+GITHUB_CLIENT_SECRET=your-client-secret</code></pre>
+
+			<h5>Microsoft OAuth</h5>
+			<ol>
+				<li>Go to <a href="https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationsListBlade" target="_blank">Azure Portal</a></li>
+				<li>New registration</li>
+				<li>Set redirect URI: <code>https://yourdomain.com/api/v1/auth/microsoft/callback</code></li>
+				<li>Go to Certificates & secrets > New client secret</li>
+				<li>Copy Application (client) ID and secret value</li>
+			</ol>
+<pre><code>MICROSOFT_CLIENT_ID=your-application-id
+MICROSOFT_CLIENT_SECRET=your-client-secret</code></pre>
+		</div>
+
+		<!-- AWS S3 -->
+		<h4 id="s3">AWS S3 Storage</h4>
+		<div class="step">
+			<p><strong>Purpose:</strong> Store uploaded files (logos, knowledge base documents) in the cloud instead of local storage.</p>
+
+			<p><strong>Step 1:</strong> Create an S3 Bucket:</p>
+			<ol>
+				<li>Go to AWS S3 Console</li>
+				<li>Create bucket with a unique name</li>
+				<li>Region: Choose closest to your server</li>
+				<li>Uncheck "Block all public access" (for public file URLs)</li>
+			</ol>
+
+			<p><strong>Step 2:</strong> Create IAM User:</p>
+			<ol>
+				<li>Go to IAM > Users > Add user</li>
+				<li>Select "Programmatic access"</li>
+				<li>Attach policy: AmazonS3FullAccess (or create custom policy)</li>
+				<li>Copy Access Key ID and Secret Access Key</li>
+			</ol>
+
+			<p><strong>Step 3:</strong> Add Bucket Policy for Public Read:</p>
+<pre><code>{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "PublicReadGetObject",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::your-bucket-name/*"
+        }
+    ]
+}</code></pre>
+
+			<p><strong>Step 4:</strong> Add to .env:</p>
+<pre><code>AWS_ACCESS_KEY_ID=your-access-key-id
+AWS_SECRET_ACCESS_KEY=your-secret-access-key
+AWS_REGION=us-east-1
+AWS_S3_BUCKET=your-bucket-name
+AWS_S3_PUBLIC_URL=https://your-bucket-name.s3.amazonaws.com</code></pre>
+
+			<div class="info">
+				<strong>Note:</strong> If S3 is not configured, files are stored locally in the <code>uploads/</code> directory.
+			</div>
+		</div>
+
+		<hr>
+
+		<!-- ============================================
+		     G) ADMIN CONFIGURATION GUIDE
+		     ============================================ -->
+		<h3 id="admin-guide"><strong>I) Admin Configuration Guide</strong> - <a href="#toc">top</a></h3>
+
+		<p>Access the admin dashboard at <code>/admin</code> after logging in with an admin account.</p>
+
+		<h4>Admin Settings Categories</h4>
+
+		<h5>1. General Settings</h5>
+		<table class="env-table">
+			<tr><th>Setting</th><th>Description</th><th>Default</th></tr>
+			<tr><td>Platform Name</td><td>Name shown in emails and UI</td><td>IntelliConvo</td></tr>
+			<tr><td>Support Email</td><td>Contact email for support</td><td>support@intelliconvo.ai</td></tr>
+			<tr><td>Maintenance Mode</td><td>Disable access for non-admins</td><td>false</td></tr>
+		</table>
+
+		<h5>2. AI Models Settings</h5>
+		<table class="env-table">
+			<tr><th>Setting</th><th>Description</th><th>Default</th></tr>
+			<tr><td>Default Model</td><td>AI model for chat responses</td><td>gpt-4o-mini</td></tr>
+			<tr><td>Temperature</td><td>Response creativity (0-2)</td><td>0.7</td></tr>
+			<tr><td>Max Tokens</td><td>Maximum response length</td><td>1000</td></tr>
+			<tr><td>Embedding Model</td><td>Model for vector embeddings</td><td>text-embedding-3-small</td></tr>
+			<tr><td>Embedding Dimensions</td><td>Vector dimensions</td><td>512</td></tr>
+		</table>
+
+		<h5>3. Security Settings</h5>
+		<table class="env-table">
+			<tr><th>Setting</th><th>Description</th><th>Default</th></tr>
+			<tr><td>Session Timeout</td><td>Hours until session expires</td><td>168 (7 days)</td></tr>
+			<tr><td>Refresh Token Days</td><td>Days until refresh token expires</td><td>30</td></tr>
+			<tr><td>Max Login Attempts</td><td>Failed attempts before lockout</td><td>5</td></tr>
+			<tr><td>Lockout Duration</td><td>Minutes of account lockout</td><td>15</td></tr>
+		</table>
+
+		<h5>4. Rate Limiting</h5>
+		<table class="env-table">
+			<tr><th>Setting</th><th>Description</th><th>Default</th></tr>
+			<tr><td>Rate Limit Window</td><td>Time window in milliseconds</td><td>60000 (1 min)</td></tr>
+			<tr><td>Rate Limit Max Requests</td><td>Max requests per window</td><td>100</td></tr>
+			<tr><td>Auth Rate Limit Window</td><td>Auth endpoint window</td><td>900000 (15 min)</td></tr>
+			<tr><td>Auth Rate Limit Max</td><td>Max auth attempts</td><td>5</td></tr>
+		</table>
+
+		<h5>5. Billing Settings</h5>
+		<table class="env-table">
+			<tr><th>Setting</th><th>Description</th><th>Default</th></tr>
+			<tr><td>Trial Days</td><td>Free trial period</td><td>14</td></tr>
+			<tr><td>Max URLs per Site</td><td>URL limit per site</td><td>1000</td></tr>
+			<tr><td>Currency</td><td>Default currency</td><td>USD</td></tr>
+		</table>
+
+		<h5>6. Storage Settings</h5>
+		<table class="env-table">
+			<tr><th>Setting</th><th>Description</th><th>Default</th></tr>
+			<tr><td>Max File Size</td><td>Upload limit in MB</td><td>10</td></tr>
+			<tr><td>Upload Directory</td><td>Local storage path</td><td>uploads</td></tr>
+		</table>
+
+		<h5>7. Authentication Settings</h5>
+		<table class="env-table">
+			<tr><th>Setting</th><th>Description</th><th>Default</th></tr>
+			<tr><td>Enable Email Auth</td><td>Allow email/password login</td><td>true</td></tr>
+			<tr><td>Enable Google Auth</td><td>Allow Google login</td><td>true</td></tr>
+			<tr><td>Enable GitHub Auth</td><td>Allow GitHub login</td><td>true</td></tr>
+			<tr><td>Enable Microsoft Auth</td><td>Allow Microsoft login</td><td>true</td></tr>
+			<tr><td>Require Email Verification</td><td>Verify email before access</td><td>false</td></tr>
+		</table>
+
+		<h4>Admin Dashboard Features</h4>
+		<ul>
+			<li><strong>Users Management:</strong> View, edit, delete users; change roles; impersonate</li>
+			<li><strong>Sites Management:</strong> View all sites, crawl status, conversation counts</li>
+			<li><strong>Subscriptions:</strong> View subscriptions, cancel, extend trials</li>
+			<li><strong>Analytics:</strong> Platform-wide statistics, usage metrics</li>
+			<li><strong>Audit Logs:</strong> Track all admin actions for compliance</li>
+			<li><strong>Email Logs:</strong> View sent emails and delivery status</li>
+		</ul>
+
+		<hr>
+
+		<!-- ============================================
+		     H) WIDGET CUSTOMIZATION
+		     ============================================ -->
+		<h3 id="widget-customization"><strong>J) Widget Customization</strong> - <a href="#toc">top</a></h3>
+
+		<p>The widget supports 100+ customization options organized into categories:</p>
+
+		<h4>Appearance Settings</h4>
+		<table class="env-table">
+			<tr><th>Setting</th><th>Description</th></tr>
+			<tr><td>Primary Color</td><td>Main brand color</td></tr>
+			<tr><td>Secondary Color</td><td>Accent color</td></tr>
+			<tr><td>Background Color</td><td>Chat window background</td></tr>
+			<tr><td>Text Color</td><td>Main text color</td></tr>
+			<tr><td>Border Radius</td><td>Corner roundness (px)</td></tr>
+			<tr><td>Font Family</td><td>Custom font</td></tr>
+			<tr><td>Dark Mode</td><td>Enable dark theme</td></tr>
+			<tr><td>Theme</td><td>Predefined theme (light/dark/system)</td></tr>
+		</table>
+
+		<h4>Launcher Settings</h4>
+		<table class="env-table">
+			<tr><th>Setting</th><th>Description</th></tr>
+			<tr><td>Launcher Icon</td><td>Custom icon or default</td></tr>
+			<tr><td>Launcher Size</td><td>Button size (small/medium/large)</td></tr>
+			<tr><td>Launcher Position</td><td>Screen position (bottom-right/bottom-left)</td></tr>
+			<tr><td>Launcher Tooltip</td><td>Hover tooltip text</td></tr>
+			<tr><td>Show Badge</td><td>Show unread message count</td></tr>
+			<tr><td>Animation</td><td>Entrance animation (bounce/pulse/none)</td></tr>
+		</table>
+
+		<h4>Chat Window Settings</h4>
+		<table class="env-table">
+			<tr><th>Setting</th><th>Description</th></tr>
+			<tr><td>Window Width</td><td>Chat window width (px)</td></tr>
+			<tr><td>Window Height</td><td>Chat window height (px)</td></tr>
+			<tr><td>Header Title</td><td>Chat window title</td></tr>
+			<tr><td>Header Subtitle</td><td>Subtitle text</td></tr>
+			<tr><td>Show Close Button</td><td>Display close button</td></tr>
+			<tr><td>Show Minimize Button</td><td>Display minimize button</td></tr>
+		</table>
+
+		<h4>Behavior Settings</h4>
+		<table class="env-table">
+			<tr><th>Setting</th><th>Description</th></tr>
+			<tr><td>Auto Open</td><td>Open chat automatically</td></tr>
+			<tr><td>Auto Open Delay</td><td>Delay before auto-open (seconds)</td></tr>
+			<tr><td>Show Typing Indicator</td><td>Show "typing..." animation</td></tr>
+			<tr><td>Enable Notifications</td><td>Browser notifications</td></tr>
+			<tr><td>Enable Voice Input</td><td>Speech-to-text</td></tr>
+			<tr><td>Enable File Attachments</td><td>Allow file uploads</td></tr>
+			<tr><td>Persist Conversations</td><td>Save chat history</td></tr>
+		</table>
+
+		<h4>Content Settings</h4>
+		<table class="env-table">
+			<tr><th>Setting</th><th>Description</th></tr>
+			<tr><td>Bot Name</td><td>Assistant's display name</td></tr>
+			<tr><td>Bot Avatar</td><td>Assistant's profile image</td></tr>
+			<tr><td>Welcome Message</td><td>Initial greeting</td></tr>
+			<tr><td>Placeholder Text</td><td>Input field placeholder</td></tr>
+			<tr><td>Conversation Starters</td><td>Suggested questions</td></tr>
+			<tr><td>Offline Message</td><td>Message when unavailable</td></tr>
+		</table>
+
+		<h4>Embedding the Widget</h4>
+		<p>Add this code to your website before the closing <code>&lt;/body&gt;</code> tag:</p>
+<pre><code>&lt;script&gt;
+  (function() {
+    var script = document.createElement('script');
+    script.src = 'https://yourdomain.com/widget/widget.js';
+    script.async = true;
+    script.onload = function() {
+      window.intelliconvo('init', {
+        siteId: 'your-site-id',
+        apiUrl: 'https://yourdomain.com/api/v1'
+      });
+    };
+    document.head.appendChild(script);
+  })();
+&lt;/script&gt;</code></pre>
+
+		<p>Replace the following values:</p>
+		<ul>
+			<li><code>script.src</code> - URL where your widget.js is hosted</li>
+			<li><code>siteId</code> - Your site ID (found in Site Settings)</li>
+			<li><code>apiUrl</code> - Your backend API URL</li>
+		</ul>
+
+		<hr>
+
+		<!-- ============================================
+		     I) USER GUIDE
+		     ============================================ -->
+		<h3 id="user-guide"><strong>K) User Guide</strong> - <a href="#toc">top</a></h3>
+
+		<h4>Site Creation & Onboarding (5-Step Wizard)</h4>
+		<p>When you create a new site, you'll go through a guided 5-step onboarding process:</p>
+
+		<div class="step">
+			<span class="step-number">1</span>
+			<strong>Enter Website URL</strong>
+			<ul>
+				<li>Enter your website URL (e.g., <code>example.com</code> or <code>https://example.com</code>)</li>
+				<li>The URL is validated and normalized automatically</li>
+				<li>Click "Continue" to proceed</li>
+			</ul>
+		</div>
+
+		<div class="step">
+			<span class="step-number">2</span>
+			<strong>Select Pages to Include</strong>
+			<ul>
+				<li>The system automatically discovers pages from your website (via sitemap or homepage links)</li>
+				<li>Pages are categorized into groups:
+					<ul>
+						<li><strong>Homepage</strong> - Root and main pages</li>
+						<li><strong>Products & Services</strong> - Product/service pages</li>
+						<li><strong>About & Contact</strong> - Company info pages</li>
+						<li><strong>Help & Support</strong> - Support pages</li>
+						<li><strong>Blog & News</strong> - Content pages</li>
+						<li><strong>Other</strong> - Everything else</li>
+					</ul>
+				</li>
+				<li>Select which pages you want the AI to learn from</li>
+				<li>You can also add custom URLs manually</li>
+				<li>Click "Continue with X pages" to proceed</li>
+			</ul>
+		</div>
+
+		<div class="step">
+			<span class="step-number">3</span>
+			<strong>Crawling Pages</strong>
+			<ul>
+				<li>The system crawls your selected pages and extracts content</li>
+				<li>Real-time progress is shown with:
+					<ul>
+						<li>Progress bar with percentage</li>
+						<li>Pages crawled count (e.g., "50 / 100 pages")</li>
+						<li>Estimated time remaining</li>
+						<li>Current URL being processed</li>
+					</ul>
+				</li>
+				<li>After crawling, embeddings are generated for semantic search</li>
+				<li>This step is automatic - just wait for completion</li>
+			</ul>
+		</div>
+
+		<div class="step">
+			<span class="step-number">4</span>
+			<strong>Choose Subscription Plan</strong>
+			<ul>
+				<li>Select from available plans:
+					<ul>
+						<li><strong>Premium Monthly:</strong> $29/month</li>
+						<li><strong>Premium Annual:</strong> $279/year (save $69)</li>
+					</ul>
+				</li>
+				<li>2-day free trial included on all plans (the trial days are 2 by default and configurable from the admin dashboard settings)</li>
+				<li>No charges until trial ends</li>
+				<li>Complete payment via secure Stripe checkout</li>
+			</ul>
+		</div>
+
+		<div class="step">
+			<span class="step-number">5</span>
+			<strong>Setup Complete</strong>
+			<ul>
+				<li>Your AI assistant is ready!</li>				
+				<li>Click "Go to Dashboard" to manage your site</li>
+			</ul>
+		</div>
+
+		<h4>Site Dashboard</h4>
+		<p>After completing onboarding, your site dashboard has these tabs:</p>
+		<table class="env-table">
+			<tr><th>Tab</th><th>Description</th></tr>
+			<tr><td><strong>Overview</strong></td><td>Crawl stats, conversation metrics, quick actions</td></tr>
+			<tr><td><strong>Website Content</strong></td><td>View and manage crawled pages, re-crawl individual pages</td></tr>
+			<tr><td><strong>Widget Customization</strong></td><td>Customize appearance, get installation code</td></tr>
+			<tr><td><strong>Conversations</strong></td><td>View user chat sessions and messages</td></tr>
+			<tr><td><strong>Site Settings</strong></td><td>Basic info, AI instructions, custom prompts</td></tr>
+			<tr><td><strong>Allowed Domains</strong></td><td>Configure which domains can embed your widget (CORS)</td></tr>
+		</table>
+
+		<h4>Widget Customization</h4>
+		<p>Customize your widget appearance in the Widget Customization tab:</p>
+
+		<h5>Appearance Settings</h5>
+		<ul>
+			<li>Primary, secondary, background, and text colors</li>
+			<li>Border color and radius</li>
+			<li>Font family and shadow effects</li>
+		</ul>
+
+		<h5>Launcher Settings (Floating Button)</h5>
+		<ul>
+			<li>Icon style (chat, message, help, support) or custom icon upload</li>
+			<li>Size (small, medium, large)</li>
+			<li>Position (bottom-right, bottom-left, top-right, top-left)</li>
+			<li>Shape (circle, rounded-square, square)</li>
+			<li>Tooltip text and animation (none, pulse, bounce, shake)</li>
+		</ul>
+
+		<h5>Chat Window Settings</h5>
+		<ul>
+			<li>Width and height</li>
+			<li>Header title and subtitle</li>
+			<li>Bot avatar and status indicator</li>
+			<li>Message bubble colors</li>
+			<li>Input field placeholder text</li>
+		</ul>
+
+		<h5>Behavior Settings</h5>
+		<ul>
+			<li>Auto-open on page load (with delay option)</li>
+			<li>Typing indicator, sound notifications</li>
+			<li>Voice input, file attachments, emoji picker</li>
+			<li>Conversation persistence</li>
+		</ul>
+
+		<h5>Content Settings</h5>
+		<ul>
+			<li>Bot name and welcome message</li>
+			<li>Conversation starters (suggested questions)</li>
+			<li>Custom AI instructions</li>
+		</ul>
+
+		<h4>Installing the Widget</h4>
+		<p>To add the chat widget to your website:</p>
+		<ol>
+			<li>Go to your site's Widget Customization tab</li>
+			<li>Scroll to the "Installation" section</li>
+			<li>Copy the embed code snippet</li>
+			<li>Paste it into your website's HTML before the closing <code>&lt;/body&gt;</code> tag</li>
+		</ol>
+
+		<p>Example embed code:</p>
+<pre><code>&lt;script&gt;
+  (function() {
+    var script = document.createElement('script');
+    script.src = 'https://yourdomain.com/widget/widget.js';
+    script.async = true;
+    script.onload = function() {
+      window.intelliconvo('init', {
+        siteId: 'your-site-id',
+        apiUrl: 'https://yourdomain.com/api/v1'
+      });
+    };
+    document.head.appendChild(script);
+  })();
+&lt;/script&gt;</code></pre>
+
+		<h4>Managing Crawled Content</h4>
+		<p>In the Website Content tab, you can:</p>
+		<ul>
+			<li>View all crawled pages with their status</li>
+			<li>See when each page was last crawled</li>
+			<li>Re-crawl individual pages to update content</li>
+			<li>Add new pages to crawl</li>
+			<li>Remove pages from the knowledge base</li>
+		</ul>
+
+		<h4>Viewing Conversations</h4>
+		<p>In the Conversations tab:</p>
+		<ul>
+			<li>View all chat sessions from your website visitors</li>
+			<li>See full message history for each conversation</li>
+			<li>View timestamps and message counts</li>
+			<li>Track AI response costs</li>
+			<li>Export conversation data</li>
+		</ul>
+
+		<h4>Subscription & Billing</h4>
+		<ul>
+			<li>2-day free trial on all plans (no credit card required to start, and the trial days are 2 by default and configurable from the admin dashboard settings)</li>
+			<li>Subscription automatically activates after trial</li>
+			<li>Cancel anytime from Account Settings</li>
+			<li>View billing history and invoices</li>
+			<li>Change plans (prorated billing)</li>
+		</ul>
+
+		<div class="info">
+			<strong>Note:</strong> If Stripe is not configured by the platform admin, the payment step is skipped and all features are available without payment.
+		</div>
+
+		<hr>
+
+		<!-- ============================================
+		     J) API REFERENCE
+		     ============================================ -->
+		<h3 id="api-reference"><strong>L) API Reference</strong> - <a href="#toc">top</a></h3>
+
+		<p>Full API documentation is available at <code>/api/docs</code> (Swagger UI).</p>
+
+		<h4>Authentication</h4>
+		<p>All API requests require authentication via JWT token:</p>
+<pre><code>Authorization: Bearer your-jwt-token</code></pre>
+
+		<h4>Main Endpoints</h4>
+		<table class="env-table">
+			<tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+			<tr><td>POST</td><td>/api/v1/auth/register</td><td>Create new account</td></tr>
+			<tr><td>POST</td><td>/api/v1/auth/login</td><td>Login and get tokens</td></tr>
+			<tr><td>GET</td><td>/api/v1/sites</td><td>List user's sites</td></tr>
+			<tr><td>POST</td><td>/api/v1/sites</td><td>Create new site</td></tr>
+			<tr><td>GET</td><td>/api/v1/sites/:id</td><td>Get site details</td></tr>
+			<tr><td>POST</td><td>/api/v1/sites/:id/crawl</td><td>Start crawling</td></tr>
+			<tr><td>GET</td><td>/api/v1/sites/:id/conversations</td><td>List conversations</td></tr>
+			<tr><td>GET</td><td>/api/v1/widget/:siteId/settings</td><td>Get widget settings (public)</td></tr>
+			<tr><td>POST</td><td>/api/v1/widget/:siteId/chat</td><td>Send chat message (public)</td></tr>
+		</table>
+
+		<h4>Widget API (Public - No Auth Required)</h4>
+		<table class="env-table">
+			<tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+			<tr><td>GET</td><td>/api/v1/widget/:siteId/settings</td><td>Get widget configuration</td></tr>
+			<tr><td>POST</td><td>/api/v1/widget/:siteId/conversations</td><td>Create conversation</td></tr>
+			<tr><td>POST</td><td>/api/v1/widget/:siteId/chat</td><td>Send message</td></tr>
+			<tr><td>GET</td><td>/api/v1/widget/:siteId/conversations/:id</td><td>Get conversation history</td></tr>
+		</table>
+
+		<h4>Rate Limits</h4>
+		<ul>
+			<li><strong>General API:</strong> 100 requests per minute</li>
+			<li><strong>Auth endpoints:</strong> 5 requests per 15 minutes</li>
+			<li><strong>Widget endpoints:</strong> 60 requests per minute</li>
+		</ul>
+
+		<hr>
+
+		<!-- ============================================
+		     K) TROUBLESHOOTING & FAQ
+		     ============================================ -->
+		<h3 id="troubleshooting"><strong>M) Troubleshooting & FAQ</strong> - <a href="#toc">top</a></h3>
+
+		<h4>Common Issues</h4>
+
+		<h5>1. "Database connection refused"</h5>
+		<div class="step">
+			<p><strong>Cause:</strong> PostgreSQL is not running or credentials are wrong.</p>
+			<p><strong>Solution:</strong></p>
+<pre><code># Check PostgreSQL status
+sudo systemctl status postgresql
+
+# Test connection
+psql -h localhost -U postgres -d intelliconvo
+
+# Docker: check container
+docker logs intelliconvo-postgres</code></pre>
+		</div>
+
+		<h5>2. "Redis connection failed"</h5>
+		<div class="step">
+			<p><strong>Cause:</strong> Redis is not running.</p>
+			<p><strong>Solution:</strong></p>
+<pre><code># Check Redis status
+sudo systemctl status redis
+redis-cli ping
+
+# Docker: check container
+docker logs intelliconvo-redis</code></pre>
+		</div>
+
+		<h5>3. "OpenAI API error"</h5>
+		<div class="step">
+			<p><strong>Cause:</strong> Invalid API key or insufficient credits.</p>
+			<p><strong>Solution:</strong></p>
+			<ul>
+				<li>Verify API key is correct in .env</li>
+				<li>Check OpenAI account has credits</li>
+				<li>Verify API key has correct permissions</li>
+			</ul>
+		</div>
+
+		<h5>4. "Widget not loading"</h5>
+		<div class="step">
+			<p><strong>Cause:</strong> CORS issues or wrong widget URL.</p>
+			<p><strong>Solution:</strong></p>
+			<ul>
+				<li>Verify WIDGET_CDN_URL matches where widget is hosted</li>
+				<li>Check browser console for CORS errors</li>
+				<li>Ensure site ID in embed code is correct</li>
+			</ul>
+		</div>
+
+		<h5>5. "Crawling stuck or failing"</h5>
+		<div class="step">
+			<p><strong>Cause:</strong> Website blocking bots or JavaScript rendering issues.</p>
+			<p><strong>Solution:</strong></p>
+			<ul>
+				<li>Check website allows crawling (robots.txt)</li>
+				<li>Some sites require JavaScript rendering - this is handled automatically</li>
+				<li>Check backend logs for specific errors</li>
+			</ul>
+		</div>
+
+		<h5>6. "Stripe webhook not working"</h5>
+		<div class="step">
+			<p><strong>Cause:</strong> Wrong webhook URL or secret.</p>
+			<p><strong>Solution:</strong></p>
+			<ul>
+				<li>Verify webhook URL is correct: <code>https://yourdomain.com/api/v1/webhooks/stripe</code></li>
+				<li>Ensure STRIPE_WEBHOOK_SECRET matches Stripe dashboard</li>
+				<li>Check all required events are selected</li>
+				<li>For local testing, use Stripe CLI</li>
+			</ul>
+		</div>
+
+		<h4>FAQ</h4>
+
+		<h5>Q: How do I change the default admin password?</h5>
+		<p>Log in with default credentials, go to Account Settings, and change your password. Or set ADMIN_EMAIL and ADMIN_PASSWORD environment variables before first run.</p>
+
+		<h5>Q: Can I use my own OpenAI account per user?</h5>
+		<p>Currently, all AI requests use the platform's OpenAI key. Per-user keys would require code modification.</p>
+
+		<h5>Q: How do I backup my data?</h5>
+<pre><code># Database backup
+docker exec intelliconvo-postgres pg_dump -U postgres intelliconvo > backup.sql
+
+# File uploads backup
+tar -czvf uploads-backup.tar.gz uploads/</code></pre>
+
+		<h5>Q: How do I update to a new version?</h5>
+<pre><code># Pull latest code
+git pull origin main
+
+# Rebuild and restart
+docker-compose -f docker-compose.prod.yml up -d --build
+
+# Run migrations
+docker exec intelliconvo-backend npx prisma db push</code></pre>
+
+		<h5>Q: Can I disable payments and make it free?</h5>
+		<p>Yes, simply don't configure Stripe. Users will have unlimited access without payment prompts.</p>
+
+		<h5>Q: How do I add a new language?</h5>
+		<p>The AI responds in the user's language automatically. For UI translations, modify the frontend components.</p>
+
+		<hr>
+
+		<!-- ============================================
+		     L) UPDATES & CHANGELOG
+		     ============================================ -->
+		<h3 id="updates"><strong>N) Updates & Changelog</strong> - <a href="#toc">top</a></h3>
+
+		<h4>Version 1.0.0 (November 2025)</h4>
+		<ul>
+			<li>Initial release</li>
+			<li>Full SaaS platform with user authentication</li>
+			<li>Website crawling and content indexing</li>
+			<li>AI-powered chat widget</li>
+			<li>100+ widget customization options</li>
+			<li>Stripe subscription billing</li>
+			<li>OAuth (Google, GitHub, Microsoft)</li>
+			<li>Admin dashboard</li>
+			<li>Knowledge base file uploads</li>
+			<li>Real-time chat with streaming responses</li>
+		</ul>
+
+		<hr>
+
+		<!-- ============================================
+		     M) REBRANDING GUIDE
+		     ============================================ -->
+		<h3 id="rebranding"><strong>O) Rebranding Guide</strong> - <a href="#toc">top</a></h3>
+
+		<p>This guide explains how to rename "IntelliConvo" to your own brand name throughout the application.</p>
+
+		<h4>Overview</h4>
+		<p><strong>Difficulty:</strong> Easy to Moderate<br>
+		<strong>Skills Required:</strong> Basic find-and-replace, command line usage</p>
+
+		<h4>Visual Assets to Replace</h4>
+
+		<h5>1. Favicon</h5>
+		<table class="env-table">
+			<tr><th>File</th><th>Description</th></tr>
+			<tr>
+				<td><code>frontend/app/favicon.ico</code></td>
+				<td>Browser tab icon (recommended: 32x32 or 48x48 pixels)</td>
+			</tr>
+		</table>
+		<p><strong>How to replace:</strong> Create your favicon at <a href="https://favicon.io" target="_blank">favicon.io</a> or <a href="https://realfavicongenerator.net" target="_blank">realfavicongenerator.net</a>, then replace the file.</p>
+
+		<h5>2. Brand Logo</h5>
+		<table class="env-table">
+			<tr><th>File</th><th>Description</th></tr>
+			<tr>
+				<td><code>frontend/components/ui/brand-logo.tsx</code></td>
+				<td>Main logo component used throughout the dashboard. Contains "IC" letters and "IntelliConvo" text.</td>
+			</tr>
+			<tr>
+				<td><code>frontend/components/icons/intelliconvo-icon.tsx</code></td>
+				<td>Icon-only version of the logo (for compact displays)</td>
+			</tr>
+		</table>
+		<p><strong>How to customize:</strong></p>
+		<ul>
+			<li>Change the "IC" letters in the chat bubble to your brand initials</li>
+			<li>Update the "IntelliConvo" text to your brand name (line 188 in brand-logo.tsx)</li>
+			<li>Modify gradient colors (<code>from-indigo-600 to-purple-600</code>) to match your brand</li>
+			<li>Or replace the entire component with your own SVG/image logo</li>
+		</ul>
+
+		<h5>3. Brand Colors</h5>
+		<table class="env-table">
+			<tr><th>File</th><th>What to Change</th></tr>
+			<tr>
+				<td><code>frontend/app/globals.css</code></td>
+				<td>CSS custom properties for theme colors</td>
+			</tr>
+			<tr>
+				<td><code>frontend/tailwind.config.ts</code></td>
+				<td>Tailwind color configuration (if extended)</td>
+			</tr>
+		</table>
+		<p><strong>Key color variables in globals.css:</strong></p>
+<pre><code>:root {
+  --primary: 239 84% 67%;        /* Main brand color (indigo) */
+  --primary-foreground: 210 40% 98%;
+  --ring: 239 84% 67%;           /* Focus ring color */
+}
+
+/* Gradient used in logo and accents */
+.gradient-brand {
+  @apply bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-700;
+}</code></pre>
+
+		<h5>4. Email Templates</h5>
+		<table class="env-table">
+			<tr><th>File</th><th>What to Change</th></tr>
+			<tr>
+				<td><code>backend/src/services/email/templates/baseLayout.ts</code></td>
+				<td>Email header, footer, and brand colors</td>
+			</tr>
+		</table>
+		<p><strong>Key settings in baseLayout.ts:</strong></p>
+<pre><code>// Default values - customize these
+platformName = 'IntelliConvo',        // Your brand name
+supportEmail = 'support@intelliconvo.com',  // Your support email
+primaryColor = '#6366f1',             // Your brand color (hex)</code></pre>
+
+		<h5>5. Metadata & SEO</h5>
+		<table class="env-table">
+			<tr><th>File</th><th>What to Change</th></tr>
+			<tr>
+				<td><code>frontend/app/layout.tsx</code></td>
+				<td>Site title, description, and metadata</td>
+			</tr>
+		</table>
+<pre><code>export const metadata: Metadata = {
+  title: "YourBrand - AI Chat Assistant for Websites",
+  description: "Your custom description here.",
+};</code></pre>
+
+		<hr style="border: none; border-top: 1px dashed #ddd; margin: 30px 0;">
+
+		<h4>Files to Update (Text Replacements)</h4>
+
+		<h5>1. Backend</h5>
+		<table class="env-table">
+			<tr><th>File</th><th>What to Change</th></tr>
+			<tr>
+				<td><code>backend/package.json</code></td>
+				<td>Update <code>"name"</code> field</td>
+			</tr>
+			<tr>
+				<td><code>backend/prisma/seed.ts</code></td>
+				<td>Update admin email domain and any seeded text</td>
+			</tr>
+		</table>
+
+		<h5>2. Frontend</h5>
+		<table class="env-table">
+			<tr><th>File</th><th>What to Change</th></tr>
+			<tr>
+				<td><code>frontend/package.json</code></td>
+				<td>Update <code>"name"</code> field</td>
+			</tr>
+			<tr>
+				<td><code>frontend/app/layout.tsx</code></td>
+				<td>Update metadata title and description</td>
+			</tr>
+			<tr>
+				<td><code>frontend/components/ui/brand-logo.tsx</code></td>
+				<td>Update "IntelliConvo" text and "IC" initials</td>
+			</tr>
+			<tr>
+				<td>Various pages</td>
+				<td>Search for "IntelliConvo" in page titles and content</td>
+			</tr>
+		</table>
+
+		<h5>3. Widget (Most Work Required)</h5>
+		<table class="env-table">
+			<tr><th>File/Area</th><th>What to Change</th></tr>
+			<tr>
+				<td><code>widget/package.json</code></td>
+				<td>Update <code>"name"</code> field</td>
+			</tr>
+			<tr>
+				<td><code>widget/src/index.ts</code></td>
+				<td>Update <code>window.intelliconvo</code> global function name</td>
+			</tr>
+			<tr>
+				<td><code>widget/src/**/*.ts</code></td>
+				<td>Update CSS class prefixes (e.g., <code>ic-widget</code> → <code>yb-widget</code>)</td>
+			</tr>
+		</table>
+
+		<div class="alert alert-warning">
+			<strong>Important:</strong> After changing widget files, you must rebuild the widget:
+<pre><code>cd widget
+npm run build</code></pre>
+		</div>
+
+		<h5>4. Configuration Files</h5>
+		<table class="env-table">
+			<tr><th>File</th><th>What to Change</th></tr>
+			<tr>
+				<td><code>docker-compose*.yml</code></td>
+				<td>Update container names (e.g., <code>intelliconvo-backend</code>)</td>
+			</tr>
+			<tr>
+				<td><code>.env</code> files</td>
+				<td>Update any brand-specific values</td>
+			</tr>
+			<tr>
+				<td><code>DOCKER.md</code></td>
+				<td>Update documentation references</td>
+			</tr>
+		</table>
+
+		<h4>Step-by-Step Process</h4>
+
+		<div class="step">
+			<strong>Step 1: Search for All Occurrences</strong>
+			<p>First, find all files containing the brand name:</p>
+<pre><code># macOS/Linux
+grep -r "intelliconvo" --include="*.ts" --include="*.tsx" --include="*.json" --include="*.md" .
+
+# Windows (PowerShell)
+Get-ChildItem -Recurse -Include *.ts,*.tsx,*.json,*.md | Select-String -Pattern "intelliconvo"</code></pre>
+		</div>
+
+		<div class="step">
+			<strong>Step 2: Replace in Backend</strong>
+<pre><code>cd backend
+
+# Update package.json name
+# Update prisma/seed.ts admin email
+# Update any email templates in src/templates/</code></pre>
+		</div>
+
+		<div class="step">
+			<strong>Step 3: Replace in Frontend</strong>
+<pre><code>cd frontend
+
+# Update package.json name
+# Update app/layout.tsx metadata
+# Update components/ui/logo.tsx
+# Search and replace in all .tsx files</code></pre>
+		</div>
+
+		<div class="step">
+			<strong>Step 4: Replace in Widget (Careful!)</strong>
+<pre><code>cd widget
+
+# Update package.json name
+# Update window.intelliconvo in src/index.ts
+# Update CSS class prefixes throughout src/
+
+# IMPORTANT: Update the embed code pattern
+# Old: window.intelliconvo('init', {...})
+# New: window.yourbrand('init', {...})</code></pre>
+		</div>
+
+		<div class="step">
+			<strong>Step 5: Update Docker Configuration</strong>
+<pre><code># Update container names in:
+# - docker-compose.yml
+# - docker-compose.dev.yml
+# - docker-compose.prod.yml
+
+# Example: intelliconvo-backend → yourbrand-backend</code></pre>
+		</div>
+
+		<div class="step">
+			<strong>Step 6: Rebuild Everything</strong>
+<pre><code># Rebuild widget
+cd widget && npm run build
+
+# If using Docker, rebuild all containers
+docker-compose down
+docker-compose up -d --build</code></pre>
+		</div>
+
+		<h4>Update Embed Code</h4>
+		<p>After rebranding, update your widget embed code instructions:</p>
+<pre><code>&lt;script&gt;
+  (function() {
+    var script = document.createElement('script');
+    script.src = 'https://yourdomain.com/widget/widget.js';
+    script.async = true;
+    script.onload = function() {
+      window.yourbrand('init', {  // Changed from 'intelliconvo'
+        siteId: 'your-site-id',
+        apiUrl: 'https://yourdomain.com/api/v1'
+      });
+    };
+    document.head.appendChild(script);
+  })();
+&lt;/script&gt;</code></pre>
+
+		<h4>Testing After Rebranding</h4>
+		<ol>
+			<li>Start all services and verify no errors in console</li>
+			<li>Check frontend loads with correct title/branding</li>
+			<li>Test widget initialization with new global function name</li>
+			<li>Verify emails send with correct branding</li>
+			<li>Check all pages display correctly</li>
+		</ol>
+
+		<hr>
+
+		<!-- ============================================
+		     N) CREDITS & LICENSES
+		     ============================================ -->
+		<h3 id="credits"><strong>P) Credits & Licenses</strong> - <a href="#toc">top</a></h3>
+
+		<h4>Technologies Used</h4>
+		<ul>
+			<li><strong>Next.js</strong> - React framework (MIT License)</li>
+			<li><strong>Express.js</strong> - Node.js web framework (MIT License)</li>
+			<li><strong>Prisma</strong> - Database ORM (Apache 2.0 License)</li>
+			<li><strong>Tailwind CSS</strong> - CSS framework (MIT License)</li>
+			<li><strong>Radix UI</strong> - Component library (MIT License)</li>
+			<li><strong>Socket.io</strong> - Real-time engine (MIT License)</li>
+			<li><strong>BullMQ</strong> - Job queue (MIT License)</li>
+		</ul>
+
+		<h4>Third-Party Services</h4>
+		<ul>
+			<li><strong>OpenAI</strong> - AI/LLM provider</li>
+			<li><strong>Pinecone</strong> - Vector database</li>
+			<li><strong>Stripe</strong> - Payment processing</li>
+			<li><strong>Resend</strong> - Email service</li>
+			<li><strong>AWS S3</strong> - Cloud storage</li>
+		</ul>
+
+		<hr>
+
+		<p>Thank you for choosing IntelliConvo! We're committed to helping you create amazing AI-powered chat experiences for your users.</p>
+
+		<p class="append-bottom alt large"><strong>The IntelliConvo Team</strong></p>
+		<p><a href="#toc">Go To Table of Contents</a></p>
+
+		<hr class="space">
+	</div>
+</body>
+</html>

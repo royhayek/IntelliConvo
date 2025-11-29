@@ -143,8 +143,27 @@ export async function saveFile(options: FileStorageOptions): Promise<string> {
       return urlPath;
     }
   } catch (error) {
-    logger.error('Failed to save file:', error);
-    throw new Error('Failed to save file to storage');
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorCode = (error as NodeJS.ErrnoException)?.code;
+
+    logger.error('Failed to save file:', {
+      error: errorMessage,
+      code: errorCode,
+      storageType: isS3Configured() ? 'S3' : 'LOCAL',
+      fileType: options.fileType,
+      siteId: options.siteId,
+    });
+
+    // Provide more specific error messages
+    if (errorCode === 'EACCES') {
+      throw new Error('File storage permission denied. Check that the uploads directory is writable.');
+    } else if (errorCode === 'EROFS') {
+      throw new Error('File storage failed: Read-only filesystem. Configure S3 storage for production.');
+    } else if (errorCode === 'ENOENT') {
+      throw new Error('File storage path not found. Check UPLOAD_DIR configuration.');
+    }
+
+    throw new Error(`Failed to save file to storage: ${errorMessage}`);
   }
 }
 
