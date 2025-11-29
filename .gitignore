@@ -31,11 +31,24 @@ dist/
 dist
 
 # Environment files (comprehensive coverage)
+# Root level
 .env
 .env.local
 .env.*.local
+
+# All subdirectories
+**/.env
+**/.env.local
+**/.env.*.local
+
+# Specific exclusions
 widget/.env.development
 widget/.env.production
+
+# Keep example files tracked (they have placeholders only)
+!.env.example
+!**/.env.example
+!.env.docker.example
 
 *token.json*
 *credentials.json*

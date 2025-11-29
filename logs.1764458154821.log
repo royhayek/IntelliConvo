@@ -1,0 +1,71 @@
+2025-11-29T23:15:29.601563651Z [inf]  
+2025-11-29T23:15:31.981583648Z [inf]  [35m[Region: europe-west4][0m
+2025-11-29T23:15:31.987774693Z [inf]  [35m=========================
+2025-11-29T23:15:31.987799948Z [inf]  Using Detected Dockerfile
+2025-11-29T23:15:31.987803554Z [inf]  =========================
+2025-11-29T23:15:31.987806829Z [inf]  [0m
+2025-11-29T23:15:31.987817306Z [inf]  context: xvj9-ou4B
+2025-11-29T23:15:32.175463742Z [inf]  [internal] load build definition from Dockerfile
+2025-11-29T23:15:32.175510725Z [inf]  [internal] load build definition from Dockerfile
+2025-11-29T23:15:32.175530834Z [inf]  [internal] load build definition from Dockerfile
+2025-11-29T23:15:32.175547151Z [inf]  [internal] load build definition from Dockerfile
+2025-11-29T23:15:32.185480611Z [inf]  [internal] load build definition from Dockerfile
+2025-11-29T23:15:32.188119448Z [inf]  [internal] load metadata for docker.io/library/node:20-slim
+2025-11-29T23:15:32.498159811Z [inf]  [internal] load metadata for docker.io/library/node:20-slim
+2025-11-29T23:15:32.498475472Z [inf]  [internal] load .dockerignore
+2025-11-29T23:15:32.498513187Z [inf]  [internal] load .dockerignore
+2025-11-29T23:15:32.498860743Z [inf]  [internal] load .dockerignore
+2025-11-29T23:15:32.508179205Z [inf]  [internal] load .dockerignore
+2025-11-29T23:15:32.513932781Z [inf]  [deps 3/7] RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
+2025-11-29T23:15:32.513963979Z [inf]  [runner  4/12] RUN groupadd --gid 1001 nodejs &&     useradd --uid 1001 --gid nodejs --shell /bin/bash --create-home nodejs
+2025-11-29T23:15:32.513973812Z [inf]  [runner  3/12] RUN apt-get update && apt-get install -y     openssl     wget     gnupg     ca-certificates     fonts-liberation     libasound2     libatk-bridge2.0-0     libatk1.0-0     libcups2     libdbus-1-3     libdrm2     libgbm1     libgtk-3-0     libnspr4     libnss3     libx11-xcb1     libxcomposite1     libxdamage1     libxfixes3     libxrandr2     libxshmfence1     xdg-utils     netcat-openbsd     && rm -rf /var/lib/apt/lists/*
+2025-11-29T23:15:32.513983680Z [inf]  [deps 2/7] WORKDIR /app
+2025-11-29T23:15:32.513989953Z [inf]  [deps 1/7] FROM docker.io/library/node:20-slim@sha256:fbb357f69d05c97333855b0846e4ef65462409728312df3c9ff12c941741c0a5
+2025-11-29T23:15:32.514018853Z [inf]  [builder  5/11] COPY --from=deps /app/package*.json ./
+2025-11-29T23:15:32.514025578Z [inf]  [builder  4/11] COPY --from=deps /app/node_modules ./node_modules
+2025-11-29T23:15:32.514031109Z [inf]  [deps 7/7] RUN npx prisma generate
+2025-11-29T23:15:32.514042381Z [inf]  [deps 6/7] RUN npm ci
+2025-11-29T23:15:32.514048041Z [inf]  [deps 5/7] COPY prisma ./prisma/
+2025-11-29T23:15:32.514053687Z [inf]  [deps 4/7] COPY package*.json ./
+2025-11-29T23:15:32.514058944Z [inf]  [internal] load build context
+2025-11-29T23:15:32.514075191Z [inf]  [builder 10/11] RUN npm run build
+2025-11-29T23:15:32.514084162Z [inf]  [builder  9/11] RUN ls -la docker-entrypoint.sh
+2025-11-29T23:15:32.514089891Z [inf]  [builder  8/11] COPY . .
+2025-11-29T23:15:32.514095282Z [inf]  [builder  7/11] RUN npx prisma generate
+2025-11-29T23:15:32.514100405Z [inf]  [builder  6/11] COPY prisma ./prisma/
+2025-11-29T23:15:32.514124786Z [inf]  [runner 11/12] COPY --from=builder /app/docker-entrypoint.sh /usr/local/bin/
+2025-11-29T23:15:32.514130408Z [inf]  [runner 10/12] RUN npx playwright install chromium &&     chown -R nodejs:nodejs /root/.cache || true
+2025-11-29T23:15:32.514135452Z [inf]  [runner  9/12] RUN mkdir -p uploads && chown -R nodejs:nodejs uploads
+2025-11-29T23:15:32.514142402Z [inf]  [runner  8/12] COPY --from=builder /app/prisma ./prisma
+2025-11-29T23:15:32.514150250Z [inf]  [runner  7/12] COPY --from=builder /app/package*.json ./
+2025-11-29T23:15:32.514155761Z [inf]  [runner  6/12] COPY --from=builder /app/node_modules ./node_modules
+2025-11-29T23:15:32.514161096Z [inf]  [runner  5/12] COPY --from=builder /app/dist ./dist
+2025-11-29T23:15:32.514166076Z [inf]  [builder 11/11] RUN ls -la dist/
+2025-11-29T23:15:32.514175944Z [inf]  [runner 12/12] RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+2025-11-29T23:15:32.514245824Z [inf]  [internal] load build context
+2025-11-29T23:15:32.514453383Z [inf]  [deps 1/7] FROM docker.io/library/node:20-slim@sha256:fbb357f69d05c97333855b0846e4ef65462409728312df3c9ff12c941741c0a5
+2025-11-29T23:15:32.519343008Z [inf]  [deps 1/7] FROM docker.io/library/node:20-slim@sha256:fbb357f69d05c97333855b0846e4ef65462409728312df3c9ff12c941741c0a5
+2025-11-29T23:15:32.520040029Z [inf]  [deps 2/7] WORKDIR /app
+2025-11-29T23:15:32.520081219Z [inf]  [internal] load build context
+2025-11-29T23:15:32.520107953Z [inf]  [runner  3/12] RUN apt-get update && apt-get install -y     openssl     wget     gnupg     ca-certificates     fonts-liberation     libasound2     libatk-bridge2.0-0     libatk1.0-0     libcups2     libdbus-1-3     libdrm2     libgbm1     libgtk-3-0     libnspr4     libnss3     libx11-xcb1     libxcomposite1     libxdamage1     libxfixes3     libxrandr2     libxshmfence1     xdg-utils     netcat-openbsd     && rm -rf /var/lib/apt/lists/*
+2025-11-29T23:15:32.520125416Z [inf]  [deps 3/7] RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
+2025-11-29T23:15:32.676905695Z [inf]  [internal] load build context
+2025-11-29T23:15:32.686617156Z [inf]  [deps 3/7] RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
+2025-11-29T23:15:32.686646431Z [inf]  [deps 4/7] COPY package*.json ./
+2025-11-29T23:15:32.686664642Z [err]  [deps 5/7] COPY prisma ./prisma/
+2025-11-29T23:15:32.686677529Z [inf]  [deps 6/7] RUN npm ci
+2025-11-29T23:15:32.686689196Z [inf]  [deps 7/7] RUN npx prisma generate
+2025-11-29T23:15:32.686699905Z [inf]  [builder  4/11] COPY --from=deps /app/node_modules ./node_modules
+2025-11-29T23:15:32.686713924Z [inf]  [builder  5/11] COPY --from=deps /app/package*.json ./
+2025-11-29T23:15:32.686727347Z [err]  [builder  6/11] COPY prisma ./prisma/
+2025-11-29T23:15:32.710680810Z [err]  [deps 3/7] RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
+2025-11-29T23:15:32.798119073Z [err]  [runner  3/12] RUN apt-get update && apt-get install -y     openssl     wget     gnupg     ca-certificates     fonts-liberation     libasound2     libatk-bridge2.0-0     libatk1.0-0     libcups2     libdbus-1-3     libdrm2     libgbm1     libgtk-3-0     libnspr4     libnss3     libx11-xcb1     libxcomposite1     libxdamage1     libxfixes3     libxrandr2     libxshmfence1     xdg-utils     netcat-openbsd     && rm -rf /var/lib/apt/lists/*
+2025-11-29T23:15:32.812589215Z [err]  Dockerfile:46
+2025-11-29T23:15:32.812622888Z [err]  -------------------
+2025-11-29T23:15:32.812627518Z [err]  44 |
+2025-11-29T23:15:32.812631102Z [err]  45 |     # Copy prisma schema first (needed for build)
+2025-11-29T23:15:32.812635653Z [err]  46 | >>> COPY prisma ./prisma/
+2025-11-29T23:15:32.812638855Z [err]  47 |
+2025-11-29T23:15:32.812644326Z [err]  48 |     # Regenerate Prisma client in builder context
+2025-11-29T23:15:32.812649816Z [err]  -------------------
+2025-11-29T23:15:32.812655455Z [err]  ERROR: failed to build: failed to solve: failed to compute cache key: failed to calculate checksum of ref yhng3lf8rxn5yebvm5o5ol4b6::aom4riwh70pt8w63sm6k2iezp: "/prisma": not found
