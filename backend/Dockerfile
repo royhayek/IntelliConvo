@@ -88,6 +88,7 @@ RUN apt-get update && apt-get install -y \
     libxrandr2 \
     libxshmfence1 \
     xdg-utils \
+    netcat-openbsd \
     && rm -rf /var/lib/apt/lists/*
 
 # Create non-root user for security
@@ -117,12 +118,12 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 # Switch to non-root user
 USER nodejs
 
-# Expose port
-EXPOSE 5001
+# Expose port (Railway will override with PORT env var)
+EXPOSE ${PORT:-5000}
 
-# Health check
+# Health check - use PORT env var that Railway provides
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:5001/api/health || exit 1
+    CMD wget --no-verbose --tries=1 --spider http://localhost:${PORT:-5000}/health || exit 1
 
 # Start application
 ENTRYPOINT ["docker-entrypoint.sh"]
