@@ -1,6 +1,6 @@
 # AWS S3 Storage Integration Guide
 
-This guide explains how to configure and use AWS S3 for file storage in IntelligentConvo.
+This guide explains how to configure and use AWS S3 for file storage in IntelliConvo.
 
 ## Overview
 
@@ -27,7 +27,7 @@ The system automatically detects which mode to use based on AWS credentials. Whe
 
 2. **Create Bucket**
    - Click "Create bucket"
-   - Choose a globally unique name (e.g., `intelligentconvo-uploads`)
+   - Choose a globally unique name (e.g., `intelliconvo-uploads`)
    - Select your preferred region
    - **Block Public Access**: Uncheck "Block all public access"
      - ⚠️ Required for public file access
@@ -71,7 +71,7 @@ The system automatically detects which mode to use based on AWS credentials. Whe
 
 2. **Create User**
    - Users → Add users
-   - Username: `intelligentconvo-s3`
+   - Username: `intelliconvo-s3`
    - Access type: Programmatic access
 
 3. **Attach Policy**
@@ -221,7 +221,7 @@ The server logs the storage configuration on startup:
 
 ```
 # S3 Configured:
-📦 S3 storage initialized { bucket: 'intelligentconvo-uploads', region: 'us-east-1', hasCustomUrl: false }
+📦 S3 storage initialized { bucket: 'intelliconvo-uploads', region: 'us-east-1', hasCustomUrl: false }
 
 # S3 Not Configured:
 📦 S3 storage not configured - using local storage
@@ -302,7 +302,7 @@ AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE   ✅ Real key
 
 **Test credentials:**
 ```bash
-aws s3 ls s3://your-bucket-name --profile intelligentconvo
+aws s3 ls s3://your-bucket-name --profile intelliconvo
 ```
 
 ### Files Not Publicly Accessible
@@ -336,8 +336,8 @@ Download files from S3 to local storage:
 
 ```bash
 # Use AWS CLI
-aws s3 sync s3://your-bucket-name/files/ uploads/files/ --profile intelligentconvo
-aws s3 sync s3://your-bucket-name/logos/ uploads/logos/ --profile intelligentconvo
+aws s3 sync s3://your-bucket-name/files/ uploads/files/ --profile intelliconvo
+aws s3 sync s3://your-bucket-name/logos/ uploads/logos/ --profile intelliconvo
 ```
 
 Update database file URLs to use local paths.

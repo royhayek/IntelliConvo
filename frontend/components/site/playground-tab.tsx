@@ -11,6 +11,7 @@ import { ChatInterface, type ChatMessage } from "@/components/ui/chat-interface"
 import { SuggestedQuestions } from "@/components/playground/suggested-questions";
 import { AssistantInfoCard } from "@/components/playground/assistant-info-card";
 import { type SiteResponse } from "@/lib/api/generated/models";
+import { getSocketUrl } from "@/lib/utils";
 
 interface PlaygroundTabProps {
   site: SiteResponse;
@@ -40,10 +41,10 @@ export function PlaygroundTab({ site }: PlaygroundTabProps) {
 
   // Initialize socket connection
   useEffect(() => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    const socketUrl = getSocketUrl();
     const token = localStorage.getItem("accessToken");
 
-    socketRef.current = io(apiUrl, {
+    socketRef.current = io(socketUrl, {
       auth: { token },
       transports: ["websocket", "polling"],
       reconnection: true,
@@ -170,11 +171,12 @@ export function PlaygroundTab({ site }: PlaygroundTabProps) {
     };
     setMessages(prev => [...prev, streamingMessage]);
 
-    // Send message via socket
+    // Send message via socket (marked as test conversation)
     socketRef.current.emit('message', {
       sessionId: sessionIdRef.current,
       siteId: site.id,
-      content
+      content,
+      isTest: true
     });
   }, [isConnected, site.id]);
 
@@ -204,7 +206,7 @@ export function PlaygroundTab({ site }: PlaygroundTabProps) {
   return (
     <div className="space-y-6">
       <SectionHeader
-        title="Playground"
+        title="Test Chatbot"
         description="Test your AI assistant and see how it responds to questions"
         action={
           <Button variant="outline" onClick={() => setShowResetDialog(true)}>

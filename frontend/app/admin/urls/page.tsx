@@ -9,12 +9,12 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
 import { UrlsTable, UrlsFilters } from "@/components/admin/urls";
 import {
-  useGetApiV1AdminUrls,
-  useDeleteApiV1AdminUrlsUrlId,
-  usePatchApiV1AdminUrlsUrlId,
-  getGetApiV1AdminUrlsQueryKey,
+  useGetAdminUrls,
+  useDeleteAdminUrlsUrlId,
+  usePatchAdminUrlsUrlId,
+  getGetAdminUrlsQueryKey,
 } from "@/lib/api/generated/queries/admin-urls/admin-urls";
-import type { GetApiV1AdminUrlsParams } from "@/lib/api/generated/models";
+import type { GetAdminUrlsParams } from "@/lib/api/generated/models";
 import type { SiteUrlExtended } from "@/lib/types/admin-urls";
 
 export default function AdminUrlsPage() {
@@ -35,7 +35,7 @@ export default function AdminUrlsPage() {
   const [deleteUrl, setDeleteUrl] = useState<SiteUrlExtended | null>(null);
   const [searchInput, setSearchInput] = useState(search);
 
-  const queryParams: GetApiV1AdminUrlsParams = {
+  const queryParams: GetAdminUrlsParams = {
     page: page.toString(),
     limit: "20",
     ...(search && { search }),
@@ -44,24 +44,24 @@ export default function AdminUrlsPage() {
     ...(hasEmbeddings !== "all" && { hasEmbeddings }),
   };
 
-  const { data, isLoading, error } = useGetApiV1AdminUrls(queryParams);
+  const { data, isLoading, error } = useGetAdminUrls(queryParams);
 
-  const deleteMutation = useDeleteApiV1AdminUrlsUrlId({
+  const deleteMutation = useDeleteAdminUrlsUrlId({
     mutation: {
       onSuccess: () => {
         setDeleteUrl(null);
         queryClient.invalidateQueries({
-          queryKey: getGetApiV1AdminUrlsQueryKey(queryParams),
+          queryKey: getGetAdminUrlsQueryKey(queryParams),
         });
       },
     },
   });
 
-  const updateMutation = usePatchApiV1AdminUrlsUrlId({
+  const updateMutation = usePatchAdminUrlsUrlId({
     mutation: {
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: getGetApiV1AdminUrlsQueryKey(queryParams),
+          queryKey: getGetAdminUrlsQueryKey(queryParams),
         });
       },
     },

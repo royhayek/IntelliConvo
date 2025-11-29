@@ -137,7 +137,7 @@ const emailTestResponseSchema = registry.register(
 // GET /api/v1/admin/emails
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/emails',
+  path: '/admin/emails',
   summary: 'Get paginated list of email logs',
   tags: ['Admin - Emails'],
   security: [{ bearerAuth: [] }],
@@ -171,7 +171,7 @@ registry.registerPath({
 // GET /api/v1/admin/emails/stats
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/emails/stats',
+  path: '/admin/emails/stats',
   summary: 'Get email statistics',
   tags: ['Admin - Emails'],
   security: [{ bearerAuth: [] }],
@@ -192,7 +192,7 @@ registry.registerPath({
 // GET /api/v1/admin/emails/provider/status
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/emails/provider/status',
+  path: '/admin/emails/provider/status',
   summary: 'Get email provider status',
   tags: ['Admin - Emails'],
   security: [{ bearerAuth: [] }],
@@ -213,7 +213,7 @@ registry.registerPath({
 // GET /api/v1/admin/emails/{id}
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/emails/{id}',
+  path: '/admin/emails/{id}',
   summary: 'Get a single email log by ID',
   tags: ['Admin - Emails'],
   security: [{ bearerAuth: [] }],
@@ -240,7 +240,7 @@ registry.registerPath({
 // POST /api/v1/admin/emails/{id}/retry
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/admin/emails/{id}/retry',
+  path: '/admin/emails/{id}/retry',
   summary: 'Retry a failed email',
   tags: ['Admin - Emails'],
   security: [{ bearerAuth: [] }],
@@ -268,7 +268,7 @@ registry.registerPath({
 // POST /api/v1/admin/emails/test
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/admin/emails/test',
+  path: '/admin/emails/test',
   summary: 'Send a test email',
   tags: ['Admin - Emails'],
   security: [{ bearerAuth: [] }],

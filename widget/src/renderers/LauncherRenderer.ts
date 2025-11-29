@@ -26,8 +26,8 @@ export class LauncherRenderer {
     const animation = this.settings?.launcherAnimation || 'pulse';
 
     const button = document.createElement('button');
-    button.id = 'intelligentconvo-button';
-    button.className = `intelligentconvo-button intelligentconvo-${position} intelligentconvo-shape-${shape} intelligentconvo-animation-${animation}`;
+    button.id = 'intelliconvo-button';
+    button.className = `intelliconvo-button intelliconvo-${position} intelliconvo-shape-${shape} intelliconvo-animation-${animation}`;
     button.setAttribute('aria-label', tooltip);
     button.setAttribute('title', this.settings?.launcherShowTooltip ? tooltip : '');
     button.setAttribute('role', 'button');
@@ -35,11 +35,11 @@ export class LauncherRenderer {
     // All launcher styles are now handled via CSS variables set in applySettings()
 
     button.innerHTML = `
-      <div class="intelligentconvo-button-inner">
+      <div class="intelliconvo-button-inner">
         ${this.getLauncherIcon()}
-        ${this.settings?.launcherShowBadge ? `<span class="intelligentconvo-badge">0</span>` : ''}
+        ${this.settings?.launcherShowBadge ? `<span class="intelliconvo-badge">0</span>` : ''}
       </div>
-      ${this.settings?.launcherText ? `<span class="intelligentconvo-launcher-text">${this.settings.launcherText}</span>` : ''}
+      ${this.settings?.launcherText ? `<span class="intelliconvo-launcher-text">${this.settings.launcherText}</span>` : ''}
     `;
 
     button.addEventListener('click', () => {
@@ -68,7 +68,11 @@ export class LauncherRenderer {
     }
 
     if (this.settings.launcherCustomIconUrl) {
-      return `<img src="${this.settings.launcherCustomIconUrl}" alt="Chat" width="24" height="24" />`;
+      // If the URL is relative, prepend the API base URL
+      const iconUrl = this.settings.launcherCustomIconUrl.startsWith('http')
+        ? this.settings.launcherCustomIconUrl
+        : `${this.config.apiUrl}${this.settings.launcherCustomIconUrl}`;
+      return `<img src="${iconUrl}" alt="Chat" />`;
     }
 
     const icons: Record<string, string> = {

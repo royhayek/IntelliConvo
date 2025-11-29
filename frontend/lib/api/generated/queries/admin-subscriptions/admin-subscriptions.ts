@@ -20,17 +20,17 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  DeleteApiV1AdminSubscriptionsSubscriptionId200,
-  GetApiV1AdminSubscriptions200,
-  GetApiV1AdminSubscriptionsExportParams,
-  GetApiV1AdminSubscriptionsParams,
-  GetApiV1AdminSubscriptionsSubscriptionId200,
-  PatchApiV1AdminSubscriptionsSubscriptionId200,
-  PatchApiV1AdminSubscriptionsSubscriptionIdBody,
-  PostApiV1AdminSubscriptionsSubscriptionIdCancel200,
-  PostApiV1AdminSubscriptionsSubscriptionIdExtendTrial200,
-  PostApiV1AdminSubscriptionsSubscriptionIdExtendTrialBody,
-  PostApiV1AdminSubscriptionsSubscriptionIdReactivate200
+  DeleteAdminSubscriptionsSubscriptionId200,
+  GetAdminSubscriptions200,
+  GetAdminSubscriptionsExportParams,
+  GetAdminSubscriptionsParams,
+  GetAdminSubscriptionsSubscriptionId200,
+  PatchAdminSubscriptionsSubscriptionId200,
+  PatchAdminSubscriptionsSubscriptionIdBody,
+  PostAdminSubscriptionsSubscriptionIdCancel200,
+  PostAdminSubscriptionsSubscriptionIdExtendTrial200,
+  PostAdminSubscriptionsSubscriptionIdExtendTrialBody,
+  PostAdminSubscriptionsSubscriptionIdReactivate200
 } from '../../models';
 
 import { customInstance } from '../../../axios-instance';
@@ -44,14 +44,14 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 /**
  * @summary Get paginated list of subscriptions
  */
-export const getApiV1AdminSubscriptions = (
-    params?: GetApiV1AdminSubscriptionsParams,
+export const getAdminSubscriptions = (
+    params?: GetAdminSubscriptionsParams,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<GetApiV1AdminSubscriptions200>(
-      {url: `/api/v1/admin/subscriptions`, method: 'GET',
+      return customInstance<GetAdminSubscriptions200>(
+      {url: `/admin/subscriptions`, method: 'GET',
         params, signal
     },
       options);
@@ -60,69 +60,69 @@ export const getApiV1AdminSubscriptions = (
 
 
 
-export const getGetApiV1AdminSubscriptionsQueryKey = (params?: GetApiV1AdminSubscriptionsParams,) => {
+export const getGetAdminSubscriptionsQueryKey = (params?: GetAdminSubscriptionsParams,) => {
     return [
-    `/api/v1/admin/subscriptions`, ...(params ? [params]: [])
+    `/admin/subscriptions`, ...(params ? [params]: [])
     ] as const;
     }
 
     
-export const getGetApiV1AdminSubscriptionsQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminSubscriptions>>, TError = ErrorType<void>>(params?: GetApiV1AdminSubscriptionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSubscriptions>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminSubscriptionsQueryOptions = <TData = Awaited<ReturnType<typeof getAdminSubscriptions>>, TError = ErrorType<void>>(params?: GetAdminSubscriptionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSubscriptions>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminSubscriptionsQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminSubscriptionsQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminSubscriptions>>> = ({ signal }) => getApiV1AdminSubscriptions(params, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminSubscriptions>>> = ({ signal }) => getAdminSubscriptions(params, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSubscriptions>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminSubscriptions>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminSubscriptionsQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminSubscriptions>>>
-export type GetApiV1AdminSubscriptionsQueryError = ErrorType<void>
+export type GetAdminSubscriptionsQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminSubscriptions>>>
+export type GetAdminSubscriptionsQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminSubscriptions<TData = Awaited<ReturnType<typeof getApiV1AdminSubscriptions>>, TError = ErrorType<void>>(
- params: undefined |  GetApiV1AdminSubscriptionsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSubscriptions>>, TError, TData>> & Pick<
+export function useGetAdminSubscriptions<TData = Awaited<ReturnType<typeof getAdminSubscriptions>>, TError = ErrorType<void>>(
+ params: undefined |  GetAdminSubscriptionsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSubscriptions>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminSubscriptions>>,
+          Awaited<ReturnType<typeof getAdminSubscriptions>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminSubscriptions>>
+          Awaited<ReturnType<typeof getAdminSubscriptions>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminSubscriptions<TData = Awaited<ReturnType<typeof getApiV1AdminSubscriptions>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminSubscriptionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSubscriptions>>, TError, TData>> & Pick<
+export function useGetAdminSubscriptions<TData = Awaited<ReturnType<typeof getAdminSubscriptions>>, TError = ErrorType<void>>(
+ params?: GetAdminSubscriptionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSubscriptions>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminSubscriptions>>,
+          Awaited<ReturnType<typeof getAdminSubscriptions>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminSubscriptions>>
+          Awaited<ReturnType<typeof getAdminSubscriptions>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminSubscriptions<TData = Awaited<ReturnType<typeof getApiV1AdminSubscriptions>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminSubscriptionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSubscriptions>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminSubscriptions<TData = Awaited<ReturnType<typeof getAdminSubscriptions>>, TError = ErrorType<void>>(
+ params?: GetAdminSubscriptionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSubscriptions>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get paginated list of subscriptions
  */
 
-export function useGetApiV1AdminSubscriptions<TData = Awaited<ReturnType<typeof getApiV1AdminSubscriptions>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminSubscriptionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSubscriptions>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminSubscriptions<TData = Awaited<ReturnType<typeof getAdminSubscriptions>>, TError = ErrorType<void>>(
+ params?: GetAdminSubscriptionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSubscriptions>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminSubscriptionsQueryOptions(params,options)
+  const queryOptions = getGetAdminSubscriptionsQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -137,14 +137,14 @@ export function useGetApiV1AdminSubscriptions<TData = Awaited<ReturnType<typeof 
 /**
  * @summary Get subscription statistics
  */
-export const getApiV1AdminSubscriptionsStats = (
+export const getAdminSubscriptionsStats = (
     
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<void>(
-      {url: `/api/v1/admin/subscriptions/stats`, method: 'GET', signal
+      {url: `/admin/subscriptions/stats`, method: 'GET', signal
     },
       options);
     }
@@ -152,69 +152,69 @@ export const getApiV1AdminSubscriptionsStats = (
 
 
 
-export const getGetApiV1AdminSubscriptionsStatsQueryKey = () => {
+export const getGetAdminSubscriptionsStatsQueryKey = () => {
     return [
-    `/api/v1/admin/subscriptions/stats`
+    `/admin/subscriptions/stats`
     ] as const;
     }
 
     
-export const getGetApiV1AdminSubscriptionsStatsQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminSubscriptionsStats>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSubscriptionsStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminSubscriptionsStatsQueryOptions = <TData = Awaited<ReturnType<typeof getAdminSubscriptionsStats>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSubscriptionsStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminSubscriptionsStatsQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminSubscriptionsStatsQueryKey();
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminSubscriptionsStats>>> = ({ signal }) => getApiV1AdminSubscriptionsStats(requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminSubscriptionsStats>>> = ({ signal }) => getAdminSubscriptionsStats(requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSubscriptionsStats>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminSubscriptionsStats>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminSubscriptionsStatsQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminSubscriptionsStats>>>
-export type GetApiV1AdminSubscriptionsStatsQueryError = ErrorType<void>
+export type GetAdminSubscriptionsStatsQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminSubscriptionsStats>>>
+export type GetAdminSubscriptionsStatsQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminSubscriptionsStats<TData = Awaited<ReturnType<typeof getApiV1AdminSubscriptionsStats>>, TError = ErrorType<void>>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSubscriptionsStats>>, TError, TData>> & Pick<
+export function useGetAdminSubscriptionsStats<TData = Awaited<ReturnType<typeof getAdminSubscriptionsStats>>, TError = ErrorType<void>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSubscriptionsStats>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminSubscriptionsStats>>,
+          Awaited<ReturnType<typeof getAdminSubscriptionsStats>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminSubscriptionsStats>>
+          Awaited<ReturnType<typeof getAdminSubscriptionsStats>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminSubscriptionsStats<TData = Awaited<ReturnType<typeof getApiV1AdminSubscriptionsStats>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSubscriptionsStats>>, TError, TData>> & Pick<
+export function useGetAdminSubscriptionsStats<TData = Awaited<ReturnType<typeof getAdminSubscriptionsStats>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSubscriptionsStats>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminSubscriptionsStats>>,
+          Awaited<ReturnType<typeof getAdminSubscriptionsStats>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminSubscriptionsStats>>
+          Awaited<ReturnType<typeof getAdminSubscriptionsStats>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminSubscriptionsStats<TData = Awaited<ReturnType<typeof getApiV1AdminSubscriptionsStats>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSubscriptionsStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminSubscriptionsStats<TData = Awaited<ReturnType<typeof getAdminSubscriptionsStats>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSubscriptionsStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get subscription statistics
  */
 
-export function useGetApiV1AdminSubscriptionsStats<TData = Awaited<ReturnType<typeof getApiV1AdminSubscriptionsStats>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSubscriptionsStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminSubscriptionsStats<TData = Awaited<ReturnType<typeof getAdminSubscriptionsStats>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSubscriptionsStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminSubscriptionsStatsQueryOptions(options)
+  const queryOptions = getGetAdminSubscriptionsStatsQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -229,14 +229,14 @@ export function useGetApiV1AdminSubscriptionsStats<TData = Awaited<ReturnType<ty
 /**
  * @summary Export subscriptions
  */
-export const getApiV1AdminSubscriptionsExport = (
-    params?: GetApiV1AdminSubscriptionsExportParams,
+export const getAdminSubscriptionsExport = (
+    params?: GetAdminSubscriptionsExportParams,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<void>(
-      {url: `/api/v1/admin/subscriptions/export`, method: 'GET',
+      {url: `/admin/subscriptions/export`, method: 'GET',
         params, signal
     },
       options);
@@ -245,69 +245,69 @@ export const getApiV1AdminSubscriptionsExport = (
 
 
 
-export const getGetApiV1AdminSubscriptionsExportQueryKey = (params?: GetApiV1AdminSubscriptionsExportParams,) => {
+export const getGetAdminSubscriptionsExportQueryKey = (params?: GetAdminSubscriptionsExportParams,) => {
     return [
-    `/api/v1/admin/subscriptions/export`, ...(params ? [params]: [])
+    `/admin/subscriptions/export`, ...(params ? [params]: [])
     ] as const;
     }
 
     
-export const getGetApiV1AdminSubscriptionsExportQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminSubscriptionsExport>>, TError = ErrorType<void>>(params?: GetApiV1AdminSubscriptionsExportParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSubscriptionsExport>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminSubscriptionsExportQueryOptions = <TData = Awaited<ReturnType<typeof getAdminSubscriptionsExport>>, TError = ErrorType<void>>(params?: GetAdminSubscriptionsExportParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSubscriptionsExport>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminSubscriptionsExportQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminSubscriptionsExportQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminSubscriptionsExport>>> = ({ signal }) => getApiV1AdminSubscriptionsExport(params, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminSubscriptionsExport>>> = ({ signal }) => getAdminSubscriptionsExport(params, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSubscriptionsExport>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminSubscriptionsExport>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminSubscriptionsExportQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminSubscriptionsExport>>>
-export type GetApiV1AdminSubscriptionsExportQueryError = ErrorType<void>
+export type GetAdminSubscriptionsExportQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminSubscriptionsExport>>>
+export type GetAdminSubscriptionsExportQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminSubscriptionsExport<TData = Awaited<ReturnType<typeof getApiV1AdminSubscriptionsExport>>, TError = ErrorType<void>>(
- params: undefined |  GetApiV1AdminSubscriptionsExportParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSubscriptionsExport>>, TError, TData>> & Pick<
+export function useGetAdminSubscriptionsExport<TData = Awaited<ReturnType<typeof getAdminSubscriptionsExport>>, TError = ErrorType<void>>(
+ params: undefined |  GetAdminSubscriptionsExportParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSubscriptionsExport>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminSubscriptionsExport>>,
+          Awaited<ReturnType<typeof getAdminSubscriptionsExport>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminSubscriptionsExport>>
+          Awaited<ReturnType<typeof getAdminSubscriptionsExport>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminSubscriptionsExport<TData = Awaited<ReturnType<typeof getApiV1AdminSubscriptionsExport>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminSubscriptionsExportParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSubscriptionsExport>>, TError, TData>> & Pick<
+export function useGetAdminSubscriptionsExport<TData = Awaited<ReturnType<typeof getAdminSubscriptionsExport>>, TError = ErrorType<void>>(
+ params?: GetAdminSubscriptionsExportParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSubscriptionsExport>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminSubscriptionsExport>>,
+          Awaited<ReturnType<typeof getAdminSubscriptionsExport>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminSubscriptionsExport>>
+          Awaited<ReturnType<typeof getAdminSubscriptionsExport>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminSubscriptionsExport<TData = Awaited<ReturnType<typeof getApiV1AdminSubscriptionsExport>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminSubscriptionsExportParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSubscriptionsExport>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminSubscriptionsExport<TData = Awaited<ReturnType<typeof getAdminSubscriptionsExport>>, TError = ErrorType<void>>(
+ params?: GetAdminSubscriptionsExportParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSubscriptionsExport>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Export subscriptions
  */
 
-export function useGetApiV1AdminSubscriptionsExport<TData = Awaited<ReturnType<typeof getApiV1AdminSubscriptionsExport>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminSubscriptionsExportParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSubscriptionsExport>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminSubscriptionsExport<TData = Awaited<ReturnType<typeof getAdminSubscriptionsExport>>, TError = ErrorType<void>>(
+ params?: GetAdminSubscriptionsExportParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSubscriptionsExport>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminSubscriptionsExportQueryOptions(params,options)
+  const queryOptions = getGetAdminSubscriptionsExportQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -322,14 +322,14 @@ export function useGetApiV1AdminSubscriptionsExport<TData = Awaited<ReturnType<t
 /**
  * @summary Get subscription by ID
  */
-export const getApiV1AdminSubscriptionsSubscriptionId = (
+export const getAdminSubscriptionsSubscriptionId = (
     subscriptionId: string,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<GetApiV1AdminSubscriptionsSubscriptionId200>(
-      {url: `/api/v1/admin/subscriptions/${subscriptionId}`, method: 'GET', signal
+      return customInstance<GetAdminSubscriptionsSubscriptionId200>(
+      {url: `/admin/subscriptions/${subscriptionId}`, method: 'GET', signal
     },
       options);
     }
@@ -337,69 +337,69 @@ export const getApiV1AdminSubscriptionsSubscriptionId = (
 
 
 
-export const getGetApiV1AdminSubscriptionsSubscriptionIdQueryKey = (subscriptionId?: string,) => {
+export const getGetAdminSubscriptionsSubscriptionIdQueryKey = (subscriptionId?: string,) => {
     return [
-    `/api/v1/admin/subscriptions/${subscriptionId}`
+    `/admin/subscriptions/${subscriptionId}`
     ] as const;
     }
 
     
-export const getGetApiV1AdminSubscriptionsSubscriptionIdQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminSubscriptionsSubscriptionId>>, TError = ErrorType<void>>(subscriptionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSubscriptionsSubscriptionId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminSubscriptionsSubscriptionIdQueryOptions = <TData = Awaited<ReturnType<typeof getAdminSubscriptionsSubscriptionId>>, TError = ErrorType<void>>(subscriptionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSubscriptionsSubscriptionId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminSubscriptionsSubscriptionIdQueryKey(subscriptionId);
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminSubscriptionsSubscriptionIdQueryKey(subscriptionId);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminSubscriptionsSubscriptionId>>> = ({ signal }) => getApiV1AdminSubscriptionsSubscriptionId(subscriptionId, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminSubscriptionsSubscriptionId>>> = ({ signal }) => getAdminSubscriptionsSubscriptionId(subscriptionId, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(subscriptionId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSubscriptionsSubscriptionId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: !!(subscriptionId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminSubscriptionsSubscriptionId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminSubscriptionsSubscriptionIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminSubscriptionsSubscriptionId>>>
-export type GetApiV1AdminSubscriptionsSubscriptionIdQueryError = ErrorType<void>
+export type GetAdminSubscriptionsSubscriptionIdQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminSubscriptionsSubscriptionId>>>
+export type GetAdminSubscriptionsSubscriptionIdQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminSubscriptionsSubscriptionId<TData = Awaited<ReturnType<typeof getApiV1AdminSubscriptionsSubscriptionId>>, TError = ErrorType<void>>(
- subscriptionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSubscriptionsSubscriptionId>>, TError, TData>> & Pick<
+export function useGetAdminSubscriptionsSubscriptionId<TData = Awaited<ReturnType<typeof getAdminSubscriptionsSubscriptionId>>, TError = ErrorType<void>>(
+ subscriptionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSubscriptionsSubscriptionId>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminSubscriptionsSubscriptionId>>,
+          Awaited<ReturnType<typeof getAdminSubscriptionsSubscriptionId>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminSubscriptionsSubscriptionId>>
+          Awaited<ReturnType<typeof getAdminSubscriptionsSubscriptionId>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminSubscriptionsSubscriptionId<TData = Awaited<ReturnType<typeof getApiV1AdminSubscriptionsSubscriptionId>>, TError = ErrorType<void>>(
- subscriptionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSubscriptionsSubscriptionId>>, TError, TData>> & Pick<
+export function useGetAdminSubscriptionsSubscriptionId<TData = Awaited<ReturnType<typeof getAdminSubscriptionsSubscriptionId>>, TError = ErrorType<void>>(
+ subscriptionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSubscriptionsSubscriptionId>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminSubscriptionsSubscriptionId>>,
+          Awaited<ReturnType<typeof getAdminSubscriptionsSubscriptionId>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminSubscriptionsSubscriptionId>>
+          Awaited<ReturnType<typeof getAdminSubscriptionsSubscriptionId>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminSubscriptionsSubscriptionId<TData = Awaited<ReturnType<typeof getApiV1AdminSubscriptionsSubscriptionId>>, TError = ErrorType<void>>(
- subscriptionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSubscriptionsSubscriptionId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminSubscriptionsSubscriptionId<TData = Awaited<ReturnType<typeof getAdminSubscriptionsSubscriptionId>>, TError = ErrorType<void>>(
+ subscriptionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSubscriptionsSubscriptionId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get subscription by ID
  */
 
-export function useGetApiV1AdminSubscriptionsSubscriptionId<TData = Awaited<ReturnType<typeof getApiV1AdminSubscriptionsSubscriptionId>>, TError = ErrorType<void>>(
- subscriptionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSubscriptionsSubscriptionId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminSubscriptionsSubscriptionId<TData = Awaited<ReturnType<typeof getAdminSubscriptionsSubscriptionId>>, TError = ErrorType<void>>(
+ subscriptionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSubscriptionsSubscriptionId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminSubscriptionsSubscriptionIdQueryOptions(subscriptionId,options)
+  const queryOptions = getGetAdminSubscriptionsSubscriptionIdQueryOptions(subscriptionId,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -414,27 +414,27 @@ export function useGetApiV1AdminSubscriptionsSubscriptionId<TData = Awaited<Retu
 /**
  * @summary Update subscription
  */
-export const patchApiV1AdminSubscriptionsSubscriptionId = (
+export const patchAdminSubscriptionsSubscriptionId = (
     subscriptionId: string,
-    patchApiV1AdminSubscriptionsSubscriptionIdBody: BodyType<PatchApiV1AdminSubscriptionsSubscriptionIdBody>,
+    patchAdminSubscriptionsSubscriptionIdBody: BodyType<PatchAdminSubscriptionsSubscriptionIdBody>,
  options?: SecondParameter<typeof customInstance>,) => {
       
       
-      return customInstance<PatchApiV1AdminSubscriptionsSubscriptionId200>(
-      {url: `/api/v1/admin/subscriptions/${subscriptionId}`, method: 'PATCH',
+      return customInstance<PatchAdminSubscriptionsSubscriptionId200>(
+      {url: `/admin/subscriptions/${subscriptionId}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
-      data: patchApiV1AdminSubscriptionsSubscriptionIdBody
+      data: patchAdminSubscriptionsSubscriptionIdBody
     },
       options);
     }
   
 
 
-export const getPatchApiV1AdminSubscriptionsSubscriptionIdMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchApiV1AdminSubscriptionsSubscriptionId>>, TError,{subscriptionId: string;data: BodyType<PatchApiV1AdminSubscriptionsSubscriptionIdBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof patchApiV1AdminSubscriptionsSubscriptionId>>, TError,{subscriptionId: string;data: BodyType<PatchApiV1AdminSubscriptionsSubscriptionIdBody>}, TContext> => {
+export const getPatchAdminSubscriptionsSubscriptionIdMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchAdminSubscriptionsSubscriptionId>>, TError,{subscriptionId: string;data: BodyType<PatchAdminSubscriptionsSubscriptionIdBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof patchAdminSubscriptionsSubscriptionId>>, TError,{subscriptionId: string;data: BodyType<PatchAdminSubscriptionsSubscriptionIdBody>}, TContext> => {
 
-const mutationKey = ['patchApiV1AdminSubscriptionsSubscriptionId'];
+const mutationKey = ['patchAdminSubscriptionsSubscriptionId'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -444,10 +444,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchApiV1AdminSubscriptionsSubscriptionId>>, {subscriptionId: string;data: BodyType<PatchApiV1AdminSubscriptionsSubscriptionIdBody>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchAdminSubscriptionsSubscriptionId>>, {subscriptionId: string;data: BodyType<PatchAdminSubscriptionsSubscriptionIdBody>}> = (props) => {
           const {subscriptionId,data} = props ?? {};
 
-          return  patchApiV1AdminSubscriptionsSubscriptionId(subscriptionId,data,requestOptions)
+          return  patchAdminSubscriptionsSubscriptionId(subscriptionId,data,requestOptions)
         }
 
         
@@ -455,47 +455,47 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PatchApiV1AdminSubscriptionsSubscriptionIdMutationResult = NonNullable<Awaited<ReturnType<typeof patchApiV1AdminSubscriptionsSubscriptionId>>>
-    export type PatchApiV1AdminSubscriptionsSubscriptionIdMutationBody = BodyType<PatchApiV1AdminSubscriptionsSubscriptionIdBody>
-    export type PatchApiV1AdminSubscriptionsSubscriptionIdMutationError = ErrorType<void>
+    export type PatchAdminSubscriptionsSubscriptionIdMutationResult = NonNullable<Awaited<ReturnType<typeof patchAdminSubscriptionsSubscriptionId>>>
+    export type PatchAdminSubscriptionsSubscriptionIdMutationBody = BodyType<PatchAdminSubscriptionsSubscriptionIdBody>
+    export type PatchAdminSubscriptionsSubscriptionIdMutationError = ErrorType<void>
 
     /**
  * @summary Update subscription
  */
-export const usePatchApiV1AdminSubscriptionsSubscriptionId = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchApiV1AdminSubscriptionsSubscriptionId>>, TError,{subscriptionId: string;data: BodyType<PatchApiV1AdminSubscriptionsSubscriptionIdBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePatchAdminSubscriptionsSubscriptionId = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchAdminSubscriptionsSubscriptionId>>, TError,{subscriptionId: string;data: BodyType<PatchAdminSubscriptionsSubscriptionIdBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof patchApiV1AdminSubscriptionsSubscriptionId>>,
+        Awaited<ReturnType<typeof patchAdminSubscriptionsSubscriptionId>>,
         TError,
-        {subscriptionId: string;data: BodyType<PatchApiV1AdminSubscriptionsSubscriptionIdBody>},
+        {subscriptionId: string;data: BodyType<PatchAdminSubscriptionsSubscriptionIdBody>},
         TContext
       > => {
 
-      const mutationOptions = getPatchApiV1AdminSubscriptionsSubscriptionIdMutationOptions(options);
+      const mutationOptions = getPatchAdminSubscriptionsSubscriptionIdMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
     /**
  * @summary Delete subscription
  */
-export const deleteApiV1AdminSubscriptionsSubscriptionId = (
+export const deleteAdminSubscriptionsSubscriptionId = (
     subscriptionId: string,
  options?: SecondParameter<typeof customInstance>,) => {
       
       
-      return customInstance<DeleteApiV1AdminSubscriptionsSubscriptionId200>(
-      {url: `/api/v1/admin/subscriptions/${subscriptionId}`, method: 'DELETE'
+      return customInstance<DeleteAdminSubscriptionsSubscriptionId200>(
+      {url: `/admin/subscriptions/${subscriptionId}`, method: 'DELETE'
     },
       options);
     }
   
 
 
-export const getDeleteApiV1AdminSubscriptionsSubscriptionIdMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1AdminSubscriptionsSubscriptionId>>, TError,{subscriptionId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1AdminSubscriptionsSubscriptionId>>, TError,{subscriptionId: string}, TContext> => {
+export const getDeleteAdminSubscriptionsSubscriptionIdMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAdminSubscriptionsSubscriptionId>>, TError,{subscriptionId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteAdminSubscriptionsSubscriptionId>>, TError,{subscriptionId: string}, TContext> => {
 
-const mutationKey = ['deleteApiV1AdminSubscriptionsSubscriptionId'];
+const mutationKey = ['deleteAdminSubscriptionsSubscriptionId'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -505,10 +505,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteApiV1AdminSubscriptionsSubscriptionId>>, {subscriptionId: string}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteAdminSubscriptionsSubscriptionId>>, {subscriptionId: string}> = (props) => {
           const {subscriptionId} = props ?? {};
 
-          return  deleteApiV1AdminSubscriptionsSubscriptionId(subscriptionId,requestOptions)
+          return  deleteAdminSubscriptionsSubscriptionId(subscriptionId,requestOptions)
         }
 
         
@@ -516,48 +516,48 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type DeleteApiV1AdminSubscriptionsSubscriptionIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteApiV1AdminSubscriptionsSubscriptionId>>>
+    export type DeleteAdminSubscriptionsSubscriptionIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteAdminSubscriptionsSubscriptionId>>>
     
-    export type DeleteApiV1AdminSubscriptionsSubscriptionIdMutationError = ErrorType<void>
+    export type DeleteAdminSubscriptionsSubscriptionIdMutationError = ErrorType<void>
 
     /**
  * @summary Delete subscription
  */
-export const useDeleteApiV1AdminSubscriptionsSubscriptionId = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1AdminSubscriptionsSubscriptionId>>, TError,{subscriptionId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const useDeleteAdminSubscriptionsSubscriptionId = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAdminSubscriptionsSubscriptionId>>, TError,{subscriptionId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof deleteApiV1AdminSubscriptionsSubscriptionId>>,
+        Awaited<ReturnType<typeof deleteAdminSubscriptionsSubscriptionId>>,
         TError,
         {subscriptionId: string},
         TContext
       > => {
 
-      const mutationOptions = getDeleteApiV1AdminSubscriptionsSubscriptionIdMutationOptions(options);
+      const mutationOptions = getDeleteAdminSubscriptionsSubscriptionIdMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
     /**
  * @summary Cancel subscription
  */
-export const postApiV1AdminSubscriptionsSubscriptionIdCancel = (
+export const postAdminSubscriptionsSubscriptionIdCancel = (
     subscriptionId: string,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<PostApiV1AdminSubscriptionsSubscriptionIdCancel200>(
-      {url: `/api/v1/admin/subscriptions/${subscriptionId}/cancel`, method: 'POST', signal
+      return customInstance<PostAdminSubscriptionsSubscriptionIdCancel200>(
+      {url: `/admin/subscriptions/${subscriptionId}/cancel`, method: 'POST', signal
     },
       options);
     }
   
 
 
-export const getPostApiV1AdminSubscriptionsSubscriptionIdCancelMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminSubscriptionsSubscriptionIdCancel>>, TError,{subscriptionId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminSubscriptionsSubscriptionIdCancel>>, TError,{subscriptionId: string}, TContext> => {
+export const getPostAdminSubscriptionsSubscriptionIdCancelMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminSubscriptionsSubscriptionIdCancel>>, TError,{subscriptionId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postAdminSubscriptionsSubscriptionIdCancel>>, TError,{subscriptionId: string}, TContext> => {
 
-const mutationKey = ['postApiV1AdminSubscriptionsSubscriptionIdCancel'];
+const mutationKey = ['postAdminSubscriptionsSubscriptionIdCancel'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -567,10 +567,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1AdminSubscriptionsSubscriptionIdCancel>>, {subscriptionId: string}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postAdminSubscriptionsSubscriptionIdCancel>>, {subscriptionId: string}> = (props) => {
           const {subscriptionId} = props ?? {};
 
-          return  postApiV1AdminSubscriptionsSubscriptionIdCancel(subscriptionId,requestOptions)
+          return  postAdminSubscriptionsSubscriptionIdCancel(subscriptionId,requestOptions)
         }
 
         
@@ -578,48 +578,48 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiV1AdminSubscriptionsSubscriptionIdCancelMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1AdminSubscriptionsSubscriptionIdCancel>>>
+    export type PostAdminSubscriptionsSubscriptionIdCancelMutationResult = NonNullable<Awaited<ReturnType<typeof postAdminSubscriptionsSubscriptionIdCancel>>>
     
-    export type PostApiV1AdminSubscriptionsSubscriptionIdCancelMutationError = ErrorType<void>
+    export type PostAdminSubscriptionsSubscriptionIdCancelMutationError = ErrorType<void>
 
     /**
  * @summary Cancel subscription
  */
-export const usePostApiV1AdminSubscriptionsSubscriptionIdCancel = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminSubscriptionsSubscriptionIdCancel>>, TError,{subscriptionId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePostAdminSubscriptionsSubscriptionIdCancel = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminSubscriptionsSubscriptionIdCancel>>, TError,{subscriptionId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiV1AdminSubscriptionsSubscriptionIdCancel>>,
+        Awaited<ReturnType<typeof postAdminSubscriptionsSubscriptionIdCancel>>,
         TError,
         {subscriptionId: string},
         TContext
       > => {
 
-      const mutationOptions = getPostApiV1AdminSubscriptionsSubscriptionIdCancelMutationOptions(options);
+      const mutationOptions = getPostAdminSubscriptionsSubscriptionIdCancelMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
     /**
  * @summary Reactivate cancelled subscription
  */
-export const postApiV1AdminSubscriptionsSubscriptionIdReactivate = (
+export const postAdminSubscriptionsSubscriptionIdReactivate = (
     subscriptionId: string,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<PostApiV1AdminSubscriptionsSubscriptionIdReactivate200>(
-      {url: `/api/v1/admin/subscriptions/${subscriptionId}/reactivate`, method: 'POST', signal
+      return customInstance<PostAdminSubscriptionsSubscriptionIdReactivate200>(
+      {url: `/admin/subscriptions/${subscriptionId}/reactivate`, method: 'POST', signal
     },
       options);
     }
   
 
 
-export const getPostApiV1AdminSubscriptionsSubscriptionIdReactivateMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminSubscriptionsSubscriptionIdReactivate>>, TError,{subscriptionId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminSubscriptionsSubscriptionIdReactivate>>, TError,{subscriptionId: string}, TContext> => {
+export const getPostAdminSubscriptionsSubscriptionIdReactivateMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminSubscriptionsSubscriptionIdReactivate>>, TError,{subscriptionId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postAdminSubscriptionsSubscriptionIdReactivate>>, TError,{subscriptionId: string}, TContext> => {
 
-const mutationKey = ['postApiV1AdminSubscriptionsSubscriptionIdReactivate'];
+const mutationKey = ['postAdminSubscriptionsSubscriptionIdReactivate'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -629,10 +629,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1AdminSubscriptionsSubscriptionIdReactivate>>, {subscriptionId: string}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postAdminSubscriptionsSubscriptionIdReactivate>>, {subscriptionId: string}> = (props) => {
           const {subscriptionId} = props ?? {};
 
-          return  postApiV1AdminSubscriptionsSubscriptionIdReactivate(subscriptionId,requestOptions)
+          return  postAdminSubscriptionsSubscriptionIdReactivate(subscriptionId,requestOptions)
         }
 
         
@@ -640,51 +640,51 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiV1AdminSubscriptionsSubscriptionIdReactivateMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1AdminSubscriptionsSubscriptionIdReactivate>>>
+    export type PostAdminSubscriptionsSubscriptionIdReactivateMutationResult = NonNullable<Awaited<ReturnType<typeof postAdminSubscriptionsSubscriptionIdReactivate>>>
     
-    export type PostApiV1AdminSubscriptionsSubscriptionIdReactivateMutationError = ErrorType<void>
+    export type PostAdminSubscriptionsSubscriptionIdReactivateMutationError = ErrorType<void>
 
     /**
  * @summary Reactivate cancelled subscription
  */
-export const usePostApiV1AdminSubscriptionsSubscriptionIdReactivate = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminSubscriptionsSubscriptionIdReactivate>>, TError,{subscriptionId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePostAdminSubscriptionsSubscriptionIdReactivate = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminSubscriptionsSubscriptionIdReactivate>>, TError,{subscriptionId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiV1AdminSubscriptionsSubscriptionIdReactivate>>,
+        Awaited<ReturnType<typeof postAdminSubscriptionsSubscriptionIdReactivate>>,
         TError,
         {subscriptionId: string},
         TContext
       > => {
 
-      const mutationOptions = getPostApiV1AdminSubscriptionsSubscriptionIdReactivateMutationOptions(options);
+      const mutationOptions = getPostAdminSubscriptionsSubscriptionIdReactivateMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
     /**
  * @summary Extend trial period
  */
-export const postApiV1AdminSubscriptionsSubscriptionIdExtendTrial = (
+export const postAdminSubscriptionsSubscriptionIdExtendTrial = (
     subscriptionId: string,
-    postApiV1AdminSubscriptionsSubscriptionIdExtendTrialBody: BodyType<PostApiV1AdminSubscriptionsSubscriptionIdExtendTrialBody>,
+    postAdminSubscriptionsSubscriptionIdExtendTrialBody: BodyType<PostAdminSubscriptionsSubscriptionIdExtendTrialBody>,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<PostApiV1AdminSubscriptionsSubscriptionIdExtendTrial200>(
-      {url: `/api/v1/admin/subscriptions/${subscriptionId}/extend-trial`, method: 'POST',
+      return customInstance<PostAdminSubscriptionsSubscriptionIdExtendTrial200>(
+      {url: `/admin/subscriptions/${subscriptionId}/extend-trial`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: postApiV1AdminSubscriptionsSubscriptionIdExtendTrialBody, signal
+      data: postAdminSubscriptionsSubscriptionIdExtendTrialBody, signal
     },
       options);
     }
   
 
 
-export const getPostApiV1AdminSubscriptionsSubscriptionIdExtendTrialMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminSubscriptionsSubscriptionIdExtendTrial>>, TError,{subscriptionId: string;data: BodyType<PostApiV1AdminSubscriptionsSubscriptionIdExtendTrialBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminSubscriptionsSubscriptionIdExtendTrial>>, TError,{subscriptionId: string;data: BodyType<PostApiV1AdminSubscriptionsSubscriptionIdExtendTrialBody>}, TContext> => {
+export const getPostAdminSubscriptionsSubscriptionIdExtendTrialMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminSubscriptionsSubscriptionIdExtendTrial>>, TError,{subscriptionId: string;data: BodyType<PostAdminSubscriptionsSubscriptionIdExtendTrialBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postAdminSubscriptionsSubscriptionIdExtendTrial>>, TError,{subscriptionId: string;data: BodyType<PostAdminSubscriptionsSubscriptionIdExtendTrialBody>}, TContext> => {
 
-const mutationKey = ['postApiV1AdminSubscriptionsSubscriptionIdExtendTrial'];
+const mutationKey = ['postAdminSubscriptionsSubscriptionIdExtendTrial'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -694,10 +694,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1AdminSubscriptionsSubscriptionIdExtendTrial>>, {subscriptionId: string;data: BodyType<PostApiV1AdminSubscriptionsSubscriptionIdExtendTrialBody>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postAdminSubscriptionsSubscriptionIdExtendTrial>>, {subscriptionId: string;data: BodyType<PostAdminSubscriptionsSubscriptionIdExtendTrialBody>}> = (props) => {
           const {subscriptionId,data} = props ?? {};
 
-          return  postApiV1AdminSubscriptionsSubscriptionIdExtendTrial(subscriptionId,data,requestOptions)
+          return  postAdminSubscriptionsSubscriptionIdExtendTrial(subscriptionId,data,requestOptions)
         }
 
         
@@ -705,23 +705,23 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiV1AdminSubscriptionsSubscriptionIdExtendTrialMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1AdminSubscriptionsSubscriptionIdExtendTrial>>>
-    export type PostApiV1AdminSubscriptionsSubscriptionIdExtendTrialMutationBody = BodyType<PostApiV1AdminSubscriptionsSubscriptionIdExtendTrialBody>
-    export type PostApiV1AdminSubscriptionsSubscriptionIdExtendTrialMutationError = ErrorType<void>
+    export type PostAdminSubscriptionsSubscriptionIdExtendTrialMutationResult = NonNullable<Awaited<ReturnType<typeof postAdminSubscriptionsSubscriptionIdExtendTrial>>>
+    export type PostAdminSubscriptionsSubscriptionIdExtendTrialMutationBody = BodyType<PostAdminSubscriptionsSubscriptionIdExtendTrialBody>
+    export type PostAdminSubscriptionsSubscriptionIdExtendTrialMutationError = ErrorType<void>
 
     /**
  * @summary Extend trial period
  */
-export const usePostApiV1AdminSubscriptionsSubscriptionIdExtendTrial = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminSubscriptionsSubscriptionIdExtendTrial>>, TError,{subscriptionId: string;data: BodyType<PostApiV1AdminSubscriptionsSubscriptionIdExtendTrialBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePostAdminSubscriptionsSubscriptionIdExtendTrial = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminSubscriptionsSubscriptionIdExtendTrial>>, TError,{subscriptionId: string;data: BodyType<PostAdminSubscriptionsSubscriptionIdExtendTrialBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiV1AdminSubscriptionsSubscriptionIdExtendTrial>>,
+        Awaited<ReturnType<typeof postAdminSubscriptionsSubscriptionIdExtendTrial>>,
         TError,
-        {subscriptionId: string;data: BodyType<PostApiV1AdminSubscriptionsSubscriptionIdExtendTrialBody>},
+        {subscriptionId: string;data: BodyType<PostAdminSubscriptionsSubscriptionIdExtendTrialBody>},
         TContext
       > => {
 
-      const mutationOptions = getPostApiV1AdminSubscriptionsSubscriptionIdExtendTrialMutationOptions(options);
+      const mutationOptions = getPostAdminSubscriptionsSubscriptionIdExtendTrialMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }

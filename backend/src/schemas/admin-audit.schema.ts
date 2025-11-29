@@ -143,7 +143,7 @@ const auditCleanupResponseSchema = registry.register(
 // GET /api/v1/admin/audit
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/audit',
+  path: '/admin/audit',
   summary: 'Get paginated list of audit logs',
   tags: ['Admin - Audit'],
   security: [{ bearerAuth: [] }],
@@ -178,7 +178,7 @@ registry.registerPath({
 // GET /api/v1/admin/audit/stats
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/audit/stats',
+  path: '/admin/audit/stats',
   summary: 'Get audit statistics',
   tags: ['Admin - Audit'],
   security: [{ bearerAuth: [] }],
@@ -199,7 +199,7 @@ registry.registerPath({
 // GET /api/v1/admin/audit/entity/{entityType}/{entityId}
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/audit/entity/{entityType}/{entityId}',
+  path: '/admin/audit/entity/{entityType}/{entityId}',
   summary: 'Get audit history for a specific entity',
   tags: ['Admin - Audit'],
   security: [{ bearerAuth: [] }],
@@ -227,7 +227,7 @@ registry.registerPath({
 // GET /api/v1/admin/audit/{id}
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/audit/{id}',
+  path: '/admin/audit/{id}',
   summary: 'Get a single audit log by ID',
   tags: ['Admin - Audit'],
   security: [{ bearerAuth: [] }],
@@ -254,7 +254,7 @@ registry.registerPath({
 // GET /api/v1/admin/audit/export/download
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/audit/export/download',
+  path: '/admin/audit/export/download',
   summary: 'Export audit logs',
   tags: ['Admin - Audit'],
   security: [{ bearerAuth: [] }],
@@ -287,7 +287,7 @@ registry.registerPath({
 // POST /api/v1/admin/audit/cleanup
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/admin/audit/cleanup',
+  path: '/admin/audit/cleanup',
   summary: 'Clean up old audit logs',
   tags: ['Admin - Audit'],
   security: [{ bearerAuth: [] }],

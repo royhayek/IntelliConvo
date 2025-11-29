@@ -5,8 +5,8 @@ import { CheckCircle, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { useAuthStore } from "@/lib/store";
-import { useGetApiV1ConfigPublic } from "@/lib/api/generated/queries/config/config";
-import { useGetApiV1AuthMe, usePostApiV1AuthResendVerification } from "@/lib/api/generated/queries/authentication/authentication";
+import { useGetConfigPublic } from "@/lib/api/generated/queries/config/config";
+import { useGetAuthMe, usePostAuthResendVerification } from "@/lib/api/generated/queries/authentication/authentication";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 interface EmailVerificationAlertProps {
@@ -22,10 +22,10 @@ export function EmailVerificationAlert({
 
   // Fetch public config to check if email verification is required
   const { data: configData, isLoading: isConfigLoading } =
-    useGetApiV1ConfigPublic();
+    useGetConfigPublic();
 
   // Fetch fresh user data to check if email was verified
-  const { data: meData } = useGetApiV1AuthMe({
+  const { data: meData } = useGetAuthMe({
     query: {
       enabled: !!user && !user.emailVerified,
       staleTime: 0, // Always fetch fresh data
@@ -39,7 +39,7 @@ export function EmailVerificationAlert({
     }
   }, [meData, user, updateUser]);
 
-  const resendMutation = usePostApiV1AuthResendVerification({
+  const resendMutation = usePostAuthResendVerification({
     mutation: {
       onSuccess: (data) => {
         const message = (data as { message?: string })?.message || 'Verification email sent.';

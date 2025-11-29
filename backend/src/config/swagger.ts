@@ -37,7 +37,7 @@ export const setupSwagger = (app: Express): void => {
   const swaggerOptions = {
     explorer: true,
     customCss: '.swagger-ui .topbar { display: none }',
-    customSiteTitle: 'IntelligentConvo API Documentation',
+    customSiteTitle: 'IntelliConvo API Documentation',
     swaggerOptions: {
       persistAuthorization: true,
       displayRequestDuration: true,

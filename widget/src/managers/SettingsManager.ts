@@ -206,8 +206,8 @@ export class SettingsManager {
       root.style.setProperty('--ic-text-secondary', this.settings.darkModeTextSecondaryColor);
       root.style.setProperty('--ic-border', this.settings.darkModeBorderColor);
       root.style.setProperty('--ic-message-area-bg', this.settings.messageAreaBackgroundColor || this.settings.darkModeSecondaryBackgroundColor);
-      root.style.setProperty('--ic-assistant-bubble-bg', this.settings.darkModeSecondaryBackgroundColor);
-      root.style.setProperty('--ic-assistant-bubble-text', this.settings.darkModeTextColor);
+      root.style.setProperty('--ic-assistant-bubble-bg', this.settings.assistantBubbleBackgroundColor);
+      root.style.setProperty('--ic-assistant-bubble-text', this.settings.assistantBubbleTextColor);
       root.style.setProperty('--ic-input-bg', this.settings.darkModeSecondaryBackgroundColor);
       root.style.setProperty('--ic-input-text', this.settings.darkModeTextColor);
       root.style.setProperty('--ic-input-border', this.settings.darkModeTextSecondaryColor);

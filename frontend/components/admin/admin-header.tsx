@@ -44,7 +44,7 @@ export function AdminHeader({ onMenuClick }: AdminHeaderProps) {
           <Menu className="h-5 w-5" />
         </Button>
 
-        <BrandLogo size="sm" showText={true} href="/admin" animated={false} />
+        <BrandLogo size="xs" showText={true} href="/admin" animated={false} />
       </div>
 
       {/* Right side - User menu */}

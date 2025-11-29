@@ -14,22 +14,22 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useRequireUser } from "@/lib/hooks/useAuth";
 import { AuthLoading } from "@/components/auth/auth-loading";
 import {
-  useGetApiV1SitesSiteId,
-  usePostApiV1Sites,
-  getGetApiV1SitesSiteIdQueryKey,
-  usePostApiV1SitesSiteIdDiscover,
-  useGetApiV1SitesSiteIdDiscovery,
-  usePutApiV1SitesSiteIdDiscoverySelections,
-  usePostApiV1SitesSiteIdDiscoveryBulkSelect,
-  usePostApiV1SitesSiteIdDiscoveryManualUrls,
-  usePostApiV1SitesSiteIdCrawlSelective,
+  useGetSitesSiteId,
+  usePostSites,
+  getGetSitesSiteIdQueryKey,
+  usePostSitesSiteIdDiscover,
+  useGetSitesSiteIdDiscovery,
+  usePutSitesSiteIdDiscoverySelections,
+  usePostSitesSiteIdDiscoveryBulkSelect,
+  usePostSitesSiteIdDiscoveryManualUrls,
+  usePostSitesSiteIdCrawlSelective,
 } from "@/lib/api/generated/queries/sites/sites";
 import {
-  useGetApiV1SitesSiteIdUrls,
+  useGetSitesSiteIdUrls,
 } from "@/lib/api/generated/queries/urls/urls";
 import {
-  usePostApiV1BillingSubscriptions,
-  useGetApiV1BillingPlans,
+  usePostBillingSubscriptions,
+  useGetBillingPlans,
 } from "@/lib/api/generated/queries/subscriptions/subscriptions";
 import { useSiteSocket, CrawlProgressUpdate, EmbeddingProgressUpdate } from "@/lib/hooks/useSiteSocket";
 
@@ -152,7 +152,7 @@ function OnboardingContent() {
   }, [searchParams]);
 
   // Fetch site data
-  const { data: site } = useGetApiV1SitesSiteId(siteId!, {
+  const { data: site } = useGetSitesSiteId(siteId!, {
     query: {
       enabled: !isAuthLoading && isAuthenticated && !!siteId,
     },
@@ -160,7 +160,7 @@ function OnboardingContent() {
 
   // Fetch URLs when needed (for crawling step review)
   const crawlStatus = site?.crawlStatus as string | undefined;
-  const { data: urls = [] } = useGetApiV1SitesSiteIdUrls(
+  const { data: urls = [] } = useGetSitesSiteIdUrls(
     siteId!,
     {},
     {
@@ -171,21 +171,21 @@ function OnboardingContent() {
   );
 
   // Mutations
-  const createSiteMutation = usePostApiV1Sites();
-  const subscriptionMutation = usePostApiV1BillingSubscriptions();
+  const createSiteMutation = usePostSites();
+  const subscriptionMutation = usePostBillingSubscriptions();
 
   // Discovery mutations
-  const discoverMutation = usePostApiV1SitesSiteIdDiscover();
-  const updateSelectionsMutation = usePutApiV1SitesSiteIdDiscoverySelections();
-  const bulkSelectMutation = usePostApiV1SitesSiteIdDiscoveryBulkSelect();
-  const addManualUrlsMutation = usePostApiV1SitesSiteIdDiscoveryManualUrls();
-  const selectiveCrawlMutation = usePostApiV1SitesSiteIdCrawlSelective();
+  const discoverMutation = usePostSitesSiteIdDiscover();
+  const updateSelectionsMutation = usePutSitesSiteIdDiscoverySelections();
+  const bulkSelectMutation = usePostSitesSiteIdDiscoveryBulkSelect();
+  const addManualUrlsMutation = usePostSitesSiteIdDiscoveryManualUrls();
+  const selectiveCrawlMutation = usePostSitesSiteIdCrawlSelective();
 
   // Discovery query with polling support
   const {
     data: discoveryQueryData,
     refetch: refetchDiscovery,
-  } = useGetApiV1SitesSiteIdDiscovery(siteId!, {
+  } = useGetSitesSiteIdDiscovery(siteId!, {
     query: {
       enabled: !isAuthLoading && isAuthenticated && !!siteId && isDiscovering,
       refetchInterval: isDiscovering ? 1000 : false, // Poll every 1s when discovering
@@ -295,7 +295,7 @@ function OnboardingContent() {
   }, [currentStep, pendingSiteUrl, siteId, isAuthLoading, isAuthenticated, createSiteMutation, discoverMutation, updateUrl]);
 
   // Fetch plans from Stripe via API
-  const { data: apiPlans = [] } = useGetApiV1BillingPlans({
+  const { data: apiPlans = [] } = useGetBillingPlans({
     query: {
       enabled: !isAuthLoading && isAuthenticated,
       staleTime: 1000 * 60 * 60,
@@ -332,7 +332,7 @@ function OnboardingContent() {
   const handleCrawlStatusUpdate = useCallback(
     (update: { siteId: string; crawlStatus: string; urlCount?: number }) => {
       if (update.siteId === siteId) {
-        queryClient.invalidateQueries({ queryKey: getGetApiV1SitesSiteIdQueryKey(siteId) });
+        queryClient.invalidateQueries({ queryKey: getGetSitesSiteIdQueryKey(siteId) });
         // Reset progress when crawl completes
         if (update.crawlStatus === "AWAITING_PAYMENT" || update.crawlStatus === "FAILED") {
           setCrawlProgress(null);
@@ -704,6 +704,13 @@ function OnboardingContent() {
     }
   }, [currentStep, crawlStatus, urls.length, isDiscovering, crawlProgress]);
 
+  // Redirect to dashboard if email is not verified
+  useEffect(() => {
+    if (isAuthenticated && user && !user.emailVerified) {
+      router.push("/dashboard");
+    }
+  }, [isAuthenticated, user, router]);
+
   // Show loading state while auth is hydrating
   if (isAuthLoading) {
     return <AuthLoading />;
@@ -711,6 +718,11 @@ function OnboardingContent() {
 
   if (!isAuthenticated) {
     return null;
+  }
+
+  // Prevent rendering if email is not verified (redirect is in progress)
+  if (user && !user.emailVerified) {
+    return <AuthLoading />;
   }
 
   return (

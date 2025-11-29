@@ -39,8 +39,8 @@ export function disputeAlertEmail(data: DisputeAlertData): { subject: string; ht
     createdAt,
     respondByDate,
     stripeDisputeUrl,
-    platformName = 'IntelligentConvo',
-    supportEmail = 'support@intelligentconvo.com',
+    platformName = 'IntelliConvo',
+    supportEmail = 'support@intelliconvo.com',
   } = data;
 
   const subject = `🚨 URGENT: Dispute Opened - ${amount} ${currency}`;

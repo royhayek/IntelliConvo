@@ -20,16 +20,16 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  DeleteApiV1AdminWidgetsWidgetId200,
-  GetApiV1AdminWidgets200,
-  GetApiV1AdminWidgetsParams,
-  GetApiV1AdminWidgetsSiteSiteId200,
-  GetApiV1AdminWidgetsWidgetId200,
-  PatchApiV1AdminWidgetsBulk200,
-  PatchApiV1AdminWidgetsBulkBody,
-  PatchApiV1AdminWidgetsWidgetId200,
-  PatchApiV1AdminWidgetsWidgetIdBody,
-  PostApiV1AdminWidgetsWidgetIdReset200
+  DeleteAdminWidgetsWidgetId200,
+  GetAdminWidgets200,
+  GetAdminWidgetsParams,
+  GetAdminWidgetsSiteSiteId200,
+  GetAdminWidgetsWidgetId200,
+  PatchAdminWidgetsBulk200,
+  PatchAdminWidgetsBulkBody,
+  PatchAdminWidgetsWidgetId200,
+  PatchAdminWidgetsWidgetIdBody,
+  PostAdminWidgetsWidgetIdReset200
 } from '../../models';
 
 import { customInstance } from '../../../axios-instance';
@@ -43,14 +43,14 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 /**
  * @summary Get paginated list of widget settings
  */
-export const getApiV1AdminWidgets = (
-    params?: GetApiV1AdminWidgetsParams,
+export const getAdminWidgets = (
+    params?: GetAdminWidgetsParams,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<GetApiV1AdminWidgets200>(
-      {url: `/api/v1/admin/widgets`, method: 'GET',
+      return customInstance<GetAdminWidgets200>(
+      {url: `/admin/widgets`, method: 'GET',
         params, signal
     },
       options);
@@ -59,69 +59,69 @@ export const getApiV1AdminWidgets = (
 
 
 
-export const getGetApiV1AdminWidgetsQueryKey = (params?: GetApiV1AdminWidgetsParams,) => {
+export const getGetAdminWidgetsQueryKey = (params?: GetAdminWidgetsParams,) => {
     return [
-    `/api/v1/admin/widgets`, ...(params ? [params]: [])
+    `/admin/widgets`, ...(params ? [params]: [])
     ] as const;
     }
 
     
-export const getGetApiV1AdminWidgetsQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminWidgets>>, TError = ErrorType<void>>(params?: GetApiV1AdminWidgetsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminWidgets>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminWidgetsQueryOptions = <TData = Awaited<ReturnType<typeof getAdminWidgets>>, TError = ErrorType<void>>(params?: GetAdminWidgetsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminWidgets>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminWidgetsQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminWidgetsQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminWidgets>>> = ({ signal }) => getApiV1AdminWidgets(params, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminWidgets>>> = ({ signal }) => getAdminWidgets(params, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminWidgets>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminWidgets>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminWidgetsQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminWidgets>>>
-export type GetApiV1AdminWidgetsQueryError = ErrorType<void>
+export type GetAdminWidgetsQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminWidgets>>>
+export type GetAdminWidgetsQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminWidgets<TData = Awaited<ReturnType<typeof getApiV1AdminWidgets>>, TError = ErrorType<void>>(
- params: undefined |  GetApiV1AdminWidgetsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminWidgets>>, TError, TData>> & Pick<
+export function useGetAdminWidgets<TData = Awaited<ReturnType<typeof getAdminWidgets>>, TError = ErrorType<void>>(
+ params: undefined |  GetAdminWidgetsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminWidgets>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminWidgets>>,
+          Awaited<ReturnType<typeof getAdminWidgets>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminWidgets>>
+          Awaited<ReturnType<typeof getAdminWidgets>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminWidgets<TData = Awaited<ReturnType<typeof getApiV1AdminWidgets>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminWidgetsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminWidgets>>, TError, TData>> & Pick<
+export function useGetAdminWidgets<TData = Awaited<ReturnType<typeof getAdminWidgets>>, TError = ErrorType<void>>(
+ params?: GetAdminWidgetsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminWidgets>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminWidgets>>,
+          Awaited<ReturnType<typeof getAdminWidgets>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminWidgets>>
+          Awaited<ReturnType<typeof getAdminWidgets>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminWidgets<TData = Awaited<ReturnType<typeof getApiV1AdminWidgets>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminWidgetsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminWidgets>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminWidgets<TData = Awaited<ReturnType<typeof getAdminWidgets>>, TError = ErrorType<void>>(
+ params?: GetAdminWidgetsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminWidgets>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get paginated list of widget settings
  */
 
-export function useGetApiV1AdminWidgets<TData = Awaited<ReturnType<typeof getApiV1AdminWidgets>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminWidgetsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminWidgets>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminWidgets<TData = Awaited<ReturnType<typeof getAdminWidgets>>, TError = ErrorType<void>>(
+ params?: GetAdminWidgetsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminWidgets>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminWidgetsQueryOptions(params,options)
+  const queryOptions = getGetAdminWidgetsQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -136,14 +136,14 @@ export function useGetApiV1AdminWidgets<TData = Awaited<ReturnType<typeof getApi
 /**
  * @summary Get widget statistics
  */
-export const getApiV1AdminWidgetsStats = (
+export const getAdminWidgetsStats = (
     
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<void>(
-      {url: `/api/v1/admin/widgets/stats`, method: 'GET', signal
+      {url: `/admin/widgets/stats`, method: 'GET', signal
     },
       options);
     }
@@ -151,69 +151,69 @@ export const getApiV1AdminWidgetsStats = (
 
 
 
-export const getGetApiV1AdminWidgetsStatsQueryKey = () => {
+export const getGetAdminWidgetsStatsQueryKey = () => {
     return [
-    `/api/v1/admin/widgets/stats`
+    `/admin/widgets/stats`
     ] as const;
     }
 
     
-export const getGetApiV1AdminWidgetsStatsQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminWidgetsStats>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminWidgetsStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminWidgetsStatsQueryOptions = <TData = Awaited<ReturnType<typeof getAdminWidgetsStats>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminWidgetsStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminWidgetsStatsQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminWidgetsStatsQueryKey();
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminWidgetsStats>>> = ({ signal }) => getApiV1AdminWidgetsStats(requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminWidgetsStats>>> = ({ signal }) => getAdminWidgetsStats(requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminWidgetsStats>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminWidgetsStats>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminWidgetsStatsQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminWidgetsStats>>>
-export type GetApiV1AdminWidgetsStatsQueryError = ErrorType<void>
+export type GetAdminWidgetsStatsQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminWidgetsStats>>>
+export type GetAdminWidgetsStatsQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminWidgetsStats<TData = Awaited<ReturnType<typeof getApiV1AdminWidgetsStats>>, TError = ErrorType<void>>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminWidgetsStats>>, TError, TData>> & Pick<
+export function useGetAdminWidgetsStats<TData = Awaited<ReturnType<typeof getAdminWidgetsStats>>, TError = ErrorType<void>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminWidgetsStats>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminWidgetsStats>>,
+          Awaited<ReturnType<typeof getAdminWidgetsStats>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminWidgetsStats>>
+          Awaited<ReturnType<typeof getAdminWidgetsStats>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminWidgetsStats<TData = Awaited<ReturnType<typeof getApiV1AdminWidgetsStats>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminWidgetsStats>>, TError, TData>> & Pick<
+export function useGetAdminWidgetsStats<TData = Awaited<ReturnType<typeof getAdminWidgetsStats>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminWidgetsStats>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminWidgetsStats>>,
+          Awaited<ReturnType<typeof getAdminWidgetsStats>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminWidgetsStats>>
+          Awaited<ReturnType<typeof getAdminWidgetsStats>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminWidgetsStats<TData = Awaited<ReturnType<typeof getApiV1AdminWidgetsStats>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminWidgetsStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminWidgetsStats<TData = Awaited<ReturnType<typeof getAdminWidgetsStats>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminWidgetsStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get widget statistics
  */
 
-export function useGetApiV1AdminWidgetsStats<TData = Awaited<ReturnType<typeof getApiV1AdminWidgetsStats>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminWidgetsStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminWidgetsStats<TData = Awaited<ReturnType<typeof getAdminWidgetsStats>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminWidgetsStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminWidgetsStatsQueryOptions(options)
+  const queryOptions = getGetAdminWidgetsStatsQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -228,14 +228,14 @@ export function useGetApiV1AdminWidgetsStats<TData = Awaited<ReturnType<typeof g
 /**
  * @summary Get widget settings by site ID
  */
-export const getApiV1AdminWidgetsSiteSiteId = (
+export const getAdminWidgetsSiteSiteId = (
     siteId: string,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<GetApiV1AdminWidgetsSiteSiteId200>(
-      {url: `/api/v1/admin/widgets/site/${siteId}`, method: 'GET', signal
+      return customInstance<GetAdminWidgetsSiteSiteId200>(
+      {url: `/admin/widgets/site/${siteId}`, method: 'GET', signal
     },
       options);
     }
@@ -243,69 +243,69 @@ export const getApiV1AdminWidgetsSiteSiteId = (
 
 
 
-export const getGetApiV1AdminWidgetsSiteSiteIdQueryKey = (siteId?: string,) => {
+export const getGetAdminWidgetsSiteSiteIdQueryKey = (siteId?: string,) => {
     return [
-    `/api/v1/admin/widgets/site/${siteId}`
+    `/admin/widgets/site/${siteId}`
     ] as const;
     }
 
     
-export const getGetApiV1AdminWidgetsSiteSiteIdQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminWidgetsSiteSiteId>>, TError = ErrorType<void>>(siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminWidgetsSiteSiteId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminWidgetsSiteSiteIdQueryOptions = <TData = Awaited<ReturnType<typeof getAdminWidgetsSiteSiteId>>, TError = ErrorType<void>>(siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminWidgetsSiteSiteId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminWidgetsSiteSiteIdQueryKey(siteId);
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminWidgetsSiteSiteIdQueryKey(siteId);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminWidgetsSiteSiteId>>> = ({ signal }) => getApiV1AdminWidgetsSiteSiteId(siteId, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminWidgetsSiteSiteId>>> = ({ signal }) => getAdminWidgetsSiteSiteId(siteId, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(siteId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminWidgetsSiteSiteId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: !!(siteId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminWidgetsSiteSiteId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminWidgetsSiteSiteIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminWidgetsSiteSiteId>>>
-export type GetApiV1AdminWidgetsSiteSiteIdQueryError = ErrorType<void>
+export type GetAdminWidgetsSiteSiteIdQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminWidgetsSiteSiteId>>>
+export type GetAdminWidgetsSiteSiteIdQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminWidgetsSiteSiteId<TData = Awaited<ReturnType<typeof getApiV1AdminWidgetsSiteSiteId>>, TError = ErrorType<void>>(
- siteId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminWidgetsSiteSiteId>>, TError, TData>> & Pick<
+export function useGetAdminWidgetsSiteSiteId<TData = Awaited<ReturnType<typeof getAdminWidgetsSiteSiteId>>, TError = ErrorType<void>>(
+ siteId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminWidgetsSiteSiteId>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminWidgetsSiteSiteId>>,
+          Awaited<ReturnType<typeof getAdminWidgetsSiteSiteId>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminWidgetsSiteSiteId>>
+          Awaited<ReturnType<typeof getAdminWidgetsSiteSiteId>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminWidgetsSiteSiteId<TData = Awaited<ReturnType<typeof getApiV1AdminWidgetsSiteSiteId>>, TError = ErrorType<void>>(
- siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminWidgetsSiteSiteId>>, TError, TData>> & Pick<
+export function useGetAdminWidgetsSiteSiteId<TData = Awaited<ReturnType<typeof getAdminWidgetsSiteSiteId>>, TError = ErrorType<void>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminWidgetsSiteSiteId>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminWidgetsSiteSiteId>>,
+          Awaited<ReturnType<typeof getAdminWidgetsSiteSiteId>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminWidgetsSiteSiteId>>
+          Awaited<ReturnType<typeof getAdminWidgetsSiteSiteId>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminWidgetsSiteSiteId<TData = Awaited<ReturnType<typeof getApiV1AdminWidgetsSiteSiteId>>, TError = ErrorType<void>>(
- siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminWidgetsSiteSiteId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminWidgetsSiteSiteId<TData = Awaited<ReturnType<typeof getAdminWidgetsSiteSiteId>>, TError = ErrorType<void>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminWidgetsSiteSiteId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get widget settings by site ID
  */
 
-export function useGetApiV1AdminWidgetsSiteSiteId<TData = Awaited<ReturnType<typeof getApiV1AdminWidgetsSiteSiteId>>, TError = ErrorType<void>>(
- siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminWidgetsSiteSiteId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminWidgetsSiteSiteId<TData = Awaited<ReturnType<typeof getAdminWidgetsSiteSiteId>>, TError = ErrorType<void>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminWidgetsSiteSiteId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminWidgetsSiteSiteIdQueryOptions(siteId,options)
+  const queryOptions = getGetAdminWidgetsSiteSiteIdQueryOptions(siteId,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -320,14 +320,14 @@ export function useGetApiV1AdminWidgetsSiteSiteId<TData = Awaited<ReturnType<typ
 /**
  * @summary Get widget settings by ID
  */
-export const getApiV1AdminWidgetsWidgetId = (
+export const getAdminWidgetsWidgetId = (
     widgetId: string,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<GetApiV1AdminWidgetsWidgetId200>(
-      {url: `/api/v1/admin/widgets/${widgetId}`, method: 'GET', signal
+      return customInstance<GetAdminWidgetsWidgetId200>(
+      {url: `/admin/widgets/${widgetId}`, method: 'GET', signal
     },
       options);
     }
@@ -335,69 +335,69 @@ export const getApiV1AdminWidgetsWidgetId = (
 
 
 
-export const getGetApiV1AdminWidgetsWidgetIdQueryKey = (widgetId?: string,) => {
+export const getGetAdminWidgetsWidgetIdQueryKey = (widgetId?: string,) => {
     return [
-    `/api/v1/admin/widgets/${widgetId}`
+    `/admin/widgets/${widgetId}`
     ] as const;
     }
 
     
-export const getGetApiV1AdminWidgetsWidgetIdQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminWidgetsWidgetId>>, TError = ErrorType<void>>(widgetId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminWidgetsWidgetId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminWidgetsWidgetIdQueryOptions = <TData = Awaited<ReturnType<typeof getAdminWidgetsWidgetId>>, TError = ErrorType<void>>(widgetId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminWidgetsWidgetId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminWidgetsWidgetIdQueryKey(widgetId);
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminWidgetsWidgetIdQueryKey(widgetId);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminWidgetsWidgetId>>> = ({ signal }) => getApiV1AdminWidgetsWidgetId(widgetId, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminWidgetsWidgetId>>> = ({ signal }) => getAdminWidgetsWidgetId(widgetId, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(widgetId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminWidgetsWidgetId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: !!(widgetId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminWidgetsWidgetId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminWidgetsWidgetIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminWidgetsWidgetId>>>
-export type GetApiV1AdminWidgetsWidgetIdQueryError = ErrorType<void>
+export type GetAdminWidgetsWidgetIdQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminWidgetsWidgetId>>>
+export type GetAdminWidgetsWidgetIdQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminWidgetsWidgetId<TData = Awaited<ReturnType<typeof getApiV1AdminWidgetsWidgetId>>, TError = ErrorType<void>>(
- widgetId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminWidgetsWidgetId>>, TError, TData>> & Pick<
+export function useGetAdminWidgetsWidgetId<TData = Awaited<ReturnType<typeof getAdminWidgetsWidgetId>>, TError = ErrorType<void>>(
+ widgetId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminWidgetsWidgetId>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminWidgetsWidgetId>>,
+          Awaited<ReturnType<typeof getAdminWidgetsWidgetId>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminWidgetsWidgetId>>
+          Awaited<ReturnType<typeof getAdminWidgetsWidgetId>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminWidgetsWidgetId<TData = Awaited<ReturnType<typeof getApiV1AdminWidgetsWidgetId>>, TError = ErrorType<void>>(
- widgetId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminWidgetsWidgetId>>, TError, TData>> & Pick<
+export function useGetAdminWidgetsWidgetId<TData = Awaited<ReturnType<typeof getAdminWidgetsWidgetId>>, TError = ErrorType<void>>(
+ widgetId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminWidgetsWidgetId>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminWidgetsWidgetId>>,
+          Awaited<ReturnType<typeof getAdminWidgetsWidgetId>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminWidgetsWidgetId>>
+          Awaited<ReturnType<typeof getAdminWidgetsWidgetId>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminWidgetsWidgetId<TData = Awaited<ReturnType<typeof getApiV1AdminWidgetsWidgetId>>, TError = ErrorType<void>>(
- widgetId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminWidgetsWidgetId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminWidgetsWidgetId<TData = Awaited<ReturnType<typeof getAdminWidgetsWidgetId>>, TError = ErrorType<void>>(
+ widgetId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminWidgetsWidgetId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get widget settings by ID
  */
 
-export function useGetApiV1AdminWidgetsWidgetId<TData = Awaited<ReturnType<typeof getApiV1AdminWidgetsWidgetId>>, TError = ErrorType<void>>(
- widgetId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminWidgetsWidgetId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminWidgetsWidgetId<TData = Awaited<ReturnType<typeof getAdminWidgetsWidgetId>>, TError = ErrorType<void>>(
+ widgetId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminWidgetsWidgetId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminWidgetsWidgetIdQueryOptions(widgetId,options)
+  const queryOptions = getGetAdminWidgetsWidgetIdQueryOptions(widgetId,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -412,27 +412,27 @@ export function useGetApiV1AdminWidgetsWidgetId<TData = Awaited<ReturnType<typeo
 /**
  * @summary Update widget settings
  */
-export const patchApiV1AdminWidgetsWidgetId = (
+export const patchAdminWidgetsWidgetId = (
     widgetId: string,
-    patchApiV1AdminWidgetsWidgetIdBody: BodyType<PatchApiV1AdminWidgetsWidgetIdBody>,
+    patchAdminWidgetsWidgetIdBody: BodyType<PatchAdminWidgetsWidgetIdBody>,
  options?: SecondParameter<typeof customInstance>,) => {
       
       
-      return customInstance<PatchApiV1AdminWidgetsWidgetId200>(
-      {url: `/api/v1/admin/widgets/${widgetId}`, method: 'PATCH',
+      return customInstance<PatchAdminWidgetsWidgetId200>(
+      {url: `/admin/widgets/${widgetId}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
-      data: patchApiV1AdminWidgetsWidgetIdBody
+      data: patchAdminWidgetsWidgetIdBody
     },
       options);
     }
   
 
 
-export const getPatchApiV1AdminWidgetsWidgetIdMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchApiV1AdminWidgetsWidgetId>>, TError,{widgetId: string;data: BodyType<PatchApiV1AdminWidgetsWidgetIdBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof patchApiV1AdminWidgetsWidgetId>>, TError,{widgetId: string;data: BodyType<PatchApiV1AdminWidgetsWidgetIdBody>}, TContext> => {
+export const getPatchAdminWidgetsWidgetIdMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchAdminWidgetsWidgetId>>, TError,{widgetId: string;data: BodyType<PatchAdminWidgetsWidgetIdBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof patchAdminWidgetsWidgetId>>, TError,{widgetId: string;data: BodyType<PatchAdminWidgetsWidgetIdBody>}, TContext> => {
 
-const mutationKey = ['patchApiV1AdminWidgetsWidgetId'];
+const mutationKey = ['patchAdminWidgetsWidgetId'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -442,10 +442,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchApiV1AdminWidgetsWidgetId>>, {widgetId: string;data: BodyType<PatchApiV1AdminWidgetsWidgetIdBody>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchAdminWidgetsWidgetId>>, {widgetId: string;data: BodyType<PatchAdminWidgetsWidgetIdBody>}> = (props) => {
           const {widgetId,data} = props ?? {};
 
-          return  patchApiV1AdminWidgetsWidgetId(widgetId,data,requestOptions)
+          return  patchAdminWidgetsWidgetId(widgetId,data,requestOptions)
         }
 
         
@@ -453,47 +453,47 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PatchApiV1AdminWidgetsWidgetIdMutationResult = NonNullable<Awaited<ReturnType<typeof patchApiV1AdminWidgetsWidgetId>>>
-    export type PatchApiV1AdminWidgetsWidgetIdMutationBody = BodyType<PatchApiV1AdminWidgetsWidgetIdBody>
-    export type PatchApiV1AdminWidgetsWidgetIdMutationError = ErrorType<void>
+    export type PatchAdminWidgetsWidgetIdMutationResult = NonNullable<Awaited<ReturnType<typeof patchAdminWidgetsWidgetId>>>
+    export type PatchAdminWidgetsWidgetIdMutationBody = BodyType<PatchAdminWidgetsWidgetIdBody>
+    export type PatchAdminWidgetsWidgetIdMutationError = ErrorType<void>
 
     /**
  * @summary Update widget settings
  */
-export const usePatchApiV1AdminWidgetsWidgetId = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchApiV1AdminWidgetsWidgetId>>, TError,{widgetId: string;data: BodyType<PatchApiV1AdminWidgetsWidgetIdBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePatchAdminWidgetsWidgetId = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchAdminWidgetsWidgetId>>, TError,{widgetId: string;data: BodyType<PatchAdminWidgetsWidgetIdBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof patchApiV1AdminWidgetsWidgetId>>,
+        Awaited<ReturnType<typeof patchAdminWidgetsWidgetId>>,
         TError,
-        {widgetId: string;data: BodyType<PatchApiV1AdminWidgetsWidgetIdBody>},
+        {widgetId: string;data: BodyType<PatchAdminWidgetsWidgetIdBody>},
         TContext
       > => {
 
-      const mutationOptions = getPatchApiV1AdminWidgetsWidgetIdMutationOptions(options);
+      const mutationOptions = getPatchAdminWidgetsWidgetIdMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
     /**
  * @summary Delete widget settings
  */
-export const deleteApiV1AdminWidgetsWidgetId = (
+export const deleteAdminWidgetsWidgetId = (
     widgetId: string,
  options?: SecondParameter<typeof customInstance>,) => {
       
       
-      return customInstance<DeleteApiV1AdminWidgetsWidgetId200>(
-      {url: `/api/v1/admin/widgets/${widgetId}`, method: 'DELETE'
+      return customInstance<DeleteAdminWidgetsWidgetId200>(
+      {url: `/admin/widgets/${widgetId}`, method: 'DELETE'
     },
       options);
     }
   
 
 
-export const getDeleteApiV1AdminWidgetsWidgetIdMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1AdminWidgetsWidgetId>>, TError,{widgetId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1AdminWidgetsWidgetId>>, TError,{widgetId: string}, TContext> => {
+export const getDeleteAdminWidgetsWidgetIdMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAdminWidgetsWidgetId>>, TError,{widgetId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteAdminWidgetsWidgetId>>, TError,{widgetId: string}, TContext> => {
 
-const mutationKey = ['deleteApiV1AdminWidgetsWidgetId'];
+const mutationKey = ['deleteAdminWidgetsWidgetId'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -503,10 +503,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteApiV1AdminWidgetsWidgetId>>, {widgetId: string}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteAdminWidgetsWidgetId>>, {widgetId: string}> = (props) => {
           const {widgetId} = props ?? {};
 
-          return  deleteApiV1AdminWidgetsWidgetId(widgetId,requestOptions)
+          return  deleteAdminWidgetsWidgetId(widgetId,requestOptions)
         }
 
         
@@ -514,48 +514,48 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type DeleteApiV1AdminWidgetsWidgetIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteApiV1AdminWidgetsWidgetId>>>
+    export type DeleteAdminWidgetsWidgetIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteAdminWidgetsWidgetId>>>
     
-    export type DeleteApiV1AdminWidgetsWidgetIdMutationError = ErrorType<void>
+    export type DeleteAdminWidgetsWidgetIdMutationError = ErrorType<void>
 
     /**
  * @summary Delete widget settings
  */
-export const useDeleteApiV1AdminWidgetsWidgetId = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1AdminWidgetsWidgetId>>, TError,{widgetId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const useDeleteAdminWidgetsWidgetId = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAdminWidgetsWidgetId>>, TError,{widgetId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof deleteApiV1AdminWidgetsWidgetId>>,
+        Awaited<ReturnType<typeof deleteAdminWidgetsWidgetId>>,
         TError,
         {widgetId: string},
         TContext
       > => {
 
-      const mutationOptions = getDeleteApiV1AdminWidgetsWidgetIdMutationOptions(options);
+      const mutationOptions = getDeleteAdminWidgetsWidgetIdMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
     /**
  * @summary Reset widget settings to defaults
  */
-export const postApiV1AdminWidgetsWidgetIdReset = (
+export const postAdminWidgetsWidgetIdReset = (
     widgetId: string,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<PostApiV1AdminWidgetsWidgetIdReset200>(
-      {url: `/api/v1/admin/widgets/${widgetId}/reset`, method: 'POST', signal
+      return customInstance<PostAdminWidgetsWidgetIdReset200>(
+      {url: `/admin/widgets/${widgetId}/reset`, method: 'POST', signal
     },
       options);
     }
   
 
 
-export const getPostApiV1AdminWidgetsWidgetIdResetMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminWidgetsWidgetIdReset>>, TError,{widgetId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminWidgetsWidgetIdReset>>, TError,{widgetId: string}, TContext> => {
+export const getPostAdminWidgetsWidgetIdResetMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminWidgetsWidgetIdReset>>, TError,{widgetId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postAdminWidgetsWidgetIdReset>>, TError,{widgetId: string}, TContext> => {
 
-const mutationKey = ['postApiV1AdminWidgetsWidgetIdReset'];
+const mutationKey = ['postAdminWidgetsWidgetIdReset'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -565,10 +565,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1AdminWidgetsWidgetIdReset>>, {widgetId: string}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postAdminWidgetsWidgetIdReset>>, {widgetId: string}> = (props) => {
           const {widgetId} = props ?? {};
 
-          return  postApiV1AdminWidgetsWidgetIdReset(widgetId,requestOptions)
+          return  postAdminWidgetsWidgetIdReset(widgetId,requestOptions)
         }
 
         
@@ -576,49 +576,49 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiV1AdminWidgetsWidgetIdResetMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1AdminWidgetsWidgetIdReset>>>
+    export type PostAdminWidgetsWidgetIdResetMutationResult = NonNullable<Awaited<ReturnType<typeof postAdminWidgetsWidgetIdReset>>>
     
-    export type PostApiV1AdminWidgetsWidgetIdResetMutationError = ErrorType<void>
+    export type PostAdminWidgetsWidgetIdResetMutationError = ErrorType<void>
 
     /**
  * @summary Reset widget settings to defaults
  */
-export const usePostApiV1AdminWidgetsWidgetIdReset = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminWidgetsWidgetIdReset>>, TError,{widgetId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePostAdminWidgetsWidgetIdReset = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminWidgetsWidgetIdReset>>, TError,{widgetId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiV1AdminWidgetsWidgetIdReset>>,
+        Awaited<ReturnType<typeof postAdminWidgetsWidgetIdReset>>,
         TError,
         {widgetId: string},
         TContext
       > => {
 
-      const mutationOptions = getPostApiV1AdminWidgetsWidgetIdResetMutationOptions(options);
+      const mutationOptions = getPostAdminWidgetsWidgetIdResetMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
     /**
  * @summary Bulk update widget settings
  */
-export const patchApiV1AdminWidgetsBulk = (
-    patchApiV1AdminWidgetsBulkBody: BodyType<PatchApiV1AdminWidgetsBulkBody>,
+export const patchAdminWidgetsBulk = (
+    patchAdminWidgetsBulkBody: BodyType<PatchAdminWidgetsBulkBody>,
  options?: SecondParameter<typeof customInstance>,) => {
       
       
-      return customInstance<PatchApiV1AdminWidgetsBulk200>(
-      {url: `/api/v1/admin/widgets/bulk`, method: 'PATCH',
+      return customInstance<PatchAdminWidgetsBulk200>(
+      {url: `/admin/widgets/bulk`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
-      data: patchApiV1AdminWidgetsBulkBody
+      data: patchAdminWidgetsBulkBody
     },
       options);
     }
   
 
 
-export const getPatchApiV1AdminWidgetsBulkMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchApiV1AdminWidgetsBulk>>, TError,{data: BodyType<PatchApiV1AdminWidgetsBulkBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof patchApiV1AdminWidgetsBulk>>, TError,{data: BodyType<PatchApiV1AdminWidgetsBulkBody>}, TContext> => {
+export const getPatchAdminWidgetsBulkMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchAdminWidgetsBulk>>, TError,{data: BodyType<PatchAdminWidgetsBulkBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof patchAdminWidgetsBulk>>, TError,{data: BodyType<PatchAdminWidgetsBulkBody>}, TContext> => {
 
-const mutationKey = ['patchApiV1AdminWidgetsBulk'];
+const mutationKey = ['patchAdminWidgetsBulk'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -628,10 +628,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchApiV1AdminWidgetsBulk>>, {data: BodyType<PatchApiV1AdminWidgetsBulkBody>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchAdminWidgetsBulk>>, {data: BodyType<PatchAdminWidgetsBulkBody>}> = (props) => {
           const {data} = props ?? {};
 
-          return  patchApiV1AdminWidgetsBulk(data,requestOptions)
+          return  patchAdminWidgetsBulk(data,requestOptions)
         }
 
         
@@ -639,23 +639,23 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PatchApiV1AdminWidgetsBulkMutationResult = NonNullable<Awaited<ReturnType<typeof patchApiV1AdminWidgetsBulk>>>
-    export type PatchApiV1AdminWidgetsBulkMutationBody = BodyType<PatchApiV1AdminWidgetsBulkBody>
-    export type PatchApiV1AdminWidgetsBulkMutationError = ErrorType<void>
+    export type PatchAdminWidgetsBulkMutationResult = NonNullable<Awaited<ReturnType<typeof patchAdminWidgetsBulk>>>
+    export type PatchAdminWidgetsBulkMutationBody = BodyType<PatchAdminWidgetsBulkBody>
+    export type PatchAdminWidgetsBulkMutationError = ErrorType<void>
 
     /**
  * @summary Bulk update widget settings
  */
-export const usePatchApiV1AdminWidgetsBulk = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchApiV1AdminWidgetsBulk>>, TError,{data: BodyType<PatchApiV1AdminWidgetsBulkBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePatchAdminWidgetsBulk = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchAdminWidgetsBulk>>, TError,{data: BodyType<PatchAdminWidgetsBulkBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof patchApiV1AdminWidgetsBulk>>,
+        Awaited<ReturnType<typeof patchAdminWidgetsBulk>>,
         TError,
-        {data: BodyType<PatchApiV1AdminWidgetsBulkBody>},
+        {data: BodyType<PatchAdminWidgetsBulkBody>},
         TContext
       > => {
 
-      const mutationOptions = getPatchApiV1AdminWidgetsBulkMutationOptions(options);
+      const mutationOptions = getPatchAdminWidgetsBulkMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }

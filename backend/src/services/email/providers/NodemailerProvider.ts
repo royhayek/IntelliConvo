@@ -31,8 +31,8 @@ export class NodemailerProvider implements EmailProvider {
 
   constructor(config?: NodemailerConfig, defaultFrom?: EmailAddress) {
     this.defaultFrom = defaultFrom || {
-      email: process.env.EMAIL_FROM_ADDRESS || 'noreply@intelligentconvo.ai',
-      name: process.env.EMAIL_FROM_NAME || 'IntelligentConvo',
+      email: process.env.EMAIL_FROM_ADDRESS || 'noreply@intelliconvo.ai',
+      name: process.env.EMAIL_FROM_NAME || 'IntelliConvo',
     };
 
     if (config) {

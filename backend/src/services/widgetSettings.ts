@@ -116,8 +116,8 @@ export const defaultWidgetSettings: Omit<Prisma.WidgetSettingsCreateInput, 'site
   showConversationStarters: true,
   startersTitle: 'Suggested questions',
   showPoweredBy: false,
-  poweredByText: 'Powered by Intelligentconvo',
-  poweredByUrl: 'https://intelligentconvo.com',
+  poweredByText: 'Powered by IntelliConvo',
+  poweredByUrl: 'https://intelliconvo.com',
 
   // Responsive / Mobile
   mobileBreakpoint: 768,

@@ -34,7 +34,7 @@ export class Toast {
 
     // Create toast element
     const toast = document.createElement('div');
-    toast.className = `intelligentconvo-toast intelligentconvo-toast-${type}`;
+    toast.className = `intelliconvo-toast intelliconvo-toast-${type}`;
     toast.setAttribute('role', 'alert');
     toast.setAttribute('aria-live', 'polite');
     toast.textContent = message;
@@ -45,7 +45,7 @@ export class Toast {
 
     // Trigger animation
     requestAnimationFrame(() => {
-      toast.classList.add('intelligentconvo-toast-show');
+      toast.classList.add('intelliconvo-toast-show');
     });
 
     // Auto-remove after duration
@@ -65,8 +65,8 @@ export class Toast {
       return;
     }
 
-    toast.classList.remove('intelligentconvo-toast-show');
-    toast.classList.add('intelligentconvo-toast-hide');
+    toast.classList.remove('intelliconvo-toast-show');
+    toast.classList.add('intelliconvo-toast-hide');
 
     // Remove from DOM after animation
     setTimeout(() => {
@@ -87,7 +87,7 @@ export class Toast {
    */
   private static createContainer(position: 'top' | 'bottom'): void {
     this.container = document.createElement('div');
-    this.container.className = `intelligentconvo-toast-container intelligentconvo-toast-${position}`;
+    this.container.className = `intelliconvo-toast-container intelliconvo-toast-${position}`;
     this.container.setAttribute('aria-live', 'polite');
     this.container.setAttribute('aria-atomic', 'true');
     document.body.appendChild(this.container);

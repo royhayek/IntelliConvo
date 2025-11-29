@@ -26,13 +26,15 @@ import type {
   CreateSiteRequest,
   DiscoveryResult,
   DiscoveryStats,
+  GetSitesSiteIdAnalyticsParams,
   HostsListResponse,
-  PatchApiV1SitesSiteIdHostsHostId200,
-  PostApiV1SitesSiteIdCrawlSelective200,
-  PostApiV1SitesSiteIdDiscoveryManualUrls200,
-  PostApiV1SitesSiteIdHosts201,
+  PatchSitesSiteIdHostsHostId200,
+  PostSitesSiteIdCrawlSelective200,
+  PostSitesSiteIdDiscoveryManualUrls200,
+  PostSitesSiteIdHosts201,
   SelectionsUpdateResponse,
   SelectiveCrawlRequest,
+  SiteAnalyticsResponse,
   SiteResponse,
   SitesListResponse,
   SitesMessageResponse,
@@ -54,14 +56,14 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 /**
  * @summary Get all sites for user
  */
-export const getApiV1Sites = (
+export const getSites = (
     
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<SitesListResponse>(
-      {url: `/api/v1/sites`, method: 'GET', signal
+      {url: `/sites`, method: 'GET', signal
     },
       options);
     }
@@ -69,69 +71,69 @@ export const getApiV1Sites = (
 
 
 
-export const getGetApiV1SitesQueryKey = () => {
+export const getGetSitesQueryKey = () => {
     return [
-    `/api/v1/sites`
+    `/sites`
     ] as const;
     }
 
     
-export const getGetApiV1SitesQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1Sites>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1Sites>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetSitesQueryOptions = <TData = Awaited<ReturnType<typeof getSites>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSites>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1SitesQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getGetSitesQueryKey();
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1Sites>>> = ({ signal }) => getApiV1Sites(requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSites>>> = ({ signal }) => getSites(requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1Sites>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getSites>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1SitesQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1Sites>>>
-export type GetApiV1SitesQueryError = ErrorType<void>
+export type GetSitesQueryResult = NonNullable<Awaited<ReturnType<typeof getSites>>>
+export type GetSitesQueryError = ErrorType<void>
 
 
-export function useGetApiV1Sites<TData = Awaited<ReturnType<typeof getApiV1Sites>>, TError = ErrorType<void>>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1Sites>>, TError, TData>> & Pick<
+export function useGetSites<TData = Awaited<ReturnType<typeof getSites>>, TError = ErrorType<void>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSites>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1Sites>>,
+          Awaited<ReturnType<typeof getSites>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1Sites>>
+          Awaited<ReturnType<typeof getSites>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1Sites<TData = Awaited<ReturnType<typeof getApiV1Sites>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1Sites>>, TError, TData>> & Pick<
+export function useGetSites<TData = Awaited<ReturnType<typeof getSites>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSites>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1Sites>>,
+          Awaited<ReturnType<typeof getSites>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1Sites>>
+          Awaited<ReturnType<typeof getSites>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1Sites<TData = Awaited<ReturnType<typeof getApiV1Sites>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1Sites>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetSites<TData = Awaited<ReturnType<typeof getSites>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSites>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get all sites for user
  */
 
-export function useGetApiV1Sites<TData = Awaited<ReturnType<typeof getApiV1Sites>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1Sites>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetSites<TData = Awaited<ReturnType<typeof getSites>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSites>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1SitesQueryOptions(options)
+  const queryOptions = getGetSitesQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -146,14 +148,14 @@ export function useGetApiV1Sites<TData = Awaited<ReturnType<typeof getApiV1Sites
 /**
  * @summary Create a new site
  */
-export const postApiV1Sites = (
+export const postSites = (
     createSiteRequest: BodyType<CreateSiteRequest>,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<SiteResponse>(
-      {url: `/api/v1/sites`, method: 'POST',
+      {url: `/sites`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createSiteRequest, signal
     },
@@ -162,11 +164,11 @@ export const postApiV1Sites = (
   
 
 
-export const getPostApiV1SitesMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1Sites>>, TError,{data: BodyType<CreateSiteRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof postApiV1Sites>>, TError,{data: BodyType<CreateSiteRequest>}, TContext> => {
+export const getPostSitesMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postSites>>, TError,{data: BodyType<CreateSiteRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postSites>>, TError,{data: BodyType<CreateSiteRequest>}, TContext> => {
 
-const mutationKey = ['postApiV1Sites'];
+const mutationKey = ['postSites'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -176,10 +178,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1Sites>>, {data: BodyType<CreateSiteRequest>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postSites>>, {data: BodyType<CreateSiteRequest>}> = (props) => {
           const {data} = props ?? {};
 
-          return  postApiV1Sites(data,requestOptions)
+          return  postSites(data,requestOptions)
         }
 
         
@@ -187,37 +189,37 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiV1SitesMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1Sites>>>
-    export type PostApiV1SitesMutationBody = BodyType<CreateSiteRequest>
-    export type PostApiV1SitesMutationError = ErrorType<void>
+    export type PostSitesMutationResult = NonNullable<Awaited<ReturnType<typeof postSites>>>
+    export type PostSitesMutationBody = BodyType<CreateSiteRequest>
+    export type PostSitesMutationError = ErrorType<void>
 
     /**
  * @summary Create a new site
  */
-export const usePostApiV1Sites = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1Sites>>, TError,{data: BodyType<CreateSiteRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePostSites = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postSites>>, TError,{data: BodyType<CreateSiteRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiV1Sites>>,
+        Awaited<ReturnType<typeof postSites>>,
         TError,
         {data: BodyType<CreateSiteRequest>},
         TContext
       > => {
 
-      const mutationOptions = getPostApiV1SitesMutationOptions(options);
+      const mutationOptions = getPostSitesMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
     /**
  * @summary Get site by ID
  */
-export const getApiV1SitesSiteId = (
+export const getSitesSiteId = (
     siteId: string,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<SiteResponse>(
-      {url: `/api/v1/sites/${siteId}`, method: 'GET', signal
+      {url: `/sites/${siteId}`, method: 'GET', signal
     },
       options);
     }
@@ -225,69 +227,69 @@ export const getApiV1SitesSiteId = (
 
 
 
-export const getGetApiV1SitesSiteIdQueryKey = (siteId?: string,) => {
+export const getGetSitesSiteIdQueryKey = (siteId?: string,) => {
     return [
-    `/api/v1/sites/${siteId}`
+    `/sites/${siteId}`
     ] as const;
     }
 
     
-export const getGetApiV1SitesSiteIdQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1SitesSiteId>>, TError = ErrorType<void>>(siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetSitesSiteIdQueryOptions = <TData = Awaited<ReturnType<typeof getSitesSiteId>>, TError = ErrorType<void>>(siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSitesSiteId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1SitesSiteIdQueryKey(siteId);
+  const queryKey =  queryOptions?.queryKey ?? getGetSitesSiteIdQueryKey(siteId);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1SitesSiteId>>> = ({ signal }) => getApiV1SitesSiteId(siteId, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSitesSiteId>>> = ({ signal }) => getSitesSiteId(siteId, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(siteId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: !!(siteId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getSitesSiteId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1SitesSiteIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1SitesSiteId>>>
-export type GetApiV1SitesSiteIdQueryError = ErrorType<void>
+export type GetSitesSiteIdQueryResult = NonNullable<Awaited<ReturnType<typeof getSitesSiteId>>>
+export type GetSitesSiteIdQueryError = ErrorType<void>
 
 
-export function useGetApiV1SitesSiteId<TData = Awaited<ReturnType<typeof getApiV1SitesSiteId>>, TError = ErrorType<void>>(
- siteId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteId>>, TError, TData>> & Pick<
+export function useGetSitesSiteId<TData = Awaited<ReturnType<typeof getSitesSiteId>>, TError = ErrorType<void>>(
+ siteId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSitesSiteId>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1SitesSiteId>>,
+          Awaited<ReturnType<typeof getSitesSiteId>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1SitesSiteId>>
+          Awaited<ReturnType<typeof getSitesSiteId>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1SitesSiteId<TData = Awaited<ReturnType<typeof getApiV1SitesSiteId>>, TError = ErrorType<void>>(
- siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteId>>, TError, TData>> & Pick<
+export function useGetSitesSiteId<TData = Awaited<ReturnType<typeof getSitesSiteId>>, TError = ErrorType<void>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSitesSiteId>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1SitesSiteId>>,
+          Awaited<ReturnType<typeof getSitesSiteId>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1SitesSiteId>>
+          Awaited<ReturnType<typeof getSitesSiteId>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1SitesSiteId<TData = Awaited<ReturnType<typeof getApiV1SitesSiteId>>, TError = ErrorType<void>>(
- siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetSitesSiteId<TData = Awaited<ReturnType<typeof getSitesSiteId>>, TError = ErrorType<void>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSitesSiteId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get site by ID
  */
 
-export function useGetApiV1SitesSiteId<TData = Awaited<ReturnType<typeof getApiV1SitesSiteId>>, TError = ErrorType<void>>(
- siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetSitesSiteId<TData = Awaited<ReturnType<typeof getSitesSiteId>>, TError = ErrorType<void>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSitesSiteId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1SitesSiteIdQueryOptions(siteId,options)
+  const queryOptions = getGetSitesSiteIdQueryOptions(siteId,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -302,14 +304,14 @@ export function useGetApiV1SitesSiteId<TData = Awaited<ReturnType<typeof getApiV
 /**
  * @summary Update site
  */
-export const patchApiV1SitesSiteId = (
+export const patchSitesSiteId = (
     siteId: string,
     updateSiteRequest: BodyType<UpdateSiteRequest>,
  options?: SecondParameter<typeof customInstance>,) => {
       
       
       return customInstance<SiteResponse>(
-      {url: `/api/v1/sites/${siteId}`, method: 'PATCH',
+      {url: `/sites/${siteId}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: updateSiteRequest
     },
@@ -318,11 +320,11 @@ export const patchApiV1SitesSiteId = (
   
 
 
-export const getPatchApiV1SitesSiteIdMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchApiV1SitesSiteId>>, TError,{siteId: string;data: BodyType<UpdateSiteRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof patchApiV1SitesSiteId>>, TError,{siteId: string;data: BodyType<UpdateSiteRequest>}, TContext> => {
+export const getPatchSitesSiteIdMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchSitesSiteId>>, TError,{siteId: string;data: BodyType<UpdateSiteRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof patchSitesSiteId>>, TError,{siteId: string;data: BodyType<UpdateSiteRequest>}, TContext> => {
 
-const mutationKey = ['patchApiV1SitesSiteId'];
+const mutationKey = ['patchSitesSiteId'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -332,10 +334,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchApiV1SitesSiteId>>, {siteId: string;data: BodyType<UpdateSiteRequest>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchSitesSiteId>>, {siteId: string;data: BodyType<UpdateSiteRequest>}> = (props) => {
           const {siteId,data} = props ?? {};
 
-          return  patchApiV1SitesSiteId(siteId,data,requestOptions)
+          return  patchSitesSiteId(siteId,data,requestOptions)
         }
 
         
@@ -343,47 +345,47 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PatchApiV1SitesSiteIdMutationResult = NonNullable<Awaited<ReturnType<typeof patchApiV1SitesSiteId>>>
-    export type PatchApiV1SitesSiteIdMutationBody = BodyType<UpdateSiteRequest>
-    export type PatchApiV1SitesSiteIdMutationError = ErrorType<void>
+    export type PatchSitesSiteIdMutationResult = NonNullable<Awaited<ReturnType<typeof patchSitesSiteId>>>
+    export type PatchSitesSiteIdMutationBody = BodyType<UpdateSiteRequest>
+    export type PatchSitesSiteIdMutationError = ErrorType<void>
 
     /**
  * @summary Update site
  */
-export const usePatchApiV1SitesSiteId = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchApiV1SitesSiteId>>, TError,{siteId: string;data: BodyType<UpdateSiteRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePatchSitesSiteId = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchSitesSiteId>>, TError,{siteId: string;data: BodyType<UpdateSiteRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof patchApiV1SitesSiteId>>,
+        Awaited<ReturnType<typeof patchSitesSiteId>>,
         TError,
         {siteId: string;data: BodyType<UpdateSiteRequest>},
         TContext
       > => {
 
-      const mutationOptions = getPatchApiV1SitesSiteIdMutationOptions(options);
+      const mutationOptions = getPatchSitesSiteIdMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
     /**
  * @summary Delete site
  */
-export const deleteApiV1SitesSiteId = (
+export const deleteSitesSiteId = (
     siteId: string,
  options?: SecondParameter<typeof customInstance>,) => {
       
       
       return customInstance<void>(
-      {url: `/api/v1/sites/${siteId}`, method: 'DELETE'
+      {url: `/sites/${siteId}`, method: 'DELETE'
     },
       options);
     }
   
 
 
-export const getDeleteApiV1SitesSiteIdMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1SitesSiteId>>, TError,{siteId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1SitesSiteId>>, TError,{siteId: string}, TContext> => {
+export const getDeleteSitesSiteIdMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteSitesSiteId>>, TError,{siteId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteSitesSiteId>>, TError,{siteId: string}, TContext> => {
 
-const mutationKey = ['deleteApiV1SitesSiteId'];
+const mutationKey = ['deleteSitesSiteId'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -393,10 +395,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteApiV1SitesSiteId>>, {siteId: string}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteSitesSiteId>>, {siteId: string}> = (props) => {
           const {siteId} = props ?? {};
 
-          return  deleteApiV1SitesSiteId(siteId,requestOptions)
+          return  deleteSitesSiteId(siteId,requestOptions)
         }
 
         
@@ -404,48 +406,48 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type DeleteApiV1SitesSiteIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteApiV1SitesSiteId>>>
+    export type DeleteSitesSiteIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteSitesSiteId>>>
     
-    export type DeleteApiV1SitesSiteIdMutationError = ErrorType<void>
+    export type DeleteSitesSiteIdMutationError = ErrorType<void>
 
     /**
  * @summary Delete site
  */
-export const useDeleteApiV1SitesSiteId = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1SitesSiteId>>, TError,{siteId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const useDeleteSitesSiteId = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteSitesSiteId>>, TError,{siteId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof deleteApiV1SitesSiteId>>,
+        Awaited<ReturnType<typeof deleteSitesSiteId>>,
         TError,
         {siteId: string},
         TContext
       > => {
 
-      const mutationOptions = getDeleteApiV1SitesSiteIdMutationOptions(options);
+      const mutationOptions = getDeleteSitesSiteIdMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
     /**
  * @summary Trigger site recrawl
  */
-export const postApiV1SitesSiteIdCrawl = (
+export const postSitesSiteIdCrawl = (
     siteId: string,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<SitesMessageResponse>(
-      {url: `/api/v1/sites/${siteId}/crawl`, method: 'POST', signal
+      {url: `/sites/${siteId}/crawl`, method: 'POST', signal
     },
       options);
     }
   
 
 
-export const getPostApiV1SitesSiteIdCrawlMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1SitesSiteIdCrawl>>, TError,{siteId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof postApiV1SitesSiteIdCrawl>>, TError,{siteId: string}, TContext> => {
+export const getPostSitesSiteIdCrawlMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postSitesSiteIdCrawl>>, TError,{siteId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postSitesSiteIdCrawl>>, TError,{siteId: string}, TContext> => {
 
-const mutationKey = ['postApiV1SitesSiteIdCrawl'];
+const mutationKey = ['postSitesSiteIdCrawl'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -455,10 +457,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1SitesSiteIdCrawl>>, {siteId: string}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postSitesSiteIdCrawl>>, {siteId: string}> = (props) => {
           const {siteId} = props ?? {};
 
-          return  postApiV1SitesSiteIdCrawl(siteId,requestOptions)
+          return  postSitesSiteIdCrawl(siteId,requestOptions)
         }
 
         
@@ -466,37 +468,37 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiV1SitesSiteIdCrawlMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1SitesSiteIdCrawl>>>
+    export type PostSitesSiteIdCrawlMutationResult = NonNullable<Awaited<ReturnType<typeof postSitesSiteIdCrawl>>>
     
-    export type PostApiV1SitesSiteIdCrawlMutationError = ErrorType<void>
+    export type PostSitesSiteIdCrawlMutationError = ErrorType<void>
 
     /**
  * @summary Trigger site recrawl
  */
-export const usePostApiV1SitesSiteIdCrawl = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1SitesSiteIdCrawl>>, TError,{siteId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePostSitesSiteIdCrawl = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postSitesSiteIdCrawl>>, TError,{siteId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiV1SitesSiteIdCrawl>>,
+        Awaited<ReturnType<typeof postSitesSiteIdCrawl>>,
         TError,
         {siteId: string},
         TContext
       > => {
 
-      const mutationOptions = getPostApiV1SitesSiteIdCrawlMutationOptions(options);
+      const mutationOptions = getPostSitesSiteIdCrawlMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
     /**
  * @summary Get conversation starters
  */
-export const getApiV1SitesSiteIdStarters = (
+export const getSitesSiteIdStarters = (
     siteId: string,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<StartersResponse>(
-      {url: `/api/v1/sites/${siteId}/starters`, method: 'GET', signal
+      {url: `/sites/${siteId}/starters`, method: 'GET', signal
     },
       options);
     }
@@ -504,69 +506,69 @@ export const getApiV1SitesSiteIdStarters = (
 
 
 
-export const getGetApiV1SitesSiteIdStartersQueryKey = (siteId?: string,) => {
+export const getGetSitesSiteIdStartersQueryKey = (siteId?: string,) => {
     return [
-    `/api/v1/sites/${siteId}/starters`
+    `/sites/${siteId}/starters`
     ] as const;
     }
 
     
-export const getGetApiV1SitesSiteIdStartersQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdStarters>>, TError = ErrorType<void>>(siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdStarters>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetSitesSiteIdStartersQueryOptions = <TData = Awaited<ReturnType<typeof getSitesSiteIdStarters>>, TError = ErrorType<void>>(siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSitesSiteIdStarters>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1SitesSiteIdStartersQueryKey(siteId);
+  const queryKey =  queryOptions?.queryKey ?? getGetSitesSiteIdStartersQueryKey(siteId);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1SitesSiteIdStarters>>> = ({ signal }) => getApiV1SitesSiteIdStarters(siteId, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSitesSiteIdStarters>>> = ({ signal }) => getSitesSiteIdStarters(siteId, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(siteId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdStarters>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: !!(siteId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getSitesSiteIdStarters>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1SitesSiteIdStartersQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1SitesSiteIdStarters>>>
-export type GetApiV1SitesSiteIdStartersQueryError = ErrorType<void>
+export type GetSitesSiteIdStartersQueryResult = NonNullable<Awaited<ReturnType<typeof getSitesSiteIdStarters>>>
+export type GetSitesSiteIdStartersQueryError = ErrorType<void>
 
 
-export function useGetApiV1SitesSiteIdStarters<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdStarters>>, TError = ErrorType<void>>(
- siteId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdStarters>>, TError, TData>> & Pick<
+export function useGetSitesSiteIdStarters<TData = Awaited<ReturnType<typeof getSitesSiteIdStarters>>, TError = ErrorType<void>>(
+ siteId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSitesSiteIdStarters>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1SitesSiteIdStarters>>,
+          Awaited<ReturnType<typeof getSitesSiteIdStarters>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1SitesSiteIdStarters>>
+          Awaited<ReturnType<typeof getSitesSiteIdStarters>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1SitesSiteIdStarters<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdStarters>>, TError = ErrorType<void>>(
- siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdStarters>>, TError, TData>> & Pick<
+export function useGetSitesSiteIdStarters<TData = Awaited<ReturnType<typeof getSitesSiteIdStarters>>, TError = ErrorType<void>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSitesSiteIdStarters>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1SitesSiteIdStarters>>,
+          Awaited<ReturnType<typeof getSitesSiteIdStarters>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1SitesSiteIdStarters>>
+          Awaited<ReturnType<typeof getSitesSiteIdStarters>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1SitesSiteIdStarters<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdStarters>>, TError = ErrorType<void>>(
- siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdStarters>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetSitesSiteIdStarters<TData = Awaited<ReturnType<typeof getSitesSiteIdStarters>>, TError = ErrorType<void>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSitesSiteIdStarters>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get conversation starters
  */
 
-export function useGetApiV1SitesSiteIdStarters<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdStarters>>, TError = ErrorType<void>>(
- siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdStarters>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetSitesSiteIdStarters<TData = Awaited<ReturnType<typeof getSitesSiteIdStarters>>, TError = ErrorType<void>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSitesSiteIdStarters>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1SitesSiteIdStartersQueryOptions(siteId,options)
+  const queryOptions = getGetSitesSiteIdStartersQueryOptions(siteId,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -581,14 +583,14 @@ export function useGetApiV1SitesSiteIdStarters<TData = Awaited<ReturnType<typeof
 /**
  * @summary Update conversation starters
  */
-export const putApiV1SitesSiteIdStarters = (
+export const putSitesSiteIdStarters = (
     siteId: string,
     updateStartersRequest: BodyType<UpdateStartersRequest>,
  options?: SecondParameter<typeof customInstance>,) => {
       
       
       return customInstance<StartersResponse>(
-      {url: `/api/v1/sites/${siteId}/starters`, method: 'PUT',
+      {url: `/sites/${siteId}/starters`, method: 'PUT',
       headers: {'Content-Type': 'application/json', },
       data: updateStartersRequest
     },
@@ -597,11 +599,11 @@ export const putApiV1SitesSiteIdStarters = (
   
 
 
-export const getPutApiV1SitesSiteIdStartersMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiV1SitesSiteIdStarters>>, TError,{siteId: string;data: BodyType<UpdateStartersRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof putApiV1SitesSiteIdStarters>>, TError,{siteId: string;data: BodyType<UpdateStartersRequest>}, TContext> => {
+export const getPutSitesSiteIdStartersMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putSitesSiteIdStarters>>, TError,{siteId: string;data: BodyType<UpdateStartersRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof putSitesSiteIdStarters>>, TError,{siteId: string;data: BodyType<UpdateStartersRequest>}, TContext> => {
 
-const mutationKey = ['putApiV1SitesSiteIdStarters'];
+const mutationKey = ['putSitesSiteIdStarters'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -611,10 +613,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putApiV1SitesSiteIdStarters>>, {siteId: string;data: BodyType<UpdateStartersRequest>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putSitesSiteIdStarters>>, {siteId: string;data: BodyType<UpdateStartersRequest>}> = (props) => {
           const {siteId,data} = props ?? {};
 
-          return  putApiV1SitesSiteIdStarters(siteId,data,requestOptions)
+          return  putSitesSiteIdStarters(siteId,data,requestOptions)
         }
 
         
@@ -622,37 +624,37 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PutApiV1SitesSiteIdStartersMutationResult = NonNullable<Awaited<ReturnType<typeof putApiV1SitesSiteIdStarters>>>
-    export type PutApiV1SitesSiteIdStartersMutationBody = BodyType<UpdateStartersRequest>
-    export type PutApiV1SitesSiteIdStartersMutationError = ErrorType<void>
+    export type PutSitesSiteIdStartersMutationResult = NonNullable<Awaited<ReturnType<typeof putSitesSiteIdStarters>>>
+    export type PutSitesSiteIdStartersMutationBody = BodyType<UpdateStartersRequest>
+    export type PutSitesSiteIdStartersMutationError = ErrorType<void>
 
     /**
  * @summary Update conversation starters
  */
-export const usePutApiV1SitesSiteIdStarters = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiV1SitesSiteIdStarters>>, TError,{siteId: string;data: BodyType<UpdateStartersRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePutSitesSiteIdStarters = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putSitesSiteIdStarters>>, TError,{siteId: string;data: BodyType<UpdateStartersRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof putApiV1SitesSiteIdStarters>>,
+        Awaited<ReturnType<typeof putSitesSiteIdStarters>>,
         TError,
         {siteId: string;data: BodyType<UpdateStartersRequest>},
         TContext
       > => {
 
-      const mutationOptions = getPutApiV1SitesSiteIdStartersMutationOptions(options);
+      const mutationOptions = getPutSitesSiteIdStartersMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
     /**
  * @summary Get active hosts
  */
-export const getApiV1SitesSiteIdHosts = (
+export const getSitesSiteIdHosts = (
     siteId: string,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<HostsListResponse>(
-      {url: `/api/v1/sites/${siteId}/hosts`, method: 'GET', signal
+      {url: `/sites/${siteId}/hosts`, method: 'GET', signal
     },
       options);
     }
@@ -660,69 +662,69 @@ export const getApiV1SitesSiteIdHosts = (
 
 
 
-export const getGetApiV1SitesSiteIdHostsQueryKey = (siteId?: string,) => {
+export const getGetSitesSiteIdHostsQueryKey = (siteId?: string,) => {
     return [
-    `/api/v1/sites/${siteId}/hosts`
+    `/sites/${siteId}/hosts`
     ] as const;
     }
 
     
-export const getGetApiV1SitesSiteIdHostsQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdHosts>>, TError = ErrorType<void>>(siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdHosts>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetSitesSiteIdHostsQueryOptions = <TData = Awaited<ReturnType<typeof getSitesSiteIdHosts>>, TError = ErrorType<void>>(siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSitesSiteIdHosts>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1SitesSiteIdHostsQueryKey(siteId);
+  const queryKey =  queryOptions?.queryKey ?? getGetSitesSiteIdHostsQueryKey(siteId);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1SitesSiteIdHosts>>> = ({ signal }) => getApiV1SitesSiteIdHosts(siteId, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSitesSiteIdHosts>>> = ({ signal }) => getSitesSiteIdHosts(siteId, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(siteId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdHosts>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: !!(siteId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getSitesSiteIdHosts>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1SitesSiteIdHostsQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1SitesSiteIdHosts>>>
-export type GetApiV1SitesSiteIdHostsQueryError = ErrorType<void>
+export type GetSitesSiteIdHostsQueryResult = NonNullable<Awaited<ReturnType<typeof getSitesSiteIdHosts>>>
+export type GetSitesSiteIdHostsQueryError = ErrorType<void>
 
 
-export function useGetApiV1SitesSiteIdHosts<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdHosts>>, TError = ErrorType<void>>(
- siteId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdHosts>>, TError, TData>> & Pick<
+export function useGetSitesSiteIdHosts<TData = Awaited<ReturnType<typeof getSitesSiteIdHosts>>, TError = ErrorType<void>>(
+ siteId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSitesSiteIdHosts>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1SitesSiteIdHosts>>,
+          Awaited<ReturnType<typeof getSitesSiteIdHosts>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1SitesSiteIdHosts>>
+          Awaited<ReturnType<typeof getSitesSiteIdHosts>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1SitesSiteIdHosts<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdHosts>>, TError = ErrorType<void>>(
- siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdHosts>>, TError, TData>> & Pick<
+export function useGetSitesSiteIdHosts<TData = Awaited<ReturnType<typeof getSitesSiteIdHosts>>, TError = ErrorType<void>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSitesSiteIdHosts>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1SitesSiteIdHosts>>,
+          Awaited<ReturnType<typeof getSitesSiteIdHosts>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1SitesSiteIdHosts>>
+          Awaited<ReturnType<typeof getSitesSiteIdHosts>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1SitesSiteIdHosts<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdHosts>>, TError = ErrorType<void>>(
- siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdHosts>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetSitesSiteIdHosts<TData = Awaited<ReturnType<typeof getSitesSiteIdHosts>>, TError = ErrorType<void>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSitesSiteIdHosts>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get active hosts
  */
 
-export function useGetApiV1SitesSiteIdHosts<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdHosts>>, TError = ErrorType<void>>(
- siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdHosts>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetSitesSiteIdHosts<TData = Awaited<ReturnType<typeof getSitesSiteIdHosts>>, TError = ErrorType<void>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSitesSiteIdHosts>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1SitesSiteIdHostsQueryOptions(siteId,options)
+  const queryOptions = getGetSitesSiteIdHostsQueryOptions(siteId,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -737,15 +739,15 @@ export function useGetApiV1SitesSiteIdHosts<TData = Awaited<ReturnType<typeof ge
 /**
  * @summary Add active host
  */
-export const postApiV1SitesSiteIdHosts = (
+export const postSitesSiteIdHosts = (
     siteId: string,
     addHostRequest: BodyType<AddHostRequest>,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<PostApiV1SitesSiteIdHosts201>(
-      {url: `/api/v1/sites/${siteId}/hosts`, method: 'POST',
+      return customInstance<PostSitesSiteIdHosts201>(
+      {url: `/sites/${siteId}/hosts`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: addHostRequest, signal
     },
@@ -754,11 +756,11 @@ export const postApiV1SitesSiteIdHosts = (
   
 
 
-export const getPostApiV1SitesSiteIdHostsMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1SitesSiteIdHosts>>, TError,{siteId: string;data: BodyType<AddHostRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof postApiV1SitesSiteIdHosts>>, TError,{siteId: string;data: BodyType<AddHostRequest>}, TContext> => {
+export const getPostSitesSiteIdHostsMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postSitesSiteIdHosts>>, TError,{siteId: string;data: BodyType<AddHostRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postSitesSiteIdHosts>>, TError,{siteId: string;data: BodyType<AddHostRequest>}, TContext> => {
 
-const mutationKey = ['postApiV1SitesSiteIdHosts'];
+const mutationKey = ['postSitesSiteIdHosts'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -768,10 +770,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1SitesSiteIdHosts>>, {siteId: string;data: BodyType<AddHostRequest>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postSitesSiteIdHosts>>, {siteId: string;data: BodyType<AddHostRequest>}> = (props) => {
           const {siteId,data} = props ?? {};
 
-          return  postApiV1SitesSiteIdHosts(siteId,data,requestOptions)
+          return  postSitesSiteIdHosts(siteId,data,requestOptions)
         }
 
         
@@ -779,38 +781,38 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiV1SitesSiteIdHostsMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1SitesSiteIdHosts>>>
-    export type PostApiV1SitesSiteIdHostsMutationBody = BodyType<AddHostRequest>
-    export type PostApiV1SitesSiteIdHostsMutationError = ErrorType<void>
+    export type PostSitesSiteIdHostsMutationResult = NonNullable<Awaited<ReturnType<typeof postSitesSiteIdHosts>>>
+    export type PostSitesSiteIdHostsMutationBody = BodyType<AddHostRequest>
+    export type PostSitesSiteIdHostsMutationError = ErrorType<void>
 
     /**
  * @summary Add active host
  */
-export const usePostApiV1SitesSiteIdHosts = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1SitesSiteIdHosts>>, TError,{siteId: string;data: BodyType<AddHostRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePostSitesSiteIdHosts = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postSitesSiteIdHosts>>, TError,{siteId: string;data: BodyType<AddHostRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiV1SitesSiteIdHosts>>,
+        Awaited<ReturnType<typeof postSitesSiteIdHosts>>,
         TError,
         {siteId: string;data: BodyType<AddHostRequest>},
         TContext
       > => {
 
-      const mutationOptions = getPostApiV1SitesSiteIdHostsMutationOptions(options);
+      const mutationOptions = getPostSitesSiteIdHostsMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
     /**
  * @summary Update active host
  */
-export const patchApiV1SitesSiteIdHostsHostId = (
+export const patchSitesSiteIdHostsHostId = (
     siteId: string,
     hostId: string,
     updateHostRequest: BodyType<UpdateHostRequest>,
  options?: SecondParameter<typeof customInstance>,) => {
       
       
-      return customInstance<PatchApiV1SitesSiteIdHostsHostId200>(
-      {url: `/api/v1/sites/${siteId}/hosts/${hostId}`, method: 'PATCH',
+      return customInstance<PatchSitesSiteIdHostsHostId200>(
+      {url: `/sites/${siteId}/hosts/${hostId}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: updateHostRequest
     },
@@ -819,11 +821,11 @@ export const patchApiV1SitesSiteIdHostsHostId = (
   
 
 
-export const getPatchApiV1SitesSiteIdHostsHostIdMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchApiV1SitesSiteIdHostsHostId>>, TError,{siteId: string;hostId: string;data: BodyType<UpdateHostRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof patchApiV1SitesSiteIdHostsHostId>>, TError,{siteId: string;hostId: string;data: BodyType<UpdateHostRequest>}, TContext> => {
+export const getPatchSitesSiteIdHostsHostIdMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchSitesSiteIdHostsHostId>>, TError,{siteId: string;hostId: string;data: BodyType<UpdateHostRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof patchSitesSiteIdHostsHostId>>, TError,{siteId: string;hostId: string;data: BodyType<UpdateHostRequest>}, TContext> => {
 
-const mutationKey = ['patchApiV1SitesSiteIdHostsHostId'];
+const mutationKey = ['patchSitesSiteIdHostsHostId'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -833,10 +835,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchApiV1SitesSiteIdHostsHostId>>, {siteId: string;hostId: string;data: BodyType<UpdateHostRequest>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchSitesSiteIdHostsHostId>>, {siteId: string;hostId: string;data: BodyType<UpdateHostRequest>}> = (props) => {
           const {siteId,hostId,data} = props ?? {};
 
-          return  patchApiV1SitesSiteIdHostsHostId(siteId,hostId,data,requestOptions)
+          return  patchSitesSiteIdHostsHostId(siteId,hostId,data,requestOptions)
         }
 
         
@@ -844,48 +846,48 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PatchApiV1SitesSiteIdHostsHostIdMutationResult = NonNullable<Awaited<ReturnType<typeof patchApiV1SitesSiteIdHostsHostId>>>
-    export type PatchApiV1SitesSiteIdHostsHostIdMutationBody = BodyType<UpdateHostRequest>
-    export type PatchApiV1SitesSiteIdHostsHostIdMutationError = ErrorType<void>
+    export type PatchSitesSiteIdHostsHostIdMutationResult = NonNullable<Awaited<ReturnType<typeof patchSitesSiteIdHostsHostId>>>
+    export type PatchSitesSiteIdHostsHostIdMutationBody = BodyType<UpdateHostRequest>
+    export type PatchSitesSiteIdHostsHostIdMutationError = ErrorType<void>
 
     /**
  * @summary Update active host
  */
-export const usePatchApiV1SitesSiteIdHostsHostId = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchApiV1SitesSiteIdHostsHostId>>, TError,{siteId: string;hostId: string;data: BodyType<UpdateHostRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePatchSitesSiteIdHostsHostId = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchSitesSiteIdHostsHostId>>, TError,{siteId: string;hostId: string;data: BodyType<UpdateHostRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof patchApiV1SitesSiteIdHostsHostId>>,
+        Awaited<ReturnType<typeof patchSitesSiteIdHostsHostId>>,
         TError,
         {siteId: string;hostId: string;data: BodyType<UpdateHostRequest>},
         TContext
       > => {
 
-      const mutationOptions = getPatchApiV1SitesSiteIdHostsHostIdMutationOptions(options);
+      const mutationOptions = getPatchSitesSiteIdHostsHostIdMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
     /**
  * @summary Remove active host
  */
-export const deleteApiV1SitesSiteIdHostsHostId = (
+export const deleteSitesSiteIdHostsHostId = (
     siteId: string,
     hostId: string,
  options?: SecondParameter<typeof customInstance>,) => {
       
       
       return customInstance<SitesMessageResponse>(
-      {url: `/api/v1/sites/${siteId}/hosts/${hostId}`, method: 'DELETE'
+      {url: `/sites/${siteId}/hosts/${hostId}`, method: 'DELETE'
     },
       options);
     }
   
 
 
-export const getDeleteApiV1SitesSiteIdHostsHostIdMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1SitesSiteIdHostsHostId>>, TError,{siteId: string;hostId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1SitesSiteIdHostsHostId>>, TError,{siteId: string;hostId: string}, TContext> => {
+export const getDeleteSitesSiteIdHostsHostIdMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteSitesSiteIdHostsHostId>>, TError,{siteId: string;hostId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteSitesSiteIdHostsHostId>>, TError,{siteId: string;hostId: string}, TContext> => {
 
-const mutationKey = ['deleteApiV1SitesSiteIdHostsHostId'];
+const mutationKey = ['deleteSitesSiteIdHostsHostId'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -895,10 +897,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteApiV1SitesSiteIdHostsHostId>>, {siteId: string;hostId: string}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteSitesSiteIdHostsHostId>>, {siteId: string;hostId: string}> = (props) => {
           const {siteId,hostId} = props ?? {};
 
-          return  deleteApiV1SitesSiteIdHostsHostId(siteId,hostId,requestOptions)
+          return  deleteSitesSiteIdHostsHostId(siteId,hostId,requestOptions)
         }
 
         
@@ -906,23 +908,23 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type DeleteApiV1SitesSiteIdHostsHostIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteApiV1SitesSiteIdHostsHostId>>>
+    export type DeleteSitesSiteIdHostsHostIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteSitesSiteIdHostsHostId>>>
     
-    export type DeleteApiV1SitesSiteIdHostsHostIdMutationError = ErrorType<void>
+    export type DeleteSitesSiteIdHostsHostIdMutationError = ErrorType<void>
 
     /**
  * @summary Remove active host
  */
-export const useDeleteApiV1SitesSiteIdHostsHostId = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1SitesSiteIdHostsHostId>>, TError,{siteId: string;hostId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const useDeleteSitesSiteIdHostsHostId = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteSitesSiteIdHostsHostId>>, TError,{siteId: string;hostId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof deleteApiV1SitesSiteIdHostsHostId>>,
+        Awaited<ReturnType<typeof deleteSitesSiteIdHostsHostId>>,
         TError,
         {siteId: string;hostId: string},
         TContext
       > => {
 
-      const mutationOptions = getDeleteApiV1SitesSiteIdHostsHostIdMutationOptions(options);
+      const mutationOptions = getDeleteSitesSiteIdHostsHostIdMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
@@ -930,25 +932,25 @@ export const useDeleteApiV1SitesSiteIdHostsHostId = <TError = ErrorType<void>,
  * Discovers URLs from sitemap or homepage without crawling content. This is fast (~30 seconds).
  * @summary Start URL discovery
  */
-export const postApiV1SitesSiteIdDiscover = (
+export const postSitesSiteIdDiscover = (
     siteId: string,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<SitesMessageResponse>(
-      {url: `/api/v1/sites/${siteId}/discover`, method: 'POST', signal
+      {url: `/sites/${siteId}/discover`, method: 'POST', signal
     },
       options);
     }
   
 
 
-export const getPostApiV1SitesSiteIdDiscoverMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1SitesSiteIdDiscover>>, TError,{siteId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof postApiV1SitesSiteIdDiscover>>, TError,{siteId: string}, TContext> => {
+export const getPostSitesSiteIdDiscoverMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postSitesSiteIdDiscover>>, TError,{siteId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postSitesSiteIdDiscover>>, TError,{siteId: string}, TContext> => {
 
-const mutationKey = ['postApiV1SitesSiteIdDiscover'];
+const mutationKey = ['postSitesSiteIdDiscover'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -958,10 +960,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1SitesSiteIdDiscover>>, {siteId: string}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postSitesSiteIdDiscover>>, {siteId: string}> = (props) => {
           const {siteId} = props ?? {};
 
-          return  postApiV1SitesSiteIdDiscover(siteId,requestOptions)
+          return  postSitesSiteIdDiscover(siteId,requestOptions)
         }
 
         
@@ -969,23 +971,23 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiV1SitesSiteIdDiscoverMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1SitesSiteIdDiscover>>>
+    export type PostSitesSiteIdDiscoverMutationResult = NonNullable<Awaited<ReturnType<typeof postSitesSiteIdDiscover>>>
     
-    export type PostApiV1SitesSiteIdDiscoverMutationError = ErrorType<void>
+    export type PostSitesSiteIdDiscoverMutationError = ErrorType<void>
 
     /**
  * @summary Start URL discovery
  */
-export const usePostApiV1SitesSiteIdDiscover = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1SitesSiteIdDiscover>>, TError,{siteId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePostSitesSiteIdDiscover = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postSitesSiteIdDiscover>>, TError,{siteId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiV1SitesSiteIdDiscover>>,
+        Awaited<ReturnType<typeof postSitesSiteIdDiscover>>,
         TError,
         {siteId: string},
         TContext
       > => {
 
-      const mutationOptions = getPostApiV1SitesSiteIdDiscoverMutationOptions(options);
+      const mutationOptions = getPostSitesSiteIdDiscoverMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
@@ -993,14 +995,14 @@ export const usePostApiV1SitesSiteIdDiscover = <TError = ErrorType<void>,
  * Returns discovered URLs with their categories and selection status.
  * @summary Get discovery results
  */
-export const getApiV1SitesSiteIdDiscovery = (
+export const getSitesSiteIdDiscovery = (
     siteId: string,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<DiscoveryResult>(
-      {url: `/api/v1/sites/${siteId}/discovery`, method: 'GET', signal
+      {url: `/sites/${siteId}/discovery`, method: 'GET', signal
     },
       options);
     }
@@ -1008,69 +1010,69 @@ export const getApiV1SitesSiteIdDiscovery = (
 
 
 
-export const getGetApiV1SitesSiteIdDiscoveryQueryKey = (siteId?: string,) => {
+export const getGetSitesSiteIdDiscoveryQueryKey = (siteId?: string,) => {
     return [
-    `/api/v1/sites/${siteId}/discovery`
+    `/sites/${siteId}/discovery`
     ] as const;
     }
 
     
-export const getGetApiV1SitesSiteIdDiscoveryQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscovery>>, TError = ErrorType<void>>(siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscovery>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetSitesSiteIdDiscoveryQueryOptions = <TData = Awaited<ReturnType<typeof getSitesSiteIdDiscovery>>, TError = ErrorType<void>>(siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSitesSiteIdDiscovery>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1SitesSiteIdDiscoveryQueryKey(siteId);
+  const queryKey =  queryOptions?.queryKey ?? getGetSitesSiteIdDiscoveryQueryKey(siteId);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscovery>>> = ({ signal }) => getApiV1SitesSiteIdDiscovery(siteId, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSitesSiteIdDiscovery>>> = ({ signal }) => getSitesSiteIdDiscovery(siteId, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(siteId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscovery>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: !!(siteId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getSitesSiteIdDiscovery>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1SitesSiteIdDiscoveryQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscovery>>>
-export type GetApiV1SitesSiteIdDiscoveryQueryError = ErrorType<void>
+export type GetSitesSiteIdDiscoveryQueryResult = NonNullable<Awaited<ReturnType<typeof getSitesSiteIdDiscovery>>>
+export type GetSitesSiteIdDiscoveryQueryError = ErrorType<void>
 
 
-export function useGetApiV1SitesSiteIdDiscovery<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscovery>>, TError = ErrorType<void>>(
- siteId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscovery>>, TError, TData>> & Pick<
+export function useGetSitesSiteIdDiscovery<TData = Awaited<ReturnType<typeof getSitesSiteIdDiscovery>>, TError = ErrorType<void>>(
+ siteId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSitesSiteIdDiscovery>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscovery>>,
+          Awaited<ReturnType<typeof getSitesSiteIdDiscovery>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscovery>>
+          Awaited<ReturnType<typeof getSitesSiteIdDiscovery>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1SitesSiteIdDiscovery<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscovery>>, TError = ErrorType<void>>(
- siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscovery>>, TError, TData>> & Pick<
+export function useGetSitesSiteIdDiscovery<TData = Awaited<ReturnType<typeof getSitesSiteIdDiscovery>>, TError = ErrorType<void>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSitesSiteIdDiscovery>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscovery>>,
+          Awaited<ReturnType<typeof getSitesSiteIdDiscovery>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscovery>>
+          Awaited<ReturnType<typeof getSitesSiteIdDiscovery>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1SitesSiteIdDiscovery<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscovery>>, TError = ErrorType<void>>(
- siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscovery>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetSitesSiteIdDiscovery<TData = Awaited<ReturnType<typeof getSitesSiteIdDiscovery>>, TError = ErrorType<void>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSitesSiteIdDiscovery>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get discovery results
  */
 
-export function useGetApiV1SitesSiteIdDiscovery<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscovery>>, TError = ErrorType<void>>(
- siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscovery>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetSitesSiteIdDiscovery<TData = Awaited<ReturnType<typeof getSitesSiteIdDiscovery>>, TError = ErrorType<void>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSitesSiteIdDiscovery>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1SitesSiteIdDiscoveryQueryOptions(siteId,options)
+  const queryOptions = getGetSitesSiteIdDiscoveryQueryOptions(siteId,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -1086,14 +1088,14 @@ export function useGetApiV1SitesSiteIdDiscovery<TData = Awaited<ReturnType<typeo
  * Returns statistics about discovered URLs by category and priority.
  * @summary Get discovery statistics
  */
-export const getApiV1SitesSiteIdDiscoveryStats = (
+export const getSitesSiteIdDiscoveryStats = (
     siteId: string,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<DiscoveryStats>(
-      {url: `/api/v1/sites/${siteId}/discovery/stats`, method: 'GET', signal
+      {url: `/sites/${siteId}/discovery/stats`, method: 'GET', signal
     },
       options);
     }
@@ -1101,69 +1103,69 @@ export const getApiV1SitesSiteIdDiscoveryStats = (
 
 
 
-export const getGetApiV1SitesSiteIdDiscoveryStatsQueryKey = (siteId?: string,) => {
+export const getGetSitesSiteIdDiscoveryStatsQueryKey = (siteId?: string,) => {
     return [
-    `/api/v1/sites/${siteId}/discovery/stats`
+    `/sites/${siteId}/discovery/stats`
     ] as const;
     }
 
     
-export const getGetApiV1SitesSiteIdDiscoveryStatsQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscoveryStats>>, TError = ErrorType<void>>(siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscoveryStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetSitesSiteIdDiscoveryStatsQueryOptions = <TData = Awaited<ReturnType<typeof getSitesSiteIdDiscoveryStats>>, TError = ErrorType<void>>(siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSitesSiteIdDiscoveryStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1SitesSiteIdDiscoveryStatsQueryKey(siteId);
+  const queryKey =  queryOptions?.queryKey ?? getGetSitesSiteIdDiscoveryStatsQueryKey(siteId);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscoveryStats>>> = ({ signal }) => getApiV1SitesSiteIdDiscoveryStats(siteId, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSitesSiteIdDiscoveryStats>>> = ({ signal }) => getSitesSiteIdDiscoveryStats(siteId, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(siteId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscoveryStats>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: !!(siteId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getSitesSiteIdDiscoveryStats>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1SitesSiteIdDiscoveryStatsQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscoveryStats>>>
-export type GetApiV1SitesSiteIdDiscoveryStatsQueryError = ErrorType<void>
+export type GetSitesSiteIdDiscoveryStatsQueryResult = NonNullable<Awaited<ReturnType<typeof getSitesSiteIdDiscoveryStats>>>
+export type GetSitesSiteIdDiscoveryStatsQueryError = ErrorType<void>
 
 
-export function useGetApiV1SitesSiteIdDiscoveryStats<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscoveryStats>>, TError = ErrorType<void>>(
- siteId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscoveryStats>>, TError, TData>> & Pick<
+export function useGetSitesSiteIdDiscoveryStats<TData = Awaited<ReturnType<typeof getSitesSiteIdDiscoveryStats>>, TError = ErrorType<void>>(
+ siteId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSitesSiteIdDiscoveryStats>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscoveryStats>>,
+          Awaited<ReturnType<typeof getSitesSiteIdDiscoveryStats>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscoveryStats>>
+          Awaited<ReturnType<typeof getSitesSiteIdDiscoveryStats>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1SitesSiteIdDiscoveryStats<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscoveryStats>>, TError = ErrorType<void>>(
- siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscoveryStats>>, TError, TData>> & Pick<
+export function useGetSitesSiteIdDiscoveryStats<TData = Awaited<ReturnType<typeof getSitesSiteIdDiscoveryStats>>, TError = ErrorType<void>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSitesSiteIdDiscoveryStats>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscoveryStats>>,
+          Awaited<ReturnType<typeof getSitesSiteIdDiscoveryStats>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscoveryStats>>
+          Awaited<ReturnType<typeof getSitesSiteIdDiscoveryStats>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1SitesSiteIdDiscoveryStats<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscoveryStats>>, TError = ErrorType<void>>(
- siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscoveryStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetSitesSiteIdDiscoveryStats<TData = Awaited<ReturnType<typeof getSitesSiteIdDiscoveryStats>>, TError = ErrorType<void>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSitesSiteIdDiscoveryStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get discovery statistics
  */
 
-export function useGetApiV1SitesSiteIdDiscoveryStats<TData = Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscoveryStats>>, TError = ErrorType<void>>(
- siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1SitesSiteIdDiscoveryStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetSitesSiteIdDiscoveryStats<TData = Awaited<ReturnType<typeof getSitesSiteIdDiscoveryStats>>, TError = ErrorType<void>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSitesSiteIdDiscoveryStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1SitesSiteIdDiscoveryStatsQueryOptions(siteId,options)
+  const queryOptions = getGetSitesSiteIdDiscoveryStatsQueryOptions(siteId,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -1179,14 +1181,14 @@ export function useGetApiV1SitesSiteIdDiscoveryStats<TData = Awaited<ReturnType<
  * Update which URLs should be included in the crawl.
  * @summary Update URL selections
  */
-export const putApiV1SitesSiteIdDiscoverySelections = (
+export const putSitesSiteIdDiscoverySelections = (
     siteId: string,
     updateSelectionsRequest: BodyType<UpdateSelectionsRequest>,
  options?: SecondParameter<typeof customInstance>,) => {
       
       
       return customInstance<SelectionsUpdateResponse>(
-      {url: `/api/v1/sites/${siteId}/discovery/selections`, method: 'PUT',
+      {url: `/sites/${siteId}/discovery/selections`, method: 'PUT',
       headers: {'Content-Type': 'application/json', },
       data: updateSelectionsRequest
     },
@@ -1195,11 +1197,11 @@ export const putApiV1SitesSiteIdDiscoverySelections = (
   
 
 
-export const getPutApiV1SitesSiteIdDiscoverySelectionsMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiV1SitesSiteIdDiscoverySelections>>, TError,{siteId: string;data: BodyType<UpdateSelectionsRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof putApiV1SitesSiteIdDiscoverySelections>>, TError,{siteId: string;data: BodyType<UpdateSelectionsRequest>}, TContext> => {
+export const getPutSitesSiteIdDiscoverySelectionsMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putSitesSiteIdDiscoverySelections>>, TError,{siteId: string;data: BodyType<UpdateSelectionsRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof putSitesSiteIdDiscoverySelections>>, TError,{siteId: string;data: BodyType<UpdateSelectionsRequest>}, TContext> => {
 
-const mutationKey = ['putApiV1SitesSiteIdDiscoverySelections'];
+const mutationKey = ['putSitesSiteIdDiscoverySelections'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -1209,10 +1211,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putApiV1SitesSiteIdDiscoverySelections>>, {siteId: string;data: BodyType<UpdateSelectionsRequest>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putSitesSiteIdDiscoverySelections>>, {siteId: string;data: BodyType<UpdateSelectionsRequest>}> = (props) => {
           const {siteId,data} = props ?? {};
 
-          return  putApiV1SitesSiteIdDiscoverySelections(siteId,data,requestOptions)
+          return  putSitesSiteIdDiscoverySelections(siteId,data,requestOptions)
         }
 
         
@@ -1220,23 +1222,23 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PutApiV1SitesSiteIdDiscoverySelectionsMutationResult = NonNullable<Awaited<ReturnType<typeof putApiV1SitesSiteIdDiscoverySelections>>>
-    export type PutApiV1SitesSiteIdDiscoverySelectionsMutationBody = BodyType<UpdateSelectionsRequest>
-    export type PutApiV1SitesSiteIdDiscoverySelectionsMutationError = ErrorType<void>
+    export type PutSitesSiteIdDiscoverySelectionsMutationResult = NonNullable<Awaited<ReturnType<typeof putSitesSiteIdDiscoverySelections>>>
+    export type PutSitesSiteIdDiscoverySelectionsMutationBody = BodyType<UpdateSelectionsRequest>
+    export type PutSitesSiteIdDiscoverySelectionsMutationError = ErrorType<void>
 
     /**
  * @summary Update URL selections
  */
-export const usePutApiV1SitesSiteIdDiscoverySelections = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiV1SitesSiteIdDiscoverySelections>>, TError,{siteId: string;data: BodyType<UpdateSelectionsRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePutSitesSiteIdDiscoverySelections = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putSitesSiteIdDiscoverySelections>>, TError,{siteId: string;data: BodyType<UpdateSelectionsRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof putApiV1SitesSiteIdDiscoverySelections>>,
+        Awaited<ReturnType<typeof putSitesSiteIdDiscoverySelections>>,
         TError,
         {siteId: string;data: BodyType<UpdateSelectionsRequest>},
         TContext
       > => {
 
-      const mutationOptions = getPutApiV1SitesSiteIdDiscoverySelectionsMutationOptions(options);
+      const mutationOptions = getPutSitesSiteIdDiscoverySelectionsMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
@@ -1244,7 +1246,7 @@ export const usePutApiV1SitesSiteIdDiscoverySelections = <TError = ErrorType<voi
  * Select or deselect all URLs matching a category or priority.
  * @summary Bulk select/deselect URLs
  */
-export const postApiV1SitesSiteIdDiscoveryBulkSelect = (
+export const postSitesSiteIdDiscoveryBulkSelect = (
     siteId: string,
     bulkSelectRequest: BodyType<BulkSelectRequest>,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
@@ -1252,7 +1254,7 @@ export const postApiV1SitesSiteIdDiscoveryBulkSelect = (
       
       
       return customInstance<SelectionsUpdateResponse>(
-      {url: `/api/v1/sites/${siteId}/discovery/bulk-select`, method: 'POST',
+      {url: `/sites/${siteId}/discovery/bulk-select`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: bulkSelectRequest, signal
     },
@@ -1261,11 +1263,11 @@ export const postApiV1SitesSiteIdDiscoveryBulkSelect = (
   
 
 
-export const getPostApiV1SitesSiteIdDiscoveryBulkSelectMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1SitesSiteIdDiscoveryBulkSelect>>, TError,{siteId: string;data: BodyType<BulkSelectRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof postApiV1SitesSiteIdDiscoveryBulkSelect>>, TError,{siteId: string;data: BodyType<BulkSelectRequest>}, TContext> => {
+export const getPostSitesSiteIdDiscoveryBulkSelectMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postSitesSiteIdDiscoveryBulkSelect>>, TError,{siteId: string;data: BodyType<BulkSelectRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postSitesSiteIdDiscoveryBulkSelect>>, TError,{siteId: string;data: BodyType<BulkSelectRequest>}, TContext> => {
 
-const mutationKey = ['postApiV1SitesSiteIdDiscoveryBulkSelect'];
+const mutationKey = ['postSitesSiteIdDiscoveryBulkSelect'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -1275,10 +1277,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1SitesSiteIdDiscoveryBulkSelect>>, {siteId: string;data: BodyType<BulkSelectRequest>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postSitesSiteIdDiscoveryBulkSelect>>, {siteId: string;data: BodyType<BulkSelectRequest>}> = (props) => {
           const {siteId,data} = props ?? {};
 
-          return  postApiV1SitesSiteIdDiscoveryBulkSelect(siteId,data,requestOptions)
+          return  postSitesSiteIdDiscoveryBulkSelect(siteId,data,requestOptions)
         }
 
         
@@ -1286,23 +1288,23 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiV1SitesSiteIdDiscoveryBulkSelectMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1SitesSiteIdDiscoveryBulkSelect>>>
-    export type PostApiV1SitesSiteIdDiscoveryBulkSelectMutationBody = BodyType<BulkSelectRequest>
-    export type PostApiV1SitesSiteIdDiscoveryBulkSelectMutationError = ErrorType<void>
+    export type PostSitesSiteIdDiscoveryBulkSelectMutationResult = NonNullable<Awaited<ReturnType<typeof postSitesSiteIdDiscoveryBulkSelect>>>
+    export type PostSitesSiteIdDiscoveryBulkSelectMutationBody = BodyType<BulkSelectRequest>
+    export type PostSitesSiteIdDiscoveryBulkSelectMutationError = ErrorType<void>
 
     /**
  * @summary Bulk select/deselect URLs
  */
-export const usePostApiV1SitesSiteIdDiscoveryBulkSelect = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1SitesSiteIdDiscoveryBulkSelect>>, TError,{siteId: string;data: BodyType<BulkSelectRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePostSitesSiteIdDiscoveryBulkSelect = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postSitesSiteIdDiscoveryBulkSelect>>, TError,{siteId: string;data: BodyType<BulkSelectRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiV1SitesSiteIdDiscoveryBulkSelect>>,
+        Awaited<ReturnType<typeof postSitesSiteIdDiscoveryBulkSelect>>,
         TError,
         {siteId: string;data: BodyType<BulkSelectRequest>},
         TContext
       > => {
 
-      const mutationOptions = getPostApiV1SitesSiteIdDiscoveryBulkSelectMutationOptions(options);
+      const mutationOptions = getPostSitesSiteIdDiscoveryBulkSelectMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
@@ -1310,15 +1312,15 @@ export const usePostApiV1SitesSiteIdDiscoveryBulkSelect = <TError = ErrorType<vo
  * Add URLs manually that were not found in sitemap or discovery.
  * @summary Add manual URLs
  */
-export const postApiV1SitesSiteIdDiscoveryManualUrls = (
+export const postSitesSiteIdDiscoveryManualUrls = (
     siteId: string,
     addManualUrlsRequest: BodyType<AddManualUrlsRequest>,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<PostApiV1SitesSiteIdDiscoveryManualUrls200>(
-      {url: `/api/v1/sites/${siteId}/discovery/manual-urls`, method: 'POST',
+      return customInstance<PostSitesSiteIdDiscoveryManualUrls200>(
+      {url: `/sites/${siteId}/discovery/manual-urls`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: addManualUrlsRequest, signal
     },
@@ -1327,11 +1329,11 @@ export const postApiV1SitesSiteIdDiscoveryManualUrls = (
   
 
 
-export const getPostApiV1SitesSiteIdDiscoveryManualUrlsMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1SitesSiteIdDiscoveryManualUrls>>, TError,{siteId: string;data: BodyType<AddManualUrlsRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof postApiV1SitesSiteIdDiscoveryManualUrls>>, TError,{siteId: string;data: BodyType<AddManualUrlsRequest>}, TContext> => {
+export const getPostSitesSiteIdDiscoveryManualUrlsMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postSitesSiteIdDiscoveryManualUrls>>, TError,{siteId: string;data: BodyType<AddManualUrlsRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postSitesSiteIdDiscoveryManualUrls>>, TError,{siteId: string;data: BodyType<AddManualUrlsRequest>}, TContext> => {
 
-const mutationKey = ['postApiV1SitesSiteIdDiscoveryManualUrls'];
+const mutationKey = ['postSitesSiteIdDiscoveryManualUrls'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -1341,10 +1343,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1SitesSiteIdDiscoveryManualUrls>>, {siteId: string;data: BodyType<AddManualUrlsRequest>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postSitesSiteIdDiscoveryManualUrls>>, {siteId: string;data: BodyType<AddManualUrlsRequest>}> = (props) => {
           const {siteId,data} = props ?? {};
 
-          return  postApiV1SitesSiteIdDiscoveryManualUrls(siteId,data,requestOptions)
+          return  postSitesSiteIdDiscoveryManualUrls(siteId,data,requestOptions)
         }
 
         
@@ -1352,23 +1354,23 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiV1SitesSiteIdDiscoveryManualUrlsMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1SitesSiteIdDiscoveryManualUrls>>>
-    export type PostApiV1SitesSiteIdDiscoveryManualUrlsMutationBody = BodyType<AddManualUrlsRequest>
-    export type PostApiV1SitesSiteIdDiscoveryManualUrlsMutationError = ErrorType<void>
+    export type PostSitesSiteIdDiscoveryManualUrlsMutationResult = NonNullable<Awaited<ReturnType<typeof postSitesSiteIdDiscoveryManualUrls>>>
+    export type PostSitesSiteIdDiscoveryManualUrlsMutationBody = BodyType<AddManualUrlsRequest>
+    export type PostSitesSiteIdDiscoveryManualUrlsMutationError = ErrorType<void>
 
     /**
  * @summary Add manual URLs
  */
-export const usePostApiV1SitesSiteIdDiscoveryManualUrls = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1SitesSiteIdDiscoveryManualUrls>>, TError,{siteId: string;data: BodyType<AddManualUrlsRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePostSitesSiteIdDiscoveryManualUrls = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postSitesSiteIdDiscoveryManualUrls>>, TError,{siteId: string;data: BodyType<AddManualUrlsRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiV1SitesSiteIdDiscoveryManualUrls>>,
+        Awaited<ReturnType<typeof postSitesSiteIdDiscoveryManualUrls>>,
         TError,
         {siteId: string;data: BodyType<AddManualUrlsRequest>},
         TContext
       > => {
 
-      const mutationOptions = getPostApiV1SitesSiteIdDiscoveryManualUrlsMutationOptions(options);
+      const mutationOptions = getPostSitesSiteIdDiscoveryManualUrlsMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
@@ -1376,15 +1378,15 @@ export const usePostApiV1SitesSiteIdDiscoveryManualUrls = <TError = ErrorType<vo
  * Crawl only the selected URLs from discovery.
  * @summary Start selective crawl
  */
-export const postApiV1SitesSiteIdCrawlSelective = (
+export const postSitesSiteIdCrawlSelective = (
     siteId: string,
     selectiveCrawlRequest: BodyType<SelectiveCrawlRequest>,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<PostApiV1SitesSiteIdCrawlSelective200>(
-      {url: `/api/v1/sites/${siteId}/crawl/selective`, method: 'POST',
+      return customInstance<PostSitesSiteIdCrawlSelective200>(
+      {url: `/sites/${siteId}/crawl/selective`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: selectiveCrawlRequest, signal
     },
@@ -1393,11 +1395,11 @@ export const postApiV1SitesSiteIdCrawlSelective = (
   
 
 
-export const getPostApiV1SitesSiteIdCrawlSelectiveMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1SitesSiteIdCrawlSelective>>, TError,{siteId: string;data: BodyType<SelectiveCrawlRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof postApiV1SitesSiteIdCrawlSelective>>, TError,{siteId: string;data: BodyType<SelectiveCrawlRequest>}, TContext> => {
+export const getPostSitesSiteIdCrawlSelectiveMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postSitesSiteIdCrawlSelective>>, TError,{siteId: string;data: BodyType<SelectiveCrawlRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postSitesSiteIdCrawlSelective>>, TError,{siteId: string;data: BodyType<SelectiveCrawlRequest>}, TContext> => {
 
-const mutationKey = ['postApiV1SitesSiteIdCrawlSelective'];
+const mutationKey = ['postSitesSiteIdCrawlSelective'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -1407,10 +1409,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1SitesSiteIdCrawlSelective>>, {siteId: string;data: BodyType<SelectiveCrawlRequest>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postSitesSiteIdCrawlSelective>>, {siteId: string;data: BodyType<SelectiveCrawlRequest>}> = (props) => {
           const {siteId,data} = props ?? {};
 
-          return  postApiV1SitesSiteIdCrawlSelective(siteId,data,requestOptions)
+          return  postSitesSiteIdCrawlSelective(siteId,data,requestOptions)
         }
 
         
@@ -1418,24 +1420,124 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiV1SitesSiteIdCrawlSelectiveMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1SitesSiteIdCrawlSelective>>>
-    export type PostApiV1SitesSiteIdCrawlSelectiveMutationBody = BodyType<SelectiveCrawlRequest>
-    export type PostApiV1SitesSiteIdCrawlSelectiveMutationError = ErrorType<void>
+    export type PostSitesSiteIdCrawlSelectiveMutationResult = NonNullable<Awaited<ReturnType<typeof postSitesSiteIdCrawlSelective>>>
+    export type PostSitesSiteIdCrawlSelectiveMutationBody = BodyType<SelectiveCrawlRequest>
+    export type PostSitesSiteIdCrawlSelectiveMutationError = ErrorType<void>
 
     /**
  * @summary Start selective crawl
  */
-export const usePostApiV1SitesSiteIdCrawlSelective = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1SitesSiteIdCrawlSelective>>, TError,{siteId: string;data: BodyType<SelectiveCrawlRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePostSitesSiteIdCrawlSelective = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postSitesSiteIdCrawlSelective>>, TError,{siteId: string;data: BodyType<SelectiveCrawlRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiV1SitesSiteIdCrawlSelective>>,
+        Awaited<ReturnType<typeof postSitesSiteIdCrawlSelective>>,
         TError,
         {siteId: string;data: BodyType<SelectiveCrawlRequest>},
         TContext
       > => {
 
-      const mutationOptions = getPostApiV1SitesSiteIdCrawlSelectiveMutationOptions(options);
+      const mutationOptions = getPostSitesSiteIdCrawlSelectiveMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
+    /**
+ * Returns detailed analytics for a site including conversations, knowledge base stats, engagement metrics, and time series data for charts.
+ * @summary Get comprehensive site analytics
+ */
+export const getSitesSiteIdAnalytics = (
+    siteId: string,
+    params?: GetSitesSiteIdAnalyticsParams,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<SiteAnalyticsResponse>(
+      {url: `/sites/${siteId}/analytics`, method: 'GET',
+        params, signal
+    },
+      options);
+    }
+  
+
+
+
+export const getGetSitesSiteIdAnalyticsQueryKey = (siteId?: string,
+    params?: GetSitesSiteIdAnalyticsParams,) => {
+    return [
+    `/sites/${siteId}/analytics`, ...(params ? [params]: [])
+    ] as const;
+    }
+
     
+export const getGetSitesSiteIdAnalyticsQueryOptions = <TData = Awaited<ReturnType<typeof getSitesSiteIdAnalytics>>, TError = ErrorType<void>>(siteId: string,
+    params?: GetSitesSiteIdAnalyticsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSitesSiteIdAnalytics>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetSitesSiteIdAnalyticsQueryKey(siteId,params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSitesSiteIdAnalytics>>> = ({ signal }) => getSitesSiteIdAnalytics(siteId,params, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(siteId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getSitesSiteIdAnalytics>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetSitesSiteIdAnalyticsQueryResult = NonNullable<Awaited<ReturnType<typeof getSitesSiteIdAnalytics>>>
+export type GetSitesSiteIdAnalyticsQueryError = ErrorType<void>
+
+
+export function useGetSitesSiteIdAnalytics<TData = Awaited<ReturnType<typeof getSitesSiteIdAnalytics>>, TError = ErrorType<void>>(
+ siteId: string,
+    params: undefined |  GetSitesSiteIdAnalyticsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSitesSiteIdAnalytics>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSitesSiteIdAnalytics>>,
+          TError,
+          Awaited<ReturnType<typeof getSitesSiteIdAnalytics>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSitesSiteIdAnalytics<TData = Awaited<ReturnType<typeof getSitesSiteIdAnalytics>>, TError = ErrorType<void>>(
+ siteId: string,
+    params?: GetSitesSiteIdAnalyticsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSitesSiteIdAnalytics>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSitesSiteIdAnalytics>>,
+          TError,
+          Awaited<ReturnType<typeof getSitesSiteIdAnalytics>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSitesSiteIdAnalytics<TData = Awaited<ReturnType<typeof getSitesSiteIdAnalytics>>, TError = ErrorType<void>>(
+ siteId: string,
+    params?: GetSitesSiteIdAnalyticsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSitesSiteIdAnalytics>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get comprehensive site analytics
+ */
+
+export function useGetSitesSiteIdAnalytics<TData = Awaited<ReturnType<typeof getSitesSiteIdAnalytics>>, TError = ErrorType<void>>(
+ siteId: string,
+    params?: GetSitesSiteIdAnalyticsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSitesSiteIdAnalytics>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetSitesSiteIdAnalyticsQueryOptions(siteId,params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+

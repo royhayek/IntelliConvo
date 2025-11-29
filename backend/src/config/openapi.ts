@@ -17,13 +17,13 @@ export function generateOpenAPIDocument() {
   return generator.generateDocument({
     openapi: '3.0.0',
     info: {
-      title: 'IntelligentConvo API',
+      title: 'IntelliConvo API',
       version: '1.0.0',
       description:
-        'A comprehensive API for IntelligentConvo - an AI-powered conversation platform that provides intelligent chatbot solutions for websites',
+        'A comprehensive API for IntelliConvo - an AI-powered conversation platform that provides intelligent chatbot solutions for websites',
       contact: {
         name: 'API Support',
-        email: 'support@intelligentconvo.com',
+        email: 'support@intelliconvo.com',
       },
       license: {
         name: 'MIT',
@@ -31,11 +31,11 @@ export function generateOpenAPIDocument() {
     },
     servers: [
       {
-        url: process.env.API_URL || 'http://localhost:5000',
+        url: process.env.API_URL || 'http://localhost:5001/api/v1',
         description: 'Development server',
       },
       {
-        url: process.env.PRODUCTION_API_URL || 'https://api.intelligentconvo.com',
+        url: process.env.PRODUCTION_API_URL || 'https://api.intelliconvo.com/api/v1',
         description: 'Production server',
       },
     ],
@@ -136,6 +136,19 @@ registry.registerComponent('securitySchemes', 'githubOAuth', {
       tokenUrl: '/api/auth/github/callback',
       scopes: {
         'user:email': 'Access user email',
+      },
+    },
+  },
+});
+
+registry.registerComponent('securitySchemes', 'microsoftOAuth', {
+  type: 'oauth2',
+  flows: {
+    authorizationCode: {
+      authorizationUrl: '/api/auth/microsoft',
+      tokenUrl: '/api/auth/microsoft/callback',
+      scopes: {
+        'user.read': 'Read user profile',
       },
     },
   },

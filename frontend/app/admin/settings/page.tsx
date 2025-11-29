@@ -7,18 +7,18 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { useDeleteApiV1AdminEmbeddingsPineconeAll } from "@/lib/api/generated/queries/admin-embeddings/admin-embeddings";
+import { useDeleteAdminEmbeddingsPineconeAll } from "@/lib/api/generated/queries/admin-embeddings/admin-embeddings";
 import {
-  useGetApiV1AdminSettings,
-  usePatchApiV1AdminSettingsBulk,
-  usePostApiV1AdminSettingsCacheClear,
-  getGetApiV1AdminSettingsQueryKey,
+  useGetAdminSettings,
+  usePatchAdminSettingsBulk,
+  usePostAdminSettingsCacheClear,
+  getGetAdminSettingsQueryKey,
 } from "@/lib/api/generated/queries/admin-settings/admin-settings";
 import type { AdminSystemSetting } from "@/lib/api/generated/models/adminSystemSetting";
-import type { DeleteApiV1AdminEmbeddingsPineconeAll200 } from "@/lib/api/generated/models/deleteApiV1AdminEmbeddingsPineconeAll200";
 import { useQueryClient } from "@tanstack/react-query";
 import { CATEGORY_ICONS, CATEGORY_NAMES } from "@/lib/constants/settings-config";
 import { CategorySettingsCard, DangerZoneCard } from "@/components/admin/settings";
+import { DeleteAdminEmbeddingsPineconeAll200 } from "@/lib/api/generated/models";
 
 export default function AdminSettingsPage() {
   const queryClient = useQueryClient();
@@ -26,23 +26,23 @@ export default function AdminSettingsPage() {
   const [hasChanges, setHasChanges] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [showDeletePineconeDialog, setShowDeletePineconeDialog] = useState(false);
-  const [deleteResult, setDeleteResult] = useState<DeleteApiV1AdminEmbeddingsPineconeAll200 | null>(null);
+  const [deleteResult, setDeleteResult] = useState<DeleteAdminEmbeddingsPineconeAll200 | null>(null);
   const [cacheCleared, setCacheCleared] = useState(false);
 
-  const { data: settingsData, isLoading, error, refetch } = useGetApiV1AdminSettings();
+  const { data: settingsData, isLoading, error, refetch } = useGetAdminSettings();
 
-  const bulkUpdateMutation = usePatchApiV1AdminSettingsBulk({
+  const bulkUpdateMutation = usePatchAdminSettingsBulk({
     mutation: {
       onSuccess: () => {
         setSaveSuccess(true);
         setHasChanges(false);
-        queryClient.invalidateQueries({ queryKey: getGetApiV1AdminSettingsQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetAdminSettingsQueryKey() });
         setTimeout(() => setSaveSuccess(false), 3000);
       },
     },
   });
 
-  const deletePineconeMutation = useDeleteApiV1AdminEmbeddingsPineconeAll({
+  const deletePineconeMutation = useDeleteAdminEmbeddingsPineconeAll({
     mutation: {
       onSuccess: (data) => {
         setDeleteResult(data);
@@ -57,7 +57,7 @@ export default function AdminSettingsPage() {
     },
   });
 
-  const clearCacheMutation = usePostApiV1AdminSettingsCacheClear({
+  const clearCacheMutation = usePostAdminSettingsCacheClear({
     mutation: {
       onSuccess: () => {
         setCacheCleared(true);

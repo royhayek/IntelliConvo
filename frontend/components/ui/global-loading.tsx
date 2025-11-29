@@ -62,7 +62,7 @@ export function GlobalLoading({
   const isDark = mounted && resolvedTheme === "dark";
 
   // Default logo if none provided
-  const defaultLogo = <BrandLogo size="lg" showText={false} href={null} animated={false} />;
+  const defaultLogo = <BrandLogo size="md" showText={false} href={null} animated={false} />;
 
   const logoElement = logo || defaultLogo;
 

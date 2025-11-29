@@ -330,7 +330,7 @@ This feature was already implemented in the original URL management system:
   - "Add URL" button opens modal dialog
   - Single URL mode with validation
   - Bulk mode (paste multiple URLs, one per line)
-  - Uses `usePostApiV1SitesSiteIdUrls` hook
+  - Uses `usePostSitesSiteIdUrls` hook
   - Real-time URL status updates via socket
 
 **API Usage:**

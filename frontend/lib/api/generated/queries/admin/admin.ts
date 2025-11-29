@@ -16,14 +16,14 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  GetApiV1AdminStatsBilling200,
-  GetApiV1AdminStatsConversations200,
-  GetApiV1AdminStatsEmbeddings200,
-  GetApiV1AdminStatsFiles200,
-  GetApiV1AdminStatsSecurity200,
-  GetApiV1AdminStatsSites200,
-  GetApiV1AdminStatsSubscriptions200,
-  GetApiV1AdminStatsUsers200
+  GetAdminStatsBilling200,
+  GetAdminStatsConversations200,
+  GetAdminStatsEmbeddings200,
+  GetAdminStatsFiles200,
+  GetAdminStatsSecurity200,
+  GetAdminStatsSites200,
+  GetAdminStatsSubscriptions200,
+  GetAdminStatsUsers200
 } from '../../models';
 
 import { customInstance } from '../../../axios-instance';
@@ -37,14 +37,14 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 /**
  * @summary Get user statistics
  */
-export const getApiV1AdminStatsUsers = (
+export const getAdminStatsUsers = (
     
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<GetApiV1AdminStatsUsers200>(
-      {url: `/api/v1/admin/stats/users`, method: 'GET', signal
+      return customInstance<GetAdminStatsUsers200>(
+      {url: `/admin/stats/users`, method: 'GET', signal
     },
       options);
     }
@@ -52,69 +52,69 @@ export const getApiV1AdminStatsUsers = (
 
 
 
-export const getGetApiV1AdminStatsUsersQueryKey = () => {
+export const getGetAdminStatsUsersQueryKey = () => {
     return [
-    `/api/v1/admin/stats/users`
+    `/admin/stats/users`
     ] as const;
     }
 
     
-export const getGetApiV1AdminStatsUsersQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminStatsUsers>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsUsers>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminStatsUsersQueryOptions = <TData = Awaited<ReturnType<typeof getAdminStatsUsers>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsUsers>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminStatsUsersQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminStatsUsersQueryKey();
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminStatsUsers>>> = ({ signal }) => getApiV1AdminStatsUsers(requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminStatsUsers>>> = ({ signal }) => getAdminStatsUsers(requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsUsers>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsUsers>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminStatsUsersQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminStatsUsers>>>
-export type GetApiV1AdminStatsUsersQueryError = ErrorType<void>
+export type GetAdminStatsUsersQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminStatsUsers>>>
+export type GetAdminStatsUsersQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminStatsUsers<TData = Awaited<ReturnType<typeof getApiV1AdminStatsUsers>>, TError = ErrorType<void>>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsUsers>>, TError, TData>> & Pick<
+export function useGetAdminStatsUsers<TData = Awaited<ReturnType<typeof getAdminStatsUsers>>, TError = ErrorType<void>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsUsers>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminStatsUsers>>,
+          Awaited<ReturnType<typeof getAdminStatsUsers>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminStatsUsers>>
+          Awaited<ReturnType<typeof getAdminStatsUsers>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminStatsUsers<TData = Awaited<ReturnType<typeof getApiV1AdminStatsUsers>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsUsers>>, TError, TData>> & Pick<
+export function useGetAdminStatsUsers<TData = Awaited<ReturnType<typeof getAdminStatsUsers>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsUsers>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminStatsUsers>>,
+          Awaited<ReturnType<typeof getAdminStatsUsers>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminStatsUsers>>
+          Awaited<ReturnType<typeof getAdminStatsUsers>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminStatsUsers<TData = Awaited<ReturnType<typeof getApiV1AdminStatsUsers>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsUsers>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminStatsUsers<TData = Awaited<ReturnType<typeof getAdminStatsUsers>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsUsers>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get user statistics
  */
 
-export function useGetApiV1AdminStatsUsers<TData = Awaited<ReturnType<typeof getApiV1AdminStatsUsers>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsUsers>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminStatsUsers<TData = Awaited<ReturnType<typeof getAdminStatsUsers>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsUsers>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminStatsUsersQueryOptions(options)
+  const queryOptions = getGetAdminStatsUsersQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -129,14 +129,14 @@ export function useGetApiV1AdminStatsUsers<TData = Awaited<ReturnType<typeof get
 /**
  * @summary Get site statistics
  */
-export const getApiV1AdminStatsSites = (
+export const getAdminStatsSites = (
     
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<GetApiV1AdminStatsSites200>(
-      {url: `/api/v1/admin/stats/sites`, method: 'GET', signal
+      return customInstance<GetAdminStatsSites200>(
+      {url: `/admin/stats/sites`, method: 'GET', signal
     },
       options);
     }
@@ -144,69 +144,69 @@ export const getApiV1AdminStatsSites = (
 
 
 
-export const getGetApiV1AdminStatsSitesQueryKey = () => {
+export const getGetAdminStatsSitesQueryKey = () => {
     return [
-    `/api/v1/admin/stats/sites`
+    `/admin/stats/sites`
     ] as const;
     }
 
     
-export const getGetApiV1AdminStatsSitesQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminStatsSites>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsSites>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminStatsSitesQueryOptions = <TData = Awaited<ReturnType<typeof getAdminStatsSites>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsSites>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminStatsSitesQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminStatsSitesQueryKey();
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminStatsSites>>> = ({ signal }) => getApiV1AdminStatsSites(requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminStatsSites>>> = ({ signal }) => getAdminStatsSites(requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsSites>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsSites>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminStatsSitesQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminStatsSites>>>
-export type GetApiV1AdminStatsSitesQueryError = ErrorType<void>
+export type GetAdminStatsSitesQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminStatsSites>>>
+export type GetAdminStatsSitesQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminStatsSites<TData = Awaited<ReturnType<typeof getApiV1AdminStatsSites>>, TError = ErrorType<void>>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsSites>>, TError, TData>> & Pick<
+export function useGetAdminStatsSites<TData = Awaited<ReturnType<typeof getAdminStatsSites>>, TError = ErrorType<void>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsSites>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminStatsSites>>,
+          Awaited<ReturnType<typeof getAdminStatsSites>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminStatsSites>>
+          Awaited<ReturnType<typeof getAdminStatsSites>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminStatsSites<TData = Awaited<ReturnType<typeof getApiV1AdminStatsSites>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsSites>>, TError, TData>> & Pick<
+export function useGetAdminStatsSites<TData = Awaited<ReturnType<typeof getAdminStatsSites>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsSites>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminStatsSites>>,
+          Awaited<ReturnType<typeof getAdminStatsSites>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminStatsSites>>
+          Awaited<ReturnType<typeof getAdminStatsSites>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminStatsSites<TData = Awaited<ReturnType<typeof getApiV1AdminStatsSites>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsSites>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminStatsSites<TData = Awaited<ReturnType<typeof getAdminStatsSites>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsSites>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get site statistics
  */
 
-export function useGetApiV1AdminStatsSites<TData = Awaited<ReturnType<typeof getApiV1AdminStatsSites>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsSites>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminStatsSites<TData = Awaited<ReturnType<typeof getAdminStatsSites>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsSites>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminStatsSitesQueryOptions(options)
+  const queryOptions = getGetAdminStatsSitesQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -221,14 +221,14 @@ export function useGetApiV1AdminStatsSites<TData = Awaited<ReturnType<typeof get
 /**
  * @summary Get embedding statistics
  */
-export const getApiV1AdminStatsEmbeddings = (
+export const getAdminStatsEmbeddings = (
     
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<GetApiV1AdminStatsEmbeddings200>(
-      {url: `/api/v1/admin/stats/embeddings`, method: 'GET', signal
+      return customInstance<GetAdminStatsEmbeddings200>(
+      {url: `/admin/stats/embeddings`, method: 'GET', signal
     },
       options);
     }
@@ -236,69 +236,69 @@ export const getApiV1AdminStatsEmbeddings = (
 
 
 
-export const getGetApiV1AdminStatsEmbeddingsQueryKey = () => {
+export const getGetAdminStatsEmbeddingsQueryKey = () => {
     return [
-    `/api/v1/admin/stats/embeddings`
+    `/admin/stats/embeddings`
     ] as const;
     }
 
     
-export const getGetApiV1AdminStatsEmbeddingsQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminStatsEmbeddings>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsEmbeddings>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminStatsEmbeddingsQueryOptions = <TData = Awaited<ReturnType<typeof getAdminStatsEmbeddings>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsEmbeddings>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminStatsEmbeddingsQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminStatsEmbeddingsQueryKey();
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminStatsEmbeddings>>> = ({ signal }) => getApiV1AdminStatsEmbeddings(requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminStatsEmbeddings>>> = ({ signal }) => getAdminStatsEmbeddings(requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsEmbeddings>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsEmbeddings>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminStatsEmbeddingsQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminStatsEmbeddings>>>
-export type GetApiV1AdminStatsEmbeddingsQueryError = ErrorType<void>
+export type GetAdminStatsEmbeddingsQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminStatsEmbeddings>>>
+export type GetAdminStatsEmbeddingsQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminStatsEmbeddings<TData = Awaited<ReturnType<typeof getApiV1AdminStatsEmbeddings>>, TError = ErrorType<void>>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsEmbeddings>>, TError, TData>> & Pick<
+export function useGetAdminStatsEmbeddings<TData = Awaited<ReturnType<typeof getAdminStatsEmbeddings>>, TError = ErrorType<void>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsEmbeddings>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminStatsEmbeddings>>,
+          Awaited<ReturnType<typeof getAdminStatsEmbeddings>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminStatsEmbeddings>>
+          Awaited<ReturnType<typeof getAdminStatsEmbeddings>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminStatsEmbeddings<TData = Awaited<ReturnType<typeof getApiV1AdminStatsEmbeddings>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsEmbeddings>>, TError, TData>> & Pick<
+export function useGetAdminStatsEmbeddings<TData = Awaited<ReturnType<typeof getAdminStatsEmbeddings>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsEmbeddings>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminStatsEmbeddings>>,
+          Awaited<ReturnType<typeof getAdminStatsEmbeddings>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminStatsEmbeddings>>
+          Awaited<ReturnType<typeof getAdminStatsEmbeddings>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminStatsEmbeddings<TData = Awaited<ReturnType<typeof getApiV1AdminStatsEmbeddings>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsEmbeddings>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminStatsEmbeddings<TData = Awaited<ReturnType<typeof getAdminStatsEmbeddings>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsEmbeddings>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get embedding statistics
  */
 
-export function useGetApiV1AdminStatsEmbeddings<TData = Awaited<ReturnType<typeof getApiV1AdminStatsEmbeddings>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsEmbeddings>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminStatsEmbeddings<TData = Awaited<ReturnType<typeof getAdminStatsEmbeddings>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsEmbeddings>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminStatsEmbeddingsQueryOptions(options)
+  const queryOptions = getGetAdminStatsEmbeddingsQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -313,14 +313,14 @@ export function useGetApiV1AdminStatsEmbeddings<TData = Awaited<ReturnType<typeo
 /**
  * @summary Get file statistics
  */
-export const getApiV1AdminStatsFiles = (
+export const getAdminStatsFiles = (
     
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<GetApiV1AdminStatsFiles200>(
-      {url: `/api/v1/admin/stats/files`, method: 'GET', signal
+      return customInstance<GetAdminStatsFiles200>(
+      {url: `/admin/stats/files`, method: 'GET', signal
     },
       options);
     }
@@ -328,69 +328,69 @@ export const getApiV1AdminStatsFiles = (
 
 
 
-export const getGetApiV1AdminStatsFilesQueryKey = () => {
+export const getGetAdminStatsFilesQueryKey = () => {
     return [
-    `/api/v1/admin/stats/files`
+    `/admin/stats/files`
     ] as const;
     }
 
     
-export const getGetApiV1AdminStatsFilesQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminStatsFiles>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsFiles>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminStatsFilesQueryOptions = <TData = Awaited<ReturnType<typeof getAdminStatsFiles>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsFiles>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminStatsFilesQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminStatsFilesQueryKey();
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminStatsFiles>>> = ({ signal }) => getApiV1AdminStatsFiles(requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminStatsFiles>>> = ({ signal }) => getAdminStatsFiles(requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsFiles>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsFiles>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminStatsFilesQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminStatsFiles>>>
-export type GetApiV1AdminStatsFilesQueryError = ErrorType<void>
+export type GetAdminStatsFilesQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminStatsFiles>>>
+export type GetAdminStatsFilesQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminStatsFiles<TData = Awaited<ReturnType<typeof getApiV1AdminStatsFiles>>, TError = ErrorType<void>>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsFiles>>, TError, TData>> & Pick<
+export function useGetAdminStatsFiles<TData = Awaited<ReturnType<typeof getAdminStatsFiles>>, TError = ErrorType<void>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsFiles>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminStatsFiles>>,
+          Awaited<ReturnType<typeof getAdminStatsFiles>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminStatsFiles>>
+          Awaited<ReturnType<typeof getAdminStatsFiles>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminStatsFiles<TData = Awaited<ReturnType<typeof getApiV1AdminStatsFiles>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsFiles>>, TError, TData>> & Pick<
+export function useGetAdminStatsFiles<TData = Awaited<ReturnType<typeof getAdminStatsFiles>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsFiles>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminStatsFiles>>,
+          Awaited<ReturnType<typeof getAdminStatsFiles>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminStatsFiles>>
+          Awaited<ReturnType<typeof getAdminStatsFiles>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminStatsFiles<TData = Awaited<ReturnType<typeof getApiV1AdminStatsFiles>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsFiles>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminStatsFiles<TData = Awaited<ReturnType<typeof getAdminStatsFiles>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsFiles>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get file statistics
  */
 
-export function useGetApiV1AdminStatsFiles<TData = Awaited<ReturnType<typeof getApiV1AdminStatsFiles>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsFiles>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminStatsFiles<TData = Awaited<ReturnType<typeof getAdminStatsFiles>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsFiles>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminStatsFilesQueryOptions(options)
+  const queryOptions = getGetAdminStatsFilesQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -405,14 +405,14 @@ export function useGetApiV1AdminStatsFiles<TData = Awaited<ReturnType<typeof get
 /**
  * @summary Get conversation statistics
  */
-export const getApiV1AdminStatsConversations = (
+export const getAdminStatsConversations = (
     
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<GetApiV1AdminStatsConversations200>(
-      {url: `/api/v1/admin/stats/conversations`, method: 'GET', signal
+      return customInstance<GetAdminStatsConversations200>(
+      {url: `/admin/stats/conversations`, method: 'GET', signal
     },
       options);
     }
@@ -420,69 +420,69 @@ export const getApiV1AdminStatsConversations = (
 
 
 
-export const getGetApiV1AdminStatsConversationsQueryKey = () => {
+export const getGetAdminStatsConversationsQueryKey = () => {
     return [
-    `/api/v1/admin/stats/conversations`
+    `/admin/stats/conversations`
     ] as const;
     }
 
     
-export const getGetApiV1AdminStatsConversationsQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminStatsConversations>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsConversations>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminStatsConversationsQueryOptions = <TData = Awaited<ReturnType<typeof getAdminStatsConversations>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsConversations>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminStatsConversationsQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminStatsConversationsQueryKey();
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminStatsConversations>>> = ({ signal }) => getApiV1AdminStatsConversations(requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminStatsConversations>>> = ({ signal }) => getAdminStatsConversations(requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsConversations>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsConversations>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminStatsConversationsQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminStatsConversations>>>
-export type GetApiV1AdminStatsConversationsQueryError = ErrorType<void>
+export type GetAdminStatsConversationsQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminStatsConversations>>>
+export type GetAdminStatsConversationsQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminStatsConversations<TData = Awaited<ReturnType<typeof getApiV1AdminStatsConversations>>, TError = ErrorType<void>>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsConversations>>, TError, TData>> & Pick<
+export function useGetAdminStatsConversations<TData = Awaited<ReturnType<typeof getAdminStatsConversations>>, TError = ErrorType<void>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsConversations>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminStatsConversations>>,
+          Awaited<ReturnType<typeof getAdminStatsConversations>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminStatsConversations>>
+          Awaited<ReturnType<typeof getAdminStatsConversations>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminStatsConversations<TData = Awaited<ReturnType<typeof getApiV1AdminStatsConversations>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsConversations>>, TError, TData>> & Pick<
+export function useGetAdminStatsConversations<TData = Awaited<ReturnType<typeof getAdminStatsConversations>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsConversations>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminStatsConversations>>,
+          Awaited<ReturnType<typeof getAdminStatsConversations>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminStatsConversations>>
+          Awaited<ReturnType<typeof getAdminStatsConversations>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminStatsConversations<TData = Awaited<ReturnType<typeof getApiV1AdminStatsConversations>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsConversations>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminStatsConversations<TData = Awaited<ReturnType<typeof getAdminStatsConversations>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsConversations>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get conversation statistics
  */
 
-export function useGetApiV1AdminStatsConversations<TData = Awaited<ReturnType<typeof getApiV1AdminStatsConversations>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsConversations>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminStatsConversations<TData = Awaited<ReturnType<typeof getAdminStatsConversations>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsConversations>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminStatsConversationsQueryOptions(options)
+  const queryOptions = getGetAdminStatsConversationsQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -497,14 +497,14 @@ export function useGetApiV1AdminStatsConversations<TData = Awaited<ReturnType<ty
 /**
  * @summary Get subscription statistics
  */
-export const getApiV1AdminStatsSubscriptions = (
+export const getAdminStatsSubscriptions = (
     
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<GetApiV1AdminStatsSubscriptions200>(
-      {url: `/api/v1/admin/stats/subscriptions`, method: 'GET', signal
+      return customInstance<GetAdminStatsSubscriptions200>(
+      {url: `/admin/stats/subscriptions`, method: 'GET', signal
     },
       options);
     }
@@ -512,69 +512,69 @@ export const getApiV1AdminStatsSubscriptions = (
 
 
 
-export const getGetApiV1AdminStatsSubscriptionsQueryKey = () => {
+export const getGetAdminStatsSubscriptionsQueryKey = () => {
     return [
-    `/api/v1/admin/stats/subscriptions`
+    `/admin/stats/subscriptions`
     ] as const;
     }
 
     
-export const getGetApiV1AdminStatsSubscriptionsQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminStatsSubscriptions>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsSubscriptions>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminStatsSubscriptionsQueryOptions = <TData = Awaited<ReturnType<typeof getAdminStatsSubscriptions>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsSubscriptions>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminStatsSubscriptionsQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminStatsSubscriptionsQueryKey();
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminStatsSubscriptions>>> = ({ signal }) => getApiV1AdminStatsSubscriptions(requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminStatsSubscriptions>>> = ({ signal }) => getAdminStatsSubscriptions(requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsSubscriptions>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsSubscriptions>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminStatsSubscriptionsQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminStatsSubscriptions>>>
-export type GetApiV1AdminStatsSubscriptionsQueryError = ErrorType<void>
+export type GetAdminStatsSubscriptionsQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminStatsSubscriptions>>>
+export type GetAdminStatsSubscriptionsQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminStatsSubscriptions<TData = Awaited<ReturnType<typeof getApiV1AdminStatsSubscriptions>>, TError = ErrorType<void>>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsSubscriptions>>, TError, TData>> & Pick<
+export function useGetAdminStatsSubscriptions<TData = Awaited<ReturnType<typeof getAdminStatsSubscriptions>>, TError = ErrorType<void>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsSubscriptions>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminStatsSubscriptions>>,
+          Awaited<ReturnType<typeof getAdminStatsSubscriptions>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminStatsSubscriptions>>
+          Awaited<ReturnType<typeof getAdminStatsSubscriptions>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminStatsSubscriptions<TData = Awaited<ReturnType<typeof getApiV1AdminStatsSubscriptions>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsSubscriptions>>, TError, TData>> & Pick<
+export function useGetAdminStatsSubscriptions<TData = Awaited<ReturnType<typeof getAdminStatsSubscriptions>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsSubscriptions>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminStatsSubscriptions>>,
+          Awaited<ReturnType<typeof getAdminStatsSubscriptions>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminStatsSubscriptions>>
+          Awaited<ReturnType<typeof getAdminStatsSubscriptions>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminStatsSubscriptions<TData = Awaited<ReturnType<typeof getApiV1AdminStatsSubscriptions>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsSubscriptions>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminStatsSubscriptions<TData = Awaited<ReturnType<typeof getAdminStatsSubscriptions>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsSubscriptions>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get subscription statistics
  */
 
-export function useGetApiV1AdminStatsSubscriptions<TData = Awaited<ReturnType<typeof getApiV1AdminStatsSubscriptions>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsSubscriptions>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminStatsSubscriptions<TData = Awaited<ReturnType<typeof getAdminStatsSubscriptions>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsSubscriptions>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminStatsSubscriptionsQueryOptions(options)
+  const queryOptions = getGetAdminStatsSubscriptionsQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -589,14 +589,14 @@ export function useGetApiV1AdminStatsSubscriptions<TData = Awaited<ReturnType<ty
 /**
  * @summary Get security statistics
  */
-export const getApiV1AdminStatsSecurity = (
+export const getAdminStatsSecurity = (
     
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<GetApiV1AdminStatsSecurity200>(
-      {url: `/api/v1/admin/stats/security`, method: 'GET', signal
+      return customInstance<GetAdminStatsSecurity200>(
+      {url: `/admin/stats/security`, method: 'GET', signal
     },
       options);
     }
@@ -604,69 +604,69 @@ export const getApiV1AdminStatsSecurity = (
 
 
 
-export const getGetApiV1AdminStatsSecurityQueryKey = () => {
+export const getGetAdminStatsSecurityQueryKey = () => {
     return [
-    `/api/v1/admin/stats/security`
+    `/admin/stats/security`
     ] as const;
     }
 
     
-export const getGetApiV1AdminStatsSecurityQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminStatsSecurity>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsSecurity>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminStatsSecurityQueryOptions = <TData = Awaited<ReturnType<typeof getAdminStatsSecurity>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsSecurity>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminStatsSecurityQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminStatsSecurityQueryKey();
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminStatsSecurity>>> = ({ signal }) => getApiV1AdminStatsSecurity(requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminStatsSecurity>>> = ({ signal }) => getAdminStatsSecurity(requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsSecurity>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsSecurity>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminStatsSecurityQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminStatsSecurity>>>
-export type GetApiV1AdminStatsSecurityQueryError = ErrorType<void>
+export type GetAdminStatsSecurityQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminStatsSecurity>>>
+export type GetAdminStatsSecurityQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminStatsSecurity<TData = Awaited<ReturnType<typeof getApiV1AdminStatsSecurity>>, TError = ErrorType<void>>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsSecurity>>, TError, TData>> & Pick<
+export function useGetAdminStatsSecurity<TData = Awaited<ReturnType<typeof getAdminStatsSecurity>>, TError = ErrorType<void>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsSecurity>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminStatsSecurity>>,
+          Awaited<ReturnType<typeof getAdminStatsSecurity>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminStatsSecurity>>
+          Awaited<ReturnType<typeof getAdminStatsSecurity>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminStatsSecurity<TData = Awaited<ReturnType<typeof getApiV1AdminStatsSecurity>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsSecurity>>, TError, TData>> & Pick<
+export function useGetAdminStatsSecurity<TData = Awaited<ReturnType<typeof getAdminStatsSecurity>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsSecurity>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminStatsSecurity>>,
+          Awaited<ReturnType<typeof getAdminStatsSecurity>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminStatsSecurity>>
+          Awaited<ReturnType<typeof getAdminStatsSecurity>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminStatsSecurity<TData = Awaited<ReturnType<typeof getApiV1AdminStatsSecurity>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsSecurity>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminStatsSecurity<TData = Awaited<ReturnType<typeof getAdminStatsSecurity>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsSecurity>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get security statistics
  */
 
-export function useGetApiV1AdminStatsSecurity<TData = Awaited<ReturnType<typeof getApiV1AdminStatsSecurity>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsSecurity>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminStatsSecurity<TData = Awaited<ReturnType<typeof getAdminStatsSecurity>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsSecurity>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminStatsSecurityQueryOptions(options)
+  const queryOptions = getGetAdminStatsSecurityQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -681,14 +681,14 @@ export function useGetApiV1AdminStatsSecurity<TData = Awaited<ReturnType<typeof 
 /**
  * @summary Get billing statistics
  */
-export const getApiV1AdminStatsBilling = (
+export const getAdminStatsBilling = (
     
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<GetApiV1AdminStatsBilling200>(
-      {url: `/api/v1/admin/stats/billing`, method: 'GET', signal
+      return customInstance<GetAdminStatsBilling200>(
+      {url: `/admin/stats/billing`, method: 'GET', signal
     },
       options);
     }
@@ -696,69 +696,69 @@ export const getApiV1AdminStatsBilling = (
 
 
 
-export const getGetApiV1AdminStatsBillingQueryKey = () => {
+export const getGetAdminStatsBillingQueryKey = () => {
     return [
-    `/api/v1/admin/stats/billing`
+    `/admin/stats/billing`
     ] as const;
     }
 
     
-export const getGetApiV1AdminStatsBillingQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminStatsBilling>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsBilling>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminStatsBillingQueryOptions = <TData = Awaited<ReturnType<typeof getAdminStatsBilling>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsBilling>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminStatsBillingQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminStatsBillingQueryKey();
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminStatsBilling>>> = ({ signal }) => getApiV1AdminStatsBilling(requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminStatsBilling>>> = ({ signal }) => getAdminStatsBilling(requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsBilling>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsBilling>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminStatsBillingQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminStatsBilling>>>
-export type GetApiV1AdminStatsBillingQueryError = ErrorType<void>
+export type GetAdminStatsBillingQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminStatsBilling>>>
+export type GetAdminStatsBillingQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminStatsBilling<TData = Awaited<ReturnType<typeof getApiV1AdminStatsBilling>>, TError = ErrorType<void>>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsBilling>>, TError, TData>> & Pick<
+export function useGetAdminStatsBilling<TData = Awaited<ReturnType<typeof getAdminStatsBilling>>, TError = ErrorType<void>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsBilling>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminStatsBilling>>,
+          Awaited<ReturnType<typeof getAdminStatsBilling>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminStatsBilling>>
+          Awaited<ReturnType<typeof getAdminStatsBilling>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminStatsBilling<TData = Awaited<ReturnType<typeof getApiV1AdminStatsBilling>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsBilling>>, TError, TData>> & Pick<
+export function useGetAdminStatsBilling<TData = Awaited<ReturnType<typeof getAdminStatsBilling>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsBilling>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminStatsBilling>>,
+          Awaited<ReturnType<typeof getAdminStatsBilling>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminStatsBilling>>
+          Awaited<ReturnType<typeof getAdminStatsBilling>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminStatsBilling<TData = Awaited<ReturnType<typeof getApiV1AdminStatsBilling>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsBilling>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminStatsBilling<TData = Awaited<ReturnType<typeof getAdminStatsBilling>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsBilling>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get billing statistics
  */
 
-export function useGetApiV1AdminStatsBilling<TData = Awaited<ReturnType<typeof getApiV1AdminStatsBilling>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminStatsBilling>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminStatsBilling<TData = Awaited<ReturnType<typeof getAdminStatsBilling>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminStatsBilling>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminStatsBillingQueryOptions(options)
+  const queryOptions = getGetAdminStatsBillingQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

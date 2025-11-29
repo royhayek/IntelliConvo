@@ -136,7 +136,7 @@ export const useUIStore = create<UIState>()(
     (set) => ({
       sidebarOpen: true,
       loading: false,
-      navigationLayout: "vertical", // Default to vertical
+      navigationLayout: "horizontal", // Default to horizontal
       setSidebarOpen: (sidebarOpen) => set({ sidebarOpen }),
       setLoading: (loading) => set({ loading }),
       setNavigationLayout: (navigationLayout) => set({ navigationLayout }),

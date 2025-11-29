@@ -226,7 +226,7 @@ export const currentUserSchema = registry.register(
 // POST /api/v1/auth/signup
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/auth/signup',
+  path: '/auth/signup',
   summary: 'Register a new user',
   tags: ['Authentication'],
   request: {
@@ -259,7 +259,7 @@ registry.registerPath({
 // POST /api/v1/auth/login
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/auth/login',
+  path: '/auth/login',
   summary: 'User login',
   tags: ['Authentication'],
   request: {
@@ -289,7 +289,7 @@ registry.registerPath({
 // GET /api/v1/auth/google
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/auth/google',
+  path: '/auth/google',
   summary: 'Initiate Google OAuth login',
   tags: ['Authentication'],
   responses: {
@@ -302,7 +302,7 @@ registry.registerPath({
 // GET /api/v1/auth/google/callback
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/auth/google/callback',
+  path: '/auth/google/callback',
   summary: 'Google OAuth callback',
   tags: ['Authentication'],
   request: {
@@ -324,7 +324,7 @@ registry.registerPath({
 // GET /api/v1/auth/github
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/auth/github',
+  path: '/auth/github',
   summary: 'Initiate GitHub OAuth login',
   tags: ['Authentication'],
   responses: {
@@ -337,7 +337,7 @@ registry.registerPath({
 // GET /api/v1/auth/github/callback
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/auth/github/callback',
+  path: '/auth/github/callback',
   summary: 'GitHub OAuth callback',
   tags: ['Authentication'],
   request: {
@@ -359,7 +359,7 @@ registry.registerPath({
 // POST /api/v1/auth/refresh
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/auth/refresh',
+  path: '/auth/refresh',
   summary: 'Refresh access token',
   tags: ['Authentication'],
   request: {
@@ -392,7 +392,7 @@ registry.registerPath({
 // POST /api/v1/auth/logout
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/auth/logout',
+  path: '/auth/logout',
   summary: 'User logout',
   tags: ['Authentication'],
   request: {
@@ -419,7 +419,7 @@ registry.registerPath({
 // GET /api/v1/auth/me
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/auth/me',
+  path: '/auth/me',
   summary: 'Get current user profile',
   tags: ['Authentication'],
   security: [{ bearerAuth: [] }],
@@ -441,7 +441,7 @@ registry.registerPath({
 // POST /api/v1/auth/forgot-password
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/auth/forgot-password',
+  path: '/auth/forgot-password',
   summary: 'Request password reset email',
   tags: ['Authentication'],
   request: {
@@ -471,7 +471,7 @@ registry.registerPath({
 // POST /api/v1/auth/reset-password
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/auth/reset-password',
+  path: '/auth/reset-password',
   summary: 'Reset password with token',
   tags: ['Authentication'],
   request: {
@@ -501,7 +501,7 @@ registry.registerPath({
 // POST /api/v1/auth/verify-email
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/auth/verify-email',
+  path: '/auth/verify-email',
   summary: 'Verify email with token',
   tags: ['Authentication'],
   request: {
@@ -531,7 +531,7 @@ registry.registerPath({
 // POST /api/v1/auth/resend-verification
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/auth/resend-verification',
+  path: '/auth/resend-verification',
   summary: 'Resend verification email',
   tags: ['Authentication'],
   request: {

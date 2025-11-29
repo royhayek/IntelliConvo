@@ -5,6 +5,7 @@ import { logger } from '../utils/logger';
 import { ConversationRole } from '@prisma/client';
 import { adminStatsService } from './admin';
 import { isOriginAllowed } from '../utils/hostValidation';
+import { getConfig } from '../config';
 
 // Store IO instance for broadcasting from other parts of the app
 let ioInstance: Server | null = null;
@@ -129,12 +130,13 @@ export function initializeSocketIO(io: Server): void {
     });
 
     // Handle chat messages
-    socket.on('message', async (data: ChatMessage) => {
+    socket.on('message', async (data: ChatMessage & { isTest?: boolean }) => {
       try {
-        const { sessionId, siteId, content } = data;
+        const { sessionId, siteId, content, isTest = false } = data;
 
         // Validate origin against site's allowed hosts and check subscription status
         const origin = socket.handshake.headers.origin || socket.handshake.headers.referer;
+        const config = getConfig();
         const site = await prisma.site.findUnique({
           where: { id: siteId },
           include: {
@@ -174,7 +176,11 @@ export function initializeSocketIO(io: Server): void {
             .filter((host) => host.isEnabled)
             .map((host) => host.hostName);
 
-          if (!isOriginAllowed(origin, allowedHosts)) {
+          // In development mode, automatically allow localhost and 127.0.0.1 origins
+          const isDevelopment = config.NODE_ENV === 'development';
+          const isLocalhostOrigin = origin.includes('localhost') || origin.includes('127.0.0.1');
+
+          if (!isOriginAllowed(origin, allowedHosts) && !(isDevelopment && isLocalhostOrigin)) {
             logger.warn(`Origin ${origin} not allowed for site ${siteId}`);
             socket.emit('error', {
               message: 'Origin not allowed',
@@ -196,6 +202,7 @@ export function initializeSocketIO(io: Server): void {
               sessionId,
               userAgent: socket.handshake.headers['user-agent'],
               ipAddress: socket.handshake.address,
+              isTest,
             },
           });
         }

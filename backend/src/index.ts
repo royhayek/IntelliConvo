@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
@@ -155,9 +155,21 @@ const bodyParserLimit = process.env.MAX_FILE_SIZE || '100mb';
 app.use(express.json({ limit: bodyParserLimit }));
 app.use(express.urlencoded({ extended: true, limit: bodyParserLimit }));
 
-// Static file serving for uploads
+// Static file serving for uploads with CORS support
 const uploadDir = process.env.UPLOAD_DIR || 'uploads';
-app.use('/uploads', express.static(uploadDir));
+
+// Add CORS headers for uploads
+const uploadsCorsMiddleware = (req: Request, res: Response, next: NextFunction) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+  next();
+};
+
+app.use('/uploads', uploadsCorsMiddleware, express.static(uploadDir));
+// Also serve uploads under /api/v1/uploads for consistency with API routes
+app.use('/api/v1/uploads', uploadsCorsMiddleware, express.static(uploadDir));
 
 // Passport middleware
 app.use(passport.initialize());

@@ -6,21 +6,21 @@ import { WidgetConfig } from './config';
 
 export type WidgetCommand = ['init', WidgetConfig] | [string, ...unknown[]];
 
-export interface IntelligentconvoQueue {
+export interface IntelliConvoQueue {
   (...args: unknown[]): void;
   q?: WidgetCommand[];
   _init?: () => void;
 }
 
-export interface IntelligentconvoInit {
+export interface IntelliConvoInit {
   (command: 'init', config: WidgetConfig): void;
   (command: string, config?: WidgetConfig): void;
 }
 
-export type IntelligentconvoFunction = IntelligentconvoQueue | IntelligentconvoInit;
+export type IntelliConvoFunction = IntelliConvoQueue | IntelliConvoInit;
 
 declare global {
   interface Window {
-    intelligentconvo: IntelligentconvoFunction;
+    intelliconvo: IntelliConvoFunction;
   }
 }

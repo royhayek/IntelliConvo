@@ -9,20 +9,20 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
 
 import {
-  useGetApiV1AdminSubscriptions,
-  useDeleteApiV1AdminSubscriptionsSubscriptionId,
-  usePostApiV1AdminSubscriptionsSubscriptionIdCancel,
-  usePostApiV1AdminSubscriptionsSubscriptionIdReactivate,
-  getGetApiV1AdminSubscriptionsQueryKey,
+  useGetAdminSubscriptions,
+  useDeleteAdminSubscriptionsSubscriptionId,
+  usePostAdminSubscriptionsSubscriptionIdCancel,
+  usePostAdminSubscriptionsSubscriptionIdReactivate,
+  getGetAdminSubscriptionsQueryKey,
 } from "@/lib/api/generated/queries/admin-subscriptions/admin-subscriptions";
 import {
-  useGetApiV1AdminStatsSubscriptions,
-  getGetApiV1AdminStatsSubscriptionsQueryKey,
+  useGetAdminStatsSubscriptions,
+  getGetAdminStatsSubscriptionsQueryKey,
 } from "@/lib/api/generated/queries/admin/admin";
 import type {
   AdminSubscription,
-  GetApiV1AdminSubscriptionsStatus,
-  GetApiV1AdminSubscriptionsPlanType,
+  GetAdminSubscriptionsStatus,
+  GetAdminSubscriptionsPlanType,
 } from "@/lib/api/generated/models";
 import {
   SubscriptionsStats,
@@ -43,10 +43,15 @@ export default function AdminSubscriptionsPage() {
 
   const [search, setSearch] = useState(searchParams.get("search") || "");
   const [status, setStatus] = useState(searchParams.get("status") || "all");
-  const [planType, setPlanType] = useState(searchParams.get("planType") || "all");
-  const [userId, setUserId] = useState<string | null>(searchParams.get("userId") || null);
+  const [planType, setPlanType] = useState(
+    searchParams.get("planType") || "all"
+  );
+  const [userId, setUserId] = useState<string | null>(
+    searchParams.get("userId") || null
+  );
   const [page, setPage] = useState(parseInt(searchParams.get("page") || "1"));
-  const [deleteSubscription, setDeleteSubscription] = useState<AdminSubscription | null>(null);
+  const [deleteSubscription, setDeleteSubscription] =
+    useState<AdminSubscription | null>(null);
   const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
 
   const queryParams = {
@@ -54,43 +59,61 @@ export default function AdminSubscriptionsPage() {
     limit: "20",
     ...(search && { search }),
     ...(userId && { userId }),
-    ...(status !== "all" && { status: status as GetApiV1AdminSubscriptionsStatus }),
-    ...(planType !== "all" && { planType: planType as GetApiV1AdminSubscriptionsPlanType }),
+    ...(status !== "all" && { status: status as GetAdminSubscriptionsStatus }),
+    ...(planType !== "all" && {
+      planType: planType as GetAdminSubscriptionsPlanType,
+    }),
   };
 
-  const { data: subscriptionsData, isLoading, error } = useGetApiV1AdminSubscriptions(queryParams);
-  const { data: statsData } = useGetApiV1AdminStatsSubscriptions();
+  const {
+    data: subscriptionsData,
+    isLoading,
+    error,
+  } = useGetAdminSubscriptions(queryParams);
+  const { data: statsData } = useGetAdminStatsSubscriptions();
 
   const stats = statsData?.data as SubscriptionStats | undefined;
   const data = subscriptionsData?.data;
 
-  const deleteMutation = useDeleteApiV1AdminSubscriptionsSubscriptionId({
+  const deleteMutation = useDeleteAdminSubscriptionsSubscriptionId({
     mutation: {
       onSuccess: () => {
         setDeleteSubscription(null);
-        queryClient.invalidateQueries({ queryKey: getGetApiV1AdminSubscriptionsQueryKey(queryParams) });
-        queryClient.invalidateQueries({ queryKey: getGetApiV1AdminStatsSubscriptionsQueryKey() });
+        queryClient.invalidateQueries({
+          queryKey: getGetAdminSubscriptionsQueryKey(queryParams),
+        });
+        queryClient.invalidateQueries({
+          queryKey: getGetAdminStatsSubscriptionsQueryKey(),
+        });
       },
     },
   });
 
-  const cancelMutation = usePostApiV1AdminSubscriptionsSubscriptionIdCancel({
+  const cancelMutation = usePostAdminSubscriptionsSubscriptionIdCancel({
     mutation: {
       onSuccess: () => {
         setActionLoadingId(null);
-        queryClient.invalidateQueries({ queryKey: getGetApiV1AdminSubscriptionsQueryKey(queryParams) });
-        queryClient.invalidateQueries({ queryKey: getGetApiV1AdminStatsSubscriptionsQueryKey() });
+        queryClient.invalidateQueries({
+          queryKey: getGetAdminSubscriptionsQueryKey(queryParams),
+        });
+        queryClient.invalidateQueries({
+          queryKey: getGetAdminStatsSubscriptionsQueryKey(),
+        });
       },
       onError: () => setActionLoadingId(null),
     },
   });
 
-  const reactivateMutation = usePostApiV1AdminSubscriptionsSubscriptionIdReactivate({
+  const reactivateMutation = usePostAdminSubscriptionsSubscriptionIdReactivate({
     mutation: {
       onSuccess: () => {
         setActionLoadingId(null);
-        queryClient.invalidateQueries({ queryKey: getGetApiV1AdminSubscriptionsQueryKey(queryParams) });
-        queryClient.invalidateQueries({ queryKey: getGetApiV1AdminStatsSubscriptionsQueryKey() });
+        queryClient.invalidateQueries({
+          queryKey: getGetAdminSubscriptionsQueryKey(queryParams),
+        });
+        queryClient.invalidateQueries({
+          queryKey: getGetAdminStatsSubscriptionsQueryKey(),
+        });
       },
       onError: () => setActionLoadingId(null),
     },
@@ -133,11 +156,20 @@ export default function AdminSubscriptionsPage() {
         onSearchChange={setSearch}
         onSearch={handleSearch}
         userId={userId}
-        onUserChange={(id) => { setUserId(id); setPage(1); }}
+        onUserChange={(id) => {
+          setUserId(id);
+          setPage(1);
+        }}
         status={status}
-        onStatusChange={(v) => { setStatus(v); setPage(1); }}
+        onStatusChange={(v) => {
+          setStatus(v);
+          setPage(1);
+        }}
         planType={planType}
-        onPlanTypeChange={(v) => { setPlanType(v); setPage(1); }}
+        onPlanTypeChange={(v) => {
+          setPlanType(v);
+          setPage(1);
+        }}
       />
 
       {errorMessage && (

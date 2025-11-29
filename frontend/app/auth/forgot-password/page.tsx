@@ -17,7 +17,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { usePostApiV1AuthForgotPassword } from "@/lib/api/generated/queries/authentication/authentication";
+import { usePostAuthForgotPassword } from "@/lib/api/generated/queries/authentication/authentication";
 import { AlertCircle, ArrowLeft, CheckCircle2, Mail } from "lucide-react";
 import { BrandLogo } from "@/components/ui/brand-logo";
 
@@ -37,7 +37,7 @@ export default function ForgotPasswordPage() {
     },
   });
 
-  const forgotPasswordMutation = usePostApiV1AuthForgotPassword({
+  const forgotPasswordMutation = usePostAuthForgotPassword({
     mutation: {
       onSuccess: () => {
         setSubmitted(true);
@@ -93,7 +93,7 @@ export default function ForgotPasswordPage() {
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="space-y-1 text-center">
           <div className="flex justify-center mb-4">
-            <BrandLogo size="lg" showText={false} href={null} animated={false} />
+            <BrandLogo size="md" showText={false} href={null} animated={false} />
           </div>
           <CardTitle className="text-2xl font-bold">Forgot your password?</CardTitle>
           <CardDescription>

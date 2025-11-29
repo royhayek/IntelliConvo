@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useCallback, useState } from "react";
 import { io, Socket } from "socket.io-client";
+import { getSocketUrl } from "@/lib/utils";
 
 interface DashboardStats {
   users: {
@@ -77,10 +78,10 @@ export function useAdminSocket(options: UseAdminSocketOptions = {}) {
   const connect = useCallback(() => {
     if (socketRef.current?.connected) return;
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    const socketUrl = getSocketUrl();
     const token = localStorage.getItem("accessToken");
 
-    socketRef.current = io(apiUrl, {
+    socketRef.current = io(socketUrl, {
       auth: { token },
       transports: ["websocket", "polling"],
       reconnection: true,

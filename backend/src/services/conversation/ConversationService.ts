@@ -57,11 +57,12 @@ export class ConversationService {
     );
     const offset = calculateOffset(normalizedPage, normalizedLimit);
 
-    // Build where clause
+    // Build where clause (excludes test conversations)
     const where: any = {
       site: {
         userId,
       },
+      isTest: false,
     };
 
     // Filter by specific site
@@ -161,9 +162,10 @@ export class ConversationService {
     const endDate = new Date();
     const startDate = this.calculateStartDate(period);
 
-    // Build base where clause
+    // Build base where clause (excludes test conversations)
     const baseWhere: any = {
       site: { userId },
+      isTest: false,
       startedAt: { gte: startDate, lte: endDate },
     };
 
@@ -223,13 +225,14 @@ export class ConversationService {
 
     const limitNumber = Math.min(100, Math.max(1, limit));
 
-    // Build where clause
+    // Build where clause (excludes test conversations)
     const where: any = {
       content: {
         contains: searchQuery,
         mode: 'insensitive',
       },
       conversation: {
+        isTest: false,
         site: {
           userId,
         },
@@ -492,7 +495,7 @@ export class ConversationService {
       return [];
     }
 
-    // Get all sites with conversation counts
+    // Get all sites with conversation counts (excludes test conversations)
     const sitesWithStats = await prisma.site.findMany({
       where: { userId },
       include: {
@@ -500,6 +503,7 @@ export class ConversationService {
           select: {
             conversations: {
               where: {
+                isTest: false,
                 startedAt: { gte: startDate, lte: endDate },
               },
             },
@@ -507,6 +511,7 @@ export class ConversationService {
         },
         conversations: {
           where: {
+            isTest: false,
             startedAt: { gte: startDate, lte: endDate },
           },
           include: {

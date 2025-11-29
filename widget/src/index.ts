@@ -70,7 +70,7 @@ declare global {
   }
 }
 
-class IntelligentconvoWidget {
+class IntelliConvoWidget {
   private config: WidgetConfig;
   private sessionId: string;
   private container: HTMLElement | null = null;
@@ -211,6 +211,8 @@ class IntelligentconvoWidget {
             if (!window.lastAssistantMessage) {
               this.displayMessage('assistant', '');
               this.setTyping(false); // Hide typing indicator once we start receiving
+              // Hide processing indicator when response starts coming
+              this.showProcessingIndicator(false);
             }
             this.appendToLastMessage(chunk);
           } catch {
@@ -219,6 +221,8 @@ class IntelligentconvoWidget {
         },
         onComplete: (content: string, quickReplies?: string[]) => {
           this.setTyping(false);
+          // Hide processing indicator when response completes
+          this.showProcessingIndicator(false);
 
           // If in speak mode, speak the response and add to transcript
           if (this.stateManager.getState().currentMode === 'speak') {
@@ -380,6 +384,9 @@ class IntelligentconvoWidget {
     this.notificationManager.setSettings(this.settings);
     this.analyticsManager.setSettings(this.settings);
 
+    // Update handlers with settings
+    this.messageHandler.setSettings(this.settings);
+
     // Update renderers with loaded settings
     this.launcherRenderer.updateSettings(this.settings);
     this.chatWindowRenderer.updateSettings(this.settings);
@@ -391,7 +398,7 @@ class IntelligentconvoWidget {
   }
 
   private handleError(error: Error | WidgetError, context?: string): void {
-    console.error(`[IntelligentconvoWidget${context ? ` - ${context}` : ''}]:`, error);
+    console.error(`[IntelliConvoWidget${context ? ` - ${context}` : ''}]:`, error);
 
     this.stateManager.setError(true, error.message);
 
@@ -403,19 +410,19 @@ class IntelligentconvoWidget {
   }
 
   private showErrorMessage(message: string): void {
-    const messagesContainer = document.getElementById('intelligentconvo-messages');
+    const messagesContainer = document.getElementById('intelliconvo-messages');
     if (messagesContainer) {
       // Use the configured error message or fallback to the provided message
       const displayMessage = this.settings?.errorMessage || message || 'Something went wrong. Please try again.';
 
       // Check if there's already an error message in the last position
       const lastMessage = messagesContainer.lastElementChild;
-      const isLastMessageError = lastMessage?.classList.contains('intelligentconvo-error');
+      const isLastMessageError = lastMessage?.classList.contains('intelliconvo-error');
 
       if (isLastMessageError && lastMessage) {
         // Update the existing error message instead of creating a new one
-        const errorContent = lastMessage.querySelector('.intelligentconvo-message-content');
-        const errorTime = lastMessage.querySelector('.intelligentconvo-message-time');
+        const errorContent = lastMessage.querySelector('.intelliconvo-transcript-content');
+        const errorTime = lastMessage.querySelector('.intelliconvo-transcript-time');
 
         if (errorContent) {
           errorContent.innerHTML = `
@@ -427,15 +434,30 @@ class IntelligentconvoWidget {
           errorTime.textContent = new Date().toLocaleTimeString();
         }
       } else {
-        // Create a new error message
+        // Create a new error message using transcript classes
         const errorDiv = document.createElement('div');
-        errorDiv.className = 'intelligentconvo-message intelligentconvo-error';
-        errorDiv.innerHTML = `
-          <div class="intelligentconvo-message-content error">
-            <span class="error-icon">⚠️</span>
-            ${displayMessage}
+        errorDiv.className = 'intelliconvo-transcript-message intelliconvo-transcript-assistant intelliconvo-error';
+
+        // Show avatar if enabled
+        const showAvatar = this.settings?.showMessageAvatar;
+        const avatarHtml = showAvatar ? `
+          <div class="intelliconvo-transcript-avatar">
+            ${this.settings?.botAvatarUrl
+              ? `<img src="${this.settings.botAvatarUrl}" alt="${this.settings?.botName || 'Assistant'}" />`
+              : `<span>${this.settings?.botAvatarFallback || 'AI'}</span>`
+            }
           </div>
-          <div class="intelligentconvo-message-time">${new Date().toLocaleTimeString()}</div>
+        ` : '';
+
+        errorDiv.innerHTML = `
+          ${avatarHtml}
+          <div class="intelliconvo-transcript-wrapper">
+            <div class="intelliconvo-transcript-content">
+              <span class="error-icon">⚠️</span>
+              ${displayMessage}
+            </div>
+            <div class="intelliconvo-transcript-time">${new Date().toLocaleTimeString()}</div>
+          </div>
         `;
         messagesContainer.appendChild(errorDiv);
       }
@@ -445,20 +467,20 @@ class IntelligentconvoWidget {
   }
 
   private displayTrialExpiredMessage(_reason: string): void {
-    const messagesContainer = document.getElementById('intelligentconvo-messages');
+    const messagesContainer = document.getElementById('intelliconvo-messages');
     if (messagesContainer) {
       const trialDiv = document.createElement('div');
-      trialDiv.className = 'intelligentconvo-message intelligentconvo-trial-expired';
+      trialDiv.className = 'intelliconvo-message intelliconvo-trial-expired';
       trialDiv.innerHTML = `
-        <div class="intelligentconvo-trial-expired-content">
-          <div class="intelligentconvo-trial-expired-icon">
+        <div class="intelliconvo-trial-expired-content">
+          <div class="intelliconvo-trial-expired-icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="10"></circle>
               <line x1="12" y1="8" x2="12" y2="12"></line>
               <line x1="12" y1="16" x2="12.01" y2="16"></line>
             </svg>
           </div>
-          <div class="intelligentconvo-trial-expired-text">
+          <div class="intelliconvo-trial-expired-text">
             <strong>Free Trial Ended</strong>
             <p>Your free trial has ended. Please upgrade to continue using this assistant.</p>
           </div>
@@ -468,8 +490,8 @@ class IntelligentconvoWidget {
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
       // Disable input
-      const input = document.getElementById('intelligentconvo-input') as HTMLInputElement;
-      const sendBtn = document.getElementById('intelligentconvo-send');
+      const input = document.getElementById('intelliconvo-input') as HTMLInputElement;
+      const sendBtn = document.getElementById('intelliconvo-send');
       if (input) {
         input.disabled = true;
         input.placeholder = 'Upgrade to continue...';
@@ -577,12 +599,12 @@ class IntelligentconvoWidget {
 
   private renderWidget() {
     const widget = document.createElement('div');
-    widget.id = 'intelligentconvo-widget';
-    widget.className = 'intelligentconvo-widget-container';
+    widget.id = 'intelliconvo-widget';
+    widget.className = 'intelliconvo-widget-container';
     widget.innerHTML = this.getWidgetHTML();
 
     // Find a container or append to body
-    const targetContainer = document.querySelector('#intelligentconvo-container') || document.body;
+    const targetContainer = document.querySelector('#intelliconvo-container') || document.body;
     targetContainer.appendChild(widget);
 
     this.container = widget;
@@ -614,7 +636,7 @@ class IntelligentconvoWidget {
       document.body.appendChild(windowElement);
 
       // Inject speak mode HTML into content area
-      const contentArea = windowElement.querySelector('.intelligentconvo-content');
+      const contentArea = windowElement.querySelector('.intelliconvo-content');
       if (contentArea) {
         const speakModeDiv = document.createElement('div');
         speakModeDiv.innerHTML = this.chatWindowRenderer.getSpeakModeHTML();
@@ -653,13 +675,17 @@ class IntelligentconvoWidget {
     }
 
     this.stateManager.setOpen(true);
-    document.body.classList.add('intelligentconvo-chat-open');
+
+    // Save scroll position and prevent body scroll
+    const scrollY = window.scrollY;
+    document.body.style.top = `-${scrollY}px`;
+    document.body.classList.add('intelliconvo-chat-open');
 
     // Track chat opened
     this.trackAnalyticsEvent('chat_opened');
 
     // Update button aria-label
-    const button = document.getElementById('intelligentconvo-button');
+    const button = document.getElementById('intelliconvo-button');
     if (button) {
       button.setAttribute('aria-label', 'Close chat');
       button.setAttribute('title', 'Close chat');
@@ -674,7 +700,7 @@ class IntelligentconvoWidget {
     }
 
     if (this.config.mode === 'button') {
-      const chatWindow = document.getElementById('intelligentconvo-chat-window');
+      const chatWindow = document.getElementById('intelliconvo-chat-window');
       if (chatWindow) {
         chatWindow.remove();
       }
@@ -687,13 +713,20 @@ class IntelligentconvoWidget {
     this.messages.length = 0;
 
     this.stateManager.setOpen(false);
-    document.body.classList.remove('intelligentconvo-chat-open');
+
+    // Restore scroll position
+    const scrollY = document.body.style.top;
+    document.body.classList.remove('intelliconvo-chat-open');
+    document.body.style.top = '';
+    if (scrollY) {
+      window.scrollTo(0, parseInt(scrollY || '0') * -1);
+    }
 
     // Track chat closed
     this.trackAnalyticsEvent('chat_closed');
 
     // Update button aria-label
-    const button = document.getElementById('intelligentconvo-button');
+    const button = document.getElementById('intelliconvo-button');
     if (button) {
       button.setAttribute('aria-label', 'Open chat');
       button.setAttribute('title', 'Open chat');
@@ -701,14 +734,14 @@ class IntelligentconvoWidget {
   }
 
   private setupEventListeners(): void {
-    const closeBtn = document.getElementById('intelligentconvo-close');
-    const minimizeBtn = document.getElementById('intelligentconvo-minimize');
-    const sendBtn = document.getElementById('intelligentconvo-send');
-    const input = document.getElementById('intelligentconvo-input') as HTMLInputElement;
-    const micBtn = document.getElementById('intelligentconvo-mic');
-    const attachBtn = document.getElementById('intelligentconvo-attach');
-    const emojiBtn = document.getElementById('intelligentconvo-emoji-btn');
-    const tabs = document.querySelectorAll('.intelligentconvo-tab');
+    const closeBtn = document.getElementById('intelliconvo-close');
+    const minimizeBtn = document.getElementById('intelliconvo-minimize');
+    const sendBtn = document.getElementById('intelliconvo-send');
+    const input = document.getElementById('intelliconvo-input') as HTMLInputElement;
+    const micBtn = document.getElementById('intelliconvo-mic');
+    const attachBtn = document.getElementById('intelliconvo-attach');
+    const emojiBtn = document.getElementById('intelliconvo-emoji-btn');
+    const tabs = document.querySelectorAll('.intelliconvo-tab');
 
     if (closeBtn) {
       closeBtn.addEventListener('click', () => this.closeChat());
@@ -801,8 +834,8 @@ class IntelligentconvoWidget {
     });
 
     // Speak mode buttons
-    const speakBtn = document.getElementById('intelligentconvo-speak-btn');
-    const stopSpeakBtn = document.getElementById('intelligentconvo-speak-stop-btn');
+    const speakBtn = document.getElementById('intelliconvo-speak-btn');
+    const stopSpeakBtn = document.getElementById('intelliconvo-speak-stop-btn');
 
     if (speakBtn) {
       speakBtn.addEventListener('click', () => this.handleSpeakModeInput());
@@ -839,7 +872,7 @@ class IntelligentconvoWidget {
 
     if (mode && mode !== this.stateManager.getState().currentMode) {
       // Update visual state
-      document.querySelectorAll('.intelligentconvo-tab').forEach(tab => {
+      document.querySelectorAll('.intelliconvo-tab').forEach(tab => {
         tab.classList.remove('active');
         tab.setAttribute('aria-selected', 'false');
       });
@@ -858,18 +891,21 @@ class IntelligentconvoWidget {
   }
 
   private toggleModeUI(mode: WidgetMode): void {
-    const messagesContainer = document.getElementById('intelligentconvo-messages');
-    const inputArea = document.querySelector('.intelligentconvo-input') as HTMLElement;
-    const startersContainer = document.getElementById('intelligentconvo-starters');
-    const typingIndicator = document.getElementById('intelligentconvo-typing');
-    const speakMode = document.getElementById('intelligentconvo-speak-mode');
-    const speakTranscript = document.getElementById('intelligentconvo-speak-transcript');
+    const messagesContainer = document.getElementById('intelliconvo-messages');
+    const inputArea = document.querySelector('.intelliconvo-input') as HTMLElement;
+    const startersContainer = document.getElementById('intelliconvo-starters');
+    const typingIndicator = document.getElementById('intelliconvo-typing');
+    const speakMode = document.getElementById('intelliconvo-speak-mode');
+    const speakTranscript = document.getElementById('intelliconvo-speak-transcript');
 
     if (mode === 'chat') {
       // Show chat UI
       if (messagesContainer) messagesContainer.style.display = '';
       if (inputArea) inputArea.style.display = '';
-      if (startersContainer) startersContainer.style.display = '';
+      // Only show starters if there are no messages
+      if (startersContainer) {
+        startersContainer.style.display = this.messages.length === 0 ? '' : 'none';
+      }
       if (typingIndicator && this.stateManager.getState().isTyping) typingIndicator.style.display = '';
       if (speakMode) speakMode.style.display = 'none';
 
@@ -883,8 +919,38 @@ class IntelligentconvoWidget {
       if (typingIndicator) typingIndicator.style.display = 'none';
       if (speakMode) speakMode.style.display = 'flex';
 
-      // Hide transcript initially (will show on first message)
-      if (speakTranscript) speakTranscript.classList.remove('visible');
+      // Check if there are existing messages and populate the transcript
+      if (speakTranscript) {
+        const transcriptContainer = document.getElementById('intelliconvo-transcript-messages');
+        const speakHeader = document.querySelector('.intelliconvo-speak-header') as HTMLElement;
+
+        // Populate transcript from existing messages if it's empty
+        if (transcriptContainer && this.messages.length > 0) {
+          const hasTranscriptMessages = transcriptContainer.children.length > 0 &&
+            !transcriptContainer.querySelector('.intelliconvo-transcript-empty');
+
+          if (!hasTranscriptMessages) {
+            // Populate transcript from this.messages
+            this.populateSpeakTranscript();
+          }
+
+          // Keep transcript visible if there are messages
+          speakTranscript.classList.add('visible');
+
+          // Hide header when there are messages
+          if (speakHeader) {
+            speakHeader.style.display = 'none';
+          }
+        } else {
+          // Hide transcript if empty
+          speakTranscript.classList.remove('visible');
+
+          // Show header when there are no messages
+          if (speakHeader) {
+            speakHeader.style.display = 'flex';
+          }
+        }
+      }
 
       // Initialize speak mode status
       this.updateSpeakStatus('Ready to listen');
@@ -955,7 +1021,7 @@ class IntelligentconvoWidget {
 
   private setTyping(typing: boolean): void {
     this.stateManager.setTyping(typing);
-    const typingIndicator = document.getElementById('intelligentconvo-typing');
+    const typingIndicator = document.getElementById('intelliconvo-typing');
     const currentMode = this.stateManager.getState().currentMode;
 
     // Only show typing indicator in chat mode
@@ -995,10 +1061,10 @@ class IntelligentconvoWidget {
       messageElement.classList.add('read');
 
       // Add read receipt indicator
-      const wrapper = messageElement.querySelector('.intelligentconvo-message-wrapper');
-      if (wrapper && !wrapper.querySelector('.intelligentconvo-read-receipt')) {
+      const wrapper = messageElement.querySelector('.intelliconvo-message-wrapper');
+      if (wrapper && !wrapper.querySelector('.intelliconvo-read-receipt')) {
         const receipt = document.createElement('span');
-        receipt.className = 'intelligentconvo-read-receipt';
+        receipt.className = 'intelliconvo-read-receipt';
         receipt.innerHTML = '✓✓';
         receipt.setAttribute('aria-label', 'Read');
         wrapper.appendChild(receipt);
@@ -1012,7 +1078,7 @@ class IntelligentconvoWidget {
   private markAllMessagesAsRead(): void {
     if (!this.settings?.showReadReceipts) return;
 
-    const messages = document.querySelectorAll('.intelligentconvo-message.intelligentconvo-user:not(.read)');
+    const messages = document.querySelectorAll('.intelliconvo-message.intelliconvo-user:not(.read)');
     messages.forEach(message => {
       const messageId = message.getAttribute('data-message-id');
       if (messageId) {
@@ -1041,23 +1107,23 @@ class IntelligentconvoWidget {
     const newVisibility = !this.stateManager.getState().emojiPickerVisible;
     this.stateManager.setEmojiPicker(newVisibility);
 
-    let picker = document.getElementById('intelligentconvo-emoji-picker');
+    let picker = document.getElementById('intelliconvo-emoji-picker');
 
     if (newVisibility) {
       if (!picker) {
         picker = document.createElement('div');
-        picker.id = 'intelligentconvo-emoji-picker';
-        picker.className = 'intelligentconvo-emoji-picker';
+        picker.id = 'intelliconvo-emoji-picker';
+        picker.className = 'intelliconvo-emoji-picker';
         picker.innerHTML = this.getEmojiPickerHTML();
 
-        const inputArea = document.querySelector('.intelligentconvo-input');
+        const inputArea = document.querySelector('.intelliconvo-input');
         if (inputArea) {
           // Insert inside the input area so absolute positioning works
           inputArea.insertBefore(picker, inputArea.firstChild);
         }
 
         // Add emoji click handlers
-        picker.querySelectorAll('.intelligentconvo-emoji').forEach(emoji => {
+        picker.querySelectorAll('.intelliconvo-emoji').forEach(emoji => {
           emoji.addEventListener('click', (e) => {
             const emojiChar = (e.target as HTMLElement).textContent;
             this.insertEmoji(emojiChar || '');
@@ -1077,7 +1143,7 @@ class IntelligentconvoWidget {
   }
 
   private insertEmoji(emoji: string): void {
-    const input = document.getElementById('intelligentconvo-input') as HTMLInputElement;
+    const input = document.getElementById('intelliconvo-input') as HTMLInputElement;
     if (input) {
       const start = input.selectionStart || 0;
       const end = input.selectionEnd || 0;
@@ -1111,7 +1177,7 @@ class IntelligentconvoWidget {
       });
 
       // Hide starters if there are messages
-      const starters = document.getElementById('intelligentconvo-starters');
+      const starters = document.getElementById('intelliconvo-starters');
       if (starters) {
         starters.style.display = 'none';
       }
@@ -1122,11 +1188,11 @@ class IntelligentconvoWidget {
    * Renders a persisted message to the DOM without adding to messages array
    */
   private renderPersistedMessage(msg: Message): void {
-    const messagesContainer = document.getElementById('intelligentconvo-messages');
+    const messagesContainer = document.getElementById('intelliconvo-messages');
     if (!messagesContainer) return;
 
     const messageDiv = document.createElement('div');
-    messageDiv.className = `intelligentconvo-message intelligentconvo-${msg.role}`;
+    messageDiv.className = `intelliconvo-transcript-message intelliconvo-transcript-${msg.role}`;
     messageDiv.setAttribute('data-message-id', msg.id);
 
     // Format timestamp from message
@@ -1149,7 +1215,7 @@ class IntelligentconvoWidget {
     // Show avatar for assistant messages if enabled
     const showAvatar = this.settings?.showMessageAvatar && msg.role === 'assistant';
     const avatarHtml = showAvatar ? `
-      <div class="intelligentconvo-message-avatar">
+      <div class="intelliconvo-transcript-avatar">
         ${this.settings?.botAvatarUrl
           ? `<img src="${this.settings.botAvatarUrl}" alt="${this.settings?.botName || 'Assistant'}" />`
           : `<span>${this.settings?.botAvatarFallback || 'AI'}</span>`
@@ -1164,9 +1230,9 @@ class IntelligentconvoWidget {
 
     messageDiv.innerHTML = `
       ${avatarHtml}
-      <div class="intelligentconvo-message-wrapper">
-        <div class="intelligentconvo-message-content">${processedContent || ''}</div>
-        ${showTimestamp ? `<div class="intelligentconvo-message-time">${formattedTime}</div>` : ''}
+      <div class="intelliconvo-transcript-wrapper">
+        <div class="intelliconvo-transcript-content">${processedContent || ''}</div>
+        ${showTimestamp ? `<div class="intelliconvo-transcript-time">${formattedTime}</div>` : ''}
       </div>
     `;
 
@@ -1191,7 +1257,7 @@ class IntelligentconvoWidget {
   private setupLazyLoading(): void {
     if (!this.settings?.lazyLoadMessages) return;
 
-    const messagesContainer = document.getElementById('intelligentconvo-messages');
+    const messagesContainer = document.getElementById('intelliconvo-messages');
     if (!messagesContainer) return;
 
     // Throttle scroll event for better performance
@@ -1208,7 +1274,7 @@ class IntelligentconvoWidget {
   private loadMoreMessages(): void {
     if (!this.settings?.lazyLoadMessages) return;
 
-    const messagesContainer = document.getElementById('intelligentconvo-messages');
+    const messagesContainer = document.getElementById('intelliconvo-messages');
     if (!messagesContainer) return;
 
     const previousScrollHeight = messagesContainer.scrollHeight;
@@ -1221,7 +1287,7 @@ class IntelligentconvoWidget {
     // Prepend messages
     messagesToLoad.reverse().forEach(msg => {
       const messageDiv = document.createElement('div');
-      messageDiv.className = `intelligentconvo-message intelligentconvo-${msg.role}`;
+      messageDiv.className = `intelliconvo-message intelliconvo-${msg.role}`;
       messageDiv.setAttribute('data-message-id', msg.id);
 
       // Convert markdown to HTML for assistant messages, sanitize user messages
@@ -1230,8 +1296,8 @@ class IntelligentconvoWidget {
         : this.sanitizeHtml(msg.content);
 
       messageDiv.innerHTML = `
-        <div class="intelligentconvo-message-wrapper">
-          <div class="intelligentconvo-message-content">${processedContent}</div>
+        <div class="intelliconvo-message-wrapper">
+          <div class="intelliconvo-message-content">${processedContent}</div>
         </div>
       `;
 
@@ -1253,6 +1319,14 @@ class IntelligentconvoWidget {
       return;
     }
 
+    // If already listening, stop
+    if (this.voiceHandler.isListening()) {
+      this.voiceHandler.stopVoiceInput();
+      this.updateSpeakStatus('Ready to listen');
+      this.toggleWaveform(false);
+      return;
+    }
+
     // Update UI to show listening state
     this.updateSpeakStatus('Listening...');
     this.toggleWaveform(true);
@@ -1265,12 +1339,16 @@ class IntelligentconvoWidget {
         this.updateSpeakStatus('Thinking...');
         this.toggleWaveform(false);
 
+        // Show processing indicator
+        this.showProcessingIndicator(true);
+
         // Send message and wait for response
         await this.sendMessageInSpeakMode(transcript);
       } catch (error) {
         console.error('Failed to process speech:', error);
         this.updateSpeakStatus('Error processing speech');
         this.toggleWaveform(false);
+        this.showProcessingIndicator(false);
       }
     });
   }
@@ -1283,24 +1361,74 @@ class IntelligentconvoWidget {
     // We need to intercept it to speak it out loud
   }
 
+  private populateSpeakTranscript(): void {
+    const transcriptContainer = document.getElementById('intelliconvo-transcript-messages');
+    if (!transcriptContainer) return;
+
+    // Clear the container
+    transcriptContainer.innerHTML = '';
+
+    // Add all messages to the transcript
+    this.messages.forEach(message => {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `intelliconvo-transcript-message intelliconvo-transcript-${message.role}`;
+
+      const timeStr = new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      // Use markdown for assistant messages, sanitize for user messages
+      const processedContent = message.role === 'assistant'
+        ? markdownToHtml(message.content)
+        : this.sanitizeHtml(message.content);
+
+      // Show avatar for assistant messages
+      const showAvatar = this.settings?.showMessageAvatar && message.role === 'assistant';
+      const avatarHtml = showAvatar ? `
+        <div class="intelliconvo-transcript-avatar">
+          ${this.settings?.botAvatarUrl
+            ? `<img src="${this.settings.botAvatarUrl}" alt="${this.settings?.botName || 'Assistant'}" />`
+            : `<span>${this.settings?.botAvatarFallback || 'AI'}</span>`
+          }
+        </div>
+      ` : '';
+
+      messageDiv.innerHTML = `
+        ${avatarHtml}
+        <div class="intelliconvo-transcript-wrapper">
+          <div class="intelliconvo-transcript-content">${processedContent}</div>
+          <div class="intelliconvo-transcript-time">${timeStr}</div>
+        </div>
+      `;
+
+      transcriptContainer.appendChild(messageDiv);
+    });
+
+    transcriptContainer.scrollTop = transcriptContainer.scrollHeight;
+  }
+
   private addToSpeakTranscript(role: 'user' | 'assistant', content: string): void {
-    const transcriptContainer = document.getElementById('intelligentconvo-transcript-messages');
+    const transcriptContainer = document.getElementById('intelliconvo-transcript-messages');
     if (!transcriptContainer) return;
 
     // Show transcript section on first message
-    const transcriptSection = document.getElementById('intelligentconvo-speak-transcript');
+    const transcriptSection = document.getElementById('intelliconvo-speak-transcript');
     if (transcriptSection && !transcriptSection.classList.contains('visible')) {
       transcriptSection.classList.add('visible');
     }
 
     // Hide empty state on first message
-    const emptyState = transcriptContainer.querySelector('.intelligentconvo-transcript-empty');
+    const emptyState = transcriptContainer.querySelector('.intelliconvo-transcript-empty');
     if (emptyState) {
       emptyState.remove();
     }
 
+    // Hide header when first message is added
+    const speakHeader = document.querySelector('.intelliconvo-speak-header') as HTMLElement;
+    if (speakHeader && this.messages.length === 0) {
+      speakHeader.style.display = 'none';
+    }
+
     const messageDiv = document.createElement('div');
-    messageDiv.className = `intelligentconvo-transcript-message intelligentconvo-transcript-${role}`;
+    messageDiv.className = `intelliconvo-transcript-message intelliconvo-transcript-${role}`;
 
     const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
@@ -1309,9 +1437,23 @@ class IntelligentconvoWidget {
       ? markdownToHtml(content)
       : this.sanitizeHtml(content);
 
+    // Show avatar for assistant messages
+    const showAvatar = this.settings?.showMessageAvatar && role === 'assistant';
+    const avatarHtml = showAvatar ? `
+      <div class="intelliconvo-transcript-avatar">
+        ${this.settings?.botAvatarUrl
+          ? `<img src="${this.settings.botAvatarUrl}" alt="${this.settings?.botName || 'Assistant'}" />`
+          : `<span>${this.settings?.botAvatarFallback || 'AI'}</span>`
+        }
+      </div>
+    ` : '';
+
     messageDiv.innerHTML = `
-      <div class="intelligentconvo-transcript-content">${processedContent}</div>
-      <div class="intelligentconvo-transcript-time">${timeStr}</div>
+      ${avatarHtml}
+      <div class="intelliconvo-transcript-wrapper">
+        <div class="intelliconvo-transcript-content">${processedContent}</div>
+        <div class="intelliconvo-transcript-time">${timeStr}</div>
+      </div>
     `;
 
     transcriptContainer.appendChild(messageDiv);
@@ -1319,9 +1461,9 @@ class IntelligentconvoWidget {
   }
 
   private updateSpeakStatus(status: string): void {
-    const statusElement = document.getElementById('intelligentconvo-speak-status');
+    const statusElement = document.getElementById('intelliconvo-speak-status');
     if (statusElement) {
-      const statusText = statusElement.querySelector('.intelligentconvo-status-text');
+      const statusText = statusElement.querySelector('.intelliconvo-status-text');
       if (statusText) {
         statusText.textContent = status;
       }
@@ -1329,13 +1471,30 @@ class IntelligentconvoWidget {
   }
 
   private toggleWaveform(active: boolean): void {
-    const waveform = document.getElementById('intelligentconvo-speak-waveform');
+    const waveform = document.getElementById('intelliconvo-speak-waveform');
+    const waveformContainer = document.querySelector('.intelliconvo-speak-waveform-container') as HTMLElement;
+
     if (waveform) {
       if (active) {
         waveform.classList.add('active');
       } else {
         waveform.classList.remove('active');
       }
+    }
+
+    if (waveformContainer) {
+      if (active) {
+        waveformContainer.classList.add('active');
+      } else {
+        waveformContainer.classList.remove('active');
+      }
+    }
+  }
+
+  private showProcessingIndicator(show: boolean): void {
+    const indicator = document.getElementById('intelliconvo-processing-indicator');
+    if (indicator) {
+      indicator.style.display = show ? 'flex' : 'none';
     }
   }
 
@@ -1349,41 +1508,41 @@ class IntelligentconvoWidget {
 }
 
 // Import global types
-import type { WidgetCommand, IntelligentconvoQueue, IntelligentconvoInit } from './types/global';
+import type { WidgetCommand, IntelliConvoQueue, IntelliConvoInit } from './types/global';
 
 // Global initialization function
-const intelligentconvoGlobal = window.intelligentconvo as IntelligentconvoQueue;
-window.intelligentconvo = intelligentconvoGlobal || function(...args: unknown[]) {
-  ((window.intelligentconvo as IntelligentconvoQueue).q =
-    (window.intelligentconvo as IntelligentconvoQueue).q || []).push(args as WidgetCommand);
+const intelliconvoGlobal = window.intelliconvo as IntelliConvoQueue;
+window.intelliconvo = intelliconvoGlobal || function(...args: unknown[]) {
+  ((window.intelliconvo as IntelliConvoQueue).q =
+    (window.intelliconvo as IntelliConvoQueue).q || []).push(args as WidgetCommand);
 };
 
 // Process queued commands
-(window.intelligentconvo as IntelligentconvoQueue)._init = () => {
-  const commands = (window.intelligentconvo as IntelligentconvoQueue).q || [];
+(window.intelliconvo as IntelliConvoQueue)._init = () => {
+  const commands = (window.intelliconvo as IntelliConvoQueue).q || [];
 
   commands.forEach((command: WidgetCommand) => {
     if (command[0] === 'init' && command[1]) {
-      new IntelligentconvoWidget(command[1] as WidgetConfig);
+      new IntelliConvoWidget(command[1] as WidgetConfig);
     }
   });
 
   // Replace function to handle future commands
-  const initFn: IntelligentconvoInit = (command: string, config?: WidgetConfig) => {
+  const initFn: IntelliConvoInit = (command: string, config?: WidgetConfig) => {
     if (command === 'init' && config) {
-      new IntelligentconvoWidget(config);
+      new IntelliConvoWidget(config);
     }
   };
-  window.intelligentconvo = initFn;
+  window.intelliconvo = initFn;
 };
 
 // Auto-init if DOM is ready
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
-    (window.intelligentconvo as IntelligentconvoQueue)._init?.();
+    (window.intelliconvo as IntelliConvoQueue)._init?.();
   });
 } else {
-  (window.intelligentconvo as IntelligentconvoQueue)._init?.();
+  (window.intelliconvo as IntelliConvoQueue)._init?.();
 }
 
-export default IntelligentconvoWidget;
+export default IntelliConvoWidget;

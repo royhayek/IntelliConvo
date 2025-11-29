@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IntelliConvo - Thumbnail 80x80</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .thumbnail-container {
+      width: 320px;
+      height: 320px;
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .thumbnail {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .thumbnail::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 60%);
+    }
+
+    .icon-wrapper {
+      position: relative;
+      z-index: 1;
+    }
+
+    .chat-bubble {
+      width: 38px;
+      height: 38px;
+      background: white;
+      border-radius: 50% 50% 50% 0;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ai-sparkle {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      width: 16px;
+      height: 16px;
+      background: #fbbf24;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8px;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.1); opacity: 0.8; }
+    }
+
+    .letters {
+      color: #6366f1;
+      font-weight: 800;
+      font-size: 10px;
+      letter-spacing: -0.5px;
+    }
+
+    .instructions {
+      margin-top: 30px;
+      text-align: center;
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    .instructions strong {
+      color: #1e293b;
+      display: block;
+      margin-bottom: 8px;
+      font-size: 16px;
+    }
+
+    .size-label {
+      background: #6366f1;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 12px;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+  <div class="thumbnail-container">
+    <div>
+      <div class="thumbnail">
+        <div class="icon-wrapper">
+          <div class="chat-bubble">
+            <div class="letters">IC</div>
+            <div class="ai-sparkle">✨</div>
+          </div>
+        </div>
+      </div>
+      <div class="instructions">
+        <strong>Thumbnail Preview</strong>
+        Screenshot the colored square above
+        <div class="size-label">80x80 pixels</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    console.log('%c📸 THUMBNAIL SCREENSHOT INSTRUCTIONS:', 'font-size: 16px; font-weight: bold; color: #6366f1;');
+    console.log('%c1. Use your browser\'s screenshot tool or Cmd+Shift+4 (Mac)', 'font-size: 14px;');
+    console.log('%c2. Select just the colored square (80x80px)', 'font-size: 14px;');
+    console.log('%c3. Save as PNG or JPEG', 'font-size: 14px;');
+  </script>
+</body>
+</html>

@@ -48,14 +48,14 @@ import { TimeAgo } from "@/components/ui/time-ago";
 
 // Import generated hooks
 import {
-  useGetApiV1AdminWidgets,
-  useDeleteApiV1AdminWidgetsWidgetId,
-  usePostApiV1AdminWidgetsWidgetIdReset,
-  getGetApiV1AdminWidgetsQueryKey,
+  useGetAdminWidgets,
+  useDeleteAdminWidgetsWidgetId,
+  usePostAdminWidgetsWidgetIdReset,
+  getGetAdminWidgetsQueryKey,
 } from "@/lib/api/generated/queries/admin-widgets/admin-widgets";
 
 // Import generated types
-import type { GetApiV1AdminWidgetsParams } from "@/lib/api/generated/models";
+import type { GetAdminWidgetsParams } from "@/lib/api/generated/models";
 import { TablePagination } from "@/components/ui/table-pagination";
 
 // Extended widget interface to include additional fields from API response
@@ -98,7 +98,7 @@ export default function AdminWidgetsPage() {
   const [mutationError, setMutationError] = useState<string | null>(null);
 
   // Build query params
-  const queryParams: GetApiV1AdminWidgetsParams = {
+  const queryParams: GetAdminWidgetsParams = {
     page: page.toString(),
     limit: "20",
     ...(search && { search }),
@@ -110,17 +110,17 @@ export default function AdminWidgetsPage() {
     data: widgetsResponse,
     isLoading,
     error: widgetsError,
-  } = useGetApiV1AdminWidgets(queryParams);
+  } = useGetAdminWidgets(queryParams);
 
   // Delete mutation
-  const deleteMutation = useDeleteApiV1AdminWidgetsWidgetId({
+  const deleteMutation = useDeleteAdminWidgetsWidgetId({
     mutation: {
       onSuccess: () => {
         setDeleteWidget(null);
         setMutationError(null);
         // Invalidate widgets query to refetch
         queryClient.invalidateQueries({
-          queryKey: getGetApiV1AdminWidgetsQueryKey(queryParams),
+          queryKey: getGetAdminWidgetsQueryKey(queryParams),
         });
       },
       onError: (error) => {
@@ -132,13 +132,13 @@ export default function AdminWidgetsPage() {
   });
 
   // Reset mutation
-  const resetMutation = usePostApiV1AdminWidgetsWidgetIdReset({
+  const resetMutation = usePostAdminWidgetsWidgetIdReset({
     mutation: {
       onSuccess: () => {
         setMutationError(null);
         // Invalidate widgets query to refetch
         queryClient.invalidateQueries({
-          queryKey: getGetApiV1AdminWidgetsQueryKey(queryParams),
+          queryKey: getGetAdminWidgetsQueryKey(queryParams),
         });
       },
       onError: (error) => {

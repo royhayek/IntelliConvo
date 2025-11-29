@@ -18,7 +18,7 @@ export class KeyboardHandler {
   public setupKeyboardNavigation(): void {
     if (!this.dependencies.settings?.enableKeyboardNavigation) return;
 
-    const chatWindow = document.getElementById('intelligentconvo-chat-window');
+    const chatWindow = document.getElementById('intelliconvo-chat-window');
     if (!chatWindow) return;
 
     // Remove existing handler if any
@@ -82,7 +82,7 @@ export class KeyboardHandler {
    * Cleanup method to remove event listeners
    */
   public cleanup(): void {
-    const chatWindow = document.getElementById('intelligentconvo-chat-window');
+    const chatWindow = document.getElementById('intelliconvo-chat-window');
     if (chatWindow && this.keydownHandler) {
       chatWindow.removeEventListener('keydown', this.keydownHandler);
       this.keydownHandler = null;

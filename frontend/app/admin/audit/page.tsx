@@ -38,11 +38,11 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import {
-  useGetApiV1AdminAudit,
-  useGetApiV1AdminAuditStats,
-  usePostApiV1AdminAuditCleanup,
-  getGetApiV1AdminAuditQueryKey,
-  getGetApiV1AdminAuditStatsQueryKey,
+  useGetAdminAudit,
+  useGetAdminAuditStats,
+  usePostAdminAuditCleanup,
+  getGetAdminAuditQueryKey,
+  getGetAdminAuditStatsQueryKey,
 } from "@/lib/api/generated/queries/admin-audit/admin-audit";
 import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
@@ -91,14 +91,14 @@ export default function AdminAuditPage() {
     data: statsResponse,
     isLoading: statsLoading,
     error: statsError,
-  } = useGetApiV1AdminAuditStats();
+  } = useGetAdminAuditStats();
 
   // Fetch audit logs
   const {
     data: logsResponse,
     isLoading: logsLoading,
     error: logsError,
-  } = useGetApiV1AdminAudit({
+  } = useGetAdminAudit({
     page: String(page),
     limit: "50",
     action: actionFilter !== "all" ? actionFilter as never : undefined,
@@ -108,12 +108,12 @@ export default function AdminAuditPage() {
   });
 
   // Cleanup mutation
-  const cleanupMutation = usePostApiV1AdminAuditCleanup({
+  const cleanupMutation = usePostAdminAuditCleanup({
     mutation: {
       onSuccess: (data) => {
         setSuccessMessage(data.message || "Old audit logs cleaned up successfully");
-        queryClient.invalidateQueries({ queryKey: getGetApiV1AdminAuditQueryKey() });
-        queryClient.invalidateQueries({ queryKey: getGetApiV1AdminAuditStatsQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetAdminAuditQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetAdminAuditStatsQueryKey() });
         setTimeout(() => setSuccessMessage(null), 3000);
       },
       onError: () => {
@@ -130,8 +130,8 @@ export default function AdminAuditPage() {
   const displayError = actionError || (statsError || logsError ? "Failed to load audit data" : null);
 
   const handleRefresh = () => {
-    queryClient.invalidateQueries({ queryKey: getGetApiV1AdminAuditQueryKey() });
-    queryClient.invalidateQueries({ queryKey: getGetApiV1AdminAuditStatsQueryKey() });
+    queryClient.invalidateQueries({ queryKey: getGetAdminAuditQueryKey() });
+    queryClient.invalidateQueries({ queryKey: getGetAdminAuditStatsQueryKey() });
   };
 
   const handleCleanup = () => {

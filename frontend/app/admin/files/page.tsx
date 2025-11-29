@@ -10,16 +10,16 @@ import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-di
 import { TablePagination } from "@/components/ui/table-pagination";
 
 import {
-  useGetApiV1AdminFiles,
-  useDeleteApiV1AdminFilesFileId,
-  usePostApiV1AdminFilesFileIdReprocess,
-  getGetApiV1AdminFilesQueryKey,
+  useGetAdminFiles,
+  useDeleteAdminFilesFileId,
+  usePostAdminFilesFileIdReprocess,
+  getGetAdminFilesQueryKey,
 } from "@/lib/api/generated/queries/admin-files/admin-files";
 import {
-  useGetApiV1AdminStatsFiles,
-  getGetApiV1AdminStatsFilesQueryKey,
+  useGetAdminStatsFiles,
+  getGetAdminStatsFilesQueryKey,
 } from "@/lib/api/generated/queries/admin/admin";
-import type { AdminFile, GetApiV1AdminFilesParams, GetApiV1AdminFilesStatus } from "@/lib/api/generated/models";
+import type { AdminFile, GetAdminFilesParams, GetAdminFilesStatus } from "@/lib/api/generated/models";
 import { FilesStats, FilesTable, FilesFilters } from "@/components/admin/files";
 
 interface FileStats {
@@ -42,24 +42,24 @@ export default function AdminFilesPage() {
   const [deleteFile, setDeleteFile] = useState<AdminFile | null>(null);
   const [mutationError, setMutationError] = useState<string | null>(null);
 
-  const queryParams: GetApiV1AdminFilesParams = {
+  const queryParams: GetAdminFilesParams = {
     page: page.toString(),
     limit: "20",
     ...(searchQuery && { search: searchQuery }),
     ...(siteId && { siteId }),
-    ...(status !== "all" && { status: status as GetApiV1AdminFilesStatus }),
+    ...(status !== "all" && { status: status as GetAdminFilesStatus }),
   };
 
-  const { data: filesData, isLoading, error: filesError } = useGetApiV1AdminFiles(queryParams);
-  const { data: statsData } = useGetApiV1AdminStatsFiles();
+  const { data: filesData, isLoading, error: filesError } = useGetAdminFiles(queryParams);
+  const { data: statsData } = useGetAdminStatsFiles();
 
-  const deleteMutation = useDeleteApiV1AdminFilesFileId({
+  const deleteMutation = useDeleteAdminFilesFileId({
     mutation: {
       onSuccess: () => {
         setDeleteFile(null);
         setMutationError(null);
-        queryClient.invalidateQueries({ queryKey: getGetApiV1AdminFilesQueryKey(queryParams) });
-        queryClient.invalidateQueries({ queryKey: getGetApiV1AdminStatsFilesQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetAdminFilesQueryKey(queryParams) });
+        queryClient.invalidateQueries({ queryKey: getGetAdminStatsFilesQueryKey() });
       },
       onError: (error) => {
         setMutationError(error instanceof Error ? error.message : "Failed to delete file");
@@ -67,12 +67,12 @@ export default function AdminFilesPage() {
     },
   });
 
-  const reprocessMutation = usePostApiV1AdminFilesFileIdReprocess({
+  const reprocessMutation = usePostAdminFilesFileIdReprocess({
     mutation: {
       onSuccess: () => {
         setMutationError(null);
-        queryClient.invalidateQueries({ queryKey: getGetApiV1AdminFilesQueryKey(queryParams) });
-        queryClient.invalidateQueries({ queryKey: getGetApiV1AdminStatsFilesQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetAdminFilesQueryKey(queryParams) });
+        queryClient.invalidateQueries({ queryKey: getGetAdminStatsFilesQueryKey() });
       },
       onError: (error) => {
         setMutationError(error instanceof Error ? error.message : "Failed to trigger reprocessing");

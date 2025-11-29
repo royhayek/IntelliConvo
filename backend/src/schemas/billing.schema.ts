@@ -201,7 +201,7 @@ export const billingHistoryResponseSchema = registry.register(
 // GET /api/v1/billing/history
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/billing/history',
+  path: '/billing/history',
   summary: 'Get billing transaction history',
   tags: ['Billing'],
   security: [{ bearerAuth: [] }],
@@ -234,7 +234,7 @@ export const billingSummaryQuerySchema = z.object({
 // GET /api/v1/billing/summary
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/billing/summary',
+  path: '/billing/summary',
   summary: 'Get billing summary',
   description: 'Retrieve billing summary, optionally filtered by site',
   tags: ['Billing'],
@@ -260,7 +260,7 @@ registry.registerPath({
 // GET /api/v1/billing/transactions/{transactionId}
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/billing/transactions/{transactionId}',
+  path: '/billing/transactions/{transactionId}',
   summary: 'Get transaction details',
   tags: ['Billing'],
   security: [{ bearerAuth: [] }],
@@ -303,7 +303,7 @@ export const receiptUrlResponseSchema = registry.register(
 // GET /api/v1/billing/receipts/{transactionId}
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/billing/receipts/{transactionId}',
+  path: '/billing/receipts/{transactionId}',
   summary: 'Get receipt URL',
   description: 'Get the Stripe hosted receipt URL for a transaction',
   tags: ['Billing'],

@@ -24,7 +24,7 @@ export class ComponentRenderer {
     onSendMessage: (text: string) => void,
     sanitizeHtml: (html: string) => string
   ): void {
-    const container = document.getElementById('intelligentconvo-starters');
+    const container = document.getElementById('intelliconvo-starters');
     if (!container) return;
 
     // Check if starters should be shown
@@ -42,14 +42,14 @@ export class ComponentRenderer {
     const startersTitle = this.settings?.startersTitle || 'Suggested questions';
 
     container.innerHTML = `
-      <div class="intelligentconvo-welcome" role="heading" aria-level="3">${sanitizedHeadline}</div>
+      <div class="intelliconvo-welcome" role="heading" aria-level="3">${sanitizedHeadline}</div>
       ${data.starters.length > 0 ? `
-        <div class="intelligentconvo-starters-title">${startersTitle}</div>
-        <div class="intelligentconvo-starter-buttons" role="group" aria-label="Conversation starters">
+        <div class="intelliconvo-starters-title">${startersTitle}</div>
+        <div class="intelliconvo-starter-buttons" role="group" aria-label="Conversation starters">
           ${data.starters.map((starter) => {
             const sanitizedText = sanitizeHtml(starter.starterText);
             return `<button
-              class="intelligentconvo-starter-btn"
+              class="intelliconvo-starter-btn"
               data-text="${sanitizedText}"
               aria-label="Send: ${sanitizedText}"
               tabindex="0"
@@ -62,7 +62,7 @@ export class ComponentRenderer {
     `;
 
     // Add click and keyboard handlers to starter buttons
-    container.querySelectorAll('.intelligentconvo-starter-btn').forEach(btn => {
+    container.querySelectorAll('.intelliconvo-starter-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const text = (e.target as HTMLElement).getAttribute('data-text');
         if (text) {
@@ -98,20 +98,20 @@ export class ComponentRenderer {
 
     this.quickReplies = replies;
 
-    let container = document.getElementById('intelligentconvo-quick-replies');
+    let container = document.getElementById('intelliconvo-quick-replies');
     if (!container) {
       container = document.createElement('div');
-      container.id = 'intelligentconvo-quick-replies';
-      container.className = `intelligentconvo-quick-replies intelligentconvo-quick-replies-${this.settings.quickRepliesPosition}`;
+      container.id = 'intelliconvo-quick-replies';
+      container.className = `intelliconvo-quick-replies intelliconvo-quick-replies-${this.settings.quickRepliesPosition}`;
 
       // Position based on setting
       if (this.settings.quickRepliesPosition === 'above-input') {
-        const inputArea = document.querySelector('.intelligentconvo-input');
+        const inputArea = document.querySelector('.intelliconvo-input');
         if (inputArea) {
           inputArea.parentElement?.insertBefore(container, inputArea);
         }
       } else {
-        const messagesArea = document.getElementById('intelligentconvo-messages');
+        const messagesArea = document.getElementById('intelliconvo-messages');
         if (messagesArea) {
           messagesArea.parentElement?.insertBefore(container, messagesArea.nextSibling);
         }
@@ -119,9 +119,9 @@ export class ComponentRenderer {
     }
 
     container.innerHTML = `
-      <div class="intelligentconvo-quick-replies-list">
+      <div class="intelliconvo-quick-replies-list">
         ${replies.map(reply => `
-          <button class="intelligentconvo-quick-reply-btn" data-reply="${sanitizeHtml(reply)}">
+          <button class="intelliconvo-quick-reply-btn" data-reply="${sanitizeHtml(reply)}">
             ${sanitizeHtml(reply)}
           </button>
         `).join('')}
@@ -129,7 +129,7 @@ export class ComponentRenderer {
     `;
 
     // Add click handlers
-    container.querySelectorAll('.intelligentconvo-quick-reply-btn').forEach(btn => {
+    container.querySelectorAll('.intelliconvo-quick-reply-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const reply = (e.target as HTMLElement).getAttribute('data-reply');
         if (reply) {
@@ -158,9 +158,9 @@ export class ComponentRenderer {
     ];
 
     return `
-      <div class="intelligentconvo-emoji-grid">
+      <div class="intelliconvo-emoji-grid">
         ${emojis.map(emoji => `
-          <button class="intelligentconvo-emoji" aria-label="${emoji}">${emoji}</button>
+          <button class="intelliconvo-emoji" aria-label="${emoji}">${emoji}</button>
         `).join('')}
       </div>
     `;
@@ -170,7 +170,7 @@ export class ComponentRenderer {
    * Clears quick replies from the DOM
    */
   public clearQuickReplies(): void {
-    const container = document.getElementById('intelligentconvo-quick-replies');
+    const container = document.getElementById('intelliconvo-quick-replies');
     if (container) {
       container.remove();
     }

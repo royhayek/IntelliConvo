@@ -20,16 +20,16 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  DeleteApiV1AdminFilesFileId200,
-  GetApiV1AdminFiles200,
-  GetApiV1AdminFilesFileId200,
-  GetApiV1AdminFilesParams,
-  GetApiV1AdminFilesStuckParams,
-  PatchApiV1AdminFilesFileId200,
-  PatchApiV1AdminFilesFileIdBody,
-  PostApiV1AdminFilesBulkStatus200,
-  PostApiV1AdminFilesBulkStatusBody,
-  PostApiV1AdminFilesFileIdReprocess200
+  DeleteAdminFilesFileId200,
+  GetAdminFiles200,
+  GetAdminFilesFileId200,
+  GetAdminFilesParams,
+  GetAdminFilesStuckParams,
+  PatchAdminFilesFileId200,
+  PatchAdminFilesFileIdBody,
+  PostAdminFilesBulkStatus200,
+  PostAdminFilesBulkStatusBody,
+  PostAdminFilesFileIdReprocess200
 } from '../../models';
 
 import { customInstance } from '../../../axios-instance';
@@ -43,14 +43,14 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 /**
  * @summary Get paginated list of knowledge files
  */
-export const getApiV1AdminFiles = (
-    params?: GetApiV1AdminFilesParams,
+export const getAdminFiles = (
+    params?: GetAdminFilesParams,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<GetApiV1AdminFiles200>(
-      {url: `/api/v1/admin/files`, method: 'GET',
+      return customInstance<GetAdminFiles200>(
+      {url: `/admin/files`, method: 'GET',
         params, signal
     },
       options);
@@ -59,69 +59,69 @@ export const getApiV1AdminFiles = (
 
 
 
-export const getGetApiV1AdminFilesQueryKey = (params?: GetApiV1AdminFilesParams,) => {
+export const getGetAdminFilesQueryKey = (params?: GetAdminFilesParams,) => {
     return [
-    `/api/v1/admin/files`, ...(params ? [params]: [])
+    `/admin/files`, ...(params ? [params]: [])
     ] as const;
     }
 
     
-export const getGetApiV1AdminFilesQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminFiles>>, TError = ErrorType<void>>(params?: GetApiV1AdminFilesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminFiles>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminFilesQueryOptions = <TData = Awaited<ReturnType<typeof getAdminFiles>>, TError = ErrorType<void>>(params?: GetAdminFilesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminFiles>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminFilesQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminFilesQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminFiles>>> = ({ signal }) => getApiV1AdminFiles(params, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminFiles>>> = ({ signal }) => getAdminFiles(params, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminFiles>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminFiles>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminFilesQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminFiles>>>
-export type GetApiV1AdminFilesQueryError = ErrorType<void>
+export type GetAdminFilesQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminFiles>>>
+export type GetAdminFilesQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminFiles<TData = Awaited<ReturnType<typeof getApiV1AdminFiles>>, TError = ErrorType<void>>(
- params: undefined |  GetApiV1AdminFilesParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminFiles>>, TError, TData>> & Pick<
+export function useGetAdminFiles<TData = Awaited<ReturnType<typeof getAdminFiles>>, TError = ErrorType<void>>(
+ params: undefined |  GetAdminFilesParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminFiles>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminFiles>>,
+          Awaited<ReturnType<typeof getAdminFiles>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminFiles>>
+          Awaited<ReturnType<typeof getAdminFiles>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminFiles<TData = Awaited<ReturnType<typeof getApiV1AdminFiles>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminFilesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminFiles>>, TError, TData>> & Pick<
+export function useGetAdminFiles<TData = Awaited<ReturnType<typeof getAdminFiles>>, TError = ErrorType<void>>(
+ params?: GetAdminFilesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminFiles>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminFiles>>,
+          Awaited<ReturnType<typeof getAdminFiles>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminFiles>>
+          Awaited<ReturnType<typeof getAdminFiles>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminFiles<TData = Awaited<ReturnType<typeof getApiV1AdminFiles>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminFilesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminFiles>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminFiles<TData = Awaited<ReturnType<typeof getAdminFiles>>, TError = ErrorType<void>>(
+ params?: GetAdminFilesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminFiles>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get paginated list of knowledge files
  */
 
-export function useGetApiV1AdminFiles<TData = Awaited<ReturnType<typeof getApiV1AdminFiles>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminFilesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminFiles>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminFiles<TData = Awaited<ReturnType<typeof getAdminFiles>>, TError = ErrorType<void>>(
+ params?: GetAdminFilesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminFiles>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminFilesQueryOptions(params,options)
+  const queryOptions = getGetAdminFilesQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -136,14 +136,14 @@ export function useGetApiV1AdminFiles<TData = Awaited<ReturnType<typeof getApiV1
 /**
  * @summary Get distinct file types for filtering
  */
-export const getApiV1AdminFilesTypes = (
+export const getAdminFilesTypes = (
     
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<void>(
-      {url: `/api/v1/admin/files/types`, method: 'GET', signal
+      {url: `/admin/files/types`, method: 'GET', signal
     },
       options);
     }
@@ -151,69 +151,69 @@ export const getApiV1AdminFilesTypes = (
 
 
 
-export const getGetApiV1AdminFilesTypesQueryKey = () => {
+export const getGetAdminFilesTypesQueryKey = () => {
     return [
-    `/api/v1/admin/files/types`
+    `/admin/files/types`
     ] as const;
     }
 
     
-export const getGetApiV1AdminFilesTypesQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminFilesTypes>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminFilesTypes>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminFilesTypesQueryOptions = <TData = Awaited<ReturnType<typeof getAdminFilesTypes>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminFilesTypes>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminFilesTypesQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminFilesTypesQueryKey();
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminFilesTypes>>> = ({ signal }) => getApiV1AdminFilesTypes(requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminFilesTypes>>> = ({ signal }) => getAdminFilesTypes(requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminFilesTypes>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminFilesTypes>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminFilesTypesQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminFilesTypes>>>
-export type GetApiV1AdminFilesTypesQueryError = ErrorType<void>
+export type GetAdminFilesTypesQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminFilesTypes>>>
+export type GetAdminFilesTypesQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminFilesTypes<TData = Awaited<ReturnType<typeof getApiV1AdminFilesTypes>>, TError = ErrorType<void>>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminFilesTypes>>, TError, TData>> & Pick<
+export function useGetAdminFilesTypes<TData = Awaited<ReturnType<typeof getAdminFilesTypes>>, TError = ErrorType<void>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminFilesTypes>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminFilesTypes>>,
+          Awaited<ReturnType<typeof getAdminFilesTypes>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminFilesTypes>>
+          Awaited<ReturnType<typeof getAdminFilesTypes>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminFilesTypes<TData = Awaited<ReturnType<typeof getApiV1AdminFilesTypes>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminFilesTypes>>, TError, TData>> & Pick<
+export function useGetAdminFilesTypes<TData = Awaited<ReturnType<typeof getAdminFilesTypes>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminFilesTypes>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminFilesTypes>>,
+          Awaited<ReturnType<typeof getAdminFilesTypes>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminFilesTypes>>
+          Awaited<ReturnType<typeof getAdminFilesTypes>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminFilesTypes<TData = Awaited<ReturnType<typeof getApiV1AdminFilesTypes>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminFilesTypes>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminFilesTypes<TData = Awaited<ReturnType<typeof getAdminFilesTypes>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminFilesTypes>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get distinct file types for filtering
  */
 
-export function useGetApiV1AdminFilesTypes<TData = Awaited<ReturnType<typeof getApiV1AdminFilesTypes>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminFilesTypes>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminFilesTypes<TData = Awaited<ReturnType<typeof getAdminFilesTypes>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminFilesTypes>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminFilesTypesQueryOptions(options)
+  const queryOptions = getGetAdminFilesTypesQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -228,14 +228,14 @@ export function useGetApiV1AdminFilesTypes<TData = Awaited<ReturnType<typeof get
 /**
  * @summary Get files stuck in processing
  */
-export const getApiV1AdminFilesStuck = (
-    params?: GetApiV1AdminFilesStuckParams,
+export const getAdminFilesStuck = (
+    params?: GetAdminFilesStuckParams,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<void>(
-      {url: `/api/v1/admin/files/stuck`, method: 'GET',
+      {url: `/admin/files/stuck`, method: 'GET',
         params, signal
     },
       options);
@@ -244,69 +244,69 @@ export const getApiV1AdminFilesStuck = (
 
 
 
-export const getGetApiV1AdminFilesStuckQueryKey = (params?: GetApiV1AdminFilesStuckParams,) => {
+export const getGetAdminFilesStuckQueryKey = (params?: GetAdminFilesStuckParams,) => {
     return [
-    `/api/v1/admin/files/stuck`, ...(params ? [params]: [])
+    `/admin/files/stuck`, ...(params ? [params]: [])
     ] as const;
     }
 
     
-export const getGetApiV1AdminFilesStuckQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminFilesStuck>>, TError = ErrorType<void>>(params?: GetApiV1AdminFilesStuckParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminFilesStuck>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminFilesStuckQueryOptions = <TData = Awaited<ReturnType<typeof getAdminFilesStuck>>, TError = ErrorType<void>>(params?: GetAdminFilesStuckParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminFilesStuck>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminFilesStuckQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminFilesStuckQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminFilesStuck>>> = ({ signal }) => getApiV1AdminFilesStuck(params, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminFilesStuck>>> = ({ signal }) => getAdminFilesStuck(params, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminFilesStuck>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminFilesStuck>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminFilesStuckQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminFilesStuck>>>
-export type GetApiV1AdminFilesStuckQueryError = ErrorType<void>
+export type GetAdminFilesStuckQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminFilesStuck>>>
+export type GetAdminFilesStuckQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminFilesStuck<TData = Awaited<ReturnType<typeof getApiV1AdminFilesStuck>>, TError = ErrorType<void>>(
- params: undefined |  GetApiV1AdminFilesStuckParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminFilesStuck>>, TError, TData>> & Pick<
+export function useGetAdminFilesStuck<TData = Awaited<ReturnType<typeof getAdminFilesStuck>>, TError = ErrorType<void>>(
+ params: undefined |  GetAdminFilesStuckParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminFilesStuck>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminFilesStuck>>,
+          Awaited<ReturnType<typeof getAdminFilesStuck>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminFilesStuck>>
+          Awaited<ReturnType<typeof getAdminFilesStuck>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminFilesStuck<TData = Awaited<ReturnType<typeof getApiV1AdminFilesStuck>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminFilesStuckParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminFilesStuck>>, TError, TData>> & Pick<
+export function useGetAdminFilesStuck<TData = Awaited<ReturnType<typeof getAdminFilesStuck>>, TError = ErrorType<void>>(
+ params?: GetAdminFilesStuckParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminFilesStuck>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminFilesStuck>>,
+          Awaited<ReturnType<typeof getAdminFilesStuck>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminFilesStuck>>
+          Awaited<ReturnType<typeof getAdminFilesStuck>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminFilesStuck<TData = Awaited<ReturnType<typeof getApiV1AdminFilesStuck>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminFilesStuckParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminFilesStuck>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminFilesStuck<TData = Awaited<ReturnType<typeof getAdminFilesStuck>>, TError = ErrorType<void>>(
+ params?: GetAdminFilesStuckParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminFilesStuck>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get files stuck in processing
  */
 
-export function useGetApiV1AdminFilesStuck<TData = Awaited<ReturnType<typeof getApiV1AdminFilesStuck>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminFilesStuckParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminFilesStuck>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminFilesStuck<TData = Awaited<ReturnType<typeof getAdminFilesStuck>>, TError = ErrorType<void>>(
+ params?: GetAdminFilesStuckParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminFilesStuck>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminFilesStuckQueryOptions(params,options)
+  const queryOptions = getGetAdminFilesStuckQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -321,14 +321,14 @@ export function useGetApiV1AdminFilesStuck<TData = Awaited<ReturnType<typeof get
 /**
  * @summary Get file by ID
  */
-export const getApiV1AdminFilesFileId = (
+export const getAdminFilesFileId = (
     fileId: string,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<GetApiV1AdminFilesFileId200>(
-      {url: `/api/v1/admin/files/${fileId}`, method: 'GET', signal
+      return customInstance<GetAdminFilesFileId200>(
+      {url: `/admin/files/${fileId}`, method: 'GET', signal
     },
       options);
     }
@@ -336,69 +336,69 @@ export const getApiV1AdminFilesFileId = (
 
 
 
-export const getGetApiV1AdminFilesFileIdQueryKey = (fileId?: string,) => {
+export const getGetAdminFilesFileIdQueryKey = (fileId?: string,) => {
     return [
-    `/api/v1/admin/files/${fileId}`
+    `/admin/files/${fileId}`
     ] as const;
     }
 
     
-export const getGetApiV1AdminFilesFileIdQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminFilesFileId>>, TError = ErrorType<void>>(fileId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminFilesFileId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminFilesFileIdQueryOptions = <TData = Awaited<ReturnType<typeof getAdminFilesFileId>>, TError = ErrorType<void>>(fileId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminFilesFileId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminFilesFileIdQueryKey(fileId);
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminFilesFileIdQueryKey(fileId);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminFilesFileId>>> = ({ signal }) => getApiV1AdminFilesFileId(fileId, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminFilesFileId>>> = ({ signal }) => getAdminFilesFileId(fileId, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(fileId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminFilesFileId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: !!(fileId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminFilesFileId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminFilesFileIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminFilesFileId>>>
-export type GetApiV1AdminFilesFileIdQueryError = ErrorType<void>
+export type GetAdminFilesFileIdQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminFilesFileId>>>
+export type GetAdminFilesFileIdQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminFilesFileId<TData = Awaited<ReturnType<typeof getApiV1AdminFilesFileId>>, TError = ErrorType<void>>(
- fileId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminFilesFileId>>, TError, TData>> & Pick<
+export function useGetAdminFilesFileId<TData = Awaited<ReturnType<typeof getAdminFilesFileId>>, TError = ErrorType<void>>(
+ fileId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminFilesFileId>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminFilesFileId>>,
+          Awaited<ReturnType<typeof getAdminFilesFileId>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminFilesFileId>>
+          Awaited<ReturnType<typeof getAdminFilesFileId>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminFilesFileId<TData = Awaited<ReturnType<typeof getApiV1AdminFilesFileId>>, TError = ErrorType<void>>(
- fileId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminFilesFileId>>, TError, TData>> & Pick<
+export function useGetAdminFilesFileId<TData = Awaited<ReturnType<typeof getAdminFilesFileId>>, TError = ErrorType<void>>(
+ fileId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminFilesFileId>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminFilesFileId>>,
+          Awaited<ReturnType<typeof getAdminFilesFileId>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminFilesFileId>>
+          Awaited<ReturnType<typeof getAdminFilesFileId>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminFilesFileId<TData = Awaited<ReturnType<typeof getApiV1AdminFilesFileId>>, TError = ErrorType<void>>(
- fileId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminFilesFileId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminFilesFileId<TData = Awaited<ReturnType<typeof getAdminFilesFileId>>, TError = ErrorType<void>>(
+ fileId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminFilesFileId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get file by ID
  */
 
-export function useGetApiV1AdminFilesFileId<TData = Awaited<ReturnType<typeof getApiV1AdminFilesFileId>>, TError = ErrorType<void>>(
- fileId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminFilesFileId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminFilesFileId<TData = Awaited<ReturnType<typeof getAdminFilesFileId>>, TError = ErrorType<void>>(
+ fileId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminFilesFileId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminFilesFileIdQueryOptions(fileId,options)
+  const queryOptions = getGetAdminFilesFileIdQueryOptions(fileId,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -413,27 +413,27 @@ export function useGetApiV1AdminFilesFileId<TData = Awaited<ReturnType<typeof ge
 /**
  * @summary Update file status
  */
-export const patchApiV1AdminFilesFileId = (
+export const patchAdminFilesFileId = (
     fileId: string,
-    patchApiV1AdminFilesFileIdBody: BodyType<PatchApiV1AdminFilesFileIdBody>,
+    patchAdminFilesFileIdBody: BodyType<PatchAdminFilesFileIdBody>,
  options?: SecondParameter<typeof customInstance>,) => {
       
       
-      return customInstance<PatchApiV1AdminFilesFileId200>(
-      {url: `/api/v1/admin/files/${fileId}`, method: 'PATCH',
+      return customInstance<PatchAdminFilesFileId200>(
+      {url: `/admin/files/${fileId}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
-      data: patchApiV1AdminFilesFileIdBody
+      data: patchAdminFilesFileIdBody
     },
       options);
     }
   
 
 
-export const getPatchApiV1AdminFilesFileIdMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchApiV1AdminFilesFileId>>, TError,{fileId: string;data: BodyType<PatchApiV1AdminFilesFileIdBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof patchApiV1AdminFilesFileId>>, TError,{fileId: string;data: BodyType<PatchApiV1AdminFilesFileIdBody>}, TContext> => {
+export const getPatchAdminFilesFileIdMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchAdminFilesFileId>>, TError,{fileId: string;data: BodyType<PatchAdminFilesFileIdBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof patchAdminFilesFileId>>, TError,{fileId: string;data: BodyType<PatchAdminFilesFileIdBody>}, TContext> => {
 
-const mutationKey = ['patchApiV1AdminFilesFileId'];
+const mutationKey = ['patchAdminFilesFileId'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -443,10 +443,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchApiV1AdminFilesFileId>>, {fileId: string;data: BodyType<PatchApiV1AdminFilesFileIdBody>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchAdminFilesFileId>>, {fileId: string;data: BodyType<PatchAdminFilesFileIdBody>}> = (props) => {
           const {fileId,data} = props ?? {};
 
-          return  patchApiV1AdminFilesFileId(fileId,data,requestOptions)
+          return  patchAdminFilesFileId(fileId,data,requestOptions)
         }
 
         
@@ -454,47 +454,47 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PatchApiV1AdminFilesFileIdMutationResult = NonNullable<Awaited<ReturnType<typeof patchApiV1AdminFilesFileId>>>
-    export type PatchApiV1AdminFilesFileIdMutationBody = BodyType<PatchApiV1AdminFilesFileIdBody>
-    export type PatchApiV1AdminFilesFileIdMutationError = ErrorType<void>
+    export type PatchAdminFilesFileIdMutationResult = NonNullable<Awaited<ReturnType<typeof patchAdminFilesFileId>>>
+    export type PatchAdminFilesFileIdMutationBody = BodyType<PatchAdminFilesFileIdBody>
+    export type PatchAdminFilesFileIdMutationError = ErrorType<void>
 
     /**
  * @summary Update file status
  */
-export const usePatchApiV1AdminFilesFileId = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchApiV1AdminFilesFileId>>, TError,{fileId: string;data: BodyType<PatchApiV1AdminFilesFileIdBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePatchAdminFilesFileId = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchAdminFilesFileId>>, TError,{fileId: string;data: BodyType<PatchAdminFilesFileIdBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof patchApiV1AdminFilesFileId>>,
+        Awaited<ReturnType<typeof patchAdminFilesFileId>>,
         TError,
-        {fileId: string;data: BodyType<PatchApiV1AdminFilesFileIdBody>},
+        {fileId: string;data: BodyType<PatchAdminFilesFileIdBody>},
         TContext
       > => {
 
-      const mutationOptions = getPatchApiV1AdminFilesFileIdMutationOptions(options);
+      const mutationOptions = getPatchAdminFilesFileIdMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
     /**
  * @summary Delete file
  */
-export const deleteApiV1AdminFilesFileId = (
+export const deleteAdminFilesFileId = (
     fileId: string,
  options?: SecondParameter<typeof customInstance>,) => {
       
       
-      return customInstance<DeleteApiV1AdminFilesFileId200>(
-      {url: `/api/v1/admin/files/${fileId}`, method: 'DELETE'
+      return customInstance<DeleteAdminFilesFileId200>(
+      {url: `/admin/files/${fileId}`, method: 'DELETE'
     },
       options);
     }
   
 
 
-export const getDeleteApiV1AdminFilesFileIdMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1AdminFilesFileId>>, TError,{fileId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1AdminFilesFileId>>, TError,{fileId: string}, TContext> => {
+export const getDeleteAdminFilesFileIdMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAdminFilesFileId>>, TError,{fileId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteAdminFilesFileId>>, TError,{fileId: string}, TContext> => {
 
-const mutationKey = ['deleteApiV1AdminFilesFileId'];
+const mutationKey = ['deleteAdminFilesFileId'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -504,10 +504,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteApiV1AdminFilesFileId>>, {fileId: string}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteAdminFilesFileId>>, {fileId: string}> = (props) => {
           const {fileId} = props ?? {};
 
-          return  deleteApiV1AdminFilesFileId(fileId,requestOptions)
+          return  deleteAdminFilesFileId(fileId,requestOptions)
         }
 
         
@@ -515,48 +515,48 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type DeleteApiV1AdminFilesFileIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteApiV1AdminFilesFileId>>>
+    export type DeleteAdminFilesFileIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteAdminFilesFileId>>>
     
-    export type DeleteApiV1AdminFilesFileIdMutationError = ErrorType<void>
+    export type DeleteAdminFilesFileIdMutationError = ErrorType<void>
 
     /**
  * @summary Delete file
  */
-export const useDeleteApiV1AdminFilesFileId = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1AdminFilesFileId>>, TError,{fileId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const useDeleteAdminFilesFileId = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAdminFilesFileId>>, TError,{fileId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof deleteApiV1AdminFilesFileId>>,
+        Awaited<ReturnType<typeof deleteAdminFilesFileId>>,
         TError,
         {fileId: string},
         TContext
       > => {
 
-      const mutationOptions = getDeleteApiV1AdminFilesFileIdMutationOptions(options);
+      const mutationOptions = getDeleteAdminFilesFileIdMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
     /**
  * @summary Mark file for reprocessing
  */
-export const postApiV1AdminFilesFileIdReprocess = (
+export const postAdminFilesFileIdReprocess = (
     fileId: string,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<PostApiV1AdminFilesFileIdReprocess200>(
-      {url: `/api/v1/admin/files/${fileId}/reprocess`, method: 'POST', signal
+      return customInstance<PostAdminFilesFileIdReprocess200>(
+      {url: `/admin/files/${fileId}/reprocess`, method: 'POST', signal
     },
       options);
     }
   
 
 
-export const getPostApiV1AdminFilesFileIdReprocessMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminFilesFileIdReprocess>>, TError,{fileId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminFilesFileIdReprocess>>, TError,{fileId: string}, TContext> => {
+export const getPostAdminFilesFileIdReprocessMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminFilesFileIdReprocess>>, TError,{fileId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postAdminFilesFileIdReprocess>>, TError,{fileId: string}, TContext> => {
 
-const mutationKey = ['postApiV1AdminFilesFileIdReprocess'];
+const mutationKey = ['postAdminFilesFileIdReprocess'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -566,10 +566,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1AdminFilesFileIdReprocess>>, {fileId: string}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postAdminFilesFileIdReprocess>>, {fileId: string}> = (props) => {
           const {fileId} = props ?? {};
 
-          return  postApiV1AdminFilesFileIdReprocess(fileId,requestOptions)
+          return  postAdminFilesFileIdReprocess(fileId,requestOptions)
         }
 
         
@@ -577,50 +577,50 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiV1AdminFilesFileIdReprocessMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1AdminFilesFileIdReprocess>>>
+    export type PostAdminFilesFileIdReprocessMutationResult = NonNullable<Awaited<ReturnType<typeof postAdminFilesFileIdReprocess>>>
     
-    export type PostApiV1AdminFilesFileIdReprocessMutationError = ErrorType<void>
+    export type PostAdminFilesFileIdReprocessMutationError = ErrorType<void>
 
     /**
  * @summary Mark file for reprocessing
  */
-export const usePostApiV1AdminFilesFileIdReprocess = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminFilesFileIdReprocess>>, TError,{fileId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePostAdminFilesFileIdReprocess = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminFilesFileIdReprocess>>, TError,{fileId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiV1AdminFilesFileIdReprocess>>,
+        Awaited<ReturnType<typeof postAdminFilesFileIdReprocess>>,
         TError,
         {fileId: string},
         TContext
       > => {
 
-      const mutationOptions = getPostApiV1AdminFilesFileIdReprocessMutationOptions(options);
+      const mutationOptions = getPostAdminFilesFileIdReprocessMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
     /**
  * @summary Bulk update file status
  */
-export const postApiV1AdminFilesBulkStatus = (
-    postApiV1AdminFilesBulkStatusBody: BodyType<PostApiV1AdminFilesBulkStatusBody>,
+export const postAdminFilesBulkStatus = (
+    postAdminFilesBulkStatusBody: BodyType<PostAdminFilesBulkStatusBody>,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<PostApiV1AdminFilesBulkStatus200>(
-      {url: `/api/v1/admin/files/bulk/status`, method: 'POST',
+      return customInstance<PostAdminFilesBulkStatus200>(
+      {url: `/admin/files/bulk/status`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: postApiV1AdminFilesBulkStatusBody, signal
+      data: postAdminFilesBulkStatusBody, signal
     },
       options);
     }
   
 
 
-export const getPostApiV1AdminFilesBulkStatusMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminFilesBulkStatus>>, TError,{data: BodyType<PostApiV1AdminFilesBulkStatusBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminFilesBulkStatus>>, TError,{data: BodyType<PostApiV1AdminFilesBulkStatusBody>}, TContext> => {
+export const getPostAdminFilesBulkStatusMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminFilesBulkStatus>>, TError,{data: BodyType<PostAdminFilesBulkStatusBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postAdminFilesBulkStatus>>, TError,{data: BodyType<PostAdminFilesBulkStatusBody>}, TContext> => {
 
-const mutationKey = ['postApiV1AdminFilesBulkStatus'];
+const mutationKey = ['postAdminFilesBulkStatus'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -630,10 +630,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1AdminFilesBulkStatus>>, {data: BodyType<PostApiV1AdminFilesBulkStatusBody>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postAdminFilesBulkStatus>>, {data: BodyType<PostAdminFilesBulkStatusBody>}> = (props) => {
           const {data} = props ?? {};
 
-          return  postApiV1AdminFilesBulkStatus(data,requestOptions)
+          return  postAdminFilesBulkStatus(data,requestOptions)
         }
 
         
@@ -641,23 +641,23 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiV1AdminFilesBulkStatusMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1AdminFilesBulkStatus>>>
-    export type PostApiV1AdminFilesBulkStatusMutationBody = BodyType<PostApiV1AdminFilesBulkStatusBody>
-    export type PostApiV1AdminFilesBulkStatusMutationError = ErrorType<void>
+    export type PostAdminFilesBulkStatusMutationResult = NonNullable<Awaited<ReturnType<typeof postAdminFilesBulkStatus>>>
+    export type PostAdminFilesBulkStatusMutationBody = BodyType<PostAdminFilesBulkStatusBody>
+    export type PostAdminFilesBulkStatusMutationError = ErrorType<void>
 
     /**
  * @summary Bulk update file status
  */
-export const usePostApiV1AdminFilesBulkStatus = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminFilesBulkStatus>>, TError,{data: BodyType<PostApiV1AdminFilesBulkStatusBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePostAdminFilesBulkStatus = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminFilesBulkStatus>>, TError,{data: BodyType<PostAdminFilesBulkStatusBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiV1AdminFilesBulkStatus>>,
+        Awaited<ReturnType<typeof postAdminFilesBulkStatus>>,
         TError,
-        {data: BodyType<PostApiV1AdminFilesBulkStatusBody>},
+        {data: BodyType<PostAdminFilesBulkStatusBody>},
         TContext
       > => {
 
-      const mutationOptions = getPostApiV1AdminFilesBulkStatusMutationOptions(options);
+      const mutationOptions = getPostAdminFilesBulkStatusMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }

@@ -22,13 +22,13 @@ import type {
 import type {
   AuditCleanupResponse,
   AuditLog,
-  GetApiV1AdminAudit200,
-  GetApiV1AdminAuditEntityEntityTypeEntityId200,
-  GetApiV1AdminAuditExportDownloadParams,
-  GetApiV1AdminAuditId200,
-  GetApiV1AdminAuditParams,
-  GetApiV1AdminAuditStats200,
-  PostApiV1AdminAuditCleanupBody
+  GetAdminAudit200,
+  GetAdminAuditEntityEntityTypeEntityId200,
+  GetAdminAuditExportDownloadParams,
+  GetAdminAuditId200,
+  GetAdminAuditParams,
+  GetAdminAuditStats200,
+  PostAdminAuditCleanupBody
 } from '../../models';
 
 import { customInstance } from '../../../axios-instance';
@@ -42,14 +42,14 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 /**
  * @summary Get paginated list of audit logs
  */
-export const getApiV1AdminAudit = (
-    params?: GetApiV1AdminAuditParams,
+export const getAdminAudit = (
+    params?: GetAdminAuditParams,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<GetApiV1AdminAudit200>(
-      {url: `/api/v1/admin/audit`, method: 'GET',
+      return customInstance<GetAdminAudit200>(
+      {url: `/admin/audit`, method: 'GET',
         params, signal
     },
       options);
@@ -58,69 +58,69 @@ export const getApiV1AdminAudit = (
 
 
 
-export const getGetApiV1AdminAuditQueryKey = (params?: GetApiV1AdminAuditParams,) => {
+export const getGetAdminAuditQueryKey = (params?: GetAdminAuditParams,) => {
     return [
-    `/api/v1/admin/audit`, ...(params ? [params]: [])
+    `/admin/audit`, ...(params ? [params]: [])
     ] as const;
     }
 
     
-export const getGetApiV1AdminAuditQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminAudit>>, TError = ErrorType<void>>(params?: GetApiV1AdminAuditParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminAudit>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminAuditQueryOptions = <TData = Awaited<ReturnType<typeof getAdminAudit>>, TError = ErrorType<void>>(params?: GetAdminAuditParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminAudit>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminAuditQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminAuditQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminAudit>>> = ({ signal }) => getApiV1AdminAudit(params, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminAudit>>> = ({ signal }) => getAdminAudit(params, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminAudit>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminAudit>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminAuditQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminAudit>>>
-export type GetApiV1AdminAuditQueryError = ErrorType<void>
+export type GetAdminAuditQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminAudit>>>
+export type GetAdminAuditQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminAudit<TData = Awaited<ReturnType<typeof getApiV1AdminAudit>>, TError = ErrorType<void>>(
- params: undefined |  GetApiV1AdminAuditParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminAudit>>, TError, TData>> & Pick<
+export function useGetAdminAudit<TData = Awaited<ReturnType<typeof getAdminAudit>>, TError = ErrorType<void>>(
+ params: undefined |  GetAdminAuditParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminAudit>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminAudit>>,
+          Awaited<ReturnType<typeof getAdminAudit>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminAudit>>
+          Awaited<ReturnType<typeof getAdminAudit>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminAudit<TData = Awaited<ReturnType<typeof getApiV1AdminAudit>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminAuditParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminAudit>>, TError, TData>> & Pick<
+export function useGetAdminAudit<TData = Awaited<ReturnType<typeof getAdminAudit>>, TError = ErrorType<void>>(
+ params?: GetAdminAuditParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminAudit>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminAudit>>,
+          Awaited<ReturnType<typeof getAdminAudit>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminAudit>>
+          Awaited<ReturnType<typeof getAdminAudit>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminAudit<TData = Awaited<ReturnType<typeof getApiV1AdminAudit>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminAuditParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminAudit>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminAudit<TData = Awaited<ReturnType<typeof getAdminAudit>>, TError = ErrorType<void>>(
+ params?: GetAdminAuditParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminAudit>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get paginated list of audit logs
  */
 
-export function useGetApiV1AdminAudit<TData = Awaited<ReturnType<typeof getApiV1AdminAudit>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminAuditParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminAudit>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminAudit<TData = Awaited<ReturnType<typeof getAdminAudit>>, TError = ErrorType<void>>(
+ params?: GetAdminAuditParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminAudit>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminAuditQueryOptions(params,options)
+  const queryOptions = getGetAdminAuditQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -135,14 +135,14 @@ export function useGetApiV1AdminAudit<TData = Awaited<ReturnType<typeof getApiV1
 /**
  * @summary Get audit statistics
  */
-export const getApiV1AdminAuditStats = (
+export const getAdminAuditStats = (
     
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<GetApiV1AdminAuditStats200>(
-      {url: `/api/v1/admin/audit/stats`, method: 'GET', signal
+      return customInstance<GetAdminAuditStats200>(
+      {url: `/admin/audit/stats`, method: 'GET', signal
     },
       options);
     }
@@ -150,69 +150,69 @@ export const getApiV1AdminAuditStats = (
 
 
 
-export const getGetApiV1AdminAuditStatsQueryKey = () => {
+export const getGetAdminAuditStatsQueryKey = () => {
     return [
-    `/api/v1/admin/audit/stats`
+    `/admin/audit/stats`
     ] as const;
     }
 
     
-export const getGetApiV1AdminAuditStatsQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminAuditStats>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminAuditStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminAuditStatsQueryOptions = <TData = Awaited<ReturnType<typeof getAdminAuditStats>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminAuditStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminAuditStatsQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminAuditStatsQueryKey();
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminAuditStats>>> = ({ signal }) => getApiV1AdminAuditStats(requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminAuditStats>>> = ({ signal }) => getAdminAuditStats(requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminAuditStats>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminAuditStats>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminAuditStatsQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminAuditStats>>>
-export type GetApiV1AdminAuditStatsQueryError = ErrorType<void>
+export type GetAdminAuditStatsQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminAuditStats>>>
+export type GetAdminAuditStatsQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminAuditStats<TData = Awaited<ReturnType<typeof getApiV1AdminAuditStats>>, TError = ErrorType<void>>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminAuditStats>>, TError, TData>> & Pick<
+export function useGetAdminAuditStats<TData = Awaited<ReturnType<typeof getAdminAuditStats>>, TError = ErrorType<void>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminAuditStats>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminAuditStats>>,
+          Awaited<ReturnType<typeof getAdminAuditStats>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminAuditStats>>
+          Awaited<ReturnType<typeof getAdminAuditStats>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminAuditStats<TData = Awaited<ReturnType<typeof getApiV1AdminAuditStats>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminAuditStats>>, TError, TData>> & Pick<
+export function useGetAdminAuditStats<TData = Awaited<ReturnType<typeof getAdminAuditStats>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminAuditStats>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminAuditStats>>,
+          Awaited<ReturnType<typeof getAdminAuditStats>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminAuditStats>>
+          Awaited<ReturnType<typeof getAdminAuditStats>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminAuditStats<TData = Awaited<ReturnType<typeof getApiV1AdminAuditStats>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminAuditStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminAuditStats<TData = Awaited<ReturnType<typeof getAdminAuditStats>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminAuditStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get audit statistics
  */
 
-export function useGetApiV1AdminAuditStats<TData = Awaited<ReturnType<typeof getApiV1AdminAuditStats>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminAuditStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminAuditStats<TData = Awaited<ReturnType<typeof getAdminAuditStats>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminAuditStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminAuditStatsQueryOptions(options)
+  const queryOptions = getGetAdminAuditStatsQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -227,15 +227,15 @@ export function useGetApiV1AdminAuditStats<TData = Awaited<ReturnType<typeof get
 /**
  * @summary Get audit history for a specific entity
  */
-export const getApiV1AdminAuditEntityEntityTypeEntityId = (
+export const getAdminAuditEntityEntityTypeEntityId = (
     entityType: 'USER' | 'SITE' | 'URL' | 'EMBEDDING' | 'FILE' | 'CONVERSATION' | 'MESSAGE' | 'SUBSCRIPTION' | 'TRANSACTION' | 'SESSION' | 'WIDGET' | 'BILLING_INFO',
     entityId: string,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<GetApiV1AdminAuditEntityEntityTypeEntityId200>(
-      {url: `/api/v1/admin/audit/entity/${entityType}/${entityId}`, method: 'GET', signal
+      return customInstance<GetAdminAuditEntityEntityTypeEntityId200>(
+      {url: `/admin/audit/entity/${entityType}/${entityId}`, method: 'GET', signal
     },
       options);
     }
@@ -243,75 +243,75 @@ export const getApiV1AdminAuditEntityEntityTypeEntityId = (
 
 
 
-export const getGetApiV1AdminAuditEntityEntityTypeEntityIdQueryKey = (entityType?: 'USER' | 'SITE' | 'URL' | 'EMBEDDING' | 'FILE' | 'CONVERSATION' | 'MESSAGE' | 'SUBSCRIPTION' | 'TRANSACTION' | 'SESSION' | 'WIDGET' | 'BILLING_INFO',
+export const getGetAdminAuditEntityEntityTypeEntityIdQueryKey = (entityType?: 'USER' | 'SITE' | 'URL' | 'EMBEDDING' | 'FILE' | 'CONVERSATION' | 'MESSAGE' | 'SUBSCRIPTION' | 'TRANSACTION' | 'SESSION' | 'WIDGET' | 'BILLING_INFO',
     entityId?: string,) => {
     return [
-    `/api/v1/admin/audit/entity/${entityType}/${entityId}`
+    `/admin/audit/entity/${entityType}/${entityId}`
     ] as const;
     }
 
     
-export const getGetApiV1AdminAuditEntityEntityTypeEntityIdQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminAuditEntityEntityTypeEntityId>>, TError = ErrorType<void>>(entityType: 'USER' | 'SITE' | 'URL' | 'EMBEDDING' | 'FILE' | 'CONVERSATION' | 'MESSAGE' | 'SUBSCRIPTION' | 'TRANSACTION' | 'SESSION' | 'WIDGET' | 'BILLING_INFO',
-    entityId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminAuditEntityEntityTypeEntityId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminAuditEntityEntityTypeEntityIdQueryOptions = <TData = Awaited<ReturnType<typeof getAdminAuditEntityEntityTypeEntityId>>, TError = ErrorType<void>>(entityType: 'USER' | 'SITE' | 'URL' | 'EMBEDDING' | 'FILE' | 'CONVERSATION' | 'MESSAGE' | 'SUBSCRIPTION' | 'TRANSACTION' | 'SESSION' | 'WIDGET' | 'BILLING_INFO',
+    entityId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminAuditEntityEntityTypeEntityId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminAuditEntityEntityTypeEntityIdQueryKey(entityType,entityId);
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminAuditEntityEntityTypeEntityIdQueryKey(entityType,entityId);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminAuditEntityEntityTypeEntityId>>> = ({ signal }) => getApiV1AdminAuditEntityEntityTypeEntityId(entityType,entityId, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminAuditEntityEntityTypeEntityId>>> = ({ signal }) => getAdminAuditEntityEntityTypeEntityId(entityType,entityId, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(entityType && entityId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminAuditEntityEntityTypeEntityId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: !!(entityType && entityId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminAuditEntityEntityTypeEntityId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminAuditEntityEntityTypeEntityIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminAuditEntityEntityTypeEntityId>>>
-export type GetApiV1AdminAuditEntityEntityTypeEntityIdQueryError = ErrorType<void>
+export type GetAdminAuditEntityEntityTypeEntityIdQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminAuditEntityEntityTypeEntityId>>>
+export type GetAdminAuditEntityEntityTypeEntityIdQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminAuditEntityEntityTypeEntityId<TData = Awaited<ReturnType<typeof getApiV1AdminAuditEntityEntityTypeEntityId>>, TError = ErrorType<void>>(
+export function useGetAdminAuditEntityEntityTypeEntityId<TData = Awaited<ReturnType<typeof getAdminAuditEntityEntityTypeEntityId>>, TError = ErrorType<void>>(
  entityType: 'USER' | 'SITE' | 'URL' | 'EMBEDDING' | 'FILE' | 'CONVERSATION' | 'MESSAGE' | 'SUBSCRIPTION' | 'TRANSACTION' | 'SESSION' | 'WIDGET' | 'BILLING_INFO',
-    entityId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminAuditEntityEntityTypeEntityId>>, TError, TData>> & Pick<
+    entityId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminAuditEntityEntityTypeEntityId>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminAuditEntityEntityTypeEntityId>>,
+          Awaited<ReturnType<typeof getAdminAuditEntityEntityTypeEntityId>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminAuditEntityEntityTypeEntityId>>
+          Awaited<ReturnType<typeof getAdminAuditEntityEntityTypeEntityId>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminAuditEntityEntityTypeEntityId<TData = Awaited<ReturnType<typeof getApiV1AdminAuditEntityEntityTypeEntityId>>, TError = ErrorType<void>>(
+export function useGetAdminAuditEntityEntityTypeEntityId<TData = Awaited<ReturnType<typeof getAdminAuditEntityEntityTypeEntityId>>, TError = ErrorType<void>>(
  entityType: 'USER' | 'SITE' | 'URL' | 'EMBEDDING' | 'FILE' | 'CONVERSATION' | 'MESSAGE' | 'SUBSCRIPTION' | 'TRANSACTION' | 'SESSION' | 'WIDGET' | 'BILLING_INFO',
-    entityId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminAuditEntityEntityTypeEntityId>>, TError, TData>> & Pick<
+    entityId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminAuditEntityEntityTypeEntityId>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminAuditEntityEntityTypeEntityId>>,
+          Awaited<ReturnType<typeof getAdminAuditEntityEntityTypeEntityId>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminAuditEntityEntityTypeEntityId>>
+          Awaited<ReturnType<typeof getAdminAuditEntityEntityTypeEntityId>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminAuditEntityEntityTypeEntityId<TData = Awaited<ReturnType<typeof getApiV1AdminAuditEntityEntityTypeEntityId>>, TError = ErrorType<void>>(
+export function useGetAdminAuditEntityEntityTypeEntityId<TData = Awaited<ReturnType<typeof getAdminAuditEntityEntityTypeEntityId>>, TError = ErrorType<void>>(
  entityType: 'USER' | 'SITE' | 'URL' | 'EMBEDDING' | 'FILE' | 'CONVERSATION' | 'MESSAGE' | 'SUBSCRIPTION' | 'TRANSACTION' | 'SESSION' | 'WIDGET' | 'BILLING_INFO',
-    entityId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminAuditEntityEntityTypeEntityId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+    entityId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminAuditEntityEntityTypeEntityId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get audit history for a specific entity
  */
 
-export function useGetApiV1AdminAuditEntityEntityTypeEntityId<TData = Awaited<ReturnType<typeof getApiV1AdminAuditEntityEntityTypeEntityId>>, TError = ErrorType<void>>(
+export function useGetAdminAuditEntityEntityTypeEntityId<TData = Awaited<ReturnType<typeof getAdminAuditEntityEntityTypeEntityId>>, TError = ErrorType<void>>(
  entityType: 'USER' | 'SITE' | 'URL' | 'EMBEDDING' | 'FILE' | 'CONVERSATION' | 'MESSAGE' | 'SUBSCRIPTION' | 'TRANSACTION' | 'SESSION' | 'WIDGET' | 'BILLING_INFO',
-    entityId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminAuditEntityEntityTypeEntityId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+    entityId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminAuditEntityEntityTypeEntityId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminAuditEntityEntityTypeEntityIdQueryOptions(entityType,entityId,options)
+  const queryOptions = getGetAdminAuditEntityEntityTypeEntityIdQueryOptions(entityType,entityId,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -326,14 +326,14 @@ export function useGetApiV1AdminAuditEntityEntityTypeEntityId<TData = Awaited<Re
 /**
  * @summary Get a single audit log by ID
  */
-export const getApiV1AdminAuditId = (
+export const getAdminAuditId = (
     id: string,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<GetApiV1AdminAuditId200>(
-      {url: `/api/v1/admin/audit/${id}`, method: 'GET', signal
+      return customInstance<GetAdminAuditId200>(
+      {url: `/admin/audit/${id}`, method: 'GET', signal
     },
       options);
     }
@@ -341,69 +341,69 @@ export const getApiV1AdminAuditId = (
 
 
 
-export const getGetApiV1AdminAuditIdQueryKey = (id?: string,) => {
+export const getGetAdminAuditIdQueryKey = (id?: string,) => {
     return [
-    `/api/v1/admin/audit/${id}`
+    `/admin/audit/${id}`
     ] as const;
     }
 
     
-export const getGetApiV1AdminAuditIdQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminAuditId>>, TError = ErrorType<void>>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminAuditId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminAuditIdQueryOptions = <TData = Awaited<ReturnType<typeof getAdminAuditId>>, TError = ErrorType<void>>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminAuditId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminAuditIdQueryKey(id);
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminAuditIdQueryKey(id);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminAuditId>>> = ({ signal }) => getApiV1AdminAuditId(id, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminAuditId>>> = ({ signal }) => getAdminAuditId(id, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminAuditId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminAuditId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminAuditIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminAuditId>>>
-export type GetApiV1AdminAuditIdQueryError = ErrorType<void>
+export type GetAdminAuditIdQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminAuditId>>>
+export type GetAdminAuditIdQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminAuditId<TData = Awaited<ReturnType<typeof getApiV1AdminAuditId>>, TError = ErrorType<void>>(
- id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminAuditId>>, TError, TData>> & Pick<
+export function useGetAdminAuditId<TData = Awaited<ReturnType<typeof getAdminAuditId>>, TError = ErrorType<void>>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminAuditId>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminAuditId>>,
+          Awaited<ReturnType<typeof getAdminAuditId>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminAuditId>>
+          Awaited<ReturnType<typeof getAdminAuditId>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminAuditId<TData = Awaited<ReturnType<typeof getApiV1AdminAuditId>>, TError = ErrorType<void>>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminAuditId>>, TError, TData>> & Pick<
+export function useGetAdminAuditId<TData = Awaited<ReturnType<typeof getAdminAuditId>>, TError = ErrorType<void>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminAuditId>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminAuditId>>,
+          Awaited<ReturnType<typeof getAdminAuditId>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminAuditId>>
+          Awaited<ReturnType<typeof getAdminAuditId>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminAuditId<TData = Awaited<ReturnType<typeof getApiV1AdminAuditId>>, TError = ErrorType<void>>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminAuditId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminAuditId<TData = Awaited<ReturnType<typeof getAdminAuditId>>, TError = ErrorType<void>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminAuditId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get a single audit log by ID
  */
 
-export function useGetApiV1AdminAuditId<TData = Awaited<ReturnType<typeof getApiV1AdminAuditId>>, TError = ErrorType<void>>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminAuditId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminAuditId<TData = Awaited<ReturnType<typeof getAdminAuditId>>, TError = ErrorType<void>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminAuditId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminAuditIdQueryOptions(id,options)
+  const queryOptions = getGetAdminAuditIdQueryOptions(id,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -418,14 +418,14 @@ export function useGetApiV1AdminAuditId<TData = Awaited<ReturnType<typeof getApi
 /**
  * @summary Export audit logs
  */
-export const getApiV1AdminAuditExportDownload = (
-    params?: GetApiV1AdminAuditExportDownloadParams,
+export const getAdminAuditExportDownload = (
+    params?: GetAdminAuditExportDownloadParams,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<AuditLog[] | string>(
-      {url: `/api/v1/admin/audit/export/download`, method: 'GET',
+      {url: `/admin/audit/export/download`, method: 'GET',
         params, signal
     },
       options);
@@ -434,69 +434,69 @@ export const getApiV1AdminAuditExportDownload = (
 
 
 
-export const getGetApiV1AdminAuditExportDownloadQueryKey = (params?: GetApiV1AdminAuditExportDownloadParams,) => {
+export const getGetAdminAuditExportDownloadQueryKey = (params?: GetAdminAuditExportDownloadParams,) => {
     return [
-    `/api/v1/admin/audit/export/download`, ...(params ? [params]: [])
+    `/admin/audit/export/download`, ...(params ? [params]: [])
     ] as const;
     }
 
     
-export const getGetApiV1AdminAuditExportDownloadQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminAuditExportDownload>>, TError = ErrorType<void>>(params?: GetApiV1AdminAuditExportDownloadParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminAuditExportDownload>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminAuditExportDownloadQueryOptions = <TData = Awaited<ReturnType<typeof getAdminAuditExportDownload>>, TError = ErrorType<void>>(params?: GetAdminAuditExportDownloadParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminAuditExportDownload>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminAuditExportDownloadQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminAuditExportDownloadQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminAuditExportDownload>>> = ({ signal }) => getApiV1AdminAuditExportDownload(params, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminAuditExportDownload>>> = ({ signal }) => getAdminAuditExportDownload(params, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminAuditExportDownload>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminAuditExportDownload>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminAuditExportDownloadQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminAuditExportDownload>>>
-export type GetApiV1AdminAuditExportDownloadQueryError = ErrorType<void>
+export type GetAdminAuditExportDownloadQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminAuditExportDownload>>>
+export type GetAdminAuditExportDownloadQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminAuditExportDownload<TData = Awaited<ReturnType<typeof getApiV1AdminAuditExportDownload>>, TError = ErrorType<void>>(
- params: undefined |  GetApiV1AdminAuditExportDownloadParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminAuditExportDownload>>, TError, TData>> & Pick<
+export function useGetAdminAuditExportDownload<TData = Awaited<ReturnType<typeof getAdminAuditExportDownload>>, TError = ErrorType<void>>(
+ params: undefined |  GetAdminAuditExportDownloadParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminAuditExportDownload>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminAuditExportDownload>>,
+          Awaited<ReturnType<typeof getAdminAuditExportDownload>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminAuditExportDownload>>
+          Awaited<ReturnType<typeof getAdminAuditExportDownload>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminAuditExportDownload<TData = Awaited<ReturnType<typeof getApiV1AdminAuditExportDownload>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminAuditExportDownloadParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminAuditExportDownload>>, TError, TData>> & Pick<
+export function useGetAdminAuditExportDownload<TData = Awaited<ReturnType<typeof getAdminAuditExportDownload>>, TError = ErrorType<void>>(
+ params?: GetAdminAuditExportDownloadParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminAuditExportDownload>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminAuditExportDownload>>,
+          Awaited<ReturnType<typeof getAdminAuditExportDownload>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminAuditExportDownload>>
+          Awaited<ReturnType<typeof getAdminAuditExportDownload>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminAuditExportDownload<TData = Awaited<ReturnType<typeof getApiV1AdminAuditExportDownload>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminAuditExportDownloadParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminAuditExportDownload>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminAuditExportDownload<TData = Awaited<ReturnType<typeof getAdminAuditExportDownload>>, TError = ErrorType<void>>(
+ params?: GetAdminAuditExportDownloadParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminAuditExportDownload>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Export audit logs
  */
 
-export function useGetApiV1AdminAuditExportDownload<TData = Awaited<ReturnType<typeof getApiV1AdminAuditExportDownload>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminAuditExportDownloadParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminAuditExportDownload>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminAuditExportDownload<TData = Awaited<ReturnType<typeof getAdminAuditExportDownload>>, TError = ErrorType<void>>(
+ params?: GetAdminAuditExportDownloadParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminAuditExportDownload>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminAuditExportDownloadQueryOptions(params,options)
+  const queryOptions = getGetAdminAuditExportDownloadQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -511,27 +511,27 @@ export function useGetApiV1AdminAuditExportDownload<TData = Awaited<ReturnType<t
 /**
  * @summary Clean up old audit logs
  */
-export const postApiV1AdminAuditCleanup = (
-    postApiV1AdminAuditCleanupBody: BodyType<PostApiV1AdminAuditCleanupBody>,
+export const postAdminAuditCleanup = (
+    postAdminAuditCleanupBody: BodyType<PostAdminAuditCleanupBody>,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<AuditCleanupResponse>(
-      {url: `/api/v1/admin/audit/cleanup`, method: 'POST',
+      {url: `/admin/audit/cleanup`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: postApiV1AdminAuditCleanupBody, signal
+      data: postAdminAuditCleanupBody, signal
     },
       options);
     }
   
 
 
-export const getPostApiV1AdminAuditCleanupMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminAuditCleanup>>, TError,{data: BodyType<PostApiV1AdminAuditCleanupBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminAuditCleanup>>, TError,{data: BodyType<PostApiV1AdminAuditCleanupBody>}, TContext> => {
+export const getPostAdminAuditCleanupMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminAuditCleanup>>, TError,{data: BodyType<PostAdminAuditCleanupBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postAdminAuditCleanup>>, TError,{data: BodyType<PostAdminAuditCleanupBody>}, TContext> => {
 
-const mutationKey = ['postApiV1AdminAuditCleanup'];
+const mutationKey = ['postAdminAuditCleanup'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -541,10 +541,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1AdminAuditCleanup>>, {data: BodyType<PostApiV1AdminAuditCleanupBody>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postAdminAuditCleanup>>, {data: BodyType<PostAdminAuditCleanupBody>}> = (props) => {
           const {data} = props ?? {};
 
-          return  postApiV1AdminAuditCleanup(data,requestOptions)
+          return  postAdminAuditCleanup(data,requestOptions)
         }
 
         
@@ -552,23 +552,23 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiV1AdminAuditCleanupMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1AdminAuditCleanup>>>
-    export type PostApiV1AdminAuditCleanupMutationBody = BodyType<PostApiV1AdminAuditCleanupBody>
-    export type PostApiV1AdminAuditCleanupMutationError = ErrorType<void>
+    export type PostAdminAuditCleanupMutationResult = NonNullable<Awaited<ReturnType<typeof postAdminAuditCleanup>>>
+    export type PostAdminAuditCleanupMutationBody = BodyType<PostAdminAuditCleanupBody>
+    export type PostAdminAuditCleanupMutationError = ErrorType<void>
 
     /**
  * @summary Clean up old audit logs
  */
-export const usePostApiV1AdminAuditCleanup = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminAuditCleanup>>, TError,{data: BodyType<PostApiV1AdminAuditCleanupBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePostAdminAuditCleanup = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminAuditCleanup>>, TError,{data: BodyType<PostAdminAuditCleanupBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiV1AdminAuditCleanup>>,
+        Awaited<ReturnType<typeof postAdminAuditCleanup>>,
         TError,
-        {data: BodyType<PostApiV1AdminAuditCleanupBody>},
+        {data: BodyType<PostAdminAuditCleanupBody>},
         TContext
       > => {
 
-      const mutationOptions = getPostApiV1AdminAuditCleanupMutationOptions(options);
+      const mutationOptions = getPostAdminAuditCleanupMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }

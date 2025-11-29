@@ -18,11 +18,11 @@ export interface SiteTab {
 
 export const SITE_TABS: SiteTab[] = [
   { id: "overview", label: "Overview", icon: Settings },
-  { id: "sitemap", label: "Sitemap & URLs", icon: Globe },
-  { id: "knowledge", label: "PDFs & Knowledge", icon: FileText },
+  { id: "website-content", label: "Website Content", icon: Globe },
+  { id: "uploaded-documents", label: "Uploaded Documents", icon: FileText },
   { id: "conversations", label: "Conversations", icon: MessageSquare },
-  { id: "preferences", label: "Site Preferences", icon: Sliders },
-  { id: "hosts", label: "Access & Security", icon: Shield },
-  { id: "widget", label: "Widget & Button", icon: Code },
-  { id: "playground", label: "Playground", icon: Play },
+  { id: "site-settings", label: "Site Settings", icon: Sliders },
+  { id: "allowed-domains", label: "Allowed Domains", icon: Shield },
+  { id: "widget-customization", label: "Widget Customization", icon: Code },
+  { id: "test-chatbot", label: "Test Chatbot", icon: Play },
 ];

@@ -14,19 +14,27 @@ import { ErrorState } from "@/components/ui/error-state";
 import { SiteCard } from "@/components/dashboard/site-card";
 import { StatsGrid } from "@/components/ui/stats-grid";
 import { PageHeader } from "@/components/ui/page-header";
+import { Tooltip } from "@/components/ui/tooltip";
 import { useRequireUser } from "@/lib/hooks/useAuth";
 import { AuthLoading } from "@/components/auth/auth-loading";
-import { useGetApiV1Sites } from "@/lib/api/generated/queries/sites/sites";
+import { useGetSites } from "@/lib/api/generated/queries/sites/sites";
 import { EmailVerificationAlert } from "@/components/ui/email-verification-alert";
 import { SubscriptionAlert } from "@/components/ui/subscription-alert";
 import { computeDashboardStats } from "@/lib/utils/dashboard-stats";
+import { useAuthStore } from "@/lib/store";
 
 export default function DashboardPage() {
   // Protected route - redirects to login if not authenticated, admins to admin portal
   const { isLoading: isAuthLoading, isAuthenticated } = useRequireUser();
 
+  // Get user from auth store to check email verification status
+  const { user } = useAuthStore();
+
+  // Check if email is not verified
+  const isEmailUnverified = user && !user.emailVerified;
+
   // Fetch sites using generated hook
-  const { data: sites = [], isLoading: isSitesLoading, error } = useGetApiV1Sites({
+  const { data: sites = [], isLoading: isSitesLoading, error } = useGetSites({
     query: {
       enabled: isAuthenticated,
     },
@@ -118,12 +126,31 @@ export default function DashboardPage() {
           title="My Dashboard"
           description="Manage your connected sites and monitor performance"
           action={
-            <Link href="/onboarding">
-              <Button variant="gradient" size="lg" className="px-8 py-4">
-                <Plus className="w-5 h-5 mr-2" />
-                Add New Site
-              </Button>
-            </Link>
+            isEmailUnverified ? (
+              <Tooltip
+                content="Verify your email to add new site"
+                position="bottom"
+              >
+                <div>
+                  <Button
+                    variant="gradient"
+                    size="lg"
+                    className="px-8 py-4"
+                    disabled
+                  >
+                    <Plus className="w-5 h-5 mr-2" />
+                    Add New Site
+                  </Button>
+                </div>
+              </Tooltip>
+            ) : (
+              <Link href="/onboarding">
+                <Button variant="gradient" size="lg" className="px-8 py-4">
+                  <Plus className="w-5 h-5 mr-2" />
+                  Add New Site
+                </Button>
+              </Link>
+            )
           }
         />
 
@@ -176,13 +203,30 @@ export default function DashboardPage() {
                 icon={Plus}
                 title="No sites connected yet"
                 description="Get started by adding your first website to enable AI-powered conversations"
-                action={{
-                  label: "Add Your First Site",
-                  href: "/onboarding",
-                  icon: Plus,
-                  variant: "gradient",
-                }}
+                action={
+                  isEmailUnverified
+                    ? undefined
+                    : {
+                        label: "Add Your First Site",
+                        href: "/onboarding",
+                        icon: Plus,
+                        variant: "gradient",
+                      }
+                }
               />
+              {isEmailUnverified && (
+                <div className="flex justify-center mt-6">
+                  <Tooltip
+                    content="Verify your email to add new site"
+                    position="top"
+                  >
+                    <Button variant="gradient" size="lg" disabled>
+                      <Plus className="w-5 h-5 mr-2" />
+                      Add Your First Site
+                    </Button>
+                  </Tooltip>
+                </div>
+              )}
             </motion.div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

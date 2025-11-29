@@ -170,7 +170,7 @@ router.get(
   asyncHandler(async (req, res) => {
     const { siteId } = req.params;
 
-    const settings = await widgetService.getAdminSettings(siteId, req.user!.id);
+    const settings = await widgetService.getGetAdminSettings(siteId, req.user!.id);
     res.json(settings);
   })
 );

@@ -24,8 +24,8 @@ export function subscriptionCancelledEmail(data: SubscriptionCancelledData): { s
     planName,
     accessEndsAt,
     resubscribeUrl,
-    platformName = 'IntelligentConvo',
-    supportEmail = 'support@intelligentconvo.com',
+    platformName = 'IntelliConvo',
+    supportEmail = 'support@intelliconvo.com',
   } = data;
 
   const displayName = userName || email.split('@')[0];

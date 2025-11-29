@@ -38,10 +38,10 @@ import {
 import { TablePagination } from "@/components/ui/table-pagination";
 
 // Import generated hooks
-import { useGetApiV1AdminBillingDisputes } from "@/lib/api/generated/queries/admin-billing/admin-billing";
+import { useGetAdminBillingDisputes } from "@/lib/api/generated/queries/admin-billing/admin-billing";
 
 // Import generated types
-import type { GetApiV1AdminBillingDisputesParams } from "@/lib/api/generated/models";
+import type { GetAdminBillingDisputesParams } from "@/lib/api/generated/models";
 
 export default function AdminDisputesPage() {
   const searchParams = useSearchParams();
@@ -50,7 +50,7 @@ export default function AdminDisputesPage() {
   const [page, setPage] = useState(parseInt(searchParams.get("page") || "1"));
 
   // Build query params
-  const queryParams: GetApiV1AdminBillingDisputesParams = {
+  const queryParams: GetAdminBillingDisputesParams = {
     page: page.toString(),
     limit: "20",
     ...(status !== "all" && { status }),
@@ -61,7 +61,7 @@ export default function AdminDisputesPage() {
     data: disputesResponse,
     isLoading,
     error,
-  } = useGetApiV1AdminBillingDisputes(queryParams);
+  } = useGetAdminBillingDisputes(queryParams);
 
   // Extract data from response - disputesResponse is already the unwrapped data from react-query
   const data = disputesResponse?.data;

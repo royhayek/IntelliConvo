@@ -1,6 +1,6 @@
 # Stripe Setup Guide
 
-This guide covers how to set up Stripe for payment processing in IntelligentConvo.
+This guide covers how to set up Stripe for payment processing in IntelliConvo.
 
 ## Overview
 

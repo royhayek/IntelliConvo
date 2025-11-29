@@ -22,10 +22,10 @@ import {
 } from "@/components/form";
 import { useQueryClient } from "@tanstack/react-query";
 import {
-  useGetApiV1WidgetSiteIdSettingsAdmin,
-  usePatchApiV1WidgetSiteIdSettings,
-  usePutApiV1WidgetSiteIdSettingsReset,
-  getGetApiV1WidgetSiteIdSettingsAdminQueryKey,
+  useGetWidgetSiteIdSettingsAdmin,
+  usePatchWidgetSiteIdSettings,
+  usePutWidgetSiteIdSettingsReset,
+  getGetWidgetSiteIdSettingsAdminQueryKey,
 } from "@/lib/api/generated/queries/widget/widget";
 import { useToast } from "@/hooks/use-toast";
 import { SiteResponse } from "@/lib/api/generated/models";
@@ -200,7 +200,7 @@ const defaultSettings: WidgetSettings = {
   showConversationStarters: true,
   startersTitle: "Suggested questions",
   showPoweredBy: false,
-  poweredByText: "Powered by Intelligentconvo",
+  poweredByText: "Powered by IntelliConvo",
 
   // Responsive
   mobileBreakpoint: 768,
@@ -246,7 +246,10 @@ const widgetSettingsSchema = z.object({
 
   // Launcher
   launcherIcon: z.enum(["chat", "message", "help", "support"]),
-  launcherCustomIconUrl: z.string().url().or(z.literal("")).optional(),
+  launcherCustomIconUrl: z.string().optional().refine(
+    (val) => !val || val === "" || val.startsWith("/") || z.string().url().safeParse(val).success,
+    { message: "Must be a valid URL or path" }
+  ),
   launcherSize: z.enum(["small", "medium", "large"]),
   launcherPosition: z.enum(["bottom-right", "bottom-left", "top-right", "top-left"]),
   launcherOffsetX: z.number().min(0).max(100),
@@ -264,9 +267,12 @@ const widgetSettingsSchema = z.object({
   chatWindowWidth: z.number().min(300).max(800),
   chatWindowHeight: z.number().min(400).max(1000),
   headerTitle: z.string().min(1).max(50),
-  headerSubtitle: z.string().max(100).or(z.literal("")).optional(),
+  headerSubtitle: z.union([z.literal(""), z.string().max(100)]).optional(),
   headerShowAvatar: z.boolean(),
-  headerAvatarUrl: z.string().url().or(z.literal("")).optional(),
+  headerAvatarUrl: z.string().optional().refine(
+    (val) => !val || val === "" || val.startsWith("/") || z.string().url().safeParse(val).success,
+    { message: "Must be a valid URL or path" }
+  ),
   headerShowStatus: z.boolean(),
   headerShowCloseButton: z.boolean(),
   headerShowMinimizeButton: z.boolean(),
@@ -316,7 +322,7 @@ const widgetSettingsSchema = z.object({
   enableHighContrast: z.boolean(),
   respectReducedMotion: z.boolean(),
   enableKeyboardNavigation: z.boolean(),
-  customCss: z.string().max(10000).or(z.literal("")).optional(),
+  customCss: z.union([z.literal(""), z.string().max(10000)]).optional(),
   enableAnalytics: z.boolean(),
 
   // Dark Mode Colors
@@ -366,7 +372,7 @@ export function WidgetTab({ site }: WidgetTabProps) {
   });
 
   // Load settings from API
-  const { data: loadedSettings, isLoading } = useGetApiV1WidgetSiteIdSettingsAdmin(site.id);
+  const { data: loadedSettings, isLoading } = useGetWidgetSiteIdSettingsAdmin(site.id);
 
   // Helper function to transform null values to empty strings
   const transformNullToEmpty = (obj: any): any => {
@@ -389,10 +395,10 @@ export function WidgetTab({ site }: WidgetTabProps) {
   }, [loadedSettings, form]);
 
   // Save settings mutation
-  const saveMutation = usePatchApiV1WidgetSiteIdSettings({
+  const saveMutation = usePatchWidgetSiteIdSettings({
     mutation: {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: getGetApiV1WidgetSiteIdSettingsAdminQueryKey(site.id) });
+        queryClient.invalidateQueries({ queryKey: getGetWidgetSiteIdSettingsAdminQueryKey(site.id) });
         toast({
           title: "Settings saved",
           description: "Your widget settings have been updated successfully.",
@@ -410,11 +416,11 @@ export function WidgetTab({ site }: WidgetTabProps) {
   });
 
   // Reset settings mutation
-  const resetMutation = usePutApiV1WidgetSiteIdSettingsReset({
+  const resetMutation = usePutWidgetSiteIdSettingsReset({
     mutation: {
       onSuccess: (data) => {
         form.reset({ ...defaultSettings, ...data as unknown as WidgetSettings });
-        queryClient.invalidateQueries({ queryKey: getGetApiV1WidgetSiteIdSettingsAdminQueryKey(site.id) });
+        queryClient.invalidateQueries({ queryKey: getGetWidgetSiteIdSettingsAdminQueryKey(site.id) });
         toast({
           title: "Settings reset",
           description: "Widget settings have been reset to defaults.",
@@ -454,7 +460,7 @@ export function WidgetTab({ site }: WidgetTabProps) {
       form.setValue('launcherCustomIconUrl', response.logoUrl, { shouldDirty: true });
 
       // Invalidate query to refresh settings
-      queryClient.invalidateQueries({ queryKey: getGetApiV1WidgetSiteIdSettingsAdminQueryKey(site.id) });
+      queryClient.invalidateQueries({ queryKey: getGetWidgetSiteIdSettingsAdminQueryKey(site.id) });
 
       toast({
         title: "Logo uploaded",
@@ -482,7 +488,7 @@ export function WidgetTab({ site }: WidgetTabProps) {
       form.setValue('launcherCustomIconUrl', '', { shouldDirty: true });
 
       // Invalidate query to refresh settings
-      queryClient.invalidateQueries({ queryKey: getGetApiV1WidgetSiteIdSettingsAdminQueryKey(site.id) });
+      queryClient.invalidateQueries({ queryKey: getGetWidgetSiteIdSettingsAdminQueryKey(site.id) });
 
       toast({
         title: "Logo removed",
@@ -513,16 +519,16 @@ export function WidgetTab({ site }: WidgetTabProps) {
     }
   };
 
-  const embedCode = `<!-- Intelligentconvo Widget -->
+  const embedCode = `<!-- IntelliConvo Widget -->
 <script>
   (function() {
     var script = document.createElement('script');
-    script.src = '${process.env.NEXT_PUBLIC_WIDGET_URL || 'https://widget.intelligentconvo.com'}/widget.js';
+    script.src = '${process.env.NEXT_PUBLIC_WIDGET_URL || 'https://widget.intelliconvo.com'}/widget.js';
     script.async = true;
     script.onload = function() {
-      window.intelligentconvo('init', {
+      window.intelliconvo('init', {
         siteId: '${site.id}',
-        apiUrl: '${process.env.NEXT_PUBLIC_API_URL || 'https://api.intelligentconvo.com/api/v1'}'
+        apiUrl: '${process.env.NEXT_PUBLIC_API_URL || 'https://api.intelliconvo.com/api/v1'}'
       });
     };
     document.head.appendChild(script);
@@ -543,7 +549,7 @@ export function WidgetTab({ site }: WidgetTabProps) {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div className="min-w-0 flex-1">
             <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">Widget Customization</h2>
-            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">Customize every aspect of your chat widget</p>
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">Customize the appearance and behavior of your chat widget</p>
           </div>
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
             <Button type="button" variant="outline" size="sm" onClick={resetSettings} className="w-full sm:w-auto">
@@ -919,7 +925,7 @@ export function WidgetTab({ site }: WidgetTabProps) {
                     <FormTextarea
                       name="customCss"
                       label="Custom Styles"
-                      placeholder=".intelligentconvo-widget { /* your styles */ }"
+                      placeholder=".intelliconvo-widget { /* your styles */ }"
                       rows={6}
                       description="Advanced: Add custom CSS to override widget styles"
                       control={form.control}

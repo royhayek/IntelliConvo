@@ -30,13 +30,13 @@ import {
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
-  useGetApiV1AdminSitesSiteId,
-  usePatchApiV1AdminSitesSiteId,
-  getGetApiV1AdminSitesSiteIdQueryKey,
+  useGetAdminSitesSiteId,
+  usePatchAdminSitesSiteId,
+  getGetAdminSitesSiteIdQueryKey,
 } from "@/lib/api/generated/queries/admin-sites/admin-sites";
-import type { PatchApiV1AdminSitesSiteIdBody, PatchApiV1AdminSitesSiteIdBodyCrawlStatus } from "@/lib/api/generated/models";
+import type { PatchAdminSitesSiteIdBody, PatchAdminSitesSiteIdBodyCrawlStatus } from "@/lib/api/generated/models";
 
-const CRAWL_STATUS_OPTIONS: { value: PatchApiV1AdminSitesSiteIdBodyCrawlStatus; label: string }[] = [
+const CRAWL_STATUS_OPTIONS: { value: PatchAdminSitesSiteIdBodyCrawlStatus; label: string }[] = [
   { value: "PENDING", label: "Pending" },
   { value: "IN_PROGRESS", label: "In Progress" },
   { value: "COMPLETED", label: "Completed" },
@@ -49,7 +49,7 @@ export default function AdminSiteEditPage() {
   const queryClient = useQueryClient();
   const siteId = params.siteId as string;
 
-  const [formData, setFormData] = useState<PatchApiV1AdminSitesSiteIdBody>({
+  const [formData, setFormData] = useState<PatchAdminSitesSiteIdBody>({
     siteName: "",
     siteDescription: "",
     siteIndustry: "",
@@ -65,16 +65,16 @@ export default function AdminSiteEditPage() {
     data: siteResponse,
     isLoading,
     error: fetchError,
-  } = useGetApiV1AdminSitesSiteId(siteId);
+  } = useGetAdminSitesSiteId(siteId);
 
   const site = siteResponse?.data;
 
   // Update mutation
-  const updateMutation = usePatchApiV1AdminSitesSiteId({
+  const updateMutation = usePatchAdminSitesSiteId({
     mutation: {
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: getGetApiV1AdminSitesSiteIdQueryKey(siteId),
+          queryKey: getGetAdminSitesSiteIdQueryKey(siteId),
         });
         router.push(`/admin/sites/${siteId}`);
       },
@@ -95,7 +95,7 @@ export default function AdminSiteEditPage() {
         siteIndustry: site.siteIndustry || "",
         specialInstructions: site.specialInstructions || "",
         welcomeMessage: site.welcomeMessage || "",
-        crawlStatus: site.crawlStatus as PatchApiV1AdminSitesSiteIdBodyCrawlStatus,
+        crawlStatus: site.crawlStatus as PatchAdminSitesSiteIdBodyCrawlStatus,
       });
     }
   }, [site]);
@@ -119,7 +119,7 @@ export default function AdminSiteEditPage() {
     setMutationError(null);
 
     // Only send changed fields
-    const updates: PatchApiV1AdminSitesSiteIdBody = {};
+    const updates: PatchAdminSitesSiteIdBody = {};
     if (formData.siteName !== site?.siteName) {
       updates.siteName = formData.siteName;
     }
@@ -352,7 +352,7 @@ export default function AdminSiteEditPage() {
               <Label htmlFor="crawlStatus">Crawl Status</Label>
               <Select
                 value={formData.crawlStatus}
-                onValueChange={(value: PatchApiV1AdminSitesSiteIdBodyCrawlStatus) =>
+                onValueChange={(value: PatchAdminSitesSiteIdBodyCrawlStatus) =>
                   setFormData({ ...formData, crawlStatus: value })
                 }
               >

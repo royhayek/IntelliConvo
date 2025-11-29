@@ -24,8 +24,8 @@ export const MS_PER_SECOND = 1000;
 export const DEFAULT_API_URL = process.env.WIDGET_API_URL || 'http://localhost:5001';
 export const DEFAULT_SOUND_VOLUME = 0.5;
 export const DEFAULT_NOTIFICATION_SOUND = 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2teleQIl';
-export const DEFAULT_POWERED_BY_TEXT = 'Powered by Intelligentconvo';
-export const DEFAULT_POWERED_BY_URL = 'https://intelligentconvo.com';
+export const DEFAULT_POWERED_BY_TEXT = 'Powered by IntelliConvo';
+export const DEFAULT_POWERED_BY_URL = 'https://intelliconvo.com';
 
 // Breakpoints
 export const BREAKPOINTS = {
@@ -35,14 +35,14 @@ export const BREAKPOINTS = {
 
 // Storage Keys
 export const STORAGE_KEYS = {
-  SESSION: 'intelligentconvo_session',
+  SESSION: 'intelliconvo_session',
   CONVERSATION_PREFIX: 'ic_conversation_',
   AUTO_OPENED_PREFIX: 'ic_auto_opened_',
   SETTINGS_PREFIX: 'ic_settings_',
 } as const;
 
 // Notification Tags
-export const NOTIFICATION_TAG = 'intelligentconvo-message';
+export const NOTIFICATION_TAG = 'intelliconvo-message';
 
 // UI Sizes
 export const LAUNCHER_SIZES = {

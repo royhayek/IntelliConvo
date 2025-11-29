@@ -26,8 +26,8 @@ export function paymentFailedEmail(data: PaymentFailedData): { subject: string; 
     failureReason,
     updatePaymentUrl,
     retryDate,
-    platformName = 'IntelligentConvo',
-    supportEmail = 'support@intelligentconvo.com',
+    platformName = 'IntelliConvo',
+    supportEmail = 'support@intelliconvo.com',
   } = data;
 
   const displayName = userName || email.split('@')[0];

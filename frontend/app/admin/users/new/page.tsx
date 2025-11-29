@@ -21,17 +21,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
-  usePostApiV1AdminUsers,
-  getGetApiV1AdminUsersQueryKey,
+  usePostAdminUsers,
+  getGetAdminUsersQueryKey,
 } from "@/lib/api/generated/queries/admin-users/admin-users";
-import { getGetApiV1AdminStatsUsersQueryKey } from "@/lib/api/generated/queries/admin/admin";
-import type { PostApiV1AdminUsersBody } from "@/lib/api/generated/models";
+import { getGetAdminStatsUsersQueryKey } from "@/lib/api/generated/queries/admin/admin";
+import type { PostAdminUsersBody } from "@/lib/api/generated/models";
 
 export default function AdminUserCreatePage() {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const [formData, setFormData] = useState<PostApiV1AdminUsersBody>({
+  const [formData, setFormData] = useState<PostAdminUsersBody>({
     email: "",
     password: "",
     fullName: "",
@@ -40,14 +40,14 @@ export default function AdminUserCreatePage() {
   const [mutationError, setMutationError] = useState<string | null>(null);
 
   // Create mutation
-  const createMutation = usePostApiV1AdminUsers({
+  const createMutation = usePostAdminUsers({
     mutation: {
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: getGetApiV1AdminUsersQueryKey(),
+          queryKey: getGetAdminUsersQueryKey(),
         });
         queryClient.invalidateQueries({
-          queryKey: getGetApiV1AdminStatsUsersQueryKey(),
+          queryKey: getGetAdminStatsUsersQueryKey(),
         });
         router.push("/admin/users");
       },

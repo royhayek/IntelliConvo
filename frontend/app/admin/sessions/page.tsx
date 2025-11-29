@@ -10,12 +10,12 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { UserFilter } from "@/components/admin/user-filter";
 import { SessionsStatsCards, SessionsTable } from "@/components/admin/sessions";
 import {
-  useGetApiV1AdminSessions,
-  useGetApiV1AdminSessionsStats,
-  useDeleteApiV1AdminSessionsSessionId,
-  usePostApiV1AdminSessionsCleanup,
-  getGetApiV1AdminSessionsQueryKey,
-  getGetApiV1AdminSessionsStatsQueryKey,
+  useGetAdminSessions,
+  useGetAdminSessionsStats,
+  useDeleteAdminSessionsSessionId,
+  usePostAdminSessionsCleanup,
+  getGetAdminSessionsQueryKey,
+  getGetAdminSessionsStatsQueryKey,
 } from "@/lib/api/generated/queries/admin-sessions/admin-sessions";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -36,20 +36,20 @@ export default function AdminSessionsPage() {
     data: statsResponse,
     isLoading: statsLoading,
     error: statsError,
-  } = useGetApiV1AdminSessionsStats();
+  } = useGetAdminSessionsStats();
 
   const {
     data: sessionsResponse,
     isLoading: sessionsLoading,
     error: sessionsError,
-  } = useGetApiV1AdminSessions(queryParams);
+  } = useGetAdminSessions(queryParams);
 
-  const cleanupMutation = usePostApiV1AdminSessionsCleanup({
+  const cleanupMutation = usePostAdminSessionsCleanup({
     mutation: {
       onSuccess: (data) => {
         setSuccessMessage(data.message || "Expired sessions cleaned up successfully");
-        queryClient.invalidateQueries({ queryKey: getGetApiV1AdminSessionsQueryKey() });
-        queryClient.invalidateQueries({ queryKey: getGetApiV1AdminSessionsStatsQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetAdminSessionsQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetAdminSessionsStatsQueryKey() });
         setTimeout(() => setSuccessMessage(null), 3000);
       },
       onError: () => {
@@ -58,12 +58,12 @@ export default function AdminSessionsPage() {
     },
   });
 
-  const revokeSessionMutation = useDeleteApiV1AdminSessionsSessionId({
+  const revokeSessionMutation = useDeleteAdminSessionsSessionId({
     mutation: {
       onSuccess: (data) => {
         setSuccessMessage(data.message || "Session revoked successfully");
-        queryClient.invalidateQueries({ queryKey: getGetApiV1AdminSessionsQueryKey() });
-        queryClient.invalidateQueries({ queryKey: getGetApiV1AdminSessionsStatsQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetAdminSessionsQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetAdminSessionsStatsQueryKey() });
         setTimeout(() => setSuccessMessage(null), 3000);
       },
       onError: () => {
@@ -80,8 +80,8 @@ export default function AdminSessionsPage() {
   const displayError = actionError || (statsError || sessionsError ? "Failed to load session data" : null);
 
   const handleRefresh = () => {
-    queryClient.invalidateQueries({ queryKey: getGetApiV1AdminSessionsQueryKey() });
-    queryClient.invalidateQueries({ queryKey: getGetApiV1AdminSessionsStatsQueryKey() });
+    queryClient.invalidateQueries({ queryKey: getGetAdminSessionsQueryKey() });
+    queryClient.invalidateQueries({ queryKey: getGetAdminSessionsStatsQueryKey() });
   };
 
   const handleCleanup = () => {

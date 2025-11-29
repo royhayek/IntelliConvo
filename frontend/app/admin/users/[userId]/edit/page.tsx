@@ -21,11 +21,11 @@ import { Switch } from "@/components/ui/switch";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
-  useGetApiV1AdminUsersUserId,
-  usePatchApiV1AdminUsersUserId,
-  getGetApiV1AdminUsersUserIdQueryKey,
+  useGetAdminUsersUserId,
+  usePatchAdminUsersUserId,
+  getGetAdminUsersUserIdQueryKey,
 } from "@/lib/api/generated/queries/admin-users/admin-users";
-import type { PatchApiV1AdminUsersUserIdBody } from "@/lib/api/generated/models";
+import type { PatchAdminUsersUserIdBody } from "@/lib/api/generated/models";
 
 export default function AdminUserEditPage() {
   const params = useParams();
@@ -33,7 +33,7 @@ export default function AdminUserEditPage() {
   const queryClient = useQueryClient();
   const userId = params.userId as string;
 
-  const [formData, setFormData] = useState<PatchApiV1AdminUsersUserIdBody>({
+  const [formData, setFormData] = useState<PatchAdminUsersUserIdBody>({
     fullName: "",
     email: "",
     isAdmin: false,
@@ -46,16 +46,16 @@ export default function AdminUserEditPage() {
     data: userData,
     isLoading,
     error: fetchError,
-  } = useGetApiV1AdminUsersUserId(userId);
+  } = useGetAdminUsersUserId(userId);
 
   const user = userData?.data;
 
   // Update mutation
-  const updateMutation = usePatchApiV1AdminUsersUserId({
+  const updateMutation = usePatchAdminUsersUserId({
     mutation: {
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: getGetApiV1AdminUsersUserIdQueryKey(userId),
+          queryKey: getGetAdminUsersUserIdQueryKey(userId),
         });
         router.push(`/admin/users/${userId}`);
       },
@@ -94,7 +94,7 @@ export default function AdminUserEditPage() {
     setMutationError(null);
 
     // Only send changed fields
-    const updates: PatchApiV1AdminUsersUserIdBody = {};
+    const updates: PatchAdminUsersUserIdBody = {};
     if (formData.fullName !== (user?.fullName || "")) {
       updates.fullName = formData.fullName;
     }

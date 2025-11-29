@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { BrandLogo } from "@/components/ui/brand-logo";
-import { postApiV1AuthVerifyEmail } from "@/lib/api/generated/queries/authentication/authentication";
+import { postAuthVerifyEmail } from "@/lib/api/generated/queries/authentication/authentication";
 import { useAuthStore } from "@/lib/store";
 import { CheckCircle2, XCircle, Loader2, Mail } from "lucide-react";
 
@@ -28,7 +28,7 @@ function VerifyEmailContent() {
     hasAttempted.current = true;
     setState("loading");
 
-    postApiV1AuthVerifyEmail({ token })
+    postAuthVerifyEmail({ token })
       .then(() => {
         setState("success");
         // Update user's emailVerified status in the store if authenticated
@@ -56,7 +56,7 @@ function VerifyEmailContent() {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1 text-center">
           <div className="flex justify-center mb-4">
-            <BrandLogo size="lg" showText={false} href={null} animated={false} />
+            <BrandLogo size="md" showText={false} href={null} animated={false} />
           </div>
           <CardTitle className="text-3xl font-bold">Email Verification</CardTitle>
           <CardDescription>
@@ -148,7 +148,7 @@ function LoadingFallback() {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1 text-center">
           <div className="flex justify-center mb-4">
-            <BrandLogo size="lg" showText={false} href={null} animated={false} />
+            <BrandLogo size="md" showText={false} href={null} animated={false} />
           </div>
           <CardTitle className="text-3xl font-bold">Email Verification</CardTitle>
           <CardDescription>Verifying your email address...</CardDescription>

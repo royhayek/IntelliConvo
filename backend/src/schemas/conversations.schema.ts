@@ -208,7 +208,7 @@ export const messageSearchResponseSchema = registry.register(
 // GET /api/v1/conversations
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/conversations',
+  path: '/conversations',
   summary: 'Get conversations with filtering and pagination',
   tags: ['Conversations'],
   security: [{ bearerAuth: [] }],
@@ -233,7 +233,7 @@ registry.registerPath({
 // GET /api/v1/conversations/analytics
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/conversations/analytics',
+  path: '/conversations/analytics',
   summary: 'Get conversation analytics',
   tags: ['Conversations'],
   security: [{ bearerAuth: [] }],
@@ -258,7 +258,7 @@ registry.registerPath({
 // GET /api/v1/conversations/search
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/conversations/search',
+  path: '/conversations/search',
   summary: 'Search messages across conversations',
   tags: ['Conversations'],
   security: [{ bearerAuth: [] }],
@@ -286,7 +286,7 @@ registry.registerPath({
 // GET /api/v1/conversations/{conversationId}
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/conversations/{conversationId}',
+  path: '/conversations/{conversationId}',
   summary: 'Get conversation details with messages',
   tags: ['Conversations'],
   security: [{ bearerAuth: [] }],

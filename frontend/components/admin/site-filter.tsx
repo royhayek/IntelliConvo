@@ -18,7 +18,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useGetApiV1AdminSites } from "@/lib/api/generated/queries/admin-sites/admin-sites";
+import { useGetAdminSites } from "@/lib/api/generated/queries/admin-sites/admin-sites";
 
 interface SiteFilterProps {
   value: string | null;
@@ -37,7 +37,7 @@ export function SiteFilter({
   const [search, setSearch] = useState("");
 
   // Fetch sites with search
-  const { data, isLoading } = useGetApiV1AdminSites({
+  const { data, isLoading } = useGetAdminSites({
     limit: "50",
     ...(search && { search }),
   });

@@ -20,15 +20,15 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  DeleteApiV1AdminSitesSiteId200,
-  GetApiV1AdminSites200,
-  GetApiV1AdminSitesExportParams,
-  GetApiV1AdminSitesParams,
-  GetApiV1AdminSitesSiteId200,
-  PatchApiV1AdminSitesSiteId200,
-  PatchApiV1AdminSitesSiteIdBody,
-  PostApiV1AdminSitesSiteIdCacheClear200,
-  PostApiV1AdminSitesSiteIdRecrawl200
+  DeleteAdminSitesSiteId200,
+  GetAdminSites200,
+  GetAdminSitesExportParams,
+  GetAdminSitesParams,
+  GetAdminSitesSiteId200,
+  PatchAdminSitesSiteId200,
+  PatchAdminSitesSiteIdBody,
+  PostAdminSitesSiteIdCacheClear200,
+  PostAdminSitesSiteIdRecrawl200
 } from '../../models';
 
 import { customInstance } from '../../../axios-instance';
@@ -42,14 +42,14 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 /**
  * @summary Get paginated list of sites
  */
-export const getApiV1AdminSites = (
-    params?: GetApiV1AdminSitesParams,
+export const getAdminSites = (
+    params?: GetAdminSitesParams,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<GetApiV1AdminSites200>(
-      {url: `/api/v1/admin/sites`, method: 'GET',
+      return customInstance<GetAdminSites200>(
+      {url: `/admin/sites`, method: 'GET',
         params, signal
     },
       options);
@@ -58,69 +58,69 @@ export const getApiV1AdminSites = (
 
 
 
-export const getGetApiV1AdminSitesQueryKey = (params?: GetApiV1AdminSitesParams,) => {
+export const getGetAdminSitesQueryKey = (params?: GetAdminSitesParams,) => {
     return [
-    `/api/v1/admin/sites`, ...(params ? [params]: [])
+    `/admin/sites`, ...(params ? [params]: [])
     ] as const;
     }
 
     
-export const getGetApiV1AdminSitesQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminSites>>, TError = ErrorType<void>>(params?: GetApiV1AdminSitesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSites>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminSitesQueryOptions = <TData = Awaited<ReturnType<typeof getAdminSites>>, TError = ErrorType<void>>(params?: GetAdminSitesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSites>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminSitesQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminSitesQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminSites>>> = ({ signal }) => getApiV1AdminSites(params, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminSites>>> = ({ signal }) => getAdminSites(params, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSites>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminSites>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminSitesQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminSites>>>
-export type GetApiV1AdminSitesQueryError = ErrorType<void>
+export type GetAdminSitesQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminSites>>>
+export type GetAdminSitesQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminSites<TData = Awaited<ReturnType<typeof getApiV1AdminSites>>, TError = ErrorType<void>>(
- params: undefined |  GetApiV1AdminSitesParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSites>>, TError, TData>> & Pick<
+export function useGetAdminSites<TData = Awaited<ReturnType<typeof getAdminSites>>, TError = ErrorType<void>>(
+ params: undefined |  GetAdminSitesParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSites>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminSites>>,
+          Awaited<ReturnType<typeof getAdminSites>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminSites>>
+          Awaited<ReturnType<typeof getAdminSites>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminSites<TData = Awaited<ReturnType<typeof getApiV1AdminSites>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminSitesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSites>>, TError, TData>> & Pick<
+export function useGetAdminSites<TData = Awaited<ReturnType<typeof getAdminSites>>, TError = ErrorType<void>>(
+ params?: GetAdminSitesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSites>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminSites>>,
+          Awaited<ReturnType<typeof getAdminSites>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminSites>>
+          Awaited<ReturnType<typeof getAdminSites>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminSites<TData = Awaited<ReturnType<typeof getApiV1AdminSites>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminSitesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSites>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminSites<TData = Awaited<ReturnType<typeof getAdminSites>>, TError = ErrorType<void>>(
+ params?: GetAdminSitesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSites>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get paginated list of sites
  */
 
-export function useGetApiV1AdminSites<TData = Awaited<ReturnType<typeof getApiV1AdminSites>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminSitesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSites>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminSites<TData = Awaited<ReturnType<typeof getAdminSites>>, TError = ErrorType<void>>(
+ params?: GetAdminSitesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSites>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminSitesQueryOptions(params,options)
+  const queryOptions = getGetAdminSitesQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -135,14 +135,14 @@ export function useGetApiV1AdminSites<TData = Awaited<ReturnType<typeof getApiV1
 /**
  * @summary Export sites
  */
-export const getApiV1AdminSitesExport = (
-    params?: GetApiV1AdminSitesExportParams,
+export const getAdminSitesExport = (
+    params?: GetAdminSitesExportParams,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<void>(
-      {url: `/api/v1/admin/sites/export`, method: 'GET',
+      {url: `/admin/sites/export`, method: 'GET',
         params, signal
     },
       options);
@@ -151,69 +151,69 @@ export const getApiV1AdminSitesExport = (
 
 
 
-export const getGetApiV1AdminSitesExportQueryKey = (params?: GetApiV1AdminSitesExportParams,) => {
+export const getGetAdminSitesExportQueryKey = (params?: GetAdminSitesExportParams,) => {
     return [
-    `/api/v1/admin/sites/export`, ...(params ? [params]: [])
+    `/admin/sites/export`, ...(params ? [params]: [])
     ] as const;
     }
 
     
-export const getGetApiV1AdminSitesExportQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminSitesExport>>, TError = ErrorType<void>>(params?: GetApiV1AdminSitesExportParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSitesExport>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminSitesExportQueryOptions = <TData = Awaited<ReturnType<typeof getAdminSitesExport>>, TError = ErrorType<void>>(params?: GetAdminSitesExportParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSitesExport>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminSitesExportQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminSitesExportQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminSitesExport>>> = ({ signal }) => getApiV1AdminSitesExport(params, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminSitesExport>>> = ({ signal }) => getAdminSitesExport(params, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSitesExport>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminSitesExport>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminSitesExportQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminSitesExport>>>
-export type GetApiV1AdminSitesExportQueryError = ErrorType<void>
+export type GetAdminSitesExportQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminSitesExport>>>
+export type GetAdminSitesExportQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminSitesExport<TData = Awaited<ReturnType<typeof getApiV1AdminSitesExport>>, TError = ErrorType<void>>(
- params: undefined |  GetApiV1AdminSitesExportParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSitesExport>>, TError, TData>> & Pick<
+export function useGetAdminSitesExport<TData = Awaited<ReturnType<typeof getAdminSitesExport>>, TError = ErrorType<void>>(
+ params: undefined |  GetAdminSitesExportParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSitesExport>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminSitesExport>>,
+          Awaited<ReturnType<typeof getAdminSitesExport>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminSitesExport>>
+          Awaited<ReturnType<typeof getAdminSitesExport>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminSitesExport<TData = Awaited<ReturnType<typeof getApiV1AdminSitesExport>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminSitesExportParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSitesExport>>, TError, TData>> & Pick<
+export function useGetAdminSitesExport<TData = Awaited<ReturnType<typeof getAdminSitesExport>>, TError = ErrorType<void>>(
+ params?: GetAdminSitesExportParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSitesExport>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminSitesExport>>,
+          Awaited<ReturnType<typeof getAdminSitesExport>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminSitesExport>>
+          Awaited<ReturnType<typeof getAdminSitesExport>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminSitesExport<TData = Awaited<ReturnType<typeof getApiV1AdminSitesExport>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminSitesExportParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSitesExport>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminSitesExport<TData = Awaited<ReturnType<typeof getAdminSitesExport>>, TError = ErrorType<void>>(
+ params?: GetAdminSitesExportParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSitesExport>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Export sites
  */
 
-export function useGetApiV1AdminSitesExport<TData = Awaited<ReturnType<typeof getApiV1AdminSitesExport>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminSitesExportParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSitesExport>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminSitesExport<TData = Awaited<ReturnType<typeof getAdminSitesExport>>, TError = ErrorType<void>>(
+ params?: GetAdminSitesExportParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSitesExport>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminSitesExportQueryOptions(params,options)
+  const queryOptions = getGetAdminSitesExportQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -228,14 +228,14 @@ export function useGetApiV1AdminSitesExport<TData = Awaited<ReturnType<typeof ge
 /**
  * @summary Get site by ID with full details
  */
-export const getApiV1AdminSitesSiteId = (
+export const getAdminSitesSiteId = (
     siteId: string,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<GetApiV1AdminSitesSiteId200>(
-      {url: `/api/v1/admin/sites/${siteId}`, method: 'GET', signal
+      return customInstance<GetAdminSitesSiteId200>(
+      {url: `/admin/sites/${siteId}`, method: 'GET', signal
     },
       options);
     }
@@ -243,69 +243,69 @@ export const getApiV1AdminSitesSiteId = (
 
 
 
-export const getGetApiV1AdminSitesSiteIdQueryKey = (siteId?: string,) => {
+export const getGetAdminSitesSiteIdQueryKey = (siteId?: string,) => {
     return [
-    `/api/v1/admin/sites/${siteId}`
+    `/admin/sites/${siteId}`
     ] as const;
     }
 
     
-export const getGetApiV1AdminSitesSiteIdQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminSitesSiteId>>, TError = ErrorType<void>>(siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSitesSiteId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminSitesSiteIdQueryOptions = <TData = Awaited<ReturnType<typeof getAdminSitesSiteId>>, TError = ErrorType<void>>(siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSitesSiteId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminSitesSiteIdQueryKey(siteId);
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminSitesSiteIdQueryKey(siteId);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminSitesSiteId>>> = ({ signal }) => getApiV1AdminSitesSiteId(siteId, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminSitesSiteId>>> = ({ signal }) => getAdminSitesSiteId(siteId, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(siteId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSitesSiteId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: !!(siteId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminSitesSiteId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminSitesSiteIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminSitesSiteId>>>
-export type GetApiV1AdminSitesSiteIdQueryError = ErrorType<void>
+export type GetAdminSitesSiteIdQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminSitesSiteId>>>
+export type GetAdminSitesSiteIdQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminSitesSiteId<TData = Awaited<ReturnType<typeof getApiV1AdminSitesSiteId>>, TError = ErrorType<void>>(
- siteId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSitesSiteId>>, TError, TData>> & Pick<
+export function useGetAdminSitesSiteId<TData = Awaited<ReturnType<typeof getAdminSitesSiteId>>, TError = ErrorType<void>>(
+ siteId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSitesSiteId>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminSitesSiteId>>,
+          Awaited<ReturnType<typeof getAdminSitesSiteId>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminSitesSiteId>>
+          Awaited<ReturnType<typeof getAdminSitesSiteId>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminSitesSiteId<TData = Awaited<ReturnType<typeof getApiV1AdminSitesSiteId>>, TError = ErrorType<void>>(
- siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSitesSiteId>>, TError, TData>> & Pick<
+export function useGetAdminSitesSiteId<TData = Awaited<ReturnType<typeof getAdminSitesSiteId>>, TError = ErrorType<void>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSitesSiteId>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminSitesSiteId>>,
+          Awaited<ReturnType<typeof getAdminSitesSiteId>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminSitesSiteId>>
+          Awaited<ReturnType<typeof getAdminSitesSiteId>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminSitesSiteId<TData = Awaited<ReturnType<typeof getApiV1AdminSitesSiteId>>, TError = ErrorType<void>>(
- siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSitesSiteId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminSitesSiteId<TData = Awaited<ReturnType<typeof getAdminSitesSiteId>>, TError = ErrorType<void>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSitesSiteId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get site by ID with full details
  */
 
-export function useGetApiV1AdminSitesSiteId<TData = Awaited<ReturnType<typeof getApiV1AdminSitesSiteId>>, TError = ErrorType<void>>(
- siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSitesSiteId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminSitesSiteId<TData = Awaited<ReturnType<typeof getAdminSitesSiteId>>, TError = ErrorType<void>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSitesSiteId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminSitesSiteIdQueryOptions(siteId,options)
+  const queryOptions = getGetAdminSitesSiteIdQueryOptions(siteId,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -320,27 +320,27 @@ export function useGetApiV1AdminSitesSiteId<TData = Awaited<ReturnType<typeof ge
 /**
  * @summary Update site
  */
-export const patchApiV1AdminSitesSiteId = (
+export const patchAdminSitesSiteId = (
     siteId: string,
-    patchApiV1AdminSitesSiteIdBody: BodyType<PatchApiV1AdminSitesSiteIdBody>,
+    patchAdminSitesSiteIdBody: BodyType<PatchAdminSitesSiteIdBody>,
  options?: SecondParameter<typeof customInstance>,) => {
       
       
-      return customInstance<PatchApiV1AdminSitesSiteId200>(
-      {url: `/api/v1/admin/sites/${siteId}`, method: 'PATCH',
+      return customInstance<PatchAdminSitesSiteId200>(
+      {url: `/admin/sites/${siteId}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
-      data: patchApiV1AdminSitesSiteIdBody
+      data: patchAdminSitesSiteIdBody
     },
       options);
     }
   
 
 
-export const getPatchApiV1AdminSitesSiteIdMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchApiV1AdminSitesSiteId>>, TError,{siteId: string;data: BodyType<PatchApiV1AdminSitesSiteIdBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof patchApiV1AdminSitesSiteId>>, TError,{siteId: string;data: BodyType<PatchApiV1AdminSitesSiteIdBody>}, TContext> => {
+export const getPatchAdminSitesSiteIdMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchAdminSitesSiteId>>, TError,{siteId: string;data: BodyType<PatchAdminSitesSiteIdBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof patchAdminSitesSiteId>>, TError,{siteId: string;data: BodyType<PatchAdminSitesSiteIdBody>}, TContext> => {
 
-const mutationKey = ['patchApiV1AdminSitesSiteId'];
+const mutationKey = ['patchAdminSitesSiteId'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -350,10 +350,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchApiV1AdminSitesSiteId>>, {siteId: string;data: BodyType<PatchApiV1AdminSitesSiteIdBody>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchAdminSitesSiteId>>, {siteId: string;data: BodyType<PatchAdminSitesSiteIdBody>}> = (props) => {
           const {siteId,data} = props ?? {};
 
-          return  patchApiV1AdminSitesSiteId(siteId,data,requestOptions)
+          return  patchAdminSitesSiteId(siteId,data,requestOptions)
         }
 
         
@@ -361,47 +361,47 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PatchApiV1AdminSitesSiteIdMutationResult = NonNullable<Awaited<ReturnType<typeof patchApiV1AdminSitesSiteId>>>
-    export type PatchApiV1AdminSitesSiteIdMutationBody = BodyType<PatchApiV1AdminSitesSiteIdBody>
-    export type PatchApiV1AdminSitesSiteIdMutationError = ErrorType<void>
+    export type PatchAdminSitesSiteIdMutationResult = NonNullable<Awaited<ReturnType<typeof patchAdminSitesSiteId>>>
+    export type PatchAdminSitesSiteIdMutationBody = BodyType<PatchAdminSitesSiteIdBody>
+    export type PatchAdminSitesSiteIdMutationError = ErrorType<void>
 
     /**
  * @summary Update site
  */
-export const usePatchApiV1AdminSitesSiteId = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchApiV1AdminSitesSiteId>>, TError,{siteId: string;data: BodyType<PatchApiV1AdminSitesSiteIdBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePatchAdminSitesSiteId = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchAdminSitesSiteId>>, TError,{siteId: string;data: BodyType<PatchAdminSitesSiteIdBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof patchApiV1AdminSitesSiteId>>,
+        Awaited<ReturnType<typeof patchAdminSitesSiteId>>,
         TError,
-        {siteId: string;data: BodyType<PatchApiV1AdminSitesSiteIdBody>},
+        {siteId: string;data: BodyType<PatchAdminSitesSiteIdBody>},
         TContext
       > => {
 
-      const mutationOptions = getPatchApiV1AdminSitesSiteIdMutationOptions(options);
+      const mutationOptions = getPatchAdminSitesSiteIdMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
     /**
  * @summary Delete site
  */
-export const deleteApiV1AdminSitesSiteId = (
+export const deleteAdminSitesSiteId = (
     siteId: string,
  options?: SecondParameter<typeof customInstance>,) => {
       
       
-      return customInstance<DeleteApiV1AdminSitesSiteId200>(
-      {url: `/api/v1/admin/sites/${siteId}`, method: 'DELETE'
+      return customInstance<DeleteAdminSitesSiteId200>(
+      {url: `/admin/sites/${siteId}`, method: 'DELETE'
     },
       options);
     }
   
 
 
-export const getDeleteApiV1AdminSitesSiteIdMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1AdminSitesSiteId>>, TError,{siteId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1AdminSitesSiteId>>, TError,{siteId: string}, TContext> => {
+export const getDeleteAdminSitesSiteIdMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAdminSitesSiteId>>, TError,{siteId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteAdminSitesSiteId>>, TError,{siteId: string}, TContext> => {
 
-const mutationKey = ['deleteApiV1AdminSitesSiteId'];
+const mutationKey = ['deleteAdminSitesSiteId'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -411,10 +411,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteApiV1AdminSitesSiteId>>, {siteId: string}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteAdminSitesSiteId>>, {siteId: string}> = (props) => {
           const {siteId} = props ?? {};
 
-          return  deleteApiV1AdminSitesSiteId(siteId,requestOptions)
+          return  deleteAdminSitesSiteId(siteId,requestOptions)
         }
 
         
@@ -422,48 +422,48 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type DeleteApiV1AdminSitesSiteIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteApiV1AdminSitesSiteId>>>
+    export type DeleteAdminSitesSiteIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteAdminSitesSiteId>>>
     
-    export type DeleteApiV1AdminSitesSiteIdMutationError = ErrorType<void>
+    export type DeleteAdminSitesSiteIdMutationError = ErrorType<void>
 
     /**
  * @summary Delete site
  */
-export const useDeleteApiV1AdminSitesSiteId = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1AdminSitesSiteId>>, TError,{siteId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const useDeleteAdminSitesSiteId = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAdminSitesSiteId>>, TError,{siteId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof deleteApiV1AdminSitesSiteId>>,
+        Awaited<ReturnType<typeof deleteAdminSitesSiteId>>,
         TError,
         {siteId: string},
         TContext
       > => {
 
-      const mutationOptions = getDeleteApiV1AdminSitesSiteIdMutationOptions(options);
+      const mutationOptions = getDeleteAdminSitesSiteIdMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
     /**
  * @summary Trigger site recrawl
  */
-export const postApiV1AdminSitesSiteIdRecrawl = (
+export const postAdminSitesSiteIdRecrawl = (
     siteId: string,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<PostApiV1AdminSitesSiteIdRecrawl200>(
-      {url: `/api/v1/admin/sites/${siteId}/recrawl`, method: 'POST', signal
+      return customInstance<PostAdminSitesSiteIdRecrawl200>(
+      {url: `/admin/sites/${siteId}/recrawl`, method: 'POST', signal
     },
       options);
     }
   
 
 
-export const getPostApiV1AdminSitesSiteIdRecrawlMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminSitesSiteIdRecrawl>>, TError,{siteId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminSitesSiteIdRecrawl>>, TError,{siteId: string}, TContext> => {
+export const getPostAdminSitesSiteIdRecrawlMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminSitesSiteIdRecrawl>>, TError,{siteId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postAdminSitesSiteIdRecrawl>>, TError,{siteId: string}, TContext> => {
 
-const mutationKey = ['postApiV1AdminSitesSiteIdRecrawl'];
+const mutationKey = ['postAdminSitesSiteIdRecrawl'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -473,10 +473,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1AdminSitesSiteIdRecrawl>>, {siteId: string}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postAdminSitesSiteIdRecrawl>>, {siteId: string}> = (props) => {
           const {siteId} = props ?? {};
 
-          return  postApiV1AdminSitesSiteIdRecrawl(siteId,requestOptions)
+          return  postAdminSitesSiteIdRecrawl(siteId,requestOptions)
         }
 
         
@@ -484,23 +484,23 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiV1AdminSitesSiteIdRecrawlMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1AdminSitesSiteIdRecrawl>>>
+    export type PostAdminSitesSiteIdRecrawlMutationResult = NonNullable<Awaited<ReturnType<typeof postAdminSitesSiteIdRecrawl>>>
     
-    export type PostApiV1AdminSitesSiteIdRecrawlMutationError = ErrorType<void>
+    export type PostAdminSitesSiteIdRecrawlMutationError = ErrorType<void>
 
     /**
  * @summary Trigger site recrawl
  */
-export const usePostApiV1AdminSitesSiteIdRecrawl = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminSitesSiteIdRecrawl>>, TError,{siteId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePostAdminSitesSiteIdRecrawl = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminSitesSiteIdRecrawl>>, TError,{siteId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiV1AdminSitesSiteIdRecrawl>>,
+        Awaited<ReturnType<typeof postAdminSitesSiteIdRecrawl>>,
         TError,
         {siteId: string},
         TContext
       > => {
 
-      const mutationOptions = getPostApiV1AdminSitesSiteIdRecrawlMutationOptions(options);
+      const mutationOptions = getPostAdminSitesSiteIdRecrawlMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
@@ -508,25 +508,25 @@ export const usePostApiV1AdminSitesSiteIdRecrawl = <TError = ErrorType<void>,
  * Clear all cached data for a specific site
  * @summary Clear site cache
  */
-export const postApiV1AdminSitesSiteIdCacheClear = (
+export const postAdminSitesSiteIdCacheClear = (
     siteId: string,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<PostApiV1AdminSitesSiteIdCacheClear200>(
-      {url: `/api/v1/admin/sites/${siteId}/cache/clear`, method: 'POST', signal
+      return customInstance<PostAdminSitesSiteIdCacheClear200>(
+      {url: `/admin/sites/${siteId}/cache/clear`, method: 'POST', signal
     },
       options);
     }
   
 
 
-export const getPostApiV1AdminSitesSiteIdCacheClearMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminSitesSiteIdCacheClear>>, TError,{siteId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminSitesSiteIdCacheClear>>, TError,{siteId: string}, TContext> => {
+export const getPostAdminSitesSiteIdCacheClearMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminSitesSiteIdCacheClear>>, TError,{siteId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postAdminSitesSiteIdCacheClear>>, TError,{siteId: string}, TContext> => {
 
-const mutationKey = ['postApiV1AdminSitesSiteIdCacheClear'];
+const mutationKey = ['postAdminSitesSiteIdCacheClear'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -536,10 +536,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1AdminSitesSiteIdCacheClear>>, {siteId: string}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postAdminSitesSiteIdCacheClear>>, {siteId: string}> = (props) => {
           const {siteId} = props ?? {};
 
-          return  postApiV1AdminSitesSiteIdCacheClear(siteId,requestOptions)
+          return  postAdminSitesSiteIdCacheClear(siteId,requestOptions)
         }
 
         
@@ -547,23 +547,23 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiV1AdminSitesSiteIdCacheClearMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1AdminSitesSiteIdCacheClear>>>
+    export type PostAdminSitesSiteIdCacheClearMutationResult = NonNullable<Awaited<ReturnType<typeof postAdminSitesSiteIdCacheClear>>>
     
-    export type PostApiV1AdminSitesSiteIdCacheClearMutationError = ErrorType<void>
+    export type PostAdminSitesSiteIdCacheClearMutationError = ErrorType<void>
 
     /**
  * @summary Clear site cache
  */
-export const usePostApiV1AdminSitesSiteIdCacheClear = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminSitesSiteIdCacheClear>>, TError,{siteId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePostAdminSitesSiteIdCacheClear = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminSitesSiteIdCacheClear>>, TError,{siteId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiV1AdminSitesSiteIdCacheClear>>,
+        Awaited<ReturnType<typeof postAdminSitesSiteIdCacheClear>>,
         TError,
         {siteId: string},
         TContext
       > => {
 
-      const mutationOptions = getPostApiV1AdminSitesSiteIdCacheClearMutationOptions(options);
+      const mutationOptions = getPostAdminSitesSiteIdCacheClearMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }

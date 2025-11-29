@@ -20,10 +20,10 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
 import { StatCard } from "@/components/ui/stat-card";
 import {
-  useGetApiV1AdminUsersUserId,
-  useDeleteApiV1AdminUsersUserId,
-  usePostApiV1AdminUsersUserIdForceLogout,
-  getGetApiV1AdminUsersUserIdQueryKey,
+  useGetAdminUsersUserId,
+  useDeleteAdminUsersUserId,
+  usePostAdminUsersUserIdForceLogout,
+  getGetAdminUsersUserIdQueryKey,
 } from "@/lib/api/generated/queries/admin-users/admin-users";
 import {
   UserInfoCard,
@@ -46,11 +46,11 @@ export default function AdminUserDetailPage() {
     data: userData,
     isLoading,
     error: userError,
-  } = useGetApiV1AdminUsersUserId(userId);
+  } = useGetAdminUsersUserId(userId);
 
   const user: AdminUserDetail | undefined = userData?.data;
 
-  const deleteMutation = useDeleteApiV1AdminUsersUserId({
+  const deleteMutation = useDeleteAdminUsersUserId({
     mutation: {
       onSuccess: () => {
         router.push("/admin/users");
@@ -61,11 +61,11 @@ export default function AdminUserDetailPage() {
     },
   });
 
-  const forceLogoutMutation = usePostApiV1AdminUsersUserIdForceLogout({
+  const forceLogoutMutation = usePostAdminUsersUserIdForceLogout({
     mutation: {
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: getGetApiV1AdminUsersUserIdQueryKey(userId),
+          queryKey: getGetAdminUsersUserIdQueryKey(userId),
         });
       },
       onError: (error) => {

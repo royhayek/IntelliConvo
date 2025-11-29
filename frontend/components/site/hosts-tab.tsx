@@ -11,11 +11,11 @@ import { SectionHeader } from "@/components/ui/section-header";
 import { HostListItem } from "@/components/site/host-list-item";
 import { toast } from "sonner";
 import {
-  useGetApiV1SitesSiteIdHosts,
-  usePostApiV1SitesSiteIdHosts,
-  usePatchApiV1SitesSiteIdHostsHostId,
-  useDeleteApiV1SitesSiteIdHostsHostId,
-  getGetApiV1SitesSiteIdHostsQueryKey,
+  useGetSitesSiteIdHosts,
+  usePostSitesSiteIdHosts,
+  usePatchSitesSiteIdHostsHostId,
+  useDeleteSitesSiteIdHostsHostId,
+  getGetSitesSiteIdHostsQueryKey,
 } from "@/lib/api/generated/queries/sites/sites";
 import {
   type SiteResponse,
@@ -29,32 +29,32 @@ export function HostsTab({ site }: HostsTabProps) {
   const queryClient = useQueryClient();
   const [newHost, setNewHost] = useState("");
 
-  const { data: hostsData, isLoading } = useGetApiV1SitesSiteIdHosts(site.id);
+  const { data: hostsData, isLoading } = useGetSitesSiteIdHosts(site.id);
   const hosts = hostsData?.hosts || [];
 
-  const addHostMutation = usePostApiV1SitesSiteIdHosts({
+  const addHostMutation = usePostSitesSiteIdHosts({
     mutation: {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: getGetApiV1SitesSiteIdHostsQueryKey(site.id) });
+        queryClient.invalidateQueries({ queryKey: getGetSitesSiteIdHostsQueryKey(site.id) });
         toast.success("Host added successfully!");
         setNewHost("");
       },
     },
   });
 
-  const updateHostMutation = usePatchApiV1SitesSiteIdHostsHostId({
+  const updateHostMutation = usePatchSitesSiteIdHostsHostId({
     mutation: {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: getGetApiV1SitesSiteIdHostsQueryKey(site.id) });
+        queryClient.invalidateQueries({ queryKey: getGetSitesSiteIdHostsQueryKey(site.id) });
         toast.success("Host updated successfully!");
       },
     },
   });
 
-  const deleteHostMutation = useDeleteApiV1SitesSiteIdHostsHostId({
+  const deleteHostMutation = useDeleteSitesSiteIdHostsHostId({
     mutation: {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: getGetApiV1SitesSiteIdHostsQueryKey(site.id) });
+        queryClient.invalidateQueries({ queryKey: getGetSitesSiteIdHostsQueryKey(site.id) });
         toast.success("Host deleted successfully!");
       },
     },
@@ -153,8 +153,8 @@ export function HostsTab({ site }: HostsTabProps) {
   return (
     <div className="space-y-6">
       <SectionHeader
-        title="Access & Security"
-        description="Manage which domains and hostnames can access your chat widget"
+        title="Allowed Domains"
+        description="Manage which domains can embed and use your chat widget"
       />
 
       {/* Security Info */}

@@ -89,7 +89,7 @@ const sessionActionResponseSchema = registry.register(
 // GET /api/v1/admin/sessions
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/sessions',
+  path: '/admin/sessions',
   summary: 'Get paginated list of sessions',
   tags: ['Admin - Sessions'],
   security: [{ bearerAuth: [] }],
@@ -120,7 +120,7 @@ registry.registerPath({
 // GET /api/v1/admin/sessions/stats
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/sessions/stats',
+  path: '/admin/sessions/stats',
   summary: 'Get session statistics',
   tags: ['Admin - Sessions'],
   security: [{ bearerAuth: [] }],
@@ -141,7 +141,7 @@ registry.registerPath({
 // GET /api/v1/admin/sessions/user/{userId}
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/sessions/user/{userId}',
+  path: '/admin/sessions/user/{userId}',
   summary: 'Get sessions for a specific user',
   tags: ['Admin - Sessions'],
   security: [{ bearerAuth: [] }],
@@ -168,7 +168,7 @@ registry.registerPath({
 // DELETE /api/v1/admin/sessions/user/{userId}
 registry.registerPath({
   method: 'delete',
-  path: '/api/v1/admin/sessions/user/{userId}',
+  path: '/admin/sessions/user/{userId}',
   summary: 'Revoke all sessions for a user (force logout)',
   tags: ['Admin - Sessions'],
   security: [{ bearerAuth: [] }],
@@ -195,7 +195,7 @@ registry.registerPath({
 // DELETE /api/v1/admin/sessions/{sessionId}
 registry.registerPath({
   method: 'delete',
-  path: '/api/v1/admin/sessions/{sessionId}',
+  path: '/admin/sessions/{sessionId}',
   summary: 'Revoke a specific session',
   tags: ['Admin - Sessions'],
   security: [{ bearerAuth: [] }],
@@ -222,7 +222,7 @@ registry.registerPath({
 // POST /api/v1/admin/sessions/cleanup
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/admin/sessions/cleanup',
+  path: '/admin/sessions/cleanup',
   summary: 'Clean up expired sessions',
   tags: ['Admin - Sessions'],
   security: [{ bearerAuth: [] }],

@@ -872,4 +872,33 @@ router.post(
   })
 );
 
+// ============================================
+// Site Analytics
+// ============================================
+
+/**
+ * @swagger
+ * /api/v1/sites/{siteId}/analytics:
+ *   get:
+ *     summary: Get comprehensive site analytics
+ *     tags: [Sites]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.get(
+  '/:siteId/analytics',
+  authenticate,
+  validateParams(siteParamsSchema),
+  asyncHandler(async (req, res) => {
+    const { siteAnalyticsService } = await import('../services/site/SiteAnalyticsService');
+    const period = (req.query.period as string) || '30d';
+    const analytics = await siteAnalyticsService.getAnalytics(
+      req.params.siteId,
+      req.user!.id,
+      period
+    );
+    res.json(analytics);
+  })
+);
+
 export default router;

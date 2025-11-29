@@ -22,11 +22,11 @@ import type {
 import type {
   AccountMessageResponse,
   AccountResponse,
-  GetApiV1AccountBillingInfo200,
-  PatchApiV1Account200,
-  PatchApiV1AccountPasswordBody,
-  PutApiV1AccountBillingInfo200,
-  PutApiV1AccountBillingInfoBody,
+  GetAccountBillingInfo200,
+  PatchAccount200,
+  PatchAccountPasswordBody,
+  PutAccountBillingInfo200,
+  PutAccountBillingInfoBody,
   UpdateAccountRequest
 } from '../../models';
 
@@ -41,14 +41,14 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 /**
  * @summary Get current user account information
  */
-export const getApiV1Account = (
+export const getAccount = (
     
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<AccountResponse>(
-      {url: `/api/v1/account`, method: 'GET', signal
+      {url: `/account`, method: 'GET', signal
     },
       options);
     }
@@ -56,69 +56,69 @@ export const getApiV1Account = (
 
 
 
-export const getGetApiV1AccountQueryKey = () => {
+export const getGetAccountQueryKey = () => {
     return [
-    `/api/v1/account`
+    `/account`
     ] as const;
     }
 
     
-export const getGetApiV1AccountQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1Account>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1Account>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAccountQueryOptions = <TData = Awaited<ReturnType<typeof getAccount>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AccountQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getGetAccountQueryKey();
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1Account>>> = ({ signal }) => getApiV1Account(requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAccount>>> = ({ signal }) => getAccount(requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1Account>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AccountQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1Account>>>
-export type GetApiV1AccountQueryError = ErrorType<void>
+export type GetAccountQueryResult = NonNullable<Awaited<ReturnType<typeof getAccount>>>
+export type GetAccountQueryError = ErrorType<void>
 
 
-export function useGetApiV1Account<TData = Awaited<ReturnType<typeof getApiV1Account>>, TError = ErrorType<void>>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1Account>>, TError, TData>> & Pick<
+export function useGetAccount<TData = Awaited<ReturnType<typeof getAccount>>, TError = ErrorType<void>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1Account>>,
+          Awaited<ReturnType<typeof getAccount>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1Account>>
+          Awaited<ReturnType<typeof getAccount>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1Account<TData = Awaited<ReturnType<typeof getApiV1Account>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1Account>>, TError, TData>> & Pick<
+export function useGetAccount<TData = Awaited<ReturnType<typeof getAccount>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1Account>>,
+          Awaited<ReturnType<typeof getAccount>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1Account>>
+          Awaited<ReturnType<typeof getAccount>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1Account<TData = Awaited<ReturnType<typeof getApiV1Account>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1Account>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAccount<TData = Awaited<ReturnType<typeof getAccount>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get current user account information
  */
 
-export function useGetApiV1Account<TData = Awaited<ReturnType<typeof getApiV1Account>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1Account>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAccount<TData = Awaited<ReturnType<typeof getAccount>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AccountQueryOptions(options)
+  const queryOptions = getGetAccountQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -133,13 +133,13 @@ export function useGetApiV1Account<TData = Awaited<ReturnType<typeof getApiV1Acc
 /**
  * @summary Update user account information
  */
-export const patchApiV1Account = (
+export const patchAccount = (
     updateAccountRequest: BodyType<UpdateAccountRequest>,
  options?: SecondParameter<typeof customInstance>,) => {
       
       
-      return customInstance<PatchApiV1Account200>(
-      {url: `/api/v1/account`, method: 'PATCH',
+      return customInstance<PatchAccount200>(
+      {url: `/account`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: updateAccountRequest
     },
@@ -148,11 +148,11 @@ export const patchApiV1Account = (
   
 
 
-export const getPatchApiV1AccountMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchApiV1Account>>, TError,{data: BodyType<UpdateAccountRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof patchApiV1Account>>, TError,{data: BodyType<UpdateAccountRequest>}, TContext> => {
+export const getPatchAccountMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchAccount>>, TError,{data: BodyType<UpdateAccountRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof patchAccount>>, TError,{data: BodyType<UpdateAccountRequest>}, TContext> => {
 
-const mutationKey = ['patchApiV1Account'];
+const mutationKey = ['patchAccount'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -162,10 +162,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchApiV1Account>>, {data: BodyType<UpdateAccountRequest>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchAccount>>, {data: BodyType<UpdateAccountRequest>}> = (props) => {
           const {data} = props ?? {};
 
-          return  patchApiV1Account(data,requestOptions)
+          return  patchAccount(data,requestOptions)
         }
 
         
@@ -173,47 +173,47 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PatchApiV1AccountMutationResult = NonNullable<Awaited<ReturnType<typeof patchApiV1Account>>>
-    export type PatchApiV1AccountMutationBody = BodyType<UpdateAccountRequest>
-    export type PatchApiV1AccountMutationError = ErrorType<void>
+    export type PatchAccountMutationResult = NonNullable<Awaited<ReturnType<typeof patchAccount>>>
+    export type PatchAccountMutationBody = BodyType<UpdateAccountRequest>
+    export type PatchAccountMutationError = ErrorType<void>
 
     /**
  * @summary Update user account information
  */
-export const usePatchApiV1Account = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchApiV1Account>>, TError,{data: BodyType<UpdateAccountRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePatchAccount = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchAccount>>, TError,{data: BodyType<UpdateAccountRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof patchApiV1Account>>,
+        Awaited<ReturnType<typeof patchAccount>>,
         TError,
         {data: BodyType<UpdateAccountRequest>},
         TContext
       > => {
 
-      const mutationOptions = getPatchApiV1AccountMutationOptions(options);
+      const mutationOptions = getPatchAccountMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
     /**
  * @summary Delete user account
  */
-export const deleteApiV1Account = (
+export const deleteAccount = (
     
  options?: SecondParameter<typeof customInstance>,) => {
       
       
       return customInstance<AccountMessageResponse>(
-      {url: `/api/v1/account`, method: 'DELETE'
+      {url: `/account`, method: 'DELETE'
     },
       options);
     }
   
 
 
-export const getDeleteApiV1AccountMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1Account>>, TError,void, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1Account>>, TError,void, TContext> => {
+export const getDeleteAccountMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAccount>>, TError,void, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteAccount>>, TError,void, TContext> => {
 
-const mutationKey = ['deleteApiV1Account'];
+const mutationKey = ['deleteAccount'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -223,10 +223,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteApiV1Account>>, void> = () => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteAccount>>, void> = () => {
           
 
-          return  deleteApiV1Account(requestOptions)
+          return  deleteAccount(requestOptions)
         }
 
         
@@ -234,37 +234,37 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type DeleteApiV1AccountMutationResult = NonNullable<Awaited<ReturnType<typeof deleteApiV1Account>>>
+    export type DeleteAccountMutationResult = NonNullable<Awaited<ReturnType<typeof deleteAccount>>>
     
-    export type DeleteApiV1AccountMutationError = ErrorType<void>
+    export type DeleteAccountMutationError = ErrorType<void>
 
     /**
  * @summary Delete user account
  */
-export const useDeleteApiV1Account = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1Account>>, TError,void, TContext>, request?: SecondParameter<typeof customInstance>}
+export const useDeleteAccount = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAccount>>, TError,void, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof deleteApiV1Account>>,
+        Awaited<ReturnType<typeof deleteAccount>>,
         TError,
         void,
         TContext
       > => {
 
-      const mutationOptions = getDeleteApiV1AccountMutationOptions(options);
+      const mutationOptions = getDeleteAccountMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
     /**
  * @summary Get billing information
  */
-export const getApiV1AccountBillingInfo = (
+export const getAccountBillingInfo = (
     
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<GetApiV1AccountBillingInfo200>(
-      {url: `/api/v1/account/billing-info`, method: 'GET', signal
+      return customInstance<GetAccountBillingInfo200>(
+      {url: `/account/billing-info`, method: 'GET', signal
     },
       options);
     }
@@ -272,69 +272,69 @@ export const getApiV1AccountBillingInfo = (
 
 
 
-export const getGetApiV1AccountBillingInfoQueryKey = () => {
+export const getGetAccountBillingInfoQueryKey = () => {
     return [
-    `/api/v1/account/billing-info`
+    `/account/billing-info`
     ] as const;
     }
 
     
-export const getGetApiV1AccountBillingInfoQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AccountBillingInfo>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AccountBillingInfo>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAccountBillingInfoQueryOptions = <TData = Awaited<ReturnType<typeof getAccountBillingInfo>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAccountBillingInfo>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AccountBillingInfoQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getGetAccountBillingInfoQueryKey();
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AccountBillingInfo>>> = ({ signal }) => getApiV1AccountBillingInfo(requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAccountBillingInfo>>> = ({ signal }) => getAccountBillingInfo(requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AccountBillingInfo>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAccountBillingInfo>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AccountBillingInfoQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AccountBillingInfo>>>
-export type GetApiV1AccountBillingInfoQueryError = ErrorType<void>
+export type GetAccountBillingInfoQueryResult = NonNullable<Awaited<ReturnType<typeof getAccountBillingInfo>>>
+export type GetAccountBillingInfoQueryError = ErrorType<void>
 
 
-export function useGetApiV1AccountBillingInfo<TData = Awaited<ReturnType<typeof getApiV1AccountBillingInfo>>, TError = ErrorType<void>>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AccountBillingInfo>>, TError, TData>> & Pick<
+export function useGetAccountBillingInfo<TData = Awaited<ReturnType<typeof getAccountBillingInfo>>, TError = ErrorType<void>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAccountBillingInfo>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AccountBillingInfo>>,
+          Awaited<ReturnType<typeof getAccountBillingInfo>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AccountBillingInfo>>
+          Awaited<ReturnType<typeof getAccountBillingInfo>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AccountBillingInfo<TData = Awaited<ReturnType<typeof getApiV1AccountBillingInfo>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AccountBillingInfo>>, TError, TData>> & Pick<
+export function useGetAccountBillingInfo<TData = Awaited<ReturnType<typeof getAccountBillingInfo>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAccountBillingInfo>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AccountBillingInfo>>,
+          Awaited<ReturnType<typeof getAccountBillingInfo>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AccountBillingInfo>>
+          Awaited<ReturnType<typeof getAccountBillingInfo>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AccountBillingInfo<TData = Awaited<ReturnType<typeof getApiV1AccountBillingInfo>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AccountBillingInfo>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAccountBillingInfo<TData = Awaited<ReturnType<typeof getAccountBillingInfo>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAccountBillingInfo>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get billing information
  */
 
-export function useGetApiV1AccountBillingInfo<TData = Awaited<ReturnType<typeof getApiV1AccountBillingInfo>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AccountBillingInfo>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAccountBillingInfo<TData = Awaited<ReturnType<typeof getAccountBillingInfo>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAccountBillingInfo>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AccountBillingInfoQueryOptions(options)
+  const queryOptions = getGetAccountBillingInfoQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -349,26 +349,26 @@ export function useGetApiV1AccountBillingInfo<TData = Awaited<ReturnType<typeof 
 /**
  * @summary Update billing information
  */
-export const putApiV1AccountBillingInfo = (
-    putApiV1AccountBillingInfoBody: BodyType<PutApiV1AccountBillingInfoBody>,
+export const putAccountBillingInfo = (
+    putAccountBillingInfoBody: BodyType<PutAccountBillingInfoBody>,
  options?: SecondParameter<typeof customInstance>,) => {
       
       
-      return customInstance<PutApiV1AccountBillingInfo200>(
-      {url: `/api/v1/account/billing-info`, method: 'PUT',
+      return customInstance<PutAccountBillingInfo200>(
+      {url: `/account/billing-info`, method: 'PUT',
       headers: {'Content-Type': 'application/json', },
-      data: putApiV1AccountBillingInfoBody
+      data: putAccountBillingInfoBody
     },
       options);
     }
   
 
 
-export const getPutApiV1AccountBillingInfoMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiV1AccountBillingInfo>>, TError,{data: BodyType<PutApiV1AccountBillingInfoBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof putApiV1AccountBillingInfo>>, TError,{data: BodyType<PutApiV1AccountBillingInfoBody>}, TContext> => {
+export const getPutAccountBillingInfoMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putAccountBillingInfo>>, TError,{data: BodyType<PutAccountBillingInfoBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof putAccountBillingInfo>>, TError,{data: BodyType<PutAccountBillingInfoBody>}, TContext> => {
 
-const mutationKey = ['putApiV1AccountBillingInfo'];
+const mutationKey = ['putAccountBillingInfo'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -378,10 +378,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putApiV1AccountBillingInfo>>, {data: BodyType<PutApiV1AccountBillingInfoBody>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putAccountBillingInfo>>, {data: BodyType<PutAccountBillingInfoBody>}> = (props) => {
           const {data} = props ?? {};
 
-          return  putApiV1AccountBillingInfo(data,requestOptions)
+          return  putAccountBillingInfo(data,requestOptions)
         }
 
         
@@ -389,49 +389,49 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PutApiV1AccountBillingInfoMutationResult = NonNullable<Awaited<ReturnType<typeof putApiV1AccountBillingInfo>>>
-    export type PutApiV1AccountBillingInfoMutationBody = BodyType<PutApiV1AccountBillingInfoBody>
-    export type PutApiV1AccountBillingInfoMutationError = ErrorType<void>
+    export type PutAccountBillingInfoMutationResult = NonNullable<Awaited<ReturnType<typeof putAccountBillingInfo>>>
+    export type PutAccountBillingInfoMutationBody = BodyType<PutAccountBillingInfoBody>
+    export type PutAccountBillingInfoMutationError = ErrorType<void>
 
     /**
  * @summary Update billing information
  */
-export const usePutApiV1AccountBillingInfo = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiV1AccountBillingInfo>>, TError,{data: BodyType<PutApiV1AccountBillingInfoBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePutAccountBillingInfo = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putAccountBillingInfo>>, TError,{data: BodyType<PutAccountBillingInfoBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof putApiV1AccountBillingInfo>>,
+        Awaited<ReturnType<typeof putAccountBillingInfo>>,
         TError,
-        {data: BodyType<PutApiV1AccountBillingInfoBody>},
+        {data: BodyType<PutAccountBillingInfoBody>},
         TContext
       > => {
 
-      const mutationOptions = getPutApiV1AccountBillingInfoMutationOptions(options);
+      const mutationOptions = getPutAccountBillingInfoMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
     /**
  * @summary Change password
  */
-export const patchApiV1AccountPassword = (
-    patchApiV1AccountPasswordBody: BodyType<PatchApiV1AccountPasswordBody>,
+export const patchAccountPassword = (
+    patchAccountPasswordBody: BodyType<PatchAccountPasswordBody>,
  options?: SecondParameter<typeof customInstance>,) => {
       
       
       return customInstance<AccountMessageResponse>(
-      {url: `/api/v1/account/password`, method: 'PATCH',
+      {url: `/account/password`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
-      data: patchApiV1AccountPasswordBody
+      data: patchAccountPasswordBody
     },
       options);
     }
   
 
 
-export const getPatchApiV1AccountPasswordMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchApiV1AccountPassword>>, TError,{data: BodyType<PatchApiV1AccountPasswordBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof patchApiV1AccountPassword>>, TError,{data: BodyType<PatchApiV1AccountPasswordBody>}, TContext> => {
+export const getPatchAccountPasswordMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchAccountPassword>>, TError,{data: BodyType<PatchAccountPasswordBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof patchAccountPassword>>, TError,{data: BodyType<PatchAccountPasswordBody>}, TContext> => {
 
-const mutationKey = ['patchApiV1AccountPassword'];
+const mutationKey = ['patchAccountPassword'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -441,10 +441,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchApiV1AccountPassword>>, {data: BodyType<PatchApiV1AccountPasswordBody>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchAccountPassword>>, {data: BodyType<PatchAccountPasswordBody>}> = (props) => {
           const {data} = props ?? {};
 
-          return  patchApiV1AccountPassword(data,requestOptions)
+          return  patchAccountPassword(data,requestOptions)
         }
 
         
@@ -452,23 +452,23 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PatchApiV1AccountPasswordMutationResult = NonNullable<Awaited<ReturnType<typeof patchApiV1AccountPassword>>>
-    export type PatchApiV1AccountPasswordMutationBody = BodyType<PatchApiV1AccountPasswordBody>
-    export type PatchApiV1AccountPasswordMutationError = ErrorType<void>
+    export type PatchAccountPasswordMutationResult = NonNullable<Awaited<ReturnType<typeof patchAccountPassword>>>
+    export type PatchAccountPasswordMutationBody = BodyType<PatchAccountPasswordBody>
+    export type PatchAccountPasswordMutationError = ErrorType<void>
 
     /**
  * @summary Change password
  */
-export const usePatchApiV1AccountPassword = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchApiV1AccountPassword>>, TError,{data: BodyType<PatchApiV1AccountPasswordBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePatchAccountPassword = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchAccountPassword>>, TError,{data: BodyType<PatchAccountPasswordBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof patchApiV1AccountPassword>>,
+        Awaited<ReturnType<typeof patchAccountPassword>>,
         TError,
-        {data: BodyType<PatchApiV1AccountPasswordBody>},
+        {data: BodyType<PatchAccountPasswordBody>},
         TContext
       > => {
 
-      const mutationOptions = getPatchApiV1AccountPasswordMutationOptions(options);
+      const mutationOptions = getPatchAccountPasswordMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }

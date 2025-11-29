@@ -1,6 +1,6 @@
 # Subscription Plans & Limits Documentation
 
-This document outlines the subscription system, plan limits, and trial configuration for IntelligentConvo. Use this as a reference when implementing features across backend, frontend, and widget.
+This document outlines the subscription system, plan limits, and trial configuration for IntelliConvo. Use this as a reference when implementing features across backend, frontend, and widget.
 
 ---
 

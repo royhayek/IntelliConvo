@@ -99,3 +99,19 @@ export function formatAddress(address: {
   ].filter(Boolean);
   return parts.length > 0 ? parts.join(", ") : "No address";
 }
+
+/**
+ * Get the Socket.io server URL from the API URL.
+ * Socket.io should connect to the base URL (e.g., http://localhost:5001),
+ * not the API path (e.g., http://localhost:5001/api/v1).
+ */
+export function getSocketUrl(): string {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+  try {
+    const url = new URL(apiUrl);
+    return `${url.protocol}//${url.host}`;
+  } catch {
+    // Fallback: try to strip /api/v1 or similar paths
+    return apiUrl.replace(/\/api\/v\d+\/?$/, "").replace(/\/$/, "");
+  }
+}

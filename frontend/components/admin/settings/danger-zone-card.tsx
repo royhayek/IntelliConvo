@@ -10,10 +10,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import type { DeleteApiV1AdminEmbeddingsPineconeAll200 } from "@/lib/api/generated/models/deleteApiV1AdminEmbeddingsPineconeAll200";
+import { DeleteAdminEmbeddingsPineconeAll200 } from "@/lib/api/generated/models";
 
 interface DangerZoneCardProps {
-  deleteResult: DeleteApiV1AdminEmbeddingsPineconeAll200 | null;
+  deleteResult: DeleteAdminEmbeddingsPineconeAll200 | null;
   onDeletePinecone: () => void;
 }
 

@@ -168,7 +168,7 @@ export const messageResponseSchema = registry.register(
 // GET /api/v1/account
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/account',
+  path: '/account',
   summary: 'Get current user account information',
   tags: ['Account'],
   security: [{ bearerAuth: [] }],
@@ -190,7 +190,7 @@ registry.registerPath({
 // PATCH /api/v1/account
 registry.registerPath({
   method: 'patch',
-  path: '/api/v1/account',
+  path: '/account',
   summary: 'Update user account information',
   tags: ['Account'],
   security: [{ bearerAuth: [] }],
@@ -226,7 +226,7 @@ registry.registerPath({
 // DELETE /api/v1/account
 registry.registerPath({
   method: 'delete',
-  path: '/api/v1/account',
+  path: '/account',
   summary: 'Delete user account',
   tags: ['Account'],
   security: [{ bearerAuth: [] }],
@@ -251,7 +251,7 @@ registry.registerPath({
 // GET /api/v1/account/billing-info
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/account/billing-info',
+  path: '/account/billing-info',
   summary: 'Get billing information',
   tags: ['Account'],
   security: [{ bearerAuth: [] }],
@@ -273,7 +273,7 @@ registry.registerPath({
 // PUT /api/v1/account/billing-info
 registry.registerPath({
   method: 'put',
-  path: '/api/v1/account/billing-info',
+  path: '/account/billing-info',
   summary: 'Update billing information',
   tags: ['Account'],
   security: [{ bearerAuth: [] }],
@@ -304,7 +304,7 @@ registry.registerPath({
 // PATCH /api/v1/account/password
 registry.registerPath({
   method: 'patch',
-  path: '/api/v1/account/password',
+  path: '/account/password',
   summary: 'Change password',
   tags: ['Account'],
   security: [{ bearerAuth: [] }],

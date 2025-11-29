@@ -20,10 +20,10 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
 import { StatCard } from "@/components/ui/stat-card";
 import {
-  useGetApiV1AdminSitesSiteId,
-  useDeleteApiV1AdminSitesSiteId,
-  usePostApiV1AdminSitesSiteIdRecrawl,
-  getGetApiV1AdminSitesSiteIdQueryKey,
+  useGetAdminSitesSiteId,
+  useDeleteAdminSitesSiteId,
+  usePostAdminSitesSiteIdRecrawl,
+  getGetAdminSitesSiteIdQueryKey,
 } from "@/lib/api/generated/queries/admin-sites/admin-sites";
 import {
   SiteInfoCard,
@@ -49,11 +49,11 @@ export default function AdminSiteDetailPage() {
     data: siteResponse,
     isLoading,
     error: fetchError,
-  } = useGetApiV1AdminSitesSiteId(siteId);
+  } = useGetAdminSitesSiteId(siteId);
 
   const site: AdminSiteDetail | undefined = siteResponse?.data;
 
-  const deleteMutation = useDeleteApiV1AdminSitesSiteId({
+  const deleteMutation = useDeleteAdminSitesSiteId({
     mutation: {
       onSuccess: () => {
         router.push("/admin/sites");
@@ -64,11 +64,11 @@ export default function AdminSiteDetailPage() {
     },
   });
 
-  const recrawlMutation = usePostApiV1AdminSitesSiteIdRecrawl({
+  const recrawlMutation = usePostAdminSitesSiteIdRecrawl({
     mutation: {
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: getGetApiV1AdminSitesSiteIdQueryKey(siteId),
+          queryKey: getGetAdminSitesSiteIdQueryKey(siteId),
         });
       },
       onError: (error) => {

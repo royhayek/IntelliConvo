@@ -19,8 +19,8 @@ export function baseLayout(data: BaseLayoutData): string {
     previewText = '',
     content,
     footerText = 'This email was sent automatically. Please do not reply directly.',
-    platformName = 'IntelligentConvo',
-    supportEmail = 'support@intelligentconvo.com',
+    platformName = 'IntelliConvo',
+    supportEmail = 'support@intelliconvo.com',
     primaryColor = '#6366f1',
   } = data;
 

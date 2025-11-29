@@ -18,7 +18,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { usePostApiV1AuthResetPassword } from "@/lib/api/generated/queries/authentication/authentication";
+import { usePostAuthResetPassword } from "@/lib/api/generated/queries/authentication/authentication";
 import { AlertCircle, ArrowLeft, CheckCircle2, Eye, EyeOff, KeyRound } from "lucide-react";
 import { BrandLogo } from "@/components/ui/brand-logo";
 
@@ -54,7 +54,7 @@ function ResetPasswordContent() {
     },
   });
 
-  const resetPasswordMutation = usePostApiV1AuthResetPassword({
+  const resetPasswordMutation = usePostAuthResetPassword({
     mutation: {
       onSuccess: () => {
         setSuccess(true);
@@ -142,7 +142,7 @@ function ResetPasswordContent() {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1 text-center">
           <div className="flex justify-center mb-4">
-            <BrandLogo size="lg" showText={false} href={null} animated={false} />
+            <BrandLogo size="md" showText={false} href={null} animated={false} />
           </div>
           <CardTitle className="text-2xl font-bold">Reset your password</CardTitle>
           <CardDescription>

@@ -1,7 +1,7 @@
 {
-  "name": "@intelligentconvo/widget",
+  "name": "@intelliconvo/widget",
   "version": "1.0.0",
-  "description": "Intelligentconvo Widget - Embeddable chat widget",
+  "description": "IntelliConvo Widget - Embeddable chat widget",
   "main": "dist/widget.js",
   "scripts": {
     "dev": "webpack --mode development --watch",

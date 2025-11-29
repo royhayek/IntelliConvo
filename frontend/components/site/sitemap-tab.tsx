@@ -50,15 +50,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import {
-  useGetApiV1SitesSiteIdUrls,
-  usePostApiV1SitesSiteIdUrls,
-  usePatchApiV1SitesSiteIdUrlsUrlId,
-  usePostApiV1SitesSiteIdUrlsUrlIdCrawl,
-  useDeleteApiV1SitesSiteIdUrlsUrlId,
-  useGetApiV1SitesSiteIdUrlsUrlId,
-  usePutApiV1SitesSiteIdUrlsUrlIdContent,
-  getGetApiV1SitesSiteIdUrlsQueryKey,
-  getGetApiV1SitesSiteIdUrlsUrlIdQueryKey,
+  useGetSitesSiteIdUrls,
+  usePostSitesSiteIdUrls,
+  usePatchSitesSiteIdUrlsUrlId,
+  usePostSitesSiteIdUrlsUrlIdCrawl,
+  useDeleteSitesSiteIdUrlsUrlId,
+  useGetSitesSiteIdUrlsUrlId,
+  usePutSitesSiteIdUrlsUrlIdContent,
+  getGetSitesSiteIdUrlsQueryKey,
+  getGetSitesSiteIdUrlsUrlIdQueryKey,
 } from "@/lib/api/generated/queries/urls/urls";
 import { type SiteResponse, type SiteUrl } from "@/lib/api/generated/models";
 
@@ -146,7 +146,7 @@ export function SitemapTab({ site }: SitemapTabProps) {
       // Update all matching queries (regardless of search/filter params)
       // Using base key without params - setQueriesData does prefix matching
       queryClient.setQueriesData<SiteUrl[]>(
-        { queryKey: getGetApiV1SitesSiteIdUrlsQueryKey(site.id) },
+        { queryKey: getGetSitesSiteIdUrlsQueryKey(site.id) },
         (oldData) => {
           if (!oldData) return oldData;
           return oldData.map((url) => {
@@ -171,7 +171,7 @@ export function SitemapTab({ site }: SitemapTabProps) {
       if (hasScrapedUrls) {
         // Invalidate URL list to refresh lastCrawledAt and other metadata
         queryClient.invalidateQueries({
-          queryKey: getGetApiV1SitesSiteIdUrlsQueryKey(site.id),
+          queryKey: getGetSitesSiteIdUrlsQueryKey(site.id),
         });
 
         // Invalidate individual URL queries when content has changed (SCRAPED status)
@@ -179,7 +179,7 @@ export function SitemapTab({ site }: SitemapTabProps) {
         for (const urlUpdate of update.urls) {
           if (urlUpdate.embeddingStatus === "SCRAPED") {
             queryClient.invalidateQueries({
-              queryKey: getGetApiV1SitesSiteIdUrlsUrlIdQueryKey(
+              queryKey: getGetSitesSiteIdUrlsUrlIdQueryKey(
                 site.id,
                 urlUpdate.urlId
               ),
@@ -214,14 +214,14 @@ export function SitemapTab({ site }: SitemapTabProps) {
   });
 
   // Get URLs
-  const { data: urls = [], isLoading } = useGetApiV1SitesSiteIdUrls(site.id, {
+  const { data: urls = [], isLoading } = useGetSitesSiteIdUrls(site.id, {
     search: searchTerm || undefined,
     status: statusFilter === "all" ? undefined : statusFilter,
   });
 
   // Query for fetching single URL with content
   const { data: selectedUrlData, isLoading: isLoadingContent } =
-    useGetApiV1SitesSiteIdUrlsUrlId(site.id, selectedUrlId || "", {
+    useGetSitesSiteIdUrlsUrlId(site.id, selectedUrlId || "", {
       query: { enabled: !!selectedUrlId },
     });
 
@@ -244,11 +244,11 @@ export function SitemapTab({ site }: SitemapTabProps) {
   }, [isEditMode, selectedUrlData, editContentForm]);
 
   // Add URLs mutation
-  const addUrlsMutation = usePostApiV1SitesSiteIdUrls({
+  const addUrlsMutation = usePostSitesSiteIdUrls({
     mutation: {
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: getGetApiV1SitesSiteIdUrlsQueryKey(site.id),
+          queryKey: getGetSitesSiteIdUrlsQueryKey(site.id),
         });
         setShowAddModal(false);
         singleUrlForm.reset();
@@ -259,33 +259,33 @@ export function SitemapTab({ site }: SitemapTabProps) {
   });
 
   // Update URL mutation
-  const updateUrlMutation = usePatchApiV1SitesSiteIdUrlsUrlId({
+  const updateUrlMutation = usePatchSitesSiteIdUrlsUrlId({
     mutation: {
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: getGetApiV1SitesSiteIdUrlsQueryKey(site.id),
+          queryKey: getGetSitesSiteIdUrlsQueryKey(site.id),
         });
       },
     },
   });
 
   // Crawl URL mutation
-  const crawlUrlMutation = usePostApiV1SitesSiteIdUrlsUrlIdCrawl({
+  const crawlUrlMutation = usePostSitesSiteIdUrlsUrlIdCrawl({
     mutation: {
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: getGetApiV1SitesSiteIdUrlsQueryKey(site.id),
+          queryKey: getGetSitesSiteIdUrlsQueryKey(site.id),
         });
       },
     },
   });
 
   // Delete URL mutation
-  const deleteUrlMutation = useDeleteApiV1SitesSiteIdUrlsUrlId({
+  const deleteUrlMutation = useDeleteSitesSiteIdUrlsUrlId({
     mutation: {
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: getGetApiV1SitesSiteIdUrlsQueryKey(site.id),
+          queryKey: getGetSitesSiteIdUrlsQueryKey(site.id),
         });
         setUrlToDelete(null);
       },
@@ -293,15 +293,15 @@ export function SitemapTab({ site }: SitemapTabProps) {
   });
 
   // Mutation for updating content
-  const updateContentMutation = usePutApiV1SitesSiteIdUrlsUrlIdContent({
+  const updateContentMutation = usePutSitesSiteIdUrlsUrlIdContent({
     mutation: {
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: getGetApiV1SitesSiteIdUrlsQueryKey(site.id),
+          queryKey: getGetSitesSiteIdUrlsQueryKey(site.id),
         });
         if (selectedUrlId) {
           queryClient.invalidateQueries({
-            queryKey: getGetApiV1SitesSiteIdUrlsUrlIdQueryKey(
+            queryKey: getGetSitesSiteIdUrlsUrlIdQueryKey(
               site.id,
               selectedUrlId
             ),
@@ -390,10 +390,10 @@ export function SitemapTab({ site }: SitemapTabProps) {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div className="min-w-0 flex-1">
           <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
-            Sitemap & URLs
+            Website Content
           </h2>
           <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
-            Manage the URLs that Intelligentconvo knows about
+            Manage the web pages that your AI assistant learns from
           </p>
         </div>
         <Button

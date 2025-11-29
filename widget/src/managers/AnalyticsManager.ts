@@ -30,13 +30,13 @@ export class AnalyticsManager {
 
     // Track message events
     if (this.settings?.trackMessageEvents && eventName.startsWith('message_')) {
-      console.debug('[Intelligentconvo Analytics]', event);
+      console.debug('[IntelliConvo Analytics]', event);
       // Could send to analytics endpoint here
     }
 
     // Track user interactions
     if (this.settings?.trackUserInteractions && !eventName.startsWith('message_')) {
-      console.debug('[Intelligentconvo Analytics]', event);
+      console.debug('[IntelliConvo Analytics]', event);
       // Could send to analytics endpoint here
     }
   }

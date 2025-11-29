@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IntelligentConvo Widget Demo</title>
+    <title>IntelliConvo Widget Demo</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -41,7 +41,7 @@
     </style>
 </head>
 <body>
-    <h1>IntelligentConvo Widget Demo</h1>
+    <h1>IntelliConvo Widget Demo</h1>
 
     <div class="card">
         <h2>Configuration</h2>
@@ -56,14 +56,14 @@
 
     <script>
         window.addEventListener('load', function() {
-            if (typeof intelligentconvo === 'function') {
-                intelligentconvo('init', {
-                    siteId: '876f99b9-a547-4bfc-96ee-dec36ff6b20d',
+            if (typeof intelliconvo === 'function') {
+                intelliconvo('init', {
+                    siteId: '5ea9b02b-00e0-4ec4-854a-5b65ecc59ac7',
                     mode: 'button',
                     position: 'bottom-right',
                     // apiUrl removed - uses DEFAULT_API_URL from environment build
                     // Development build: http://localhost:5001
-                    // Production build: https://api.intelligentconvo.com
+                    // Production build: https://api.intelliconvo.com
                     onConnect: function() {
                         document.getElementById('status').className = 'status success';
                         document.getElementById('status').textContent = 'Widget connected successfully!';

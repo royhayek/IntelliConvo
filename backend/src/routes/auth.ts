@@ -181,6 +181,37 @@ router.get(
   })
 );
 
+/**
+ * @swagger
+ * /api/v1/auth/microsoft:
+ *   get:
+ *     summary: Initiate Microsoft OAuth login
+ *     tags: [Authentication]
+ */
+router.get(
+  '/microsoft',
+  checkProviderEnabled('microsoft'),
+  passport.authenticate('microsoft', { scope: ['user.read'] })
+);
+
+/**
+ * @swagger
+ * /api/v1/auth/microsoft/callback:
+ *   get:
+ *     summary: Microsoft OAuth callback
+ *     tags: [Authentication]
+ */
+router.get(
+  '/microsoft/callback',
+  checkProviderEnabled('microsoft'),
+  passport.authenticate('microsoft', { session: false }),
+  asyncHandler(async (req, res) => {
+    const user = req.user as any;
+    const result = await authService.handleOAuthCallback(user);
+    res.redirect(result.redirectUrl);
+  })
+);
+
 // ============================================
 // Token Management
 // ============================================

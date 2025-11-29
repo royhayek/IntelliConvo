@@ -24,8 +24,8 @@ import type {
   ChangePlanResponse,
   CreateSubscriptionRequest,
   CreateSubscriptionResponse,
-  GetApiV1BillingSubscriptionsParams,
-  GetApiV1BillingSubscriptionsSubscriptionIdPreviewChangeParams,
+  GetBillingSubscriptionsParams,
+  GetBillingSubscriptionsSubscriptionIdPreviewChangeParams,
   PlansListResponse,
   PortalUrlResponse,
   ProrationPreview,
@@ -45,14 +45,14 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
  * Retrieve user subscriptions, optionally filtered by site
  * @summary Get user subscriptions
  */
-export const getApiV1BillingSubscriptions = (
-    params?: GetApiV1BillingSubscriptionsParams,
+export const getBillingSubscriptions = (
+    params?: GetBillingSubscriptionsParams,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<SubscriptionsListResponse>(
-      {url: `/api/v1/billing/subscriptions`, method: 'GET',
+      {url: `/billing/subscriptions`, method: 'GET',
         params, signal
     },
       options);
@@ -61,69 +61,69 @@ export const getApiV1BillingSubscriptions = (
 
 
 
-export const getGetApiV1BillingSubscriptionsQueryKey = (params?: GetApiV1BillingSubscriptionsParams,) => {
+export const getGetBillingSubscriptionsQueryKey = (params?: GetBillingSubscriptionsParams,) => {
     return [
-    `/api/v1/billing/subscriptions`, ...(params ? [params]: [])
+    `/billing/subscriptions`, ...(params ? [params]: [])
     ] as const;
     }
 
     
-export const getGetApiV1BillingSubscriptionsQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError = ErrorType<void>>(params?: GetApiV1BillingSubscriptionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetBillingSubscriptionsQueryOptions = <TData = Awaited<ReturnType<typeof getBillingSubscriptions>>, TError = ErrorType<void>>(params?: GetBillingSubscriptionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getBillingSubscriptions>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1BillingSubscriptionsQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getGetBillingSubscriptionsQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>> = ({ signal }) => getApiV1BillingSubscriptions(params, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getBillingSubscriptions>>> = ({ signal }) => getBillingSubscriptions(params, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getBillingSubscriptions>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1BillingSubscriptionsQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>>
-export type GetApiV1BillingSubscriptionsQueryError = ErrorType<void>
+export type GetBillingSubscriptionsQueryResult = NonNullable<Awaited<ReturnType<typeof getBillingSubscriptions>>>
+export type GetBillingSubscriptionsQueryError = ErrorType<void>
 
 
-export function useGetApiV1BillingSubscriptions<TData = Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError = ErrorType<void>>(
- params: undefined |  GetApiV1BillingSubscriptionsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError, TData>> & Pick<
+export function useGetBillingSubscriptions<TData = Awaited<ReturnType<typeof getBillingSubscriptions>>, TError = ErrorType<void>>(
+ params: undefined |  GetBillingSubscriptionsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getBillingSubscriptions>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>,
+          Awaited<ReturnType<typeof getBillingSubscriptions>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>
+          Awaited<ReturnType<typeof getBillingSubscriptions>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1BillingSubscriptions<TData = Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError = ErrorType<void>>(
- params?: GetApiV1BillingSubscriptionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError, TData>> & Pick<
+export function useGetBillingSubscriptions<TData = Awaited<ReturnType<typeof getBillingSubscriptions>>, TError = ErrorType<void>>(
+ params?: GetBillingSubscriptionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getBillingSubscriptions>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>,
+          Awaited<ReturnType<typeof getBillingSubscriptions>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>
+          Awaited<ReturnType<typeof getBillingSubscriptions>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1BillingSubscriptions<TData = Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError = ErrorType<void>>(
- params?: GetApiV1BillingSubscriptionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetBillingSubscriptions<TData = Awaited<ReturnType<typeof getBillingSubscriptions>>, TError = ErrorType<void>>(
+ params?: GetBillingSubscriptionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getBillingSubscriptions>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get user subscriptions
  */
 
-export function useGetApiV1BillingSubscriptions<TData = Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError = ErrorType<void>>(
- params?: GetApiV1BillingSubscriptionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSubscriptions>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetBillingSubscriptions<TData = Awaited<ReturnType<typeof getBillingSubscriptions>>, TError = ErrorType<void>>(
+ params?: GetBillingSubscriptionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getBillingSubscriptions>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1BillingSubscriptionsQueryOptions(params,options)
+  const queryOptions = getGetBillingSubscriptionsQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -138,14 +138,14 @@ export function useGetApiV1BillingSubscriptions<TData = Awaited<ReturnType<typeo
 /**
  * @summary Create subscription
  */
-export const postApiV1BillingSubscriptions = (
+export const postBillingSubscriptions = (
     createSubscriptionRequest: BodyType<CreateSubscriptionRequest>,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<CreateSubscriptionResponse>(
-      {url: `/api/v1/billing/subscriptions`, method: 'POST',
+      {url: `/billing/subscriptions`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createSubscriptionRequest, signal
     },
@@ -154,11 +154,11 @@ export const postApiV1BillingSubscriptions = (
   
 
 
-export const getPostApiV1BillingSubscriptionsMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1BillingSubscriptions>>, TError,{data: BodyType<CreateSubscriptionRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof postApiV1BillingSubscriptions>>, TError,{data: BodyType<CreateSubscriptionRequest>}, TContext> => {
+export const getPostBillingSubscriptionsMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postBillingSubscriptions>>, TError,{data: BodyType<CreateSubscriptionRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postBillingSubscriptions>>, TError,{data: BodyType<CreateSubscriptionRequest>}, TContext> => {
 
-const mutationKey = ['postApiV1BillingSubscriptions'];
+const mutationKey = ['postBillingSubscriptions'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -168,10 +168,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1BillingSubscriptions>>, {data: BodyType<CreateSubscriptionRequest>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postBillingSubscriptions>>, {data: BodyType<CreateSubscriptionRequest>}> = (props) => {
           const {data} = props ?? {};
 
-          return  postApiV1BillingSubscriptions(data,requestOptions)
+          return  postBillingSubscriptions(data,requestOptions)
         }
 
         
@@ -179,48 +179,48 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiV1BillingSubscriptionsMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1BillingSubscriptions>>>
-    export type PostApiV1BillingSubscriptionsMutationBody = BodyType<CreateSubscriptionRequest>
-    export type PostApiV1BillingSubscriptionsMutationError = ErrorType<void>
+    export type PostBillingSubscriptionsMutationResult = NonNullable<Awaited<ReturnType<typeof postBillingSubscriptions>>>
+    export type PostBillingSubscriptionsMutationBody = BodyType<CreateSubscriptionRequest>
+    export type PostBillingSubscriptionsMutationError = ErrorType<void>
 
     /**
  * @summary Create subscription
  */
-export const usePostApiV1BillingSubscriptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1BillingSubscriptions>>, TError,{data: BodyType<CreateSubscriptionRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePostBillingSubscriptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postBillingSubscriptions>>, TError,{data: BodyType<CreateSubscriptionRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiV1BillingSubscriptions>>,
+        Awaited<ReturnType<typeof postBillingSubscriptions>>,
         TError,
         {data: BodyType<CreateSubscriptionRequest>},
         TContext
       > => {
 
-      const mutationOptions = getPostApiV1BillingSubscriptionsMutationOptions(options);
+      const mutationOptions = getPostBillingSubscriptionsMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
     /**
  * @summary Cancel subscription
  */
-export const postApiV1BillingSubscriptionsSubscriptionIdCancel = (
+export const postBillingSubscriptionsSubscriptionIdCancel = (
     subscriptionId: string,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<Subscription>(
-      {url: `/api/v1/billing/subscriptions/${subscriptionId}/cancel`, method: 'POST', signal
+      {url: `/billing/subscriptions/${subscriptionId}/cancel`, method: 'POST', signal
     },
       options);
     }
   
 
 
-export const getPostApiV1BillingSubscriptionsSubscriptionIdCancelMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdCancel>>, TError,{subscriptionId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdCancel>>, TError,{subscriptionId: string}, TContext> => {
+export const getPostBillingSubscriptionsSubscriptionIdCancelMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postBillingSubscriptionsSubscriptionIdCancel>>, TError,{subscriptionId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postBillingSubscriptionsSubscriptionIdCancel>>, TError,{subscriptionId: string}, TContext> => {
 
-const mutationKey = ['postApiV1BillingSubscriptionsSubscriptionIdCancel'];
+const mutationKey = ['postBillingSubscriptionsSubscriptionIdCancel'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -230,10 +230,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdCancel>>, {subscriptionId: string}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postBillingSubscriptionsSubscriptionIdCancel>>, {subscriptionId: string}> = (props) => {
           const {subscriptionId} = props ?? {};
 
-          return  postApiV1BillingSubscriptionsSubscriptionIdCancel(subscriptionId,requestOptions)
+          return  postBillingSubscriptionsSubscriptionIdCancel(subscriptionId,requestOptions)
         }
 
         
@@ -241,23 +241,23 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiV1BillingSubscriptionsSubscriptionIdCancelMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdCancel>>>
+    export type PostBillingSubscriptionsSubscriptionIdCancelMutationResult = NonNullable<Awaited<ReturnType<typeof postBillingSubscriptionsSubscriptionIdCancel>>>
     
-    export type PostApiV1BillingSubscriptionsSubscriptionIdCancelMutationError = ErrorType<void>
+    export type PostBillingSubscriptionsSubscriptionIdCancelMutationError = ErrorType<void>
 
     /**
  * @summary Cancel subscription
  */
-export const usePostApiV1BillingSubscriptionsSubscriptionIdCancel = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdCancel>>, TError,{subscriptionId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePostBillingSubscriptionsSubscriptionIdCancel = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postBillingSubscriptionsSubscriptionIdCancel>>, TError,{subscriptionId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdCancel>>,
+        Awaited<ReturnType<typeof postBillingSubscriptionsSubscriptionIdCancel>>,
         TError,
         {subscriptionId: string},
         TContext
       > => {
 
-      const mutationOptions = getPostApiV1BillingSubscriptionsSubscriptionIdCancelMutationOptions(options);
+      const mutationOptions = getPostBillingSubscriptionsSubscriptionIdCancelMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
@@ -265,25 +265,25 @@ export const usePostApiV1BillingSubscriptionsSubscriptionIdCancel = <TError = Er
  * Removes the pending cancellation from a subscription. Only works if subscription has cancelAtPeriodEnd set to true.
  * @summary Reactivate subscription
  */
-export const postApiV1BillingSubscriptionsSubscriptionIdReactivate = (
+export const postBillingSubscriptionsSubscriptionIdReactivate = (
     subscriptionId: string,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<Subscription>(
-      {url: `/api/v1/billing/subscriptions/${subscriptionId}/reactivate`, method: 'POST', signal
+      {url: `/billing/subscriptions/${subscriptionId}/reactivate`, method: 'POST', signal
     },
       options);
     }
   
 
 
-export const getPostApiV1BillingSubscriptionsSubscriptionIdReactivateMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdReactivate>>, TError,{subscriptionId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdReactivate>>, TError,{subscriptionId: string}, TContext> => {
+export const getPostBillingSubscriptionsSubscriptionIdReactivateMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postBillingSubscriptionsSubscriptionIdReactivate>>, TError,{subscriptionId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postBillingSubscriptionsSubscriptionIdReactivate>>, TError,{subscriptionId: string}, TContext> => {
 
-const mutationKey = ['postApiV1BillingSubscriptionsSubscriptionIdReactivate'];
+const mutationKey = ['postBillingSubscriptionsSubscriptionIdReactivate'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -293,10 +293,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdReactivate>>, {subscriptionId: string}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postBillingSubscriptionsSubscriptionIdReactivate>>, {subscriptionId: string}> = (props) => {
           const {subscriptionId} = props ?? {};
 
-          return  postApiV1BillingSubscriptionsSubscriptionIdReactivate(subscriptionId,requestOptions)
+          return  postBillingSubscriptionsSubscriptionIdReactivate(subscriptionId,requestOptions)
         }
 
         
@@ -304,48 +304,48 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiV1BillingSubscriptionsSubscriptionIdReactivateMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdReactivate>>>
+    export type PostBillingSubscriptionsSubscriptionIdReactivateMutationResult = NonNullable<Awaited<ReturnType<typeof postBillingSubscriptionsSubscriptionIdReactivate>>>
     
-    export type PostApiV1BillingSubscriptionsSubscriptionIdReactivateMutationError = ErrorType<void>
+    export type PostBillingSubscriptionsSubscriptionIdReactivateMutationError = ErrorType<void>
 
     /**
  * @summary Reactivate subscription
  */
-export const usePostApiV1BillingSubscriptionsSubscriptionIdReactivate = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdReactivate>>, TError,{subscriptionId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePostBillingSubscriptionsSubscriptionIdReactivate = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postBillingSubscriptionsSubscriptionIdReactivate>>, TError,{subscriptionId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdReactivate>>,
+        Awaited<ReturnType<typeof postBillingSubscriptionsSubscriptionIdReactivate>>,
         TError,
         {subscriptionId: string},
         TContext
       > => {
 
-      const mutationOptions = getPostApiV1BillingSubscriptionsSubscriptionIdReactivateMutationOptions(options);
+      const mutationOptions = getPostBillingSubscriptionsSubscriptionIdReactivateMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
     /**
  * @summary Get customer portal URL
  */
-export const postApiV1BillingSubscriptionsSubscriptionIdPortal = (
+export const postBillingSubscriptionsSubscriptionIdPortal = (
     subscriptionId: string,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<PortalUrlResponse>(
-      {url: `/api/v1/billing/subscriptions/${subscriptionId}/portal`, method: 'POST', signal
+      {url: `/billing/subscriptions/${subscriptionId}/portal`, method: 'POST', signal
     },
       options);
     }
   
 
 
-export const getPostApiV1BillingSubscriptionsSubscriptionIdPortalMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdPortal>>, TError,{subscriptionId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdPortal>>, TError,{subscriptionId: string}, TContext> => {
+export const getPostBillingSubscriptionsSubscriptionIdPortalMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postBillingSubscriptionsSubscriptionIdPortal>>, TError,{subscriptionId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postBillingSubscriptionsSubscriptionIdPortal>>, TError,{subscriptionId: string}, TContext> => {
 
-const mutationKey = ['postApiV1BillingSubscriptionsSubscriptionIdPortal'];
+const mutationKey = ['postBillingSubscriptionsSubscriptionIdPortal'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -355,10 +355,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdPortal>>, {subscriptionId: string}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postBillingSubscriptionsSubscriptionIdPortal>>, {subscriptionId: string}> = (props) => {
           const {subscriptionId} = props ?? {};
 
-          return  postApiV1BillingSubscriptionsSubscriptionIdPortal(subscriptionId,requestOptions)
+          return  postBillingSubscriptionsSubscriptionIdPortal(subscriptionId,requestOptions)
         }
 
         
@@ -366,37 +366,37 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiV1BillingSubscriptionsSubscriptionIdPortalMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdPortal>>>
+    export type PostBillingSubscriptionsSubscriptionIdPortalMutationResult = NonNullable<Awaited<ReturnType<typeof postBillingSubscriptionsSubscriptionIdPortal>>>
     
-    export type PostApiV1BillingSubscriptionsSubscriptionIdPortalMutationError = ErrorType<void>
+    export type PostBillingSubscriptionsSubscriptionIdPortalMutationError = ErrorType<void>
 
     /**
  * @summary Get customer portal URL
  */
-export const usePostApiV1BillingSubscriptionsSubscriptionIdPortal = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdPortal>>, TError,{subscriptionId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePostBillingSubscriptionsSubscriptionIdPortal = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postBillingSubscriptionsSubscriptionIdPortal>>, TError,{subscriptionId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdPortal>>,
+        Awaited<ReturnType<typeof postBillingSubscriptionsSubscriptionIdPortal>>,
         TError,
         {subscriptionId: string},
         TContext
       > => {
 
-      const mutationOptions = getPostApiV1BillingSubscriptionsSubscriptionIdPortalMutationOptions(options);
+      const mutationOptions = getPostBillingSubscriptionsSubscriptionIdPortalMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
     /**
  * @summary Get available plans
  */
-export const getApiV1BillingPlans = (
+export const getBillingPlans = (
     
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<PlansListResponse>(
-      {url: `/api/v1/billing/plans`, method: 'GET', signal
+      {url: `/billing/plans`, method: 'GET', signal
     },
       options);
     }
@@ -404,69 +404,69 @@ export const getApiV1BillingPlans = (
 
 
 
-export const getGetApiV1BillingPlansQueryKey = () => {
+export const getGetBillingPlansQueryKey = () => {
     return [
-    `/api/v1/billing/plans`
+    `/billing/plans`
     ] as const;
     }
 
     
-export const getGetApiV1BillingPlansQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1BillingPlans>>, TError = ErrorType<unknown>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingPlans>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetBillingPlansQueryOptions = <TData = Awaited<ReturnType<typeof getBillingPlans>>, TError = ErrorType<unknown>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getBillingPlans>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1BillingPlansQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getGetBillingPlansQueryKey();
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1BillingPlans>>> = ({ signal }) => getApiV1BillingPlans(requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getBillingPlans>>> = ({ signal }) => getBillingPlans(requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingPlans>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getBillingPlans>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1BillingPlansQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1BillingPlans>>>
-export type GetApiV1BillingPlansQueryError = ErrorType<unknown>
+export type GetBillingPlansQueryResult = NonNullable<Awaited<ReturnType<typeof getBillingPlans>>>
+export type GetBillingPlansQueryError = ErrorType<unknown>
 
 
-export function useGetApiV1BillingPlans<TData = Awaited<ReturnType<typeof getApiV1BillingPlans>>, TError = ErrorType<unknown>>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingPlans>>, TError, TData>> & Pick<
+export function useGetBillingPlans<TData = Awaited<ReturnType<typeof getBillingPlans>>, TError = ErrorType<unknown>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getBillingPlans>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1BillingPlans>>,
+          Awaited<ReturnType<typeof getBillingPlans>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1BillingPlans>>
+          Awaited<ReturnType<typeof getBillingPlans>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1BillingPlans<TData = Awaited<ReturnType<typeof getApiV1BillingPlans>>, TError = ErrorType<unknown>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingPlans>>, TError, TData>> & Pick<
+export function useGetBillingPlans<TData = Awaited<ReturnType<typeof getBillingPlans>>, TError = ErrorType<unknown>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getBillingPlans>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1BillingPlans>>,
+          Awaited<ReturnType<typeof getBillingPlans>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1BillingPlans>>
+          Awaited<ReturnType<typeof getBillingPlans>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1BillingPlans<TData = Awaited<ReturnType<typeof getApiV1BillingPlans>>, TError = ErrorType<unknown>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingPlans>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetBillingPlans<TData = Awaited<ReturnType<typeof getBillingPlans>>, TError = ErrorType<unknown>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getBillingPlans>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get available plans
  */
 
-export function useGetApiV1BillingPlans<TData = Awaited<ReturnType<typeof getApiV1BillingPlans>>, TError = ErrorType<unknown>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingPlans>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetBillingPlans<TData = Awaited<ReturnType<typeof getBillingPlans>>, TError = ErrorType<unknown>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getBillingPlans>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1BillingPlansQueryOptions(options)
+  const queryOptions = getGetBillingPlansQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -482,7 +482,7 @@ export function useGetApiV1BillingPlans<TData = Awaited<ReturnType<typeof getApi
  * Upgrade or downgrade subscription plan. Stripe handles proration automatically.
  * @summary Change subscription plan
  */
-export const postApiV1BillingSubscriptionsSubscriptionIdChangePlan = (
+export const postBillingSubscriptionsSubscriptionIdChangePlan = (
     subscriptionId: string,
     changePlanRequest: BodyType<ChangePlanRequest>,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
@@ -490,7 +490,7 @@ export const postApiV1BillingSubscriptionsSubscriptionIdChangePlan = (
       
       
       return customInstance<ChangePlanResponse>(
-      {url: `/api/v1/billing/subscriptions/${subscriptionId}/change-plan`, method: 'POST',
+      {url: `/billing/subscriptions/${subscriptionId}/change-plan`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: changePlanRequest, signal
     },
@@ -499,11 +499,11 @@ export const postApiV1BillingSubscriptionsSubscriptionIdChangePlan = (
   
 
 
-export const getPostApiV1BillingSubscriptionsSubscriptionIdChangePlanMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdChangePlan>>, TError,{subscriptionId: string;data: BodyType<ChangePlanRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdChangePlan>>, TError,{subscriptionId: string;data: BodyType<ChangePlanRequest>}, TContext> => {
+export const getPostBillingSubscriptionsSubscriptionIdChangePlanMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postBillingSubscriptionsSubscriptionIdChangePlan>>, TError,{subscriptionId: string;data: BodyType<ChangePlanRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postBillingSubscriptionsSubscriptionIdChangePlan>>, TError,{subscriptionId: string;data: BodyType<ChangePlanRequest>}, TContext> => {
 
-const mutationKey = ['postApiV1BillingSubscriptionsSubscriptionIdChangePlan'];
+const mutationKey = ['postBillingSubscriptionsSubscriptionIdChangePlan'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -513,10 +513,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdChangePlan>>, {subscriptionId: string;data: BodyType<ChangePlanRequest>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postBillingSubscriptionsSubscriptionIdChangePlan>>, {subscriptionId: string;data: BodyType<ChangePlanRequest>}> = (props) => {
           const {subscriptionId,data} = props ?? {};
 
-          return  postApiV1BillingSubscriptionsSubscriptionIdChangePlan(subscriptionId,data,requestOptions)
+          return  postBillingSubscriptionsSubscriptionIdChangePlan(subscriptionId,data,requestOptions)
         }
 
         
@@ -524,23 +524,23 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiV1BillingSubscriptionsSubscriptionIdChangePlanMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdChangePlan>>>
-    export type PostApiV1BillingSubscriptionsSubscriptionIdChangePlanMutationBody = BodyType<ChangePlanRequest>
-    export type PostApiV1BillingSubscriptionsSubscriptionIdChangePlanMutationError = ErrorType<void>
+    export type PostBillingSubscriptionsSubscriptionIdChangePlanMutationResult = NonNullable<Awaited<ReturnType<typeof postBillingSubscriptionsSubscriptionIdChangePlan>>>
+    export type PostBillingSubscriptionsSubscriptionIdChangePlanMutationBody = BodyType<ChangePlanRequest>
+    export type PostBillingSubscriptionsSubscriptionIdChangePlanMutationError = ErrorType<void>
 
     /**
  * @summary Change subscription plan
  */
-export const usePostApiV1BillingSubscriptionsSubscriptionIdChangePlan = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdChangePlan>>, TError,{subscriptionId: string;data: BodyType<ChangePlanRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePostBillingSubscriptionsSubscriptionIdChangePlan = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postBillingSubscriptionsSubscriptionIdChangePlan>>, TError,{subscriptionId: string;data: BodyType<ChangePlanRequest>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiV1BillingSubscriptionsSubscriptionIdChangePlan>>,
+        Awaited<ReturnType<typeof postBillingSubscriptionsSubscriptionIdChangePlan>>,
         TError,
         {subscriptionId: string;data: BodyType<ChangePlanRequest>},
         TContext
       > => {
 
-      const mutationOptions = getPostApiV1BillingSubscriptionsSubscriptionIdChangePlanMutationOptions(options);
+      const mutationOptions = getPostBillingSubscriptionsSubscriptionIdChangePlanMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
@@ -548,15 +548,15 @@ export const usePostApiV1BillingSubscriptionsSubscriptionIdChangePlan = <TError 
  * Get a preview of charges/credits for changing to a different plan
  * @summary Preview plan change proration
  */
-export const getApiV1BillingSubscriptionsSubscriptionIdPreviewChange = (
+export const getBillingSubscriptionsSubscriptionIdPreviewChange = (
     subscriptionId: string,
-    params: GetApiV1BillingSubscriptionsSubscriptionIdPreviewChangeParams,
+    params: GetBillingSubscriptionsSubscriptionIdPreviewChangeParams,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<ProrationPreview>(
-      {url: `/api/v1/billing/subscriptions/${subscriptionId}/preview-change`, method: 'GET',
+      {url: `/billing/subscriptions/${subscriptionId}/preview-change`, method: 'GET',
         params, signal
     },
       options);
@@ -565,75 +565,75 @@ export const getApiV1BillingSubscriptionsSubscriptionIdPreviewChange = (
 
 
 
-export const getGetApiV1BillingSubscriptionsSubscriptionIdPreviewChangeQueryKey = (subscriptionId?: string,
-    params?: GetApiV1BillingSubscriptionsSubscriptionIdPreviewChangeParams,) => {
+export const getGetBillingSubscriptionsSubscriptionIdPreviewChangeQueryKey = (subscriptionId?: string,
+    params?: GetBillingSubscriptionsSubscriptionIdPreviewChangeParams,) => {
     return [
-    `/api/v1/billing/subscriptions/${subscriptionId}/preview-change`, ...(params ? [params]: [])
+    `/billing/subscriptions/${subscriptionId}/preview-change`, ...(params ? [params]: [])
     ] as const;
     }
 
     
-export const getGetApiV1BillingSubscriptionsSubscriptionIdPreviewChangeQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1BillingSubscriptionsSubscriptionIdPreviewChange>>, TError = ErrorType<void>>(subscriptionId: string,
-    params: GetApiV1BillingSubscriptionsSubscriptionIdPreviewChangeParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSubscriptionsSubscriptionIdPreviewChange>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetBillingSubscriptionsSubscriptionIdPreviewChangeQueryOptions = <TData = Awaited<ReturnType<typeof getBillingSubscriptionsSubscriptionIdPreviewChange>>, TError = ErrorType<void>>(subscriptionId: string,
+    params: GetBillingSubscriptionsSubscriptionIdPreviewChangeParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getBillingSubscriptionsSubscriptionIdPreviewChange>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1BillingSubscriptionsSubscriptionIdPreviewChangeQueryKey(subscriptionId,params);
+  const queryKey =  queryOptions?.queryKey ?? getGetBillingSubscriptionsSubscriptionIdPreviewChangeQueryKey(subscriptionId,params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1BillingSubscriptionsSubscriptionIdPreviewChange>>> = ({ signal }) => getApiV1BillingSubscriptionsSubscriptionIdPreviewChange(subscriptionId,params, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getBillingSubscriptionsSubscriptionIdPreviewChange>>> = ({ signal }) => getBillingSubscriptionsSubscriptionIdPreviewChange(subscriptionId,params, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(subscriptionId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSubscriptionsSubscriptionIdPreviewChange>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: !!(subscriptionId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getBillingSubscriptionsSubscriptionIdPreviewChange>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1BillingSubscriptionsSubscriptionIdPreviewChangeQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1BillingSubscriptionsSubscriptionIdPreviewChange>>>
-export type GetApiV1BillingSubscriptionsSubscriptionIdPreviewChangeQueryError = ErrorType<void>
+export type GetBillingSubscriptionsSubscriptionIdPreviewChangeQueryResult = NonNullable<Awaited<ReturnType<typeof getBillingSubscriptionsSubscriptionIdPreviewChange>>>
+export type GetBillingSubscriptionsSubscriptionIdPreviewChangeQueryError = ErrorType<void>
 
 
-export function useGetApiV1BillingSubscriptionsSubscriptionIdPreviewChange<TData = Awaited<ReturnType<typeof getApiV1BillingSubscriptionsSubscriptionIdPreviewChange>>, TError = ErrorType<void>>(
+export function useGetBillingSubscriptionsSubscriptionIdPreviewChange<TData = Awaited<ReturnType<typeof getBillingSubscriptionsSubscriptionIdPreviewChange>>, TError = ErrorType<void>>(
  subscriptionId: string,
-    params: GetApiV1BillingSubscriptionsSubscriptionIdPreviewChangeParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSubscriptionsSubscriptionIdPreviewChange>>, TError, TData>> & Pick<
+    params: GetBillingSubscriptionsSubscriptionIdPreviewChangeParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getBillingSubscriptionsSubscriptionIdPreviewChange>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1BillingSubscriptionsSubscriptionIdPreviewChange>>,
+          Awaited<ReturnType<typeof getBillingSubscriptionsSubscriptionIdPreviewChange>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1BillingSubscriptionsSubscriptionIdPreviewChange>>
+          Awaited<ReturnType<typeof getBillingSubscriptionsSubscriptionIdPreviewChange>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1BillingSubscriptionsSubscriptionIdPreviewChange<TData = Awaited<ReturnType<typeof getApiV1BillingSubscriptionsSubscriptionIdPreviewChange>>, TError = ErrorType<void>>(
+export function useGetBillingSubscriptionsSubscriptionIdPreviewChange<TData = Awaited<ReturnType<typeof getBillingSubscriptionsSubscriptionIdPreviewChange>>, TError = ErrorType<void>>(
  subscriptionId: string,
-    params: GetApiV1BillingSubscriptionsSubscriptionIdPreviewChangeParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSubscriptionsSubscriptionIdPreviewChange>>, TError, TData>> & Pick<
+    params: GetBillingSubscriptionsSubscriptionIdPreviewChangeParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getBillingSubscriptionsSubscriptionIdPreviewChange>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1BillingSubscriptionsSubscriptionIdPreviewChange>>,
+          Awaited<ReturnType<typeof getBillingSubscriptionsSubscriptionIdPreviewChange>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1BillingSubscriptionsSubscriptionIdPreviewChange>>
+          Awaited<ReturnType<typeof getBillingSubscriptionsSubscriptionIdPreviewChange>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1BillingSubscriptionsSubscriptionIdPreviewChange<TData = Awaited<ReturnType<typeof getApiV1BillingSubscriptionsSubscriptionIdPreviewChange>>, TError = ErrorType<void>>(
+export function useGetBillingSubscriptionsSubscriptionIdPreviewChange<TData = Awaited<ReturnType<typeof getBillingSubscriptionsSubscriptionIdPreviewChange>>, TError = ErrorType<void>>(
  subscriptionId: string,
-    params: GetApiV1BillingSubscriptionsSubscriptionIdPreviewChangeParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSubscriptionsSubscriptionIdPreviewChange>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+    params: GetBillingSubscriptionsSubscriptionIdPreviewChangeParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getBillingSubscriptionsSubscriptionIdPreviewChange>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Preview plan change proration
  */
 
-export function useGetApiV1BillingSubscriptionsSubscriptionIdPreviewChange<TData = Awaited<ReturnType<typeof getApiV1BillingSubscriptionsSubscriptionIdPreviewChange>>, TError = ErrorType<void>>(
+export function useGetBillingSubscriptionsSubscriptionIdPreviewChange<TData = Awaited<ReturnType<typeof getBillingSubscriptionsSubscriptionIdPreviewChange>>, TError = ErrorType<void>>(
  subscriptionId: string,
-    params: GetApiV1BillingSubscriptionsSubscriptionIdPreviewChangeParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1BillingSubscriptionsSubscriptionIdPreviewChange>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+    params: GetBillingSubscriptionsSubscriptionIdPreviewChangeParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getBillingSubscriptionsSubscriptionIdPreviewChange>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1BillingSubscriptionsSubscriptionIdPreviewChangeQueryOptions(subscriptionId,params,options)
+  const queryOptions = getGetBillingSubscriptionsSubscriptionIdPreviewChangeQueryOptions(subscriptionId,params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

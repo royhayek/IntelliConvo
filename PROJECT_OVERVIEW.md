@@ -1,8 +1,8 @@
-# IntelligentConvo - Project Overview
+# IntelliConvo - Project Overview
 
 ## Executive Summary
 
-**IntelligentConvo** is a multi-tenant SaaS platform that enables websites to embed intelligent AI-powered chat assistants. The platform automatically learns from website content through crawling and semantic embeddings, requiring zero manual training to provide contextually relevant responses.
+**IntelliConvo** is a multi-tenant SaaS platform that enables websites to embed intelligent AI-powered chat assistants. The platform automatically learns from website content through crawling and semantic embeddings, requiring zero manual training to provide contextually relevant responses.
 
 ---
 
@@ -261,10 +261,10 @@ SCRAPED → PENDING → PROCESSING → READY
 <script>
   (function(s,i,d,e,c,o,n,v){
     s[c]=s[c]||function(){(s[c].q=s[c].q||[]).push(arguments)};
-    v=i.createElement(d);v.async=1;v.src='https://cdn.intelligentconvo.ai/widget.js';
+    v=i.createElement(d);v.async=1;v.src='https://cdn.intelliconvo.ai/widget.js';
     o=i.getElementsByTagName(d)[0];o.parentNode.insertBefore(v,o);
     s[c]('init',{siteId:'your-site-id',mode:'button'});
-  })(window,document,'script','intelligentconvo');
+  })(window,document,'script','intelliconvo');
 </script>
 ```
 
@@ -273,7 +273,7 @@ SCRAPED → PENDING → PROCESSING → READY
 ## Project Structure
 
 ```
-intelligentconvo/
+intelliconvo/
 ├── backend/                 # Node.js API server
 │   ├── src/
 │   │   ├── routes/         # API endpoints
@@ -291,13 +291,11 @@ intelligentconvo/
 │   └── hooks/             # React hooks
 │
 ├── widget/                # Embeddable chat widget
-│   ├── src/
-│   │   ├── handlers/      # Event handlers
-│   │   ├── managers/      # Utility managers
-│   │   └── renderers/     # UI rendering
-│   └── webpack.config.js
-│
-└── docker-compose.yml     # Local development
+    ├── src/
+    │   ├── handlers/      # Event handlers
+    │   ├── managers/      # Utility managers
+    │   └── renderers/     # UI rendering
+    └── webpack.config.js
 ```
 
 ---
@@ -319,9 +317,6 @@ npm run lint         # Run ESLint
 # Widget
 npm run dev          # Build in watch mode
 npm run build        # Build for production
-
-# Docker
-docker-compose up -d # Start all services
 ```
 
 ---
@@ -357,7 +352,7 @@ WIDGET_CDN_URL=http://localhost:8080
 
 ## Summary
 
-IntelligentConvo is a comprehensive SaaS platform with:
+IntelliConvo is a comprehensive SaaS platform with:
 
 - **3 main components**: Backend API, Frontend Dashboard, Embeddable Widget
 - **4 databases/stores**: PostgreSQL, Redis, Pinecone, file storage

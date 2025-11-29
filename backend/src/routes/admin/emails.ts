@@ -268,18 +268,18 @@ router.post('/test', async (req: Request, res: Response, next: NextFunction) => 
     // Send a simple test email
     const result = await emailService.sendRawEmail({
       to: email,
-      subject: 'Test Email from IntelligentConvo',
+      subject: 'Test Email from IntelliConvo',
       html: `
         <div style="font-family: Arial, sans-serif; padding: 20px;">
           <h2>Test Email</h2>
-          <p>This is a test email from IntelligentConvo to verify your email configuration.</p>
+          <p>This is a test email from IntelliConvo to verify your email configuration.</p>
           <p>If you received this email, your email service is working correctly!</p>
           <p style="color: #666; margin-top: 20px; font-size: 12px;">
             Sent at: ${new Date().toISOString()}
           </p>
         </div>
       `,
-      text: 'This is a test email from IntelligentConvo. If you received this, your email service is working correctly!',
+      text: 'This is a test email from IntelliConvo. If you received this, your email service is working correctly!',
     });
 
     if (result.success) {

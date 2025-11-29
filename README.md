@@ -1,4 +1,4 @@
-# Intelligentconvo Platform
+# IntelliConvo Platform
 
 A SaaS conversational AI platform that enables websites to embed intelligent chat and voice assistants. The platform automatically crawls website content, creates a knowledge base, and provides visitors with AI-powered assistance.
 
@@ -27,12 +27,11 @@ A SaaS conversational AI platform that enables websites to embed intelligent cha
 ## 📦 Project Structure
 
 ```
-intelligentconvo-platform/
+intelliconvo-platform/
 ├── backend/           # Node.js API server
 ├── frontend/          # Next.js admin dashboard
 ├── widget/           # Embeddable chat widget
 ├── shared/           # Shared types and utilities
-├── docker-compose.yml # Development environment
 └── README.md
 ```
 
@@ -41,7 +40,6 @@ intelligentconvo-platform/
 ### Prerequisites
 
 - Node.js 18+
-- Docker & Docker Compose
 - OpenAI API Key
 - Pinecone Account
 
@@ -50,7 +48,7 @@ intelligentconvo-platform/
 ```bash
 # Clone the repository
 git clone <repository-url>
-cd intelligentconvo-platform
+cd intelliconvo-platform
 
 # Copy environment variables
 cp .env.example .env
@@ -59,27 +57,7 @@ cp .env.example .env
 nano .env
 ```
 
-### 2. Run with Docker (Recommended)
-
-```bash
-# Start all services
-docker-compose up -d
-
-# View logs
-docker-compose logs -f
-
-# Stop all services
-docker-compose down
-```
-
-Services will be available at:
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:5000
-- Widget Demo: http://localhost:8080
-- PostgreSQL: localhost:5432
-- Redis: localhost:6379
-
-### 3. Manual Setup (Alternative)
+### 3. Setup
 
 #### Backend Setup
 
@@ -163,24 +141,16 @@ To integrate the widget into a website:
 <script>
   (function(s,i,d,e,c,o,n,v){
     s[c]=s[c]||function(){(s[c].q=s[c].q||[]).push(arguments)};
-    v=i.createElement(d);v.async=1;v.src='https://cdn.intelligentconvo.ai/widget.js';
+    v=i.createElement(d);v.async=1;v.src='https://cdn.intelliconvo.ai/widget.js';
     o=i.getElementsByTagName(d)[0];o.parentNode.insertBefore(v,o);
     s[c]('init',{siteId:'your-site-id',mode:'button'});
-  })(window,document,'script','intelligentconvo');
+  })(window,document,'script','intelliconvo');
 </script>
 ```
 
 ## 🌐 Deployment
 
 ### Production Build
-
-```bash
-# Build all components
-docker-compose -f docker-compose.prod.yml build
-
-# Deploy
-docker-compose -f docker-compose.prod.yml up -d
-```
 
 ### Environment Variables
 
@@ -195,16 +165,14 @@ OPENAI_API_KEY=sk-...
 
 # Pinecone
 PINECONE_API_KEY=...
-PINECONE_ENVIRONMENT=us-east1-gcp
-PINECONE_INDEX_NAME=intelligentconvo-embeddings
+PINECONE_INDEX_NAME=intelliconvo-embeddings
 
 # JWT
 JWT_SECRET=your-secure-secret
 
 # URLs
-FRONTEND_URL=https://app.intelligentconvo.ai
-BACKEND_URL=https://api.intelligentconvo.ai
-WIDGET_CDN_URL=https://cdn.intelligentconvo.ai
+FRONTEND_URL=https://app.intelliconvo.ai
+WIDGET_CDN_URL=https://cdn.intelliconvo.ai
 ```
 
 ## 🧪 Testing
@@ -268,11 +236,6 @@ Authorization: Bearer <access_token>
 ### Logs
 
 ```bash
-# Docker logs
-docker-compose logs backend
-docker-compose logs frontend
-docker-compose logs widget
-
 # Local logs
 tail -f backend/logs/error.log
 tail -f backend/logs/all.log
@@ -294,5 +257,5 @@ This project is licensed under the MIT License.
 
 For support and questions:
 - Open an issue on GitHub
-- Contact: support@intelligentconvo.ai
-- Documentation: https://docs.intelligentconvo.ai
+- Contact: support@intelliconvo.ai
+- Documentation: https://docs.intelliconvo.ai

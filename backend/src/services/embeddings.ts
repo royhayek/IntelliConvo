@@ -35,7 +35,7 @@ if (process.env.PINECONE_API_KEY && process.env.PINECONE_API_KEY !== 'your_pinec
     pinecone = new Pinecone({
       apiKey: process.env.PINECONE_API_KEY!,
     });
-    index = pinecone.index(process.env.PINECONE_INDEX_NAME || 'intelligentconvo');
+    index = pinecone.index(process.env.PINECONE_INDEX_NAME || 'intelliconvo');
     logger.info(`Pinecone initialized with ${EMBEDDING_DIMENSIONS}-dimensional embeddings`);
   } catch (error) {
     logger.warn('Pinecone initialization failed, running without vector storage:', error);
@@ -563,7 +563,7 @@ export async function deleteAllPineconeVectors(): Promise<{ success: boolean; me
       };
     }
 
-    const indexName = process.env.PINECONE_INDEX_NAME || 'intelligentconvo';
+    const indexName = process.env.PINECONE_INDEX_NAME || 'intelliconvo';
     const targetIndex = pinecone.index(indexName);
 
     await targetIndex.namespace('').deleteAll();

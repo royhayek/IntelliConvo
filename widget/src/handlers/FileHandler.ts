@@ -86,7 +86,7 @@ export class FileHandler {
    * Updates the file preview UI with pending files
    */
   public updateFilePreview(): void {
-    let previewContainer = document.getElementById('intelligentconvo-file-preview');
+    let previewContainer = document.getElementById('intelliconvo-file-preview');
 
     if (this.dependencies.pendingFiles.length === 0) {
       if (previewContainer) previewContainer.remove();
@@ -95,26 +95,26 @@ export class FileHandler {
 
     if (!previewContainer) {
       previewContainer = document.createElement('div');
-      previewContainer.id = 'intelligentconvo-file-preview';
-      previewContainer.className = 'intelligentconvo-file-preview';
+      previewContainer.id = 'intelliconvo-file-preview';
+      previewContainer.className = 'intelliconvo-file-preview';
 
-      const inputArea = document.querySelector('.intelligentconvo-input');
+      const inputArea = document.querySelector('.intelliconvo-input');
       if (inputArea) {
         inputArea.insertBefore(previewContainer, inputArea.firstChild);
       }
     }
 
     previewContainer.innerHTML = this.dependencies.pendingFiles.map((file, index) => `
-      <div class="intelligentconvo-file-item" data-file-index="${index}">
-        <span class="intelligentconvo-file-name">${this.dependencies.sanitizeHtml(file.name)}</span>
-        <div class="intelligentconvo-file-progress" id="file-progress-${index}" style="display: none;">
-          <div class="intelligentconvo-file-progress-bar">
-            <div class="intelligentconvo-file-progress-fill" style="width: 0%"></div>
+      <div class="intelliconvo-file-item" data-file-index="${index}">
+        <span class="intelliconvo-file-name">${this.dependencies.sanitizeHtml(file.name)}</span>
+        <div class="intelliconvo-file-progress" id="file-progress-${index}" style="display: none;">
+          <div class="intelliconvo-file-progress-bar">
+            <div class="intelliconvo-file-progress-fill" style="width: 0%"></div>
           </div>
-          <span class="intelligentconvo-file-progress-text">0%</span>
+          <span class="intelliconvo-file-progress-text">0%</span>
         </div>
         <button
-          class="intelligentconvo-file-remove"
+          class="intelliconvo-file-remove"
           data-index="${index}"
           aria-label="Remove ${file.name}"
         >×</button>
@@ -122,7 +122,7 @@ export class FileHandler {
     `).join('');
 
     // Add remove handlers
-    previewContainer.querySelectorAll('.intelligentconvo-file-remove').forEach(btn => {
+    previewContainer.querySelectorAll('.intelliconvo-file-remove').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const index = parseInt((e.target as HTMLElement).getAttribute('data-index') || '0');
         this.removeFile(index);
@@ -234,8 +234,8 @@ export class FileHandler {
     }
 
     // Update progress bar
-    const progressFill = progressContainer.querySelector('.intelligentconvo-file-progress-fill') as HTMLElement;
-    const progressText = progressContainer.querySelector('.intelligentconvo-file-progress-text') as HTMLElement;
+    const progressFill = progressContainer.querySelector('.intelliconvo-file-progress-fill') as HTMLElement;
+    const progressText = progressContainer.querySelector('.intelliconvo-file-progress-text') as HTMLElement;
 
     if (progressFill) {
       progressFill.style.width = `${progress}%`;

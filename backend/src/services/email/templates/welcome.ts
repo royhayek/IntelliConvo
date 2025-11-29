@@ -23,8 +23,8 @@ export function welcomeEmail(data: WelcomeEmailData): { subject: string; html: s
     loginUrl,
     verificationUrl,
     verificationExpiresInHours = 24,
-    platformName = 'IntelligentConvo',
-    supportEmail = 'support@intelligentconvo.com',
+    platformName = 'IntelliConvo',
+    supportEmail = 'support@intelliconvo.com',
   } = data;
 
   const displayName = userName || email.split('@')[0];

@@ -1,9 +1,15 @@
 import { defineConfig } from 'orval';
+import dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
+
+const apiUrl = process.env.ORVAL_API_URL || 'http://localhost:5001/api/docs.json';
 
 export default defineConfig({
   api: {
     input: {
-      target: 'http://localhost:5001/api/docs.json',
+      target: apiUrl,
     },
     output: {
       mode: 'tags-split',

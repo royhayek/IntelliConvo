@@ -28,13 +28,13 @@ import { StarterFieldItem } from "@/components/site/starter-field-item";
 import { DangerZoneCard } from "@/components/site/danger-zone-card";
 import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
 import {
-  usePatchApiV1SitesSiteId,
-  useGetApiV1SitesSiteIdStarters,
-  usePutApiV1SitesSiteIdStarters,
-  useDeleteApiV1SitesSiteId,
-  getGetApiV1SitesSiteIdQueryKey,
-  getGetApiV1SitesSiteIdStartersQueryKey,
-  getGetApiV1SitesQueryKey,
+  usePatchSitesSiteId,
+  useGetSitesSiteIdStarters,
+  usePutSitesSiteIdStarters,
+  useDeleteSitesSiteId,
+  getGetSitesSiteIdQueryKey,
+  getGetSitesSiteIdStartersQueryKey,
+  getGetSitesQueryKey,
 } from "@/lib/api/generated/queries/sites/sites";
 import { type SiteResponse } from "@/lib/api/generated/models";
 
@@ -99,7 +99,7 @@ export function PreferencesTab({ site }: PreferencesTabProps) {
   });
 
   // Conversation Starters Data
-  const { data: starters } = useGetApiV1SitesSiteIdStarters(site.id);
+  const { data: starters } = useGetSitesSiteIdStarters(site.id);
 
   // Conversation Starters Form
   const startersForm = useForm<ConversationStartersFormData>({
@@ -128,33 +128,33 @@ export function PreferencesTab({ site }: PreferencesTabProps) {
     }
   }, [starters, startersForm]);
 
-  const updateSiteMutation = usePatchApiV1SitesSiteId({
+  const updateSiteMutation = usePatchSitesSiteId({
     mutation: {
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: getGetApiV1SitesSiteIdQueryKey(site.id),
+          queryKey: getGetSitesSiteIdQueryKey(site.id),
         });
       },
     },
   });
 
-  const updateStartersMutation = usePutApiV1SitesSiteIdStarters({
+  const updateStartersMutation = usePutSitesSiteIdStarters({
     mutation: {
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: getGetApiV1SitesSiteIdStartersQueryKey(site.id),
+          queryKey: getGetSitesSiteIdStartersQueryKey(site.id),
         });
       },
     },
   });
 
-  const deleteSiteMutation = useDeleteApiV1SitesSiteId({
+  const deleteSiteMutation = useDeleteSitesSiteId({
     mutation: {
       onSuccess: () => {
         setDeleteDialogOpen(false);
         // Invalidate the sites list query so dashboard updates
         queryClient.invalidateQueries({
-          queryKey: getGetApiV1SitesQueryKey(),
+          queryKey: getGetSitesQueryKey(),
         });
         router.push("/dashboard");
       },
@@ -190,7 +190,7 @@ export function PreferencesTab({ site }: PreferencesTabProps) {
   return (
     <div className="space-y-6">
       <SectionHeader
-        title="Site Preferences"
+        title="Site Settings"
         description="Configure your site information and conversation settings"
       />
 

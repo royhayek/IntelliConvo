@@ -18,14 +18,14 @@ import { useUIStore } from "@/lib/store";
 import { useRequireUser } from "@/lib/hooks/useAuth";
 import { AuthLoading } from "@/components/auth/auth-loading";
 import { useSiteSocket } from "@/lib/hooks/useSiteSocket";
-import {
-  useGetApiV1SitesSiteId,
-  getGetApiV1SitesSiteIdQueryKey,
-} from "@/lib/api/generated/queries/sites/sites";
+import { getGetSitesSiteIdQueryKey, useGetSitesSiteId } from "@/lib/api/generated/queries/sites/sites";
 import { getDisplayStatus } from "@/lib/utils/status-labels";
 import { SITE_TABS } from "@/lib/constants/site-tabs";
 import type { SiteResponse } from "@/lib/api/generated/models";
-import type { CrawlStatus, SubscriptionStatus } from "@/lib/utils/status-labels";
+import type {
+  CrawlStatus,
+  SubscriptionStatus,
+} from "@/lib/utils/status-labels";
 
 import { OverviewTab } from "@/components/site/overview-tab";
 import { SitemapTab } from "@/components/site/sitemap-tab";
@@ -35,17 +35,19 @@ import { PreferencesTab } from "@/components/site/preferences-tab";
 import { WidgetTab } from "@/components/site/widget-tab";
 import { PlaygroundTab } from "@/components/site/playground-tab";
 import { HostsTab } from "@/components/site/hosts-tab";
-import { TrialStatusBanner } from "@/components/site/trial-status-banner";
 
-const TAB_COMPONENTS: Record<string, React.ComponentType<{ site: SiteResponse }>> = {
-  overview: OverviewTab,
-  sitemap: SitemapTab,
-  knowledge: KnowledgeTab,
-  conversations: ConversationsTab,
-  preferences: PreferencesTab,
-  hosts: HostsTab,
-  widget: WidgetTab,
-  playground: PlaygroundTab,
+const TAB_COMPONENTS: Record<
+  string,
+  React.ComponentType<{ site: SiteResponse }>
+> = {
+  "overview": OverviewTab,
+  "website-content": SitemapTab,
+  "uploaded-documents": KnowledgeTab,
+  "conversations": ConversationsTab,
+  "site-settings": PreferencesTab,
+  "allowed-domains": HostsTab,
+  "widget-customization": WidgetTab,
+  "test-chatbot": PlaygroundTab,
 };
 
 export default function SiteManagePage() {
@@ -79,29 +81,26 @@ export default function SiteManagePage() {
     checkIfMobile();
 
     // Listen for window resize
-    window.addEventListener('resize', checkIfMobile);
-    return () => window.removeEventListener('resize', checkIfMobile);
+    window.addEventListener("resize", checkIfMobile);
+    return () => window.removeEventListener("resize", checkIfMobile);
   }, []);
 
-  const effectiveLayout = isMobileOrTablet ? 'horizontal' : navigationLayout;
+  const effectiveLayout = isMobileOrTablet ? "horizontal" : navigationLayout;
 
-  const { data: site, isLoading: isSiteLoading } = useGetApiV1SitesSiteId(
-    siteId,
-    {
-      query: {
-        enabled: isAuthenticated && !!siteId,
-        refetchOnMount: true,
-        staleTime: 0,
-      },
-    }
-  );
+  const { data: site, isLoading: isSiteLoading } = useGetSitesSiteId(siteId, {
+    query: {
+      enabled: isAuthenticated && !!siteId,
+      refetchOnMount: true,
+      staleTime: 0,
+    },
+  });
 
   const handleCrawlStatusUpdate = useCallback(
     (update: { siteId: string; crawlStatus: string }) => {
       if (update.siteId !== siteId) return;
 
       queryClient.setQueryData(
-        getGetApiV1SitesSiteIdQueryKey(siteId),
+        getGetSitesSiteIdQueryKey(siteId),
         (oldData: SiteResponse | undefined) => {
           if (!oldData) return oldData;
           return { ...oldData, crawlStatus: update.crawlStatus };
@@ -179,14 +178,6 @@ export default function SiteManagePage() {
       </div>
 
       <SiteHeader site={site} displayStatus={displayStatus} />
-
-      {/* Trial Status Banner */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 sm:pt-4">
-        <TrialStatusBanner
-          siteId={siteId}
-          onUpgrade={() => router.push(`/account/subscriptions?siteId=${siteId}`)}
-        />
-      </div>
 
       <main
         className={

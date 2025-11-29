@@ -18,11 +18,11 @@ import { cn } from "@/lib/utils";
 import { useNotificationSocket } from "@/lib/hooks/useNotificationSocket";
 import { useAuth } from "@/lib/hooks/useAuth";
 import {
-  useGetApiV1Notifications,
-  usePatchApiV1NotificationsNotificationIdRead,
-  usePatchApiV1NotificationsReadAll,
-  useDeleteApiV1NotificationsNotificationId,
-  getGetApiV1NotificationsQueryKey,
+  useGetNotifications,
+  usePatchNotificationsNotificationIdRead,
+  usePatchNotificationsReadAll,
+  useDeleteNotificationsNotificationId,
+  getGetNotificationsQueryKey,
 } from "@/lib/api/generated/queries/notifications/notifications";
 import type { Notification, NotificationType } from "@/lib/api/generated/models";
 
@@ -110,7 +110,7 @@ export function NotificationBell() {
     data: notificationsData,
     isLoading,
     refetch,
-  } = useGetApiV1Notifications(
+  } = useGetNotifications(
     { limit: "50" },
     {
       query: {
@@ -142,26 +142,26 @@ export function NotificationBell() {
   }, [unreadCount, playNotificationSound, triggerBadgeAnimation]);
 
   // Mutations
-  const markAsReadMutation = usePatchApiV1NotificationsNotificationIdRead({
+  const markAsReadMutation = usePatchNotificationsNotificationIdRead({
     mutation: {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: getGetApiV1NotificationsQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetNotificationsQueryKey() });
       },
     },
   });
 
-  const markAllAsReadMutation = usePatchApiV1NotificationsReadAll({
+  const markAllAsReadMutation = usePatchNotificationsReadAll({
     mutation: {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: getGetApiV1NotificationsQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetNotificationsQueryKey() });
       },
     },
   });
 
-  const deleteNotificationMutation = useDeleteApiV1NotificationsNotificationId({
+  const deleteNotificationMutation = useDeleteNotificationsNotificationId({
     mutation: {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: getGetApiV1NotificationsQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetNotificationsQueryKey() });
       },
     },
   });

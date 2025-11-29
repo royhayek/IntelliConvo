@@ -20,15 +20,15 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  GetApiV1AdminSettings200,
-  GetApiV1AdminSettingsByCategory200,
-  GetApiV1AdminSettingsKey200,
-  GetApiV1AdminSettingsParams,
-  PatchApiV1AdminSettingsBulk200,
-  PatchApiV1AdminSettingsBulkBody,
-  PatchApiV1AdminSettingsKey200,
-  PatchApiV1AdminSettingsKeyBody,
-  PostApiV1AdminSettingsCacheClear200
+  GetAdminSettings200,
+  GetAdminSettingsByCategory200,
+  GetAdminSettingsKey200,
+  GetAdminSettingsParams,
+  PatchAdminSettingsBulk200,
+  PatchAdminSettingsBulkBody,
+  PatchAdminSettingsKey200,
+  PatchAdminSettingsKeyBody,
+  PostAdminSettingsCacheClear200
 } from '../../models';
 
 import { customInstance } from '../../../axios-instance';
@@ -42,14 +42,14 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 /**
  * @summary Get all system settings
  */
-export const getApiV1AdminSettings = (
-    params?: GetApiV1AdminSettingsParams,
+export const getAdminSettings = (
+    params?: GetAdminSettingsParams,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<GetApiV1AdminSettings200>(
-      {url: `/api/v1/admin/settings`, method: 'GET',
+      return customInstance<GetAdminSettings200>(
+      {url: `/admin/settings`, method: 'GET',
         params, signal
     },
       options);
@@ -58,69 +58,69 @@ export const getApiV1AdminSettings = (
 
 
 
-export const getGetApiV1AdminSettingsQueryKey = (params?: GetApiV1AdminSettingsParams,) => {
+export const getGetAdminSettingsQueryKey = (params?: GetAdminSettingsParams,) => {
     return [
-    `/api/v1/admin/settings`, ...(params ? [params]: [])
+    `/admin/settings`, ...(params ? [params]: [])
     ] as const;
     }
 
     
-export const getGetApiV1AdminSettingsQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminSettings>>, TError = ErrorType<void>>(params?: GetApiV1AdminSettingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSettings>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminSettingsQueryOptions = <TData = Awaited<ReturnType<typeof getAdminSettings>>, TError = ErrorType<void>>(params?: GetAdminSettingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSettings>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminSettingsQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminSettingsQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminSettings>>> = ({ signal }) => getApiV1AdminSettings(params, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminSettings>>> = ({ signal }) => getAdminSettings(params, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSettings>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminSettings>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminSettingsQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminSettings>>>
-export type GetApiV1AdminSettingsQueryError = ErrorType<void>
+export type GetAdminSettingsQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminSettings>>>
+export type GetAdminSettingsQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminSettings<TData = Awaited<ReturnType<typeof getApiV1AdminSettings>>, TError = ErrorType<void>>(
- params: undefined |  GetApiV1AdminSettingsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSettings>>, TError, TData>> & Pick<
+export function useGetAdminSettings<TData = Awaited<ReturnType<typeof getAdminSettings>>, TError = ErrorType<void>>(
+ params: undefined |  GetAdminSettingsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSettings>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminSettings>>,
+          Awaited<ReturnType<typeof getAdminSettings>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminSettings>>
+          Awaited<ReturnType<typeof getAdminSettings>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminSettings<TData = Awaited<ReturnType<typeof getApiV1AdminSettings>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminSettingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSettings>>, TError, TData>> & Pick<
+export function useGetAdminSettings<TData = Awaited<ReturnType<typeof getAdminSettings>>, TError = ErrorType<void>>(
+ params?: GetAdminSettingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSettings>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminSettings>>,
+          Awaited<ReturnType<typeof getAdminSettings>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminSettings>>
+          Awaited<ReturnType<typeof getAdminSettings>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminSettings<TData = Awaited<ReturnType<typeof getApiV1AdminSettings>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminSettingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSettings>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminSettings<TData = Awaited<ReturnType<typeof getAdminSettings>>, TError = ErrorType<void>>(
+ params?: GetAdminSettingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSettings>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get all system settings
  */
 
-export function useGetApiV1AdminSettings<TData = Awaited<ReturnType<typeof getApiV1AdminSettings>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminSettingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSettings>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminSettings<TData = Awaited<ReturnType<typeof getAdminSettings>>, TError = ErrorType<void>>(
+ params?: GetAdminSettingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSettings>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminSettingsQueryOptions(params,options)
+  const queryOptions = getGetAdminSettingsQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -135,14 +135,14 @@ export function useGetApiV1AdminSettings<TData = Awaited<ReturnType<typeof getAp
 /**
  * @summary Get all system settings grouped by category
  */
-export const getApiV1AdminSettingsByCategory = (
+export const getAdminSettingsByCategory = (
     
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<GetApiV1AdminSettingsByCategory200>(
-      {url: `/api/v1/admin/settings/by-category`, method: 'GET', signal
+      return customInstance<GetAdminSettingsByCategory200>(
+      {url: `/admin/settings/by-category`, method: 'GET', signal
     },
       options);
     }
@@ -150,69 +150,69 @@ export const getApiV1AdminSettingsByCategory = (
 
 
 
-export const getGetApiV1AdminSettingsByCategoryQueryKey = () => {
+export const getGetAdminSettingsByCategoryQueryKey = () => {
     return [
-    `/api/v1/admin/settings/by-category`
+    `/admin/settings/by-category`
     ] as const;
     }
 
     
-export const getGetApiV1AdminSettingsByCategoryQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminSettingsByCategory>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSettingsByCategory>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminSettingsByCategoryQueryOptions = <TData = Awaited<ReturnType<typeof getAdminSettingsByCategory>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSettingsByCategory>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminSettingsByCategoryQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminSettingsByCategoryQueryKey();
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminSettingsByCategory>>> = ({ signal }) => getApiV1AdminSettingsByCategory(requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminSettingsByCategory>>> = ({ signal }) => getAdminSettingsByCategory(requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSettingsByCategory>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminSettingsByCategory>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminSettingsByCategoryQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminSettingsByCategory>>>
-export type GetApiV1AdminSettingsByCategoryQueryError = ErrorType<void>
+export type GetAdminSettingsByCategoryQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminSettingsByCategory>>>
+export type GetAdminSettingsByCategoryQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminSettingsByCategory<TData = Awaited<ReturnType<typeof getApiV1AdminSettingsByCategory>>, TError = ErrorType<void>>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSettingsByCategory>>, TError, TData>> & Pick<
+export function useGetAdminSettingsByCategory<TData = Awaited<ReturnType<typeof getAdminSettingsByCategory>>, TError = ErrorType<void>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSettingsByCategory>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminSettingsByCategory>>,
+          Awaited<ReturnType<typeof getAdminSettingsByCategory>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminSettingsByCategory>>
+          Awaited<ReturnType<typeof getAdminSettingsByCategory>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminSettingsByCategory<TData = Awaited<ReturnType<typeof getApiV1AdminSettingsByCategory>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSettingsByCategory>>, TError, TData>> & Pick<
+export function useGetAdminSettingsByCategory<TData = Awaited<ReturnType<typeof getAdminSettingsByCategory>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSettingsByCategory>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminSettingsByCategory>>,
+          Awaited<ReturnType<typeof getAdminSettingsByCategory>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminSettingsByCategory>>
+          Awaited<ReturnType<typeof getAdminSettingsByCategory>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminSettingsByCategory<TData = Awaited<ReturnType<typeof getApiV1AdminSettingsByCategory>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSettingsByCategory>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminSettingsByCategory<TData = Awaited<ReturnType<typeof getAdminSettingsByCategory>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSettingsByCategory>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get all system settings grouped by category
  */
 
-export function useGetApiV1AdminSettingsByCategory<TData = Awaited<ReturnType<typeof getApiV1AdminSettingsByCategory>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSettingsByCategory>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminSettingsByCategory<TData = Awaited<ReturnType<typeof getAdminSettingsByCategory>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSettingsByCategory>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminSettingsByCategoryQueryOptions(options)
+  const queryOptions = getGetAdminSettingsByCategoryQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -227,14 +227,14 @@ export function useGetApiV1AdminSettingsByCategory<TData = Awaited<ReturnType<ty
 /**
  * @summary Get a specific setting by key
  */
-export const getApiV1AdminSettingsKey = (
+export const getAdminSettingsKey = (
     key: string,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<GetApiV1AdminSettingsKey200>(
-      {url: `/api/v1/admin/settings/${key}`, method: 'GET', signal
+      return customInstance<GetAdminSettingsKey200>(
+      {url: `/admin/settings/${key}`, method: 'GET', signal
     },
       options);
     }
@@ -242,69 +242,69 @@ export const getApiV1AdminSettingsKey = (
 
 
 
-export const getGetApiV1AdminSettingsKeyQueryKey = (key?: string,) => {
+export const getGetAdminSettingsKeyQueryKey = (key?: string,) => {
     return [
-    `/api/v1/admin/settings/${key}`
+    `/admin/settings/${key}`
     ] as const;
     }
 
     
-export const getGetApiV1AdminSettingsKeyQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminSettingsKey>>, TError = ErrorType<void>>(key: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSettingsKey>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminSettingsKeyQueryOptions = <TData = Awaited<ReturnType<typeof getAdminSettingsKey>>, TError = ErrorType<void>>(key: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSettingsKey>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminSettingsKeyQueryKey(key);
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminSettingsKeyQueryKey(key);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminSettingsKey>>> = ({ signal }) => getApiV1AdminSettingsKey(key, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminSettingsKey>>> = ({ signal }) => getAdminSettingsKey(key, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSettingsKey>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminSettingsKey>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminSettingsKeyQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminSettingsKey>>>
-export type GetApiV1AdminSettingsKeyQueryError = ErrorType<void>
+export type GetAdminSettingsKeyQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminSettingsKey>>>
+export type GetAdminSettingsKeyQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminSettingsKey<TData = Awaited<ReturnType<typeof getApiV1AdminSettingsKey>>, TError = ErrorType<void>>(
- key: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSettingsKey>>, TError, TData>> & Pick<
+export function useGetAdminSettingsKey<TData = Awaited<ReturnType<typeof getAdminSettingsKey>>, TError = ErrorType<void>>(
+ key: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSettingsKey>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminSettingsKey>>,
+          Awaited<ReturnType<typeof getAdminSettingsKey>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminSettingsKey>>
+          Awaited<ReturnType<typeof getAdminSettingsKey>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminSettingsKey<TData = Awaited<ReturnType<typeof getApiV1AdminSettingsKey>>, TError = ErrorType<void>>(
- key: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSettingsKey>>, TError, TData>> & Pick<
+export function useGetAdminSettingsKey<TData = Awaited<ReturnType<typeof getAdminSettingsKey>>, TError = ErrorType<void>>(
+ key: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSettingsKey>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminSettingsKey>>,
+          Awaited<ReturnType<typeof getAdminSettingsKey>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminSettingsKey>>
+          Awaited<ReturnType<typeof getAdminSettingsKey>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminSettingsKey<TData = Awaited<ReturnType<typeof getApiV1AdminSettingsKey>>, TError = ErrorType<void>>(
- key: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSettingsKey>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminSettingsKey<TData = Awaited<ReturnType<typeof getAdminSettingsKey>>, TError = ErrorType<void>>(
+ key: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSettingsKey>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get a specific setting by key
  */
 
-export function useGetApiV1AdminSettingsKey<TData = Awaited<ReturnType<typeof getApiV1AdminSettingsKey>>, TError = ErrorType<void>>(
- key: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminSettingsKey>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminSettingsKey<TData = Awaited<ReturnType<typeof getAdminSettingsKey>>, TError = ErrorType<void>>(
+ key: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminSettingsKey>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminSettingsKeyQueryOptions(key,options)
+  const queryOptions = getGetAdminSettingsKeyQueryOptions(key,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -319,27 +319,27 @@ export function useGetApiV1AdminSettingsKey<TData = Awaited<ReturnType<typeof ge
 /**
  * @summary Update a specific setting
  */
-export const patchApiV1AdminSettingsKey = (
+export const patchAdminSettingsKey = (
     key: string,
-    patchApiV1AdminSettingsKeyBody: BodyType<PatchApiV1AdminSettingsKeyBody>,
+    patchAdminSettingsKeyBody: BodyType<PatchAdminSettingsKeyBody>,
  options?: SecondParameter<typeof customInstance>,) => {
       
       
-      return customInstance<PatchApiV1AdminSettingsKey200>(
-      {url: `/api/v1/admin/settings/${key}`, method: 'PATCH',
+      return customInstance<PatchAdminSettingsKey200>(
+      {url: `/admin/settings/${key}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
-      data: patchApiV1AdminSettingsKeyBody
+      data: patchAdminSettingsKeyBody
     },
       options);
     }
   
 
 
-export const getPatchApiV1AdminSettingsKeyMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchApiV1AdminSettingsKey>>, TError,{key: string;data: BodyType<PatchApiV1AdminSettingsKeyBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof patchApiV1AdminSettingsKey>>, TError,{key: string;data: BodyType<PatchApiV1AdminSettingsKeyBody>}, TContext> => {
+export const getPatchAdminSettingsKeyMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchAdminSettingsKey>>, TError,{key: string;data: BodyType<PatchAdminSettingsKeyBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof patchAdminSettingsKey>>, TError,{key: string;data: BodyType<PatchAdminSettingsKeyBody>}, TContext> => {
 
-const mutationKey = ['patchApiV1AdminSettingsKey'];
+const mutationKey = ['patchAdminSettingsKey'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -349,10 +349,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchApiV1AdminSettingsKey>>, {key: string;data: BodyType<PatchApiV1AdminSettingsKeyBody>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchAdminSettingsKey>>, {key: string;data: BodyType<PatchAdminSettingsKeyBody>}> = (props) => {
           const {key,data} = props ?? {};
 
-          return  patchApiV1AdminSettingsKey(key,data,requestOptions)
+          return  patchAdminSettingsKey(key,data,requestOptions)
         }
 
         
@@ -360,49 +360,49 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PatchApiV1AdminSettingsKeyMutationResult = NonNullable<Awaited<ReturnType<typeof patchApiV1AdminSettingsKey>>>
-    export type PatchApiV1AdminSettingsKeyMutationBody = BodyType<PatchApiV1AdminSettingsKeyBody>
-    export type PatchApiV1AdminSettingsKeyMutationError = ErrorType<void>
+    export type PatchAdminSettingsKeyMutationResult = NonNullable<Awaited<ReturnType<typeof patchAdminSettingsKey>>>
+    export type PatchAdminSettingsKeyMutationBody = BodyType<PatchAdminSettingsKeyBody>
+    export type PatchAdminSettingsKeyMutationError = ErrorType<void>
 
     /**
  * @summary Update a specific setting
  */
-export const usePatchApiV1AdminSettingsKey = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchApiV1AdminSettingsKey>>, TError,{key: string;data: BodyType<PatchApiV1AdminSettingsKeyBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePatchAdminSettingsKey = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchAdminSettingsKey>>, TError,{key: string;data: BodyType<PatchAdminSettingsKeyBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof patchApiV1AdminSettingsKey>>,
+        Awaited<ReturnType<typeof patchAdminSettingsKey>>,
         TError,
-        {key: string;data: BodyType<PatchApiV1AdminSettingsKeyBody>},
+        {key: string;data: BodyType<PatchAdminSettingsKeyBody>},
         TContext
       > => {
 
-      const mutationOptions = getPatchApiV1AdminSettingsKeyMutationOptions(options);
+      const mutationOptions = getPatchAdminSettingsKeyMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
     /**
  * @summary Bulk update multiple settings
  */
-export const patchApiV1AdminSettingsBulk = (
-    patchApiV1AdminSettingsBulkBody: BodyType<PatchApiV1AdminSettingsBulkBody>,
+export const patchAdminSettingsBulk = (
+    patchAdminSettingsBulkBody: BodyType<PatchAdminSettingsBulkBody>,
  options?: SecondParameter<typeof customInstance>,) => {
       
       
-      return customInstance<PatchApiV1AdminSettingsBulk200>(
-      {url: `/api/v1/admin/settings/bulk`, method: 'PATCH',
+      return customInstance<PatchAdminSettingsBulk200>(
+      {url: `/admin/settings/bulk`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
-      data: patchApiV1AdminSettingsBulkBody
+      data: patchAdminSettingsBulkBody
     },
       options);
     }
   
 
 
-export const getPatchApiV1AdminSettingsBulkMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchApiV1AdminSettingsBulk>>, TError,{data: BodyType<PatchApiV1AdminSettingsBulkBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof patchApiV1AdminSettingsBulk>>, TError,{data: BodyType<PatchApiV1AdminSettingsBulkBody>}, TContext> => {
+export const getPatchAdminSettingsBulkMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchAdminSettingsBulk>>, TError,{data: BodyType<PatchAdminSettingsBulkBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof patchAdminSettingsBulk>>, TError,{data: BodyType<PatchAdminSettingsBulkBody>}, TContext> => {
 
-const mutationKey = ['patchApiV1AdminSettingsBulk'];
+const mutationKey = ['patchAdminSettingsBulk'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -412,10 +412,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchApiV1AdminSettingsBulk>>, {data: BodyType<PatchApiV1AdminSettingsBulkBody>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchAdminSettingsBulk>>, {data: BodyType<PatchAdminSettingsBulkBody>}> = (props) => {
           const {data} = props ?? {};
 
-          return  patchApiV1AdminSettingsBulk(data,requestOptions)
+          return  patchAdminSettingsBulk(data,requestOptions)
         }
 
         
@@ -423,23 +423,23 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PatchApiV1AdminSettingsBulkMutationResult = NonNullable<Awaited<ReturnType<typeof patchApiV1AdminSettingsBulk>>>
-    export type PatchApiV1AdminSettingsBulkMutationBody = BodyType<PatchApiV1AdminSettingsBulkBody>
-    export type PatchApiV1AdminSettingsBulkMutationError = ErrorType<void>
+    export type PatchAdminSettingsBulkMutationResult = NonNullable<Awaited<ReturnType<typeof patchAdminSettingsBulk>>>
+    export type PatchAdminSettingsBulkMutationBody = BodyType<PatchAdminSettingsBulkBody>
+    export type PatchAdminSettingsBulkMutationError = ErrorType<void>
 
     /**
  * @summary Bulk update multiple settings
  */
-export const usePatchApiV1AdminSettingsBulk = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchApiV1AdminSettingsBulk>>, TError,{data: BodyType<PatchApiV1AdminSettingsBulkBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePatchAdminSettingsBulk = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchAdminSettingsBulk>>, TError,{data: BodyType<PatchAdminSettingsBulkBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof patchApiV1AdminSettingsBulk>>,
+        Awaited<ReturnType<typeof patchAdminSettingsBulk>>,
         TError,
-        {data: BodyType<PatchApiV1AdminSettingsBulkBody>},
+        {data: BodyType<PatchAdminSettingsBulkBody>},
         TContext
       > => {
 
-      const mutationOptions = getPatchApiV1AdminSettingsBulkMutationOptions(options);
+      const mutationOptions = getPatchAdminSettingsBulkMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
@@ -447,25 +447,25 @@ export const usePatchApiV1AdminSettingsBulk = <TError = ErrorType<void>,
  * Clears all caches except user sessions. Safe to run anytime - caches will repopulate on next request.
  * @summary Clear all system caches
  */
-export const postApiV1AdminSettingsCacheClear = (
+export const postAdminSettingsCacheClear = (
     
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<PostApiV1AdminSettingsCacheClear200>(
-      {url: `/api/v1/admin/settings/cache/clear`, method: 'POST', signal
+      return customInstance<PostAdminSettingsCacheClear200>(
+      {url: `/admin/settings/cache/clear`, method: 'POST', signal
     },
       options);
     }
   
 
 
-export const getPostApiV1AdminSettingsCacheClearMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminSettingsCacheClear>>, TError,void, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminSettingsCacheClear>>, TError,void, TContext> => {
+export const getPostAdminSettingsCacheClearMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminSettingsCacheClear>>, TError,void, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postAdminSettingsCacheClear>>, TError,void, TContext> => {
 
-const mutationKey = ['postApiV1AdminSettingsCacheClear'];
+const mutationKey = ['postAdminSettingsCacheClear'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -475,10 +475,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1AdminSettingsCacheClear>>, void> = () => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postAdminSettingsCacheClear>>, void> = () => {
           
 
-          return  postApiV1AdminSettingsCacheClear(requestOptions)
+          return  postAdminSettingsCacheClear(requestOptions)
         }
 
         
@@ -486,23 +486,23 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiV1AdminSettingsCacheClearMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1AdminSettingsCacheClear>>>
+    export type PostAdminSettingsCacheClearMutationResult = NonNullable<Awaited<ReturnType<typeof postAdminSettingsCacheClear>>>
     
-    export type PostApiV1AdminSettingsCacheClearMutationError = ErrorType<void>
+    export type PostAdminSettingsCacheClearMutationError = ErrorType<void>
 
     /**
  * @summary Clear all system caches
  */
-export const usePostApiV1AdminSettingsCacheClear = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminSettingsCacheClear>>, TError,void, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePostAdminSettingsCacheClear = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminSettingsCacheClear>>, TError,void, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiV1AdminSettingsCacheClear>>,
+        Awaited<ReturnType<typeof postAdminSettingsCacheClear>>,
         TError,
         void,
         TContext
       > => {
 
-      const mutationOptions = getPostApiV1AdminSettingsCacheClearMutationOptions(options);
+      const mutationOptions = getPostAdminSettingsCacheClearMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }

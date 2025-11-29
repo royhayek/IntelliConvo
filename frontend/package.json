@@ -1,5 +1,5 @@
 {
-  "name": "@intelligentconvo/frontend",
+  "name": "@intelliconvo/frontend",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -67,6 +67,7 @@
     "@typescript-eslint/eslint-plugin": "^6.15.0",
     "@typescript-eslint/parser": "^6.15.0",
     "autoprefixer": "^10.4.16",
+    "dotenv": "^17.2.3",
     "eslint": "^8.56.0",
     "eslint-config-next": "^14.2.0",
     "orval": "^8.0.0-rc.2",

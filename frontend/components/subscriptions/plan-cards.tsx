@@ -12,12 +12,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import type { Plan, Subscription } from "@/lib/api/generated/models";
+import type {
+  Plan,
+  Subscription,
+  ProrationPreview,
+  GetBillingSubscriptionsSubscriptionIdPreviewChangeNewPlanType
+} from "@/lib/api/generated/models";
 import {
-  useGetProrationPreview,
-  usePostChangePlan,
-  type ProrationPreview,
-} from "@/lib/api/plan-change";
+  getGetBillingSubscriptionsQueryKey,
+  useGetBillingSubscriptionsSubscriptionIdPreviewChange,
+  usePostBillingSubscriptionsSubscriptionIdChangePlan,
+} from "@/lib/api/generated/queries/subscriptions/subscriptions";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -53,9 +58,11 @@ export function PlanCards({
 
   // Fetch proration preview when dialog is open
   const { data: prorationPreview, isLoading: isLoadingPreview } =
-    useGetProrationPreview(
+    useGetBillingSubscriptionsSubscriptionIdPreviewChange(
       currentSubscription?.id || "",
-      changePlanDialog.targetPlanId || "",
+      {
+        newPlanType: (changePlanDialog.targetPlanId || "") as GetBillingSubscriptionsSubscriptionIdPreviewChangeNewPlanType,
+      },
       {
         query: {
           enabled:
@@ -67,13 +74,13 @@ export function PlanCards({
     );
 
   // Change plan mutation
-  const changePlanMutation = usePostChangePlan({
+  const changePlanMutation = usePostBillingSubscriptionsSubscriptionIdChangePlan({
     mutation: {
       onSuccess: () => {
         toast.success("Plan changed successfully!");
         setChangePlanDialog({ open: false, targetPlanId: null, targetPlanName: "" });
         // Invalidate subscriptions query to refresh data
-        queryClient.invalidateQueries({ queryKey: ["/api/v1/billing/subscriptions"] });
+        queryClient.invalidateQueries({ queryKey: getGetBillingSubscriptionsQueryKey() });
       },
       onError: () => {
         // Error toast is handled by axios interceptor

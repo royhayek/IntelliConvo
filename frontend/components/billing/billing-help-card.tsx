@@ -17,7 +17,7 @@ export function BillingHelpCard() {
             Have questions about your bill or need assistance?
           </p>
           <a
-            href="mailto:billing@intelligentconvo.com"
+            href="mailto:billing@intelliconvo.com"
             className="text-indigo-600 hover:text-indigo-500 text-sm font-medium"
           >
             Contact Billing Support

@@ -102,9 +102,6 @@ export function performanceTracker(req: Request, res: Response, next: NextFuncti
 
   // Override res.end to capture metrics
   res.end = function (chunk?: any, encoding?: any, callback?: any): any {
-    // Restore original end function
-    res.end = originalEnd;
-
     // Calculate duration in milliseconds
     const endTime = process.hrtime.bigint();
     const duration = Number(endTime - startTime) / 1_000_000; // Convert nanoseconds to milliseconds
@@ -119,8 +116,18 @@ export function performanceTracker(req: Request, res: Response, next: NextFuncti
     // Update metrics
     updateMetrics(req.method, req.path, res.statusCode, duration);
 
-    // Add performance headers
-    res.setHeader('X-Response-Time', `${duration.toFixed(2)}ms`);
+    // Add performance headers before sending response
+    // Only set if headers haven't been sent yet
+    if (!res.headersSent) {
+      try {
+        res.setHeader('X-Response-Time', `${duration.toFixed(2)}ms`);
+      } catch (error) {
+        // Ignore header setting errors
+      }
+    }
+
+    // Restore original end function
+    res.end = originalEnd;
 
     // Log based on performance
     const logData = {

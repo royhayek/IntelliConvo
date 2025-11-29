@@ -100,7 +100,7 @@ export class SocketManager {
 
     // Connection established
     this.socket.on('connect', () => {
-      console.log('Connected to Intelligentconvo');
+      console.log('Connected to IntelliConvo');
       // NOTE: State is now managed by parent widget through onConnect callback
       // to avoid direct mutation and state synchronization issues
       this.reconnectAttempts = 0;
@@ -147,7 +147,7 @@ export class SocketManager {
 
     // Disconnection
     this.socket.on('disconnect', (reason: string) => {
-      console.log('Disconnected from Intelligentconvo:', reason);
+      console.log('Disconnected from IntelliConvo:', reason);
       // NOTE: State is now managed by parent widget through onDisconnect callback
       this.updateConnectionStatus('disconnected');
 
@@ -246,10 +246,10 @@ export class SocketManager {
    * Update the connection status indicator in the UI
    */
   private updateConnectionStatus(status: ConnectionStatus): void {
-    const statusDot = document.getElementById('intelligentconvo-status-dot');
+    const statusDot = document.getElementById('intelliconvo-status-dot');
 
     if (statusDot) {
-      statusDot.className = `intelligentconvo-status-dot ${status}`;
+      statusDot.className = `intelliconvo-status-dot ${status}`;
 
       // Update aria-label for accessibility
       switch (status) {

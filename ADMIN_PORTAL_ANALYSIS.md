@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This document analyzes the requirements and approach for implementing an admin portal for the IntelligentConvo SaaS platform. The admin portal will provide platform administrators with visibility into system-wide statistics, user management, and operational oversight.
+This document analyzes the requirements and approach for implementing an admin portal for the IntelliConvo SaaS platform. The admin portal will provide platform administrators with visibility into system-wide statistics, user management, and operational oversight.
 
 ---
 

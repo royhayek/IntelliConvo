@@ -46,11 +46,11 @@ export function UrlTableRow({
         />
       </TableCell>
       <TableCell>
-        <div className="min-w-0">
-          <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+        <div className="min-w-0 max-w-lg">
+          <p className="text-sm font-medium text-gray-900 dark:text-white line-clamp-1">
             {getDisplayTitle()}
           </p>
-          <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
+          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-1">
             {url.url || ""}
           </p>
         </div>

@@ -26,12 +26,12 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
 import { TimeAgo } from "@/components/ui/time-ago";
 import {
-  useGetApiV1AdminSubscriptionsSubscriptionId,
-  useDeleteApiV1AdminSubscriptionsSubscriptionId,
-  usePostApiV1AdminSubscriptionsSubscriptionIdCancel,
-  usePostApiV1AdminSubscriptionsSubscriptionIdReactivate,
-  usePostApiV1AdminSubscriptionsSubscriptionIdExtendTrial,
-  getGetApiV1AdminSubscriptionsSubscriptionIdQueryKey,
+  useGetAdminSubscriptionsSubscriptionId,
+  useDeleteAdminSubscriptionsSubscriptionId,
+  usePostAdminSubscriptionsSubscriptionIdCancel,
+  usePostAdminSubscriptionsSubscriptionIdReactivate,
+  usePostAdminSubscriptionsSubscriptionIdExtendTrial,
+  getGetAdminSubscriptionsSubscriptionIdQueryKey,
 } from "@/lib/api/generated/queries/admin-subscriptions/admin-subscriptions";
 import {
   Dialog,
@@ -60,12 +60,12 @@ export default function AdminSubscriptionDetailPage() {
     data: subscriptionData,
     isLoading,
     error: fetchError,
-  } = useGetApiV1AdminSubscriptionsSubscriptionId(subscriptionId);
+  } = useGetAdminSubscriptionsSubscriptionId(subscriptionId);
 
   const subscription = subscriptionData?.data;
 
   // Delete mutation
-  const deleteMutation = useDeleteApiV1AdminSubscriptionsSubscriptionId({
+  const deleteMutation = useDeleteAdminSubscriptionsSubscriptionId({
     mutation: {
       onSuccess: () => {
         router.push("/admin/subscriptions");
@@ -79,11 +79,11 @@ export default function AdminSubscriptionDetailPage() {
   });
 
   // Cancel mutation
-  const cancelMutation = usePostApiV1AdminSubscriptionsSubscriptionIdCancel({
+  const cancelMutation = usePostAdminSubscriptionsSubscriptionIdCancel({
     mutation: {
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: getGetApiV1AdminSubscriptionsSubscriptionIdQueryKey(subscriptionId),
+          queryKey: getGetAdminSubscriptionsSubscriptionIdQueryKey(subscriptionId),
         });
       },
       onError: (error) => {
@@ -95,11 +95,11 @@ export default function AdminSubscriptionDetailPage() {
   });
 
   // Reactivate mutation
-  const reactivateMutation = usePostApiV1AdminSubscriptionsSubscriptionIdReactivate({
+  const reactivateMutation = usePostAdminSubscriptionsSubscriptionIdReactivate({
     mutation: {
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: getGetApiV1AdminSubscriptionsSubscriptionIdQueryKey(subscriptionId),
+          queryKey: getGetAdminSubscriptionsSubscriptionIdQueryKey(subscriptionId),
         });
       },
       onError: (error) => {
@@ -111,12 +111,12 @@ export default function AdminSubscriptionDetailPage() {
   });
 
   // Extend trial mutation
-  const extendTrialMutation = usePostApiV1AdminSubscriptionsSubscriptionIdExtendTrial({
+  const extendTrialMutation = usePostAdminSubscriptionsSubscriptionIdExtendTrial({
     mutation: {
       onSuccess: () => {
         setShowExtendTrial(false);
         queryClient.invalidateQueries({
-          queryKey: getGetApiV1AdminSubscriptionsSubscriptionIdQueryKey(subscriptionId),
+          queryKey: getGetAdminSubscriptionsSubscriptionIdQueryKey(subscriptionId),
         });
       },
       onError: (error) => {

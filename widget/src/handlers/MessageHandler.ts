@@ -11,11 +11,19 @@ export class MessageHandler {
   }
 
   /**
+   * Updates the settings reference
+   * @param settings - New widget settings
+   */
+  public setSettings(settings: MessageHandlerDependencies['settings']): void {
+    this.dependencies.settings = settings;
+  }
+
+  /**
    * Handles the send message action from the UI
    */
   public handleSendMessage(): void {
-    const input = document.getElementById('intelligentconvo-input') as HTMLInputElement;
-    const sendBtn = document.getElementById('intelligentconvo-send');
+    const input = document.getElementById('intelliconvo-input') as HTMLInputElement;
+    const sendBtn = document.getElementById('intelliconvo-send');
     const text = input.value.trim();
 
     if (!text) {
@@ -85,7 +93,7 @@ export class MessageHandler {
       this.dependencies.messages.push(message);
 
       // Hide starters after first message
-      const starters = document.getElementById('intelligentconvo-starters');
+      const starters = document.getElementById('intelliconvo-starters');
       if (starters) {
         starters.style.display = 'none';
       }
@@ -138,11 +146,11 @@ export class MessageHandler {
    * Displays a message in the chat UI
    */
   public displayMessage(role: 'user' | 'assistant', content: string, messageId?: string): void {
-    const messagesContainer = document.getElementById('intelligentconvo-messages');
+    const messagesContainer = document.getElementById('intelliconvo-messages');
     if (!messagesContainer) return;
 
     const messageDiv = document.createElement('div');
-    messageDiv.className = `intelligentconvo-message intelligentconvo-${role}`;
+    messageDiv.className = `intelliconvo-transcript-message intelliconvo-transcript-${role}`;
     messageDiv.setAttribute('data-message-id', messageId || this.generateMessageId());
 
     // Sanitize HTML - use configured tags for assistant messages, escape all for user
@@ -170,7 +178,7 @@ export class MessageHandler {
     // Show avatar for assistant messages if enabled
     const showAvatar = this.dependencies.settings?.showMessageAvatar && role === 'assistant';
     const avatarHtml = showAvatar ? `
-      <div class="intelligentconvo-message-avatar">
+      <div class="intelliconvo-transcript-avatar">
         ${this.dependencies.settings?.botAvatarUrl
           ? `<img src="${this.dependencies.settings.botAvatarUrl}" alt="${this.dependencies.settings?.botName || 'Assistant'}" />`
           : `<span>${this.dependencies.settings?.botAvatarFallback || 'AI'}</span>`
@@ -180,9 +188,9 @@ export class MessageHandler {
 
     messageDiv.innerHTML = `
       ${avatarHtml}
-      <div class="intelligentconvo-message-wrapper">
-        <div class="intelligentconvo-message-content">${sanitizedContent || ''}</div>
-        ${showTimestamp ? `<div class="intelligentconvo-message-time">${formattedTime}</div>` : ''}
+      <div class="intelliconvo-transcript-wrapper">
+        <div class="intelliconvo-transcript-content">${sanitizedContent || ''}</div>
+        ${showTimestamp ? `<div class="intelliconvo-transcript-time">${formattedTime}</div>` : ''}
       </div>
     `;
 
@@ -217,7 +225,7 @@ export class MessageHandler {
     try {
       const lastMessage = window.lastAssistantMessage;
       if (lastMessage) {
-        const contentDiv = lastMessage.querySelector('.intelligentconvo-message-content');
+        const contentDiv = lastMessage.querySelector('.intelliconvo-transcript-content');
         if (contentDiv) {
           // First, update the message content in the messages array (raw markdown)
           const messageId = lastMessage.getAttribute('data-message-id');
@@ -256,7 +264,7 @@ export class MessageHandler {
    * Scrolls the messages container to the bottom
    */
   private scrollToBottom(): void {
-    const messagesContainer = document.getElementById('intelligentconvo-messages');
+    const messagesContainer = document.getElementById('intelliconvo-messages');
     if (messagesContainer) {
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }

@@ -92,7 +92,7 @@ const steps = [
 
 const testimonials = [
   {
-    quote: "Intelligentconvo has completely transformed our customer support operations. We've seen an 80% reduction in response times and our customer satisfaction scores have never been higher.",
+    quote: "IntelliConvo has completely transformed our customer support operations. We've seen an 80% reduction in response times and our customer satisfaction scores have never been higher.",
     author: "Sarah Johnson",
     role: "CEO, TechStart Inc",
     company: "TechStart",
@@ -135,7 +135,7 @@ export default function Home() {
                 <Sparkles className="h-5 w-5 text-white" />
               </div>
               <span className="text-xl font-semibold text-slate-900 dark:text-white">
-                Intelligentconvo
+                IntelliConvo
               </span>
             </Link>
             <div className="flex items-center space-x-4">
@@ -464,7 +464,7 @@ export default function Home() {
                     Ready to Transform Your Website?
                   </h2>
                   <p className="text-xl text-indigo-100 mb-10 max-w-2xl mx-auto">
-                    Join thousands of businesses using Intelligentconvo to provide exceptional customer experiences
+                    Join thousands of businesses using IntelliConvo to provide exceptional customer experiences
                   </p>
                   <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                     <Link href="/auth/signup">
@@ -501,7 +501,7 @@ export default function Home() {
                   <Sparkles className="h-4 w-4 text-white" />
                 </div>
                 <span className="text-lg font-semibold text-slate-900 dark:text-white">
-                  Intelligentconvo
+                  IntelliConvo
                 </span>
               </div>
               <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -576,7 +576,7 @@ export default function Home() {
           <div className="pt-8 border-t border-slate-200 dark:border-slate-800">
             <div className="flex flex-col md:flex-row items-center justify-between">
               <p className="text-slate-600 dark:text-slate-400 text-sm">
-                &copy; 2025 Intelligentconvo. All rights reserved.
+                &copy; 2025 IntelliConvo. All rights reserved.
               </p>
               <div className="flex items-center space-x-6 mt-4 md:mt-0">
                 <Link href="#" className="text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">

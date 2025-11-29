@@ -194,7 +194,7 @@ export const urlMessageResponseSchema = registry.register(
 // GET /api/v1/sites/{siteId}/urls
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/sites/{siteId}/urls',
+  path: '/sites/{siteId}/urls',
   summary: 'Get site URLs',
   tags: ['URLs'],
   security: [{ bearerAuth: [] }],
@@ -228,7 +228,7 @@ registry.registerPath({
 // POST /api/v1/sites/{siteId}/urls
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/sites/{siteId}/urls',
+  path: '/sites/{siteId}/urls',
   summary: 'Add new URLs',
   tags: ['URLs'],
   security: [{ bearerAuth: [] }],
@@ -265,7 +265,7 @@ registry.registerPath({
 // GET /api/v1/sites/{siteId}/urls/{urlId}
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/sites/{siteId}/urls/{urlId}',
+  path: '/sites/{siteId}/urls/{urlId}',
   summary: 'Get single URL details',
   tags: ['URLs'],
   security: [{ bearerAuth: [] }],
@@ -296,7 +296,7 @@ registry.registerPath({
 // PATCH /api/v1/sites/{siteId}/urls/{urlId}
 registry.registerPath({
   method: 'patch',
-  path: '/api/v1/sites/{siteId}/urls/{urlId}',
+  path: '/sites/{siteId}/urls/{urlId}',
   summary: 'Update URL settings',
   tags: ['URLs'],
   security: [{ bearerAuth: [] }],
@@ -334,7 +334,7 @@ registry.registerPath({
 // DELETE /api/v1/sites/{siteId}/urls/{urlId}
 registry.registerPath({
   method: 'delete',
-  path: '/api/v1/sites/{siteId}/urls/{urlId}',
+  path: '/sites/{siteId}/urls/{urlId}',
   summary: 'Delete URL',
   tags: ['URLs'],
   security: [{ bearerAuth: [] }],
@@ -365,7 +365,7 @@ registry.registerPath({
 // PUT /api/v1/sites/{siteId}/urls/{urlId}/content
 registry.registerPath({
   method: 'put',
-  path: '/api/v1/sites/{siteId}/urls/{urlId}/content',
+  path: '/sites/{siteId}/urls/{urlId}/content',
   summary: 'Update URL content',
   tags: ['URLs'],
   security: [{ bearerAuth: [] }],
@@ -403,7 +403,7 @@ registry.registerPath({
 // POST /api/v1/sites/{siteId}/urls/{urlId}/crawl
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/sites/{siteId}/urls/{urlId}/crawl',
+  path: '/sites/{siteId}/urls/{urlId}/crawl',
   summary: 'Trigger URL recrawl',
   tags: ['URLs'],
   security: [{ bearerAuth: [] }],
@@ -475,7 +475,7 @@ export const retryResponseSchema = registry.register(
 // GET /api/v1/sites/{siteId}/urls/failed
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/sites/{siteId}/urls/failed',
+  path: '/sites/{siteId}/urls/failed',
   summary: 'Get failed URLs with error details',
   tags: ['URLs'],
   security: [{ bearerAuth: [] }],
@@ -505,7 +505,7 @@ registry.registerPath({
 // POST /api/v1/sites/{siteId}/urls/retry-failed
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/sites/{siteId}/urls/retry-failed',
+  path: '/sites/{siteId}/urls/retry-failed',
   summary: 'Retry all failed URLs',
   tags: ['URLs'],
   security: [{ bearerAuth: [] }],
@@ -547,7 +547,7 @@ registry.registerPath({
 // POST /api/v1/sites/{siteId}/urls/{urlId}/retry
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/sites/{siteId}/urls/{urlId}/retry',
+  path: '/sites/{siteId}/urls/{urlId}/retry',
   summary: 'Retry a single failed URL',
   tags: ['URLs'],
   security: [{ bearerAuth: [] }],

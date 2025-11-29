@@ -27,9 +27,9 @@ import { TimeAgo } from "@/components/ui/time-ago";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn, formatCurrency, formatCents, formatDateTime } from "@/lib/utils";
 import {
-  useGetApiV1AdminConversationsConversationId,
-  useDeleteApiV1AdminConversationsConversationId,
-  getGetApiV1AdminConversationsQueryKey,
+  useGetAdminConversationsConversationId,
+  useDeleteAdminConversationsConversationId,
+  getGetAdminConversationsQueryKey,
 } from "@/lib/api/generated/queries/admin-conversations/admin-conversations";
 import type { AdminConversationDetail } from "@/lib/api/generated/models";
 
@@ -46,17 +46,17 @@ export default function AdminConversationDetailPage() {
     data: response,
     isLoading,
     error,
-  } = useGetApiV1AdminConversationsConversationId(conversationId);
+  } = useGetAdminConversationsConversationId(conversationId);
 
   // Use the AdminConversationDetail type from the generated API
   const conversation: AdminConversationDetail | undefined = response?.data;
 
   // Delete mutation
-  const deleteMutation = useDeleteApiV1AdminConversationsConversationId({
+  const deleteMutation = useDeleteAdminConversationsConversationId({
     mutation: {
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: [getGetApiV1AdminConversationsQueryKey()[0]],
+          queryKey: [getGetAdminConversationsQueryKey()[0]],
         });
         router.push("/admin/conversations");
       },

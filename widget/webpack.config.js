@@ -20,7 +20,7 @@ module.exports = (env, argv) => {
     output: {
       path: path.resolve(__dirname, 'dist'),
       filename: 'widget.js',
-      library: 'IntelligentconvoWidget',
+      library: 'IntelliConvoWidget',
       libraryTarget: 'umd',
       globalObject: 'this',
       clean: true,

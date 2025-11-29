@@ -30,7 +30,7 @@ export function AccountPageHeader({ backLink, userEmail }: AccountPageHeaderProp
             <div className="flex items-center space-x-3">
               <div className="h-8 w-8 rounded-lg bg-indigo-600"></div>
               <span className="hidden sm:inline text-xl font-bold text-gray-900 dark:text-white">
-                Intelligentconvo
+                IntelliConvo
               </span>
             </div>
           </div>

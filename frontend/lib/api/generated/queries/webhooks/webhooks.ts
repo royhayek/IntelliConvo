@@ -11,7 +11,7 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  PostApiV1WebhooksStripeBody,
+  PostWebhooksStripeBody,
   WebhookReceived
 } from '../../models';
 
@@ -27,27 +27,27 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
  * Handle Stripe webhook events for subscription and payment updates
  * @summary Stripe webhook handler
  */
-export const postApiV1WebhooksStripe = (
-    postApiV1WebhooksStripeBody: BodyType<PostApiV1WebhooksStripeBody>,
+export const postWebhooksStripe = (
+    postWebhooksStripeBody: BodyType<PostWebhooksStripeBody>,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<WebhookReceived>(
-      {url: `/api/v1/webhooks/stripe`, method: 'POST',
+      {url: `/webhooks/stripe`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: postApiV1WebhooksStripeBody, signal
+      data: postWebhooksStripeBody, signal
     },
       options);
     }
   
 
 
-export const getPostApiV1WebhooksStripeMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1WebhooksStripe>>, TError,{data: BodyType<PostApiV1WebhooksStripeBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof postApiV1WebhooksStripe>>, TError,{data: BodyType<PostApiV1WebhooksStripeBody>}, TContext> => {
+export const getPostWebhooksStripeMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postWebhooksStripe>>, TError,{data: BodyType<PostWebhooksStripeBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postWebhooksStripe>>, TError,{data: BodyType<PostWebhooksStripeBody>}, TContext> => {
 
-const mutationKey = ['postApiV1WebhooksStripe'];
+const mutationKey = ['postWebhooksStripe'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -57,10 +57,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1WebhooksStripe>>, {data: BodyType<PostApiV1WebhooksStripeBody>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postWebhooksStripe>>, {data: BodyType<PostWebhooksStripeBody>}> = (props) => {
           const {data} = props ?? {};
 
-          return  postApiV1WebhooksStripe(data,requestOptions)
+          return  postWebhooksStripe(data,requestOptions)
         }
 
         
@@ -68,23 +68,23 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiV1WebhooksStripeMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1WebhooksStripe>>>
-    export type PostApiV1WebhooksStripeMutationBody = BodyType<PostApiV1WebhooksStripeBody>
-    export type PostApiV1WebhooksStripeMutationError = ErrorType<void>
+    export type PostWebhooksStripeMutationResult = NonNullable<Awaited<ReturnType<typeof postWebhooksStripe>>>
+    export type PostWebhooksStripeMutationBody = BodyType<PostWebhooksStripeBody>
+    export type PostWebhooksStripeMutationError = ErrorType<void>
 
     /**
  * @summary Stripe webhook handler
  */
-export const usePostApiV1WebhooksStripe = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1WebhooksStripe>>, TError,{data: BodyType<PostApiV1WebhooksStripeBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePostWebhooksStripe = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postWebhooksStripe>>, TError,{data: BodyType<PostWebhooksStripeBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiV1WebhooksStripe>>,
+        Awaited<ReturnType<typeof postWebhooksStripe>>,
         TError,
-        {data: BodyType<PostApiV1WebhooksStripeBody>},
+        {data: BodyType<PostWebhooksStripeBody>},
         TContext
       > => {
 
-      const mutationOptions = getPostApiV1WebhooksStripeMutationOptions(options);
+      const mutationOptions = getPostWebhooksStripeMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }

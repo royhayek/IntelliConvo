@@ -18,7 +18,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useGetApiV1AdminUsers } from "@/lib/api/generated/queries/admin-users/admin-users";
+import { useGetAdminUsers } from "@/lib/api/generated/queries/admin-users/admin-users";
 
 interface UserFilterProps {
   value: string | null;
@@ -37,7 +37,7 @@ export function UserFilter({
   const [search, setSearch] = useState("");
 
   // Fetch users with search
-  const { data, isLoading } = useGetApiV1AdminUsers({
+  const { data, isLoading } = useGetAdminUsers({
     limit: "50",
     ...(search && { search }),
   });

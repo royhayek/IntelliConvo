@@ -25,9 +25,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
-  useGetApiV1AdminWidgetsWidgetId,
-  usePostApiV1AdminWidgetsWidgetIdReset,
-  getGetApiV1AdminWidgetsWidgetIdQueryKey,
+  useGetAdminWidgetsWidgetId,
+  usePostAdminWidgetsWidgetIdReset,
+  getGetAdminWidgetsWidgetIdQueryKey,
 } from "@/lib/api/generated/queries/admin-widgets/admin-widgets";
 
 // Extended interface for the full widget detail response
@@ -106,7 +106,7 @@ export default function AdminWidgetDetailPage() {
     data: widgetResponse,
     isLoading,
     error,
-  } = useGetApiV1AdminWidgetsWidgetId<{ data: WidgetDetail }>(widgetId, {
+  } = useGetAdminWidgetsWidgetId<{ data: WidgetDetail }>(widgetId, {
     query: {
       enabled: !!widgetId,
     },
@@ -115,12 +115,12 @@ export default function AdminWidgetDetailPage() {
   const widget = widgetResponse?.data;
 
   // Reset mutation using the generated hook
-  const resetMutation = usePostApiV1AdminWidgetsWidgetIdReset({
+  const resetMutation = usePostAdminWidgetsWidgetIdReset({
     mutation: {
       onSuccess: () => {
         // Invalidate the widget query to refetch fresh data
         queryClient.invalidateQueries({
-          queryKey: getGetApiV1AdminWidgetsWidgetIdQueryKey(widgetId),
+          queryKey: getGetAdminWidgetsWidgetIdQueryKey(widgetId),
         });
       },
     },

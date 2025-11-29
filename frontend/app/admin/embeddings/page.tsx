@@ -11,15 +11,15 @@ import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-di
 import { SiteFilter } from "@/components/admin/site-filter";
 import { EmbeddingsTable } from "@/components/admin/embeddings";
 import {
-  useGetApiV1AdminEmbeddings,
-  useDeleteApiV1AdminEmbeddingsEmbeddingId,
-  getGetApiV1AdminEmbeddingsQueryKey,
+  useGetAdminEmbeddings,
+  useDeleteAdminEmbeddingsEmbeddingId,
+  getGetAdminEmbeddingsQueryKey,
 } from "@/lib/api/generated/queries/admin-embeddings/admin-embeddings";
 import {
-  useGetApiV1AdminStatsEmbeddings,
-  getGetApiV1AdminStatsEmbeddingsQueryKey,
+  useGetAdminStatsEmbeddings,
+  getGetAdminStatsEmbeddingsQueryKey,
 } from "@/lib/api/generated/queries/admin/admin";
-import type { GetApiV1AdminEmbeddingsParams } from "@/lib/api/generated/models";
+import type { GetAdminEmbeddingsParams } from "@/lib/api/generated/models";
 
 interface EmbeddingWithDetails {
   id: string;
@@ -63,7 +63,7 @@ export default function AdminEmbeddingsPage() {
 
   const siteUrlId = searchParams.get("siteUrlId");
 
-  const queryParams: GetApiV1AdminEmbeddingsParams = {
+  const queryParams: GetAdminEmbeddingsParams = {
     page: page.toString(),
     limit: "20",
     ...(siteId && { siteId }),
@@ -74,19 +74,19 @@ export default function AdminEmbeddingsPage() {
     data: embeddingsResponse,
     isLoading: isLoadingEmbeddings,
     error: embeddingsError,
-  } = useGetApiV1AdminEmbeddings(queryParams);
+  } = useGetAdminEmbeddings(queryParams);
 
-  const { data: statsResponse } = useGetApiV1AdminStatsEmbeddings();
+  const { data: statsResponse } = useGetAdminStatsEmbeddings();
 
-  const deleteMutation = useDeleteApiV1AdminEmbeddingsEmbeddingId({
+  const deleteMutation = useDeleteAdminEmbeddingsEmbeddingId({
     mutation: {
       onSuccess: () => {
         setDeleteEmbedding(null);
         queryClient.invalidateQueries({
-          queryKey: getGetApiV1AdminEmbeddingsQueryKey(queryParams),
+          queryKey: getGetAdminEmbeddingsQueryKey(queryParams),
         });
         queryClient.invalidateQueries({
-          queryKey: getGetApiV1AdminStatsEmbeddingsQueryKey(),
+          queryKey: getGetAdminStatsEmbeddingsQueryKey(),
         });
       },
     },

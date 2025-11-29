@@ -39,7 +39,7 @@ export function BillingInfoCard({ siteId, hasSubscription }: BillingInfoCardProp
             <p>
               Questions?{" "}
               <a
-                href="mailto:support@intelligentconvo.com"
+                href="mailto:support@intelliconvo.com"
                 className="text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300"
               >
                 Contact our support team

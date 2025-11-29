@@ -33,7 +33,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { TimeAgo } from "@/components/ui/time-ago";
 import { formatAddress } from "@/lib/utils";
 import { TablePagination } from "@/components/ui/table-pagination";
-import { useGetApiV1AdminBillingInfo } from "@/lib/api/generated/queries/admin-billing/admin-billing";
+import { useGetAdminBillingInfo } from "@/lib/api/generated/queries/admin-billing/admin-billing";
 import type { BillingInfo, BillingInfoResponse } from "@/lib/types/billing";
 
 export default function AdminBillingInfoPage() {
@@ -45,7 +45,7 @@ export default function AdminBillingInfoPage() {
     data: response,
     isLoading,
     error,
-  } = useGetApiV1AdminBillingInfo<BillingInfoResponse>({
+  } = useGetAdminBillingInfo<BillingInfoResponse>({
     page: page.toString(),
     limit: "20",
     ...(searchQuery && { search: searchQuery }),

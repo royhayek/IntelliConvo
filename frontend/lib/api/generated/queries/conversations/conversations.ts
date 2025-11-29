@@ -19,9 +19,9 @@ import type {
   ConversationAnalytics,
   ConversationDetailsResponse,
   ConversationsListResponse,
-  GetApiV1ConversationsAnalyticsParams,
-  GetApiV1ConversationsParams,
-  GetApiV1ConversationsSearchParams,
+  GetConversationsAnalyticsParams,
+  GetConversationsParams,
+  GetConversationsSearchParams,
   MessageSearchResponse
 } from '../../models';
 
@@ -36,14 +36,14 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 /**
  * @summary Get conversations with filtering and pagination
  */
-export const getApiV1Conversations = (
-    params?: GetApiV1ConversationsParams,
+export const getConversations = (
+    params?: GetConversationsParams,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<ConversationsListResponse>(
-      {url: `/api/v1/conversations`, method: 'GET',
+      {url: `/conversations`, method: 'GET',
         params, signal
     },
       options);
@@ -52,69 +52,69 @@ export const getApiV1Conversations = (
 
 
 
-export const getGetApiV1ConversationsQueryKey = (params?: GetApiV1ConversationsParams,) => {
+export const getGetConversationsQueryKey = (params?: GetConversationsParams,) => {
     return [
-    `/api/v1/conversations`, ...(params ? [params]: [])
+    `/conversations`, ...(params ? [params]: [])
     ] as const;
     }
 
     
-export const getGetApiV1ConversationsQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1Conversations>>, TError = ErrorType<void>>(params?: GetApiV1ConversationsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1Conversations>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetConversationsQueryOptions = <TData = Awaited<ReturnType<typeof getConversations>>, TError = ErrorType<void>>(params?: GetConversationsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getConversations>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1ConversationsQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getGetConversationsQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1Conversations>>> = ({ signal }) => getApiV1Conversations(params, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getConversations>>> = ({ signal }) => getConversations(params, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1Conversations>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getConversations>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1ConversationsQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1Conversations>>>
-export type GetApiV1ConversationsQueryError = ErrorType<void>
+export type GetConversationsQueryResult = NonNullable<Awaited<ReturnType<typeof getConversations>>>
+export type GetConversationsQueryError = ErrorType<void>
 
 
-export function useGetApiV1Conversations<TData = Awaited<ReturnType<typeof getApiV1Conversations>>, TError = ErrorType<void>>(
- params: undefined |  GetApiV1ConversationsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1Conversations>>, TError, TData>> & Pick<
+export function useGetConversations<TData = Awaited<ReturnType<typeof getConversations>>, TError = ErrorType<void>>(
+ params: undefined |  GetConversationsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getConversations>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1Conversations>>,
+          Awaited<ReturnType<typeof getConversations>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1Conversations>>
+          Awaited<ReturnType<typeof getConversations>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1Conversations<TData = Awaited<ReturnType<typeof getApiV1Conversations>>, TError = ErrorType<void>>(
- params?: GetApiV1ConversationsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1Conversations>>, TError, TData>> & Pick<
+export function useGetConversations<TData = Awaited<ReturnType<typeof getConversations>>, TError = ErrorType<void>>(
+ params?: GetConversationsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getConversations>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1Conversations>>,
+          Awaited<ReturnType<typeof getConversations>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1Conversations>>
+          Awaited<ReturnType<typeof getConversations>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1Conversations<TData = Awaited<ReturnType<typeof getApiV1Conversations>>, TError = ErrorType<void>>(
- params?: GetApiV1ConversationsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1Conversations>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetConversations<TData = Awaited<ReturnType<typeof getConversations>>, TError = ErrorType<void>>(
+ params?: GetConversationsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getConversations>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get conversations with filtering and pagination
  */
 
-export function useGetApiV1Conversations<TData = Awaited<ReturnType<typeof getApiV1Conversations>>, TError = ErrorType<void>>(
- params?: GetApiV1ConversationsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1Conversations>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetConversations<TData = Awaited<ReturnType<typeof getConversations>>, TError = ErrorType<void>>(
+ params?: GetConversationsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getConversations>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1ConversationsQueryOptions(params,options)
+  const queryOptions = getGetConversationsQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -129,14 +129,14 @@ export function useGetApiV1Conversations<TData = Awaited<ReturnType<typeof getAp
 /**
  * @summary Get conversation analytics
  */
-export const getApiV1ConversationsAnalytics = (
-    params?: GetApiV1ConversationsAnalyticsParams,
+export const getConversationsAnalytics = (
+    params?: GetConversationsAnalyticsParams,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<ConversationAnalytics>(
-      {url: `/api/v1/conversations/analytics`, method: 'GET',
+      {url: `/conversations/analytics`, method: 'GET',
         params, signal
     },
       options);
@@ -145,69 +145,69 @@ export const getApiV1ConversationsAnalytics = (
 
 
 
-export const getGetApiV1ConversationsAnalyticsQueryKey = (params?: GetApiV1ConversationsAnalyticsParams,) => {
+export const getGetConversationsAnalyticsQueryKey = (params?: GetConversationsAnalyticsParams,) => {
     return [
-    `/api/v1/conversations/analytics`, ...(params ? [params]: [])
+    `/conversations/analytics`, ...(params ? [params]: [])
     ] as const;
     }
 
     
-export const getGetApiV1ConversationsAnalyticsQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1ConversationsAnalytics>>, TError = ErrorType<void>>(params?: GetApiV1ConversationsAnalyticsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1ConversationsAnalytics>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetConversationsAnalyticsQueryOptions = <TData = Awaited<ReturnType<typeof getConversationsAnalytics>>, TError = ErrorType<void>>(params?: GetConversationsAnalyticsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getConversationsAnalytics>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1ConversationsAnalyticsQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getGetConversationsAnalyticsQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1ConversationsAnalytics>>> = ({ signal }) => getApiV1ConversationsAnalytics(params, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getConversationsAnalytics>>> = ({ signal }) => getConversationsAnalytics(params, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1ConversationsAnalytics>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getConversationsAnalytics>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1ConversationsAnalyticsQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1ConversationsAnalytics>>>
-export type GetApiV1ConversationsAnalyticsQueryError = ErrorType<void>
+export type GetConversationsAnalyticsQueryResult = NonNullable<Awaited<ReturnType<typeof getConversationsAnalytics>>>
+export type GetConversationsAnalyticsQueryError = ErrorType<void>
 
 
-export function useGetApiV1ConversationsAnalytics<TData = Awaited<ReturnType<typeof getApiV1ConversationsAnalytics>>, TError = ErrorType<void>>(
- params: undefined |  GetApiV1ConversationsAnalyticsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1ConversationsAnalytics>>, TError, TData>> & Pick<
+export function useGetConversationsAnalytics<TData = Awaited<ReturnType<typeof getConversationsAnalytics>>, TError = ErrorType<void>>(
+ params: undefined |  GetConversationsAnalyticsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getConversationsAnalytics>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1ConversationsAnalytics>>,
+          Awaited<ReturnType<typeof getConversationsAnalytics>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1ConversationsAnalytics>>
+          Awaited<ReturnType<typeof getConversationsAnalytics>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1ConversationsAnalytics<TData = Awaited<ReturnType<typeof getApiV1ConversationsAnalytics>>, TError = ErrorType<void>>(
- params?: GetApiV1ConversationsAnalyticsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1ConversationsAnalytics>>, TError, TData>> & Pick<
+export function useGetConversationsAnalytics<TData = Awaited<ReturnType<typeof getConversationsAnalytics>>, TError = ErrorType<void>>(
+ params?: GetConversationsAnalyticsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getConversationsAnalytics>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1ConversationsAnalytics>>,
+          Awaited<ReturnType<typeof getConversationsAnalytics>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1ConversationsAnalytics>>
+          Awaited<ReturnType<typeof getConversationsAnalytics>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1ConversationsAnalytics<TData = Awaited<ReturnType<typeof getApiV1ConversationsAnalytics>>, TError = ErrorType<void>>(
- params?: GetApiV1ConversationsAnalyticsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1ConversationsAnalytics>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetConversationsAnalytics<TData = Awaited<ReturnType<typeof getConversationsAnalytics>>, TError = ErrorType<void>>(
+ params?: GetConversationsAnalyticsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getConversationsAnalytics>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get conversation analytics
  */
 
-export function useGetApiV1ConversationsAnalytics<TData = Awaited<ReturnType<typeof getApiV1ConversationsAnalytics>>, TError = ErrorType<void>>(
- params?: GetApiV1ConversationsAnalyticsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1ConversationsAnalytics>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetConversationsAnalytics<TData = Awaited<ReturnType<typeof getConversationsAnalytics>>, TError = ErrorType<void>>(
+ params?: GetConversationsAnalyticsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getConversationsAnalytics>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1ConversationsAnalyticsQueryOptions(params,options)
+  const queryOptions = getGetConversationsAnalyticsQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -222,14 +222,14 @@ export function useGetApiV1ConversationsAnalytics<TData = Awaited<ReturnType<typ
 /**
  * @summary Search messages across conversations
  */
-export const getApiV1ConversationsSearch = (
-    params: GetApiV1ConversationsSearchParams,
+export const getConversationsSearch = (
+    params: GetConversationsSearchParams,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<MessageSearchResponse>(
-      {url: `/api/v1/conversations/search`, method: 'GET',
+      {url: `/conversations/search`, method: 'GET',
         params, signal
     },
       options);
@@ -238,69 +238,69 @@ export const getApiV1ConversationsSearch = (
 
 
 
-export const getGetApiV1ConversationsSearchQueryKey = (params?: GetApiV1ConversationsSearchParams,) => {
+export const getGetConversationsSearchQueryKey = (params?: GetConversationsSearchParams,) => {
     return [
-    `/api/v1/conversations/search`, ...(params ? [params]: [])
+    `/conversations/search`, ...(params ? [params]: [])
     ] as const;
     }
 
     
-export const getGetApiV1ConversationsSearchQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1ConversationsSearch>>, TError = ErrorType<void>>(params: GetApiV1ConversationsSearchParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1ConversationsSearch>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetConversationsSearchQueryOptions = <TData = Awaited<ReturnType<typeof getConversationsSearch>>, TError = ErrorType<void>>(params: GetConversationsSearchParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getConversationsSearch>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1ConversationsSearchQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getGetConversationsSearchQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1ConversationsSearch>>> = ({ signal }) => getApiV1ConversationsSearch(params, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getConversationsSearch>>> = ({ signal }) => getConversationsSearch(params, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1ConversationsSearch>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getConversationsSearch>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1ConversationsSearchQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1ConversationsSearch>>>
-export type GetApiV1ConversationsSearchQueryError = ErrorType<void>
+export type GetConversationsSearchQueryResult = NonNullable<Awaited<ReturnType<typeof getConversationsSearch>>>
+export type GetConversationsSearchQueryError = ErrorType<void>
 
 
-export function useGetApiV1ConversationsSearch<TData = Awaited<ReturnType<typeof getApiV1ConversationsSearch>>, TError = ErrorType<void>>(
- params: GetApiV1ConversationsSearchParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1ConversationsSearch>>, TError, TData>> & Pick<
+export function useGetConversationsSearch<TData = Awaited<ReturnType<typeof getConversationsSearch>>, TError = ErrorType<void>>(
+ params: GetConversationsSearchParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getConversationsSearch>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1ConversationsSearch>>,
+          Awaited<ReturnType<typeof getConversationsSearch>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1ConversationsSearch>>
+          Awaited<ReturnType<typeof getConversationsSearch>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1ConversationsSearch<TData = Awaited<ReturnType<typeof getApiV1ConversationsSearch>>, TError = ErrorType<void>>(
- params: GetApiV1ConversationsSearchParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1ConversationsSearch>>, TError, TData>> & Pick<
+export function useGetConversationsSearch<TData = Awaited<ReturnType<typeof getConversationsSearch>>, TError = ErrorType<void>>(
+ params: GetConversationsSearchParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getConversationsSearch>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1ConversationsSearch>>,
+          Awaited<ReturnType<typeof getConversationsSearch>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1ConversationsSearch>>
+          Awaited<ReturnType<typeof getConversationsSearch>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1ConversationsSearch<TData = Awaited<ReturnType<typeof getApiV1ConversationsSearch>>, TError = ErrorType<void>>(
- params: GetApiV1ConversationsSearchParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1ConversationsSearch>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetConversationsSearch<TData = Awaited<ReturnType<typeof getConversationsSearch>>, TError = ErrorType<void>>(
+ params: GetConversationsSearchParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getConversationsSearch>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Search messages across conversations
  */
 
-export function useGetApiV1ConversationsSearch<TData = Awaited<ReturnType<typeof getApiV1ConversationsSearch>>, TError = ErrorType<void>>(
- params: GetApiV1ConversationsSearchParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1ConversationsSearch>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetConversationsSearch<TData = Awaited<ReturnType<typeof getConversationsSearch>>, TError = ErrorType<void>>(
+ params: GetConversationsSearchParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getConversationsSearch>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1ConversationsSearchQueryOptions(params,options)
+  const queryOptions = getGetConversationsSearchQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -315,14 +315,14 @@ export function useGetApiV1ConversationsSearch<TData = Awaited<ReturnType<typeof
 /**
  * @summary Get conversation details with messages
  */
-export const getApiV1ConversationsConversationId = (
+export const getConversationsConversationId = (
     conversationId: string,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<ConversationDetailsResponse>(
-      {url: `/api/v1/conversations/${conversationId}`, method: 'GET', signal
+      {url: `/conversations/${conversationId}`, method: 'GET', signal
     },
       options);
     }
@@ -330,69 +330,69 @@ export const getApiV1ConversationsConversationId = (
 
 
 
-export const getGetApiV1ConversationsConversationIdQueryKey = (conversationId?: string,) => {
+export const getGetConversationsConversationIdQueryKey = (conversationId?: string,) => {
     return [
-    `/api/v1/conversations/${conversationId}`
+    `/conversations/${conversationId}`
     ] as const;
     }
 
     
-export const getGetApiV1ConversationsConversationIdQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1ConversationsConversationId>>, TError = ErrorType<void>>(conversationId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1ConversationsConversationId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetConversationsConversationIdQueryOptions = <TData = Awaited<ReturnType<typeof getConversationsConversationId>>, TError = ErrorType<void>>(conversationId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getConversationsConversationId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1ConversationsConversationIdQueryKey(conversationId);
+  const queryKey =  queryOptions?.queryKey ?? getGetConversationsConversationIdQueryKey(conversationId);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1ConversationsConversationId>>> = ({ signal }) => getApiV1ConversationsConversationId(conversationId, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getConversationsConversationId>>> = ({ signal }) => getConversationsConversationId(conversationId, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(conversationId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1ConversationsConversationId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: !!(conversationId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getConversationsConversationId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1ConversationsConversationIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1ConversationsConversationId>>>
-export type GetApiV1ConversationsConversationIdQueryError = ErrorType<void>
+export type GetConversationsConversationIdQueryResult = NonNullable<Awaited<ReturnType<typeof getConversationsConversationId>>>
+export type GetConversationsConversationIdQueryError = ErrorType<void>
 
 
-export function useGetApiV1ConversationsConversationId<TData = Awaited<ReturnType<typeof getApiV1ConversationsConversationId>>, TError = ErrorType<void>>(
- conversationId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1ConversationsConversationId>>, TError, TData>> & Pick<
+export function useGetConversationsConversationId<TData = Awaited<ReturnType<typeof getConversationsConversationId>>, TError = ErrorType<void>>(
+ conversationId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getConversationsConversationId>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1ConversationsConversationId>>,
+          Awaited<ReturnType<typeof getConversationsConversationId>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1ConversationsConversationId>>
+          Awaited<ReturnType<typeof getConversationsConversationId>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1ConversationsConversationId<TData = Awaited<ReturnType<typeof getApiV1ConversationsConversationId>>, TError = ErrorType<void>>(
- conversationId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1ConversationsConversationId>>, TError, TData>> & Pick<
+export function useGetConversationsConversationId<TData = Awaited<ReturnType<typeof getConversationsConversationId>>, TError = ErrorType<void>>(
+ conversationId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getConversationsConversationId>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1ConversationsConversationId>>,
+          Awaited<ReturnType<typeof getConversationsConversationId>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1ConversationsConversationId>>
+          Awaited<ReturnType<typeof getConversationsConversationId>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1ConversationsConversationId<TData = Awaited<ReturnType<typeof getApiV1ConversationsConversationId>>, TError = ErrorType<void>>(
- conversationId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1ConversationsConversationId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetConversationsConversationId<TData = Awaited<ReturnType<typeof getConversationsConversationId>>, TError = ErrorType<void>>(
+ conversationId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getConversationsConversationId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get conversation details with messages
  */
 
-export function useGetApiV1ConversationsConversationId<TData = Awaited<ReturnType<typeof getApiV1ConversationsConversationId>>, TError = ErrorType<void>>(
- conversationId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1ConversationsConversationId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetConversationsConversationId<TData = Awaited<ReturnType<typeof getConversationsConversationId>>, TError = ErrorType<void>>(
+ conversationId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getConversationsConversationId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1ConversationsConversationIdQueryOptions(conversationId,options)
+  const queryOptions = getGetConversationsConversationIdQueryOptions(conversationId,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

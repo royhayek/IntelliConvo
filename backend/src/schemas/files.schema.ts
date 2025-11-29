@@ -128,7 +128,7 @@ export const messageResponseSchema = registry.register(
 // GET /api/v1/sites/{siteId}/files
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/sites/{siteId}/files',
+  path: '/sites/{siteId}/files',
   summary: 'Get all knowledge files for a site',
   tags: ['Files'],
   security: [{ bearerAuth: [] }],
@@ -159,7 +159,7 @@ registry.registerPath({
 // GET /api/v1/sites/{siteId}/files/{fileId}
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/sites/{siteId}/files/{fileId}',
+  path: '/sites/{siteId}/files/{fileId}',
   summary: 'Get file details',
   tags: ['Files'],
   security: [{ bearerAuth: [] }],
@@ -190,7 +190,7 @@ registry.registerPath({
 // POST /api/v1/sites/{siteId}/files
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/sites/{siteId}/files',
+  path: '/sites/{siteId}/files',
   summary: 'Upload a knowledge file',
   tags: ['Files'],
   security: [{ bearerAuth: [] }],
@@ -229,7 +229,7 @@ registry.registerPath({
 // DELETE /api/v1/sites/{siteId}/files/{fileId}
 registry.registerPath({
   method: 'delete',
-  path: '/api/v1/sites/{siteId}/files/{fileId}',
+  path: '/sites/{siteId}/files/{fileId}',
   summary: 'Delete a knowledge file',
   tags: ['Files'],
   security: [{ bearerAuth: [] }],
@@ -260,7 +260,7 @@ registry.registerPath({
 // POST /api/v1/sites/{siteId}/files/{fileId}/reprocess
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/sites/{siteId}/files/{fileId}/reprocess',
+  path: '/sites/{siteId}/files/{fileId}/reprocess',
   summary: 'Reprocess a knowledge file',
   tags: ['Files'],
   security: [{ bearerAuth: [] }],

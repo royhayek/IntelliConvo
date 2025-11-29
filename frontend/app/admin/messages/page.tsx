@@ -17,13 +17,13 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
 import { MessagesTable } from "@/components/admin/messages";
 import {
-  useGetApiV1AdminMessages,
-  useDeleteApiV1AdminMessagesMessageId,
-  getGetApiV1AdminMessagesQueryKey,
+  useGetAdminMessages,
+  useDeleteAdminMessagesMessageId,
+  getGetAdminMessagesQueryKey,
 } from "@/lib/api/generated/queries/admin-messages/admin-messages";
 import type {
-  GetApiV1AdminMessagesParams,
-  GetApiV1AdminMessagesRole,
+  GetAdminMessagesParams,
+  GetAdminMessagesRole,
 } from "@/lib/api/generated/models";
 
 interface Message {
@@ -59,28 +59,24 @@ export default function AdminMessagesPage() {
   const conversationId = searchParams.get("conversationId");
   const siteId = searchParams.get("siteId");
 
-  const queryParams: GetApiV1AdminMessagesParams = {
+  const queryParams: GetAdminMessagesParams = {
     page: page.toString(),
     limit: "20",
     ...(role !== "all" && {
-      role: role.toUpperCase() as GetApiV1AdminMessagesRole,
+      role: role.toUpperCase() as GetAdminMessagesRole,
     }),
     ...(conversationId && { conversationId }),
     ...(siteId && { siteId }),
   };
 
-  const {
-    data: response,
-    isLoading,
-    error,
-  } = useGetApiV1AdminMessages(queryParams);
+  const { data: response, isLoading, error } = useGetAdminMessages(queryParams);
 
-  const deleteMutation = useDeleteApiV1AdminMessagesMessageId({
+  const deleteMutation = useDeleteAdminMessagesMessageId({
     mutation: {
       onSuccess: () => {
         setDeleteMessage(null);
         queryClient.invalidateQueries({
-          queryKey: getGetApiV1AdminMessagesQueryKey(queryParams),
+          queryKey: getGetAdminMessagesQueryKey(queryParams),
         });
       },
     },

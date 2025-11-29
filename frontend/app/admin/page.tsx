@@ -7,14 +7,14 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useAdminSocket } from "@/lib/hooks/useAdminSocket";
 import {
-  useGetApiV1AdminStatsUsers,
-  useGetApiV1AdminStatsSites,
-  useGetApiV1AdminStatsEmbeddings,
-  useGetApiV1AdminStatsFiles,
-  useGetApiV1AdminStatsConversations,
-  useGetApiV1AdminStatsSubscriptions,
-  useGetApiV1AdminStatsSecurity,
-  useGetApiV1AdminStatsBilling,
+  useGetAdminStatsUsers,
+  useGetAdminStatsSites,
+  useGetAdminStatsEmbeddings,
+  useGetAdminStatsFiles,
+  useGetAdminStatsConversations,
+  useGetAdminStatsSubscriptions,
+  useGetAdminStatsSecurity,
+  useGetAdminStatsBilling,
 } from "@/lib/api/generated/queries/admin/admin";
 
 import { KeyMetricsGrid } from "@/components/admin/dashboard/key-metrics-grid";
@@ -46,28 +46,28 @@ export default function AdminDashboard() {
 
   const hasWsData = wsStats !== null;
 
-  const usersQuery = useGetApiV1AdminStatsUsers({
+  const usersQuery = useGetAdminStatsUsers({
     query: { enabled: !hasWsData, staleTime: 30000 },
   });
-  const sitesQuery = useGetApiV1AdminStatsSites({
+  const sitesQuery = useGetAdminStatsSites({
     query: { enabled: !hasWsData, staleTime: 30000 },
   });
-  const embeddingsQuery = useGetApiV1AdminStatsEmbeddings({
+  const embeddingsQuery = useGetAdminStatsEmbeddings({
     query: { enabled: !hasWsData, staleTime: 30000 },
   });
-  const filesQuery = useGetApiV1AdminStatsFiles({
+  const filesQuery = useGetAdminStatsFiles({
     query: { enabled: !hasWsData, staleTime: 30000 },
   });
-  const conversationsQuery = useGetApiV1AdminStatsConversations({
+  const conversationsQuery = useGetAdminStatsConversations({
     query: { enabled: !hasWsData, staleTime: 30000 },
   });
-  const subscriptionsQuery = useGetApiV1AdminStatsSubscriptions({
+  const subscriptionsQuery = useGetAdminStatsSubscriptions({
     query: { enabled: !hasWsData, staleTime: 30000 },
   });
-  const securityQuery = useGetApiV1AdminStatsSecurity({
+  const securityQuery = useGetAdminStatsSecurity({
     query: { enabled: !hasWsData, staleTime: 30000 },
   });
-  const billingQuery = useGetApiV1AdminStatsBilling({
+  const billingQuery = useGetAdminStatsBilling({
     query: { enabled: !hasWsData, staleTime: 30000 },
   });
 

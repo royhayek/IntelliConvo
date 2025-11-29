@@ -26,8 +26,8 @@ export function trialExpiringEmail(data: TrialExpiringData): { subject: string; 
     daysRemaining,
     expiresAt,
     upgradeUrl,
-    platformName = 'IntelligentConvo',
-    supportEmail = 'support@intelligentconvo.com',
+    platformName = 'IntelliConvo',
+    supportEmail = 'support@intelliconvo.com',
   } = data;
 
   const displayName = userName || email.split('@')[0];

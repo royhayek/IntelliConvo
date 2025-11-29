@@ -333,7 +333,7 @@ export class WidgetService {
    * @param userId - User ID (for authorization)
    * @returns Full widget settings
    */
-  async getAdminSettings(siteId: string, userId: string): Promise<WidgetSettings> {
+  async getGetAdminSettings(siteId: string, userId: string): Promise<WidgetSettings> {
     await this.verifySiteOwnership(siteId, userId);
     return getOrCreateWidgetSettings(siteId);
   }

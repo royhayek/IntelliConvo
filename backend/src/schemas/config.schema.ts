@@ -16,11 +16,11 @@ export const publicConfigResponseSchema = registry.register(
   z.object({
     platformName: z.string().openapi({
       description: 'Platform name',
-      example: 'IntelligentConvo',
+      example: 'IntelliConvo',
     }),
     supportEmail: z.string().email().openapi({
       description: 'Support email address',
-      example: 'support@intelligentconvo.com',
+      example: 'support@intelliconvo.com',
     }),
     maintenanceMode: z.boolean().openapi({
       description: 'Whether the platform is in maintenance mode',
@@ -46,7 +46,7 @@ export const publicConfigResponseSchema = registry.register(
 // GET /api/v1/config/public
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/config/public',
+  path: '/config/public',
   summary: 'Get public configuration',
   description: 'Returns public configuration settings for the frontend',
   tags: ['Config'],

@@ -15,20 +15,20 @@ import { UsersFilters } from "@/components/admin/users/users-filters";
 import { UsersStats } from "@/components/admin/users/users-stats";
 
 import {
-  useGetApiV1AdminUsers,
-  useDeleteApiV1AdminUsersUserId,
-  usePostApiV1AdminUsersUserIdForceLogout,
-  getGetApiV1AdminUsersQueryKey,
+  useGetAdminUsers,
+  useDeleteAdminUsersUserId,
+  usePostAdminUsersUserIdForceLogout,
+  getGetAdminUsersQueryKey,
 } from "@/lib/api/generated/queries/admin-users/admin-users";
 import {
-  useGetApiV1AdminStatsUsers,
-  getGetApiV1AdminStatsUsersQueryKey,
+  useGetAdminStatsUsers,
+  getGetAdminStatsUsersQueryKey,
 } from "@/lib/api/generated/queries/admin/admin";
 
 import type {
   AdminUser,
-  GetApiV1AdminUsersParams,
-  GetApiV1AdminUsersAuthProvider,
+  GetAdminUsersParams,
+  GetAdminUsersAuthProvider,
 } from "@/lib/api/generated/models";
 
 interface UserStats {
@@ -47,42 +47,50 @@ export default function AdminUsersPage() {
   const queryClient = useQueryClient();
 
   const [search, setSearch] = useState(searchParams.get("search") || "");
-  const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
-  const [authProvider, setAuthProvider] = useState(searchParams.get("authProvider") || "all");
+  const [searchQuery, setSearchQuery] = useState(
+    searchParams.get("search") || ""
+  );
+  const [authProvider, setAuthProvider] = useState(
+    searchParams.get("authProvider") || "all"
+  );
   const [isAdmin, setIsAdmin] = useState(searchParams.get("isAdmin") || "all");
   const [page, setPage] = useState(parseInt(searchParams.get("page") || "1"));
   const [deleteUser, setDeleteUser] = useState<AdminUser | null>(null);
 
-  const queryParams: GetApiV1AdminUsersParams = {
+  const queryParams: GetAdminUsersParams = {
     page: page.toString(),
     limit: "20",
     ...(searchQuery && { search: searchQuery }),
-    ...(authProvider !== "all" && { authProvider: authProvider as GetApiV1AdminUsersAuthProvider }),
+    ...(authProvider !== "all" && {
+      authProvider: authProvider as GetAdminUsersAuthProvider,
+    }),
     ...(isAdmin !== "all" && { isAdmin }),
   };
 
-  const {
-    data: usersData,
-    isLoading,
-    error,
-  } = useGetApiV1AdminUsers(queryParams);
+  const { data: usersData, isLoading, error } = useGetAdminUsers(queryParams);
 
-  const { data: statsData } = useGetApiV1AdminStatsUsers();
+  const { data: statsData } = useGetAdminStatsUsers();
 
-  const deleteUserMutation = useDeleteApiV1AdminUsersUserId({
+  const deleteUserMutation = useDeleteAdminUsersUserId({
     mutation: {
       onSuccess: () => {
         setDeleteUser(null);
-        queryClient.invalidateQueries({ queryKey: getGetApiV1AdminUsersQueryKey(queryParams) });
-        queryClient.invalidateQueries({ queryKey: getGetApiV1AdminStatsUsersQueryKey() });
+        queryClient.invalidateQueries({
+          queryKey: getGetAdminUsersQueryKey(queryParams),
+        });
+        queryClient.invalidateQueries({
+          queryKey: getGetAdminStatsUsersQueryKey(),
+        });
       },
     },
   });
 
-  const forceLogoutMutation = usePostApiV1AdminUsersUserIdForceLogout({
+  const forceLogoutMutation = usePostAdminUsersUserIdForceLogout({
     mutation: {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: getGetApiV1AdminUsersQueryKey(queryParams) });
+        queryClient.invalidateQueries({
+          queryKey: getGetAdminUsersQueryKey(queryParams),
+        });
       },
     },
   });
@@ -115,7 +123,9 @@ export default function AdminUsersPage() {
   const stats = statsData?.data as UserStats | undefined;
 
   const errorMessage = error
-    ? (error instanceof Error ? error.message : "An error occurred")
+    ? error instanceof Error
+      ? error.message
+      : "An error occurred"
     : deleteUserMutation.error
     ? "Failed to delete user"
     : forceLogoutMutation.error
@@ -187,7 +197,9 @@ export default function AdminUsersPage() {
         onConfirm={handleDelete}
         isDeleting={deleteUserMutation.isPending}
         title="Delete User"
-        description={`Are you sure you want to delete "${deleteUser?.fullName || deleteUser?.email}"? This action cannot be undone and will remove all associated data.`}
+        description={`Are you sure you want to delete "${
+          deleteUser?.fullName || deleteUser?.email
+        }"? This action cannot be undone and will remove all associated data.`}
       />
     </div>
   );

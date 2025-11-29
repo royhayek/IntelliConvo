@@ -7,11 +7,11 @@ import { toast } from "sonner";
 import { useRequireUser } from "@/lib/hooks/useAuth";
 import { AuthLoading } from "@/components/auth/auth-loading";
 import {
-  useGetApiV1BillingHistory,
-  useGetApiV1BillingSummary,
-  getApiV1BillingReceiptsTransactionId,
+  useGetBillingHistory,
+  useGetBillingSummary,
+  getBillingReceiptsTransactionId,
 } from "@/lib/api/generated/queries/billing/billing";
-import { useGetApiV1SitesSiteId } from "@/lib/api/generated/queries/sites/sites";
+import { useGetSitesSiteId } from "@/lib/api/generated/queries/sites/sites";
 import { getBackLinkConfig } from "@/lib/utils/navigation";
 import { NoSiteSelected } from "@/components/account";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
@@ -19,7 +19,6 @@ import { BillingSummaryStats } from "@/components/billing/billing-summary-stats"
 import { ActiveSubscriptionsCard } from "@/components/billing/active-subscriptions-card";
 import { TransactionHistoryCard } from "@/components/billing/transaction-history-card";
 import { BillingHelpCard } from "@/components/billing/billing-help-card";
-import { TrialStatusBanner } from "@/components/site/trial-status-banner";
 
 function BillingHistoryPageContent() {
   const searchParams = useSearchParams();
@@ -28,16 +27,16 @@ function BillingHistoryPageContent() {
 
   const { isLoading: isAuthLoading, isAuthenticated, user } = useRequireUser();
 
-  const { data: site } = useGetApiV1SitesSiteId(siteId || "", {
+  const { data: site } = useGetSitesSiteId(siteId || "", {
     query: { enabled: isAuthenticated && !!siteId },
   });
 
-  const { data: billingData, isLoading } = useGetApiV1BillingHistory(
+  const { data: billingData, isLoading } = useGetBillingHistory(
     { limit: "50", siteId: siteId || undefined },
     { query: { enabled: isAuthenticated && !!siteId } }
   );
 
-  const { data: billingSummary } = useGetApiV1BillingSummary(
+  const { data: billingSummary } = useGetBillingSummary(
     { siteId: siteId || undefined },
     { query: { enabled: isAuthenticated && !!siteId } }
   );
@@ -45,7 +44,7 @@ function BillingHistoryPageContent() {
   const handleViewReceipt = async (transactionId: string) => {
     setLoadingReceiptId(transactionId);
     try {
-      const response = await getApiV1BillingReceiptsTransactionId(transactionId);
+      const response = await getBillingReceiptsTransactionId(transactionId);
       // Open the Stripe hosted receipt in a new tab
       window.open(response.receiptUrl, "_blank");
     } catch {
@@ -89,7 +88,11 @@ function BillingHistoryPageContent() {
   };
 
   const totalPaid = summary.totalAmount ?? 0;
-  const statusCounts = summary.statusCounts || { paid: 0, pending: 0, failed: 0 };
+  const statusCounts = summary.statusCounts || {
+    paid: 0,
+    pending: 0,
+    failed: 0,
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-slate-950">
@@ -111,9 +114,6 @@ function BillingHistoryPageContent() {
               View payment history and invoices for this site
             </p>
           </div>
-
-          {/* Trial Status */}
-          <TrialStatusBanner siteId={siteId} />
 
           <BillingSummaryStats
             totalPaid={totalPaid}

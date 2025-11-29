@@ -23,12 +23,12 @@ export class ChatWindowRenderer {
    */
   public getWidgetHTML(): string {
     return `
-      <div class="intelligentconvo-widget" role="main" aria-label="Chat widget">
-        <div class="intelligentconvo-header">
-          <button class="intelligentconvo-menu" aria-label="Menu" tabindex="0">☰</button>
-          <div class="intelligentconvo-tabs" role="tablist">
+      <div class="intelliconvo-widget" role="main" aria-label="Chat widget">
+        <div class="intelliconvo-header">
+          <button class="intelliconvo-menu" aria-label="Menu" tabindex="0">☰</button>
+          <div class="intelliconvo-tabs" role="tablist">
             <button
-              class="intelligentconvo-tab active"
+              class="intelliconvo-tab active"
               data-mode="chat"
               role="tab"
               aria-selected="true"
@@ -36,7 +36,7 @@ export class ChatWindowRenderer {
               id="chat-tab"
             >Chat</button>
             <button
-              class="intelligentconvo-tab"
+              class="intelliconvo-tab"
               data-mode="speak"
               role="tab"
               aria-selected="false"
@@ -45,40 +45,41 @@ export class ChatWindowRenderer {
             >Speak</button>
           </div>
         </div>
-        <div class="intelligentconvo-content">
-          <div class="intelligentconvo-connection-status" id="intelligentconvo-connection-status">
-            <div class="intelligentconvo-connection-dot"></div>
-            <span id="intelligentconvo-connection-text">Connecting...</span>
+        <div class="intelliconvo-content">
+          <div class="intelliconvo-connection-status" id="intelliconvo-connection-status">
+            <div class="intelliconvo-connection-dot"></div>
+            <span id="intelliconvo-connection-text">Connecting...</span>
           </div>
           <div
-            class="intelligentconvo-messages"
-            id="intelligentconvo-messages"
+            class="intelliconvo-messages"
+            id="intelliconvo-messages"
             role="log"
             aria-live="polite"
             aria-label="Chat messages"
-          ></div>
-          <div class="intelligentconvo-starters" id="intelligentconvo-starters"></div>
-          <div class="intelligentconvo-typing" id="intelligentconvo-typing" style="display: none;" aria-live="polite">
-            <div class="intelligentconvo-typing-dots">
-              <span></span>
-              <span></span>
-              <span></span>
+          >
+            <div class="intelliconvo-typing" id="intelliconvo-typing" style="display: none;" aria-live="polite">
+              <div class="intelliconvo-typing-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
             </div>
           </div>
+          <div class="intelliconvo-starters" id="intelliconvo-starters"></div>
         </div>
-        <div class="intelligentconvo-input" role="form">
-          <label for="intelligentconvo-input" class="sr-only">Type your message</label>
+        <div class="intelliconvo-input" role="form">
+          <label for="intelliconvo-input" class="sr-only">Type your message</label>
           <input
             type="text"
             placeholder="Type your message..."
-            id="intelligentconvo-input"
+            id="intelliconvo-input"
             aria-label="Type your message"
             autocomplete="off"
             maxlength="1000"
           />
           <button
-            class="intelligentconvo-mic"
-            id="intelligentconvo-mic"
+            class="intelliconvo-mic"
+            id="intelliconvo-mic"
             aria-label="Start voice input"
             title="Start voice input"
           >
@@ -88,8 +89,8 @@ export class ChatWindowRenderer {
             </svg>
           </button>
           <button
-            class="intelligentconvo-send"
-            id="intelligentconvo-send"
+            class="intelliconvo-send"
+            id="intelliconvo-send"
             aria-label="Send message"
             title="Send message"
           >
@@ -127,55 +128,55 @@ export class ChatWindowRenderer {
     const position = this.settings?.launcherPosition || this.config.position || 'bottom-right';
 
     return `
-      <div class="intelligentconvo-chat-window intelligentconvo-${position}" id="intelligentconvo-chat-window" role="dialog" aria-labelledby="chat-title" aria-modal="true">
-        <div class="intelligentconvo-chat-header">
-          <div class="intelligentconvo-chat-title">
-            <div class="intelligentconvo-header-info">
+      <div class="intelliconvo-chat-window intelliconvo-${position}" id="intelliconvo-chat-window" role="dialog" aria-labelledby="chat-title" aria-modal="true">
+        <div class="intelliconvo-chat-header">
+          <div class="intelliconvo-chat-title">
+            <div class="intelliconvo-header-info">
               ${this.settings?.headerShowAvatar ? `
-                <div class="intelligentconvo-header-avatar">
+                <div class="intelliconvo-header-avatar">
                   ${this.settings?.headerAvatarUrl
                     ? `<img src="${this.settings.headerAvatarUrl}" alt="${this.settings?.botName || 'Assistant'}" />`
                     : `<span>${this.settings?.botAvatarFallback || 'AI'}</span>`
                   }
                   ${this.settings?.headerShowStatus !== false ? `
-                    <div class="intelligentconvo-status-dot" id="intelligentconvo-status-dot"></div>
+                    <div class="intelliconvo-status-dot" id="intelliconvo-status-dot"></div>
                   ` : ''}
                 </div>
               ` : ''}
-              <div class="intelligentconvo-header-text">
+              <div class="intelliconvo-header-text">
                 <h4 id="chat-title">${headerTitle}</h4>
-                ${headerSubtitle ? `<span class="intelligentconvo-header-subtitle">${headerSubtitle}</span>` : ''}
+                ${headerSubtitle ? `<span class="intelliconvo-header-subtitle">${headerSubtitle}</span>` : ''}
               </div>
             </div>
-            <div class="intelligentconvo-header-actions">
+            <div class="intelliconvo-header-actions">
               ${showMinimize ? `
                 <button
-                  class="intelligentconvo-minimize"
-                  id="intelligentconvo-minimize"
+                  class="intelliconvo-minimize"
+                  id="intelliconvo-minimize"
                   aria-label="${this.settings?.minimizeButtonAriaLabel || 'Minimize chat'}"
                   title="Minimize"
                 >−</button>
               ` : ''}
               ${showCloseButton ? `
                 <button
-                  class="intelligentconvo-close"
-                  id="intelligentconvo-close"
+                  class="intelliconvo-close"
+                  id="intelliconvo-close"
                   aria-label="${closeLabel}"
                   title="Close"
                 >×</button>
               ` : ''}
             </div>
           </div>
-          <div class="intelligentconvo-tabs" role="tablist">
+          <div class="intelliconvo-tabs" role="tablist">
             <button
-              class="intelligentconvo-tab active"
+              class="intelliconvo-tab active"
               data-mode="chat"
               role="tab"
               aria-selected="true"
               aria-controls="chat-panel"
             >Chat</button>
             <button
-              class="intelligentconvo-tab"
+              class="intelliconvo-tab"
               data-mode="speak"
               role="tab"
               aria-selected="false"
@@ -183,19 +184,19 @@ export class ChatWindowRenderer {
             >Speak</button>
           </div>
         </div>
-        <div class="intelligentconvo-content">
+        <div class="intelliconvo-content">
           <div
-            class="intelligentconvo-messages"
-            id="intelligentconvo-messages"
+            class="intelliconvo-messages"
+            id="intelliconvo-messages"
             role="log"
             aria-live="polite"
             aria-label="Chat messages"
           ></div>
-          <div class="intelligentconvo-starters" id="intelligentconvo-starters"></div>
+          <div class="intelliconvo-starters" id="intelliconvo-starters"></div>
           ${showTypingIndicator ? `
-            <div class="intelligentconvo-typing" id="intelligentconvo-typing" style="display: none;" aria-live="polite">
+            <div class="intelliconvo-typing" id="intelliconvo-typing" style="display: none;" aria-live="polite">
               ${(this.settings?.typingIndicatorStyle || 'dots') === 'dots' ? `
-                <div class="intelligentconvo-typing-dots">
+                <div class="intelliconvo-typing-dots">
                   <span></span>
                   <span></span>
                   <span></span>
@@ -204,36 +205,36 @@ export class ChatWindowRenderer {
             </div>
           ` : ''}
         </div>
-        <div class="intelligentconvo-input" role="form">
-          <label for="intelligentconvo-input" class="sr-only">${placeholder}</label>
+        <div class="intelliconvo-input" role="form">
+          <label for="intelliconvo-input" class="sr-only">${placeholder}</label>
           <input
             type="text"
             placeholder="${placeholder}"
-            id="intelligentconvo-input"
+            id="intelliconvo-input"
             aria-label="${placeholder}"
             autocomplete="off"
             maxlength="1000"
           />
           ${this.settings?.enableFileAttachments ? `
             <button
-              class="intelligentconvo-attach"
-              id="intelligentconvo-attach"
+              class="intelliconvo-attach"
+              id="intelliconvo-attach"
               aria-label="Attach file"
               title="Attach file"
             >📎</button>
           ` : ''}
           ${this.settings?.enableEmojiPicker ? `
             <button
-              class="intelligentconvo-emoji-btn"
-              id="intelligentconvo-emoji-btn"
+              class="intelliconvo-emoji-btn"
+              id="intelliconvo-emoji-btn"
               aria-label="Open emoji picker"
               title="Emoji"
             >😊</button>
           ` : ''}
           ${showVoiceInput ? `
             <button
-              class="intelligentconvo-mic"
-              id="intelligentconvo-mic"
+              class="intelliconvo-mic"
+              id="intelliconvo-mic"
               aria-label="Start voice input"
               title="Start voice input"
             >
@@ -244,8 +245,8 @@ export class ChatWindowRenderer {
             </button>
           ` : ''}
           <button
-            class="intelligentconvo-send intelligentconvo-btn-shape-${sendButtonShape}"
-            id="intelligentconvo-send"
+            class="intelliconvo-send intelliconvo-btn-shape-${sendButtonShape}"
+            id="intelliconvo-send"
             aria-label="${sendLabel}"
             title="Send"
           >
@@ -255,7 +256,7 @@ export class ChatWindowRenderer {
           </button>
         </div>
         ${showPoweredBy ? `
-          <div class="intelligentconvo-powered-by">
+          <div class="intelliconvo-powered-by">
             <a href="${poweredByUrl}" target="_blank" rel="noopener noreferrer">${poweredByText}</a>
           </div>
         ` : ''}
@@ -271,44 +272,44 @@ export class ChatWindowRenderer {
     const speakTitle = this.settings?.botName || 'AI Assistant';
 
     return `
-      <div class="intelligentconvo-speak-mode" id="intelligentconvo-speak-mode" style="display: none;">
-        <div class="intelligentconvo-speak-header">
-          <div class="intelligentconvo-speak-avatar-wrapper">
-            <div class="intelligentconvo-speak-avatar">
+      <div class="intelliconvo-speak-mode" id="intelliconvo-speak-mode" style="display: none;">
+        <div class="intelliconvo-speak-header">
+          <div class="intelliconvo-speak-avatar-wrapper">
+            <div class="intelliconvo-speak-avatar">
               ${this.settings?.botAvatarUrl
                 ? `<img src="${this.settings.botAvatarUrl}" alt="${speakTitle}" />`
-                : `<div class="intelligentconvo-speak-avatar-fallback">${this.settings?.botAvatarFallback || 'AI'}</div>`
+                : `<div class="intelliconvo-speak-avatar-fallback">${this.settings?.botAvatarFallback || 'AI'}</div>`
               }
-              <div class="intelligentconvo-speak-pulse"></div>
+              <div class="intelliconvo-speak-pulse"></div>
             </div>
           </div>
-          <div class="intelligentconvo-speak-status-wrapper">
-            <h3 class="intelligentconvo-speak-title">${speakTitle}</h3>
-            <div class="intelligentconvo-speak-status" id="intelligentconvo-speak-status">
-              <span class="intelligentconvo-status-text">Ready to listen</span>
+          <div class="intelliconvo-speak-status-wrapper">
+            <h3 class="intelliconvo-speak-title">${speakTitle}</h3>
+            <div class="intelliconvo-speak-status" id="intelliconvo-speak-status">
+              <span class="intelliconvo-status-text">Ready to listen</span>
             </div>
           </div>
         </div>
 
-        <div class="intelligentconvo-speak-waveform-container">
-          <div class="intelligentconvo-speak-waveform" id="intelligentconvo-speak-waveform">
-            <div class="intelligentconvo-wave-bar"></div>
-            <div class="intelligentconvo-wave-bar"></div>
-            <div class="intelligentconvo-wave-bar"></div>
-            <div class="intelligentconvo-wave-bar"></div>
-            <div class="intelligentconvo-wave-bar"></div>
+        <div class="intelliconvo-speak-waveform-container">
+          <div class="intelliconvo-speak-waveform" id="intelliconvo-speak-waveform">
+            <div class="intelliconvo-wave-bar"></div>
+            <div class="intelliconvo-wave-bar"></div>
+            <div class="intelliconvo-wave-bar"></div>
+            <div class="intelliconvo-wave-bar"></div>
+            <div class="intelliconvo-wave-bar"></div>
           </div>
         </div>
 
-        <div class="intelligentconvo-speak-transcript" id="intelligentconvo-speak-transcript">
-          <div class="intelligentconvo-transcript-header">
+        <div class="intelliconvo-speak-transcript" id="intelliconvo-speak-transcript">
+          <div class="intelliconvo-transcript-header">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
             </svg>
-            <span>Conversation</span>
+            <span>Transcript</span>
           </div>
-          <div class="intelligentconvo-transcript-messages" id="intelligentconvo-transcript-messages">
-            <div class="intelligentconvo-transcript-empty">
+          <div class="intelliconvo-transcript-messages" id="intelliconvo-transcript-messages">
+            <div class="intelliconvo-transcript-empty">
               <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                 <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
                 <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
@@ -320,22 +321,22 @@ export class ChatWindowRenderer {
           </div>
         </div>
 
-        <div class="intelligentconvo-speak-controls">
+        <div class="intelliconvo-speak-controls">
           <button
-            class="intelligentconvo-speak-btn"
-            id="intelligentconvo-speak-btn"
+            class="intelliconvo-speak-btn"
+            id="intelliconvo-speak-btn"
             aria-label="Start speaking"
             title="Tap to speak"
           >
-            <svg class="intelligentconvo-mic-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg class="intelliconvo-mic-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
               <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
               <line x1="12" y1="19" x2="12" y2="22"></line>
             </svg>
           </button>
           <button
-            class="intelligentconvo-speak-stop-btn"
-            id="intelligentconvo-speak-stop-btn"
+            class="intelliconvo-speak-stop-btn"
+            id="intelliconvo-speak-stop-btn"
             aria-label="Stop speaking"
             title="Stop"
             style="display: none;"
@@ -346,13 +347,22 @@ export class ChatWindowRenderer {
           </button>
         </div>
 
-        <div class="intelligentconvo-speaking-indicator" id="intelligentconvo-speaking-indicator" style="display: none;">
-          <div class="intelligentconvo-speaking-animation">
-            <div class="intelligentconvo-speaking-dot"></div>
-            <div class="intelligentconvo-speaking-dot"></div>
-            <div class="intelligentconvo-speaking-dot"></div>
+        <div class="intelliconvo-speaking-indicator" id="intelliconvo-speaking-indicator" style="display: none;">
+          <div class="intelliconvo-speaking-animation">
+            <div class="intelliconvo-speaking-dot"></div>
+            <div class="intelliconvo-speaking-dot"></div>
+            <div class="intelliconvo-speaking-dot"></div>
           </div>
           <span>AI is speaking...</span>
+        </div>
+
+        <div class="intelliconvo-processing-indicator" id="intelliconvo-processing-indicator" style="display: none;">
+          <div class="intelliconvo-processing-animation">
+            <div class="intelliconvo-processing-dot"></div>
+            <div class="intelliconvo-processing-dot"></div>
+            <div class="intelliconvo-processing-dot"></div>
+          </div>
+          <span>Processing...</span>
         </div>
       </div>
     `;

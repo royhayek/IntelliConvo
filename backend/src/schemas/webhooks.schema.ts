@@ -33,7 +33,7 @@ export const webhookReceivedSchema = registry.register(
 // POST /api/v1/webhooks/stripe
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/webhooks/stripe',
+  path: '/webhooks/stripe',
   summary: 'Stripe webhook handler',
   description: 'Handle Stripe webhook events for subscription and payment updates',
   tags: ['Webhooks'],

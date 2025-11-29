@@ -30,7 +30,7 @@ export class VoiceHandler {
       this.speechRecognition.lang = this.dependencies.settings?.voiceInputLanguage || 'en-US';
 
       this.speechRecognition.onstart = () => {
-        const micBtn = document.getElementById('intelligentconvo-mic');
+        const micBtn = document.getElementById('intelliconvo-mic');
         if (micBtn) {
           micBtn.classList.add('listening');
           micBtn.setAttribute('aria-label', 'Listening...');
@@ -54,7 +54,7 @@ export class VoiceHandler {
       };
 
       this.speechRecognition.onend = () => {
-        const micBtn = document.getElementById('intelligentconvo-mic');
+        const micBtn = document.getElementById('intelliconvo-mic');
         if (micBtn) {
           micBtn.classList.remove('listening');
           micBtn.setAttribute('aria-label', 'Start voice input');
@@ -70,7 +70,7 @@ export class VoiceHandler {
           this.dependencies.onError(error);
         }
 
-        const micBtn = document.getElementById('intelligentconvo-mic');
+        const micBtn = document.getElementById('intelliconvo-mic');
         if (micBtn) {
           micBtn.classList.remove('listening');
         }
@@ -135,8 +135,8 @@ export class VoiceHandler {
       this.speechRecognition.lang = this.dependencies.settings?.voiceInputLanguage || 'en-US';
 
       this.speechRecognition.onstart = () => {
-        const micBtn = document.getElementById('intelligentconvo-mic');
-        const speakBtn = document.getElementById('intelligentconvo-speak-btn');
+        const micBtn = document.getElementById('intelliconvo-mic');
+        const speakBtn = document.getElementById('intelliconvo-speak-btn');
         const btn = speakBtn || micBtn;
         if (btn) {
           btn.classList.add('listening');
@@ -161,8 +161,8 @@ export class VoiceHandler {
       };
 
       this.speechRecognition.onend = () => {
-        const micBtn = document.getElementById('intelligentconvo-mic');
-        const speakBtn = document.getElementById('intelligentconvo-speak-btn');
+        const micBtn = document.getElementById('intelliconvo-mic');
+        const speakBtn = document.getElementById('intelliconvo-speak-btn');
         const btn = speakBtn || micBtn;
         if (btn) {
           btn.classList.remove('listening');
@@ -179,8 +179,8 @@ export class VoiceHandler {
           this.dependencies.onError(error);
         }
 
-        const micBtn = document.getElementById('intelligentconvo-mic');
-        const speakBtn = document.getElementById('intelligentconvo-speak-btn');
+        const micBtn = document.getElementById('intelliconvo-mic');
+        const speakBtn = document.getElementById('intelliconvo-speak-btn');
         const btn = speakBtn || micBtn;
         if (btn) {
           btn.classList.remove('listening');

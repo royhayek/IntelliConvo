@@ -232,7 +232,7 @@ export const sitesMessageResponseSchema = registry.register(
 // GET /api/v1/sites
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/sites',
+  path: '/sites',
   summary: 'Get all sites for user',
   tags: ['Sites'],
   security: [{ bearerAuth: [] }],
@@ -254,7 +254,7 @@ registry.registerPath({
 // POST /api/v1/sites
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/sites',
+  path: '/sites',
   summary: 'Create a new site',
   tags: ['Sites'],
   security: [{ bearerAuth: [] }],
@@ -288,7 +288,7 @@ registry.registerPath({
 // GET /api/v1/sites/{siteId}
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/sites/{siteId}',
+  path: '/sites/{siteId}',
   summary: 'Get site by ID',
   tags: ['Sites'],
   security: [{ bearerAuth: [] }],
@@ -316,7 +316,7 @@ registry.registerPath({
 // PATCH /api/v1/sites/{siteId}
 registry.registerPath({
   method: 'patch',
-  path: '/api/v1/sites/{siteId}',
+  path: '/sites/{siteId}',
   summary: 'Update site',
   tags: ['Sites'],
   security: [{ bearerAuth: [] }],
@@ -351,7 +351,7 @@ registry.registerPath({
 // DELETE /api/v1/sites/{siteId}
 registry.registerPath({
   method: 'delete',
-  path: '/api/v1/sites/{siteId}',
+  path: '/sites/{siteId}',
   summary: 'Delete site',
   tags: ['Sites'],
   security: [{ bearerAuth: [] }],
@@ -374,7 +374,7 @@ registry.registerPath({
 // POST /api/v1/sites/{siteId}/crawl
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/sites/{siteId}/crawl',
+  path: '/sites/{siteId}/crawl',
   summary: 'Trigger site recrawl',
   tags: ['Sites'],
   security: [{ bearerAuth: [] }],
@@ -402,7 +402,7 @@ registry.registerPath({
 // GET /api/v1/sites/{siteId}/starters
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/sites/{siteId}/starters',
+  path: '/sites/{siteId}/starters',
   summary: 'Get conversation starters',
   tags: ['Sites'],
   security: [{ bearerAuth: [] }],
@@ -430,7 +430,7 @@ registry.registerPath({
 // PUT /api/v1/sites/{siteId}/starters
 registry.registerPath({
   method: 'put',
-  path: '/api/v1/sites/{siteId}/starters',
+  path: '/sites/{siteId}/starters',
   summary: 'Update conversation starters',
   tags: ['Sites'],
   security: [{ bearerAuth: [] }],
@@ -465,7 +465,7 @@ registry.registerPath({
 // GET /api/v1/sites/{siteId}/hosts
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/sites/{siteId}/hosts',
+  path: '/sites/{siteId}/hosts',
   summary: 'Get active hosts',
   tags: ['Sites'],
   security: [{ bearerAuth: [] }],
@@ -493,7 +493,7 @@ registry.registerPath({
 // POST /api/v1/sites/{siteId}/hosts
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/sites/{siteId}/hosts',
+  path: '/sites/{siteId}/hosts',
   summary: 'Add active host',
   tags: ['Sites'],
   security: [{ bearerAuth: [] }],
@@ -528,7 +528,7 @@ registry.registerPath({
 // PATCH /api/v1/sites/{siteId}/hosts/{hostId}
 registry.registerPath({
   method: 'patch',
-  path: '/api/v1/sites/{siteId}/hosts/{hostId}',
+  path: '/sites/{siteId}/hosts/{hostId}',
   summary: 'Update active host',
   tags: ['Sites'],
   security: [{ bearerAuth: [] }],
@@ -566,7 +566,7 @@ registry.registerPath({
 // DELETE /api/v1/sites/{siteId}/hosts/{hostId}
 registry.registerPath({
   method: 'delete',
-  path: '/api/v1/sites/{siteId}/hosts/{hostId}',
+  path: '/sites/{siteId}/hosts/{hostId}',
   summary: 'Remove active host',
   tags: ['Sites'],
   security: [{ bearerAuth: [] }],
@@ -712,7 +712,7 @@ export const selectiveCrawlSchema = registry.register(
 // POST /api/v1/sites/{siteId}/discover - Start URL discovery
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/sites/{siteId}/discover',
+  path: '/sites/{siteId}/discover',
   summary: 'Start URL discovery',
   description: 'Discovers URLs from sitemap or homepage without crawling content. This is fast (~30 seconds).',
   tags: ['Sites', 'Discovery'],
@@ -737,7 +737,7 @@ registry.registerPath({
 // GET /api/v1/sites/{siteId}/discovery - Get discovery results
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/sites/{siteId}/discovery',
+  path: '/sites/{siteId}/discovery',
   summary: 'Get discovery results',
   description: 'Returns discovered URLs with their categories and selection status.',
   tags: ['Sites', 'Discovery'],
@@ -762,7 +762,7 @@ registry.registerPath({
 // GET /api/v1/sites/{siteId}/discovery/stats - Get discovery statistics
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/sites/{siteId}/discovery/stats',
+  path: '/sites/{siteId}/discovery/stats',
   summary: 'Get discovery statistics',
   description: 'Returns statistics about discovered URLs by category and priority.',
   tags: ['Sites', 'Discovery'],
@@ -787,7 +787,7 @@ registry.registerPath({
 // PUT /api/v1/sites/{siteId}/discovery/selections - Update URL selections
 registry.registerPath({
   method: 'put',
-  path: '/api/v1/sites/{siteId}/discovery/selections',
+  path: '/sites/{siteId}/discovery/selections',
   summary: 'Update URL selections',
   description: 'Update which URLs should be included in the crawl.',
   tags: ['Sites', 'Discovery'],
@@ -819,7 +819,7 @@ registry.registerPath({
 // POST /api/v1/sites/{siteId}/discovery/bulk-select - Bulk select/deselect URLs
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/sites/{siteId}/discovery/bulk-select',
+  path: '/sites/{siteId}/discovery/bulk-select',
   summary: 'Bulk select/deselect URLs',
   description: 'Select or deselect all URLs matching a category or priority.',
   tags: ['Sites', 'Discovery'],
@@ -851,7 +851,7 @@ registry.registerPath({
 // POST /api/v1/sites/{siteId}/discovery/manual-urls - Add manual URLs
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/sites/{siteId}/discovery/manual-urls',
+  path: '/sites/{siteId}/discovery/manual-urls',
   summary: 'Add manual URLs',
   description: 'Add URLs manually that were not found in sitemap or discovery.',
   tags: ['Sites', 'Discovery'],
@@ -886,7 +886,7 @@ registry.registerPath({
 // POST /api/v1/sites/{siteId}/crawl/selective - Start selective crawl
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/sites/{siteId}/crawl/selective',
+  path: '/sites/{siteId}/crawl/selective',
   summary: 'Start selective crawl',
   description: 'Crawl only the selected URLs from discovery.',
   tags: ['Sites', 'Discovery'],
@@ -919,6 +919,122 @@ registry.registerPath({
   },
 });
 
+// ============================================
+// Site Analytics Schemas
+// ============================================
+
+// Site Analytics Query params
+export const siteAnalyticsQuerySchema = z.object({
+  period: z.enum(['7d', '30d', '90d', '1y']).default('30d').openapi({
+    description: 'Time period for analytics',
+    example: '30d',
+  }),
+});
+
+// URL Status breakdown
+const urlStatusBreakdownSchema = z.object({
+  ready: z.number().int().openapi({ description: 'URLs with ready embeddings' }),
+  processing: z.number().int().openapi({ description: 'URLs being processed' }),
+  pending: z.number().int().openapi({ description: 'URLs pending processing' }),
+  failed: z.number().int().openapi({ description: 'Failed URLs' }),
+  excluded: z.number().int().openapi({ description: 'Excluded URLs' }),
+});
+
+// File Status breakdown
+const fileStatusBreakdownSchema = z.object({
+  completed: z.number().int().openapi({ description: 'Completed files' }),
+  pending: z.number().int().openapi({ description: 'Pending files' }),
+  failed: z.number().int().openapi({ description: 'Failed files' }),
+});
+
+// Peak hour item
+const peakHourSchema = z.object({
+  hour: z.number().int().min(0).max(23).openapi({ description: 'Hour of day (0-23)' }),
+  count: z.number().int().openapi({ description: 'Conversation count at this hour' }),
+});
+
+// Time series data point
+const timeSeriesPointSchema = z.object({
+  date: z.string().openapi({ description: 'Date in YYYY-MM-DD format' }),
+  conversations: z.number().int().openapi({ description: 'Conversations on this date' }),
+  messages: z.number().int().openapi({ description: 'Messages on this date' }),
+  tokens: z.number().int().openapi({ description: 'Tokens used on this date' }),
+  cost: z.number().openapi({ description: 'Cost in cents on this date' }),
+});
+
+// Daily count item
+const dailyCountSchema = z.object({
+  date: z.string().openapi({ description: 'Date in YYYY-MM-DD format' }),
+  messages: z.number().int().optional().openapi({ description: 'Count of messages' }),
+  conversations: z.number().int().optional().openapi({ description: 'Count of conversations' }),
+});
+
+// Site Analytics Response
+export const siteAnalyticsResponseSchema = registry.register(
+  'SiteAnalyticsResponse',
+  z.object({
+    overview: z.object({
+      totalConversations: z.number().int().openapi({ description: 'Total conversations in period' }),
+      totalMessages: z.number().int().openapi({ description: 'Total messages in period' }),
+      averageMessagesPerConversation: z.number().openapi({ description: 'Average messages per conversation' }),
+      activeUsers: z.number().int().openapi({ description: 'Unique active users in period' }),
+      totalTokensUsed: z.number().int().openapi({ description: 'Total AI tokens used' }),
+      totalCostInCents: z.number().openapi({ description: 'Total AI cost in cents' }),
+    }).openapi({ description: 'Overview statistics' }),
+    knowledgeBase: z.object({
+      totalUrls: z.number().int().openapi({ description: 'Total URLs indexed' }),
+      urlsByStatus: urlStatusBreakdownSchema.openapi({ description: 'URLs grouped by status' }),
+      totalEmbeddings: z.number().int().openapi({ description: 'Total embedding chunks' }),
+      totalFiles: z.number().int().openapi({ description: 'Total knowledge files' }),
+      filesByStatus: fileStatusBreakdownSchema.openapi({ description: 'Files grouped by status' }),
+      totalFileSizeBytes: z.number().int().openapi({ description: 'Total file size in bytes' }),
+    }).openapi({ description: 'Knowledge base statistics' }),
+    engagement: z.object({
+      conversationsToday: z.number().int().openapi({ description: 'Conversations started today' }),
+      conversationsThisWeek: z.number().int().openapi({ description: 'Conversations this week' }),
+      conversationsThisMonth: z.number().int().openapi({ description: 'Conversations this month' }),
+      messagesPerDay: z.array(dailyCountSchema).openapi({ description: 'Messages per day' }),
+      conversationsPerDay: z.array(dailyCountSchema).openapi({ description: 'Conversations per day' }),
+      peakHours: z.array(peakHourSchema).openapi({ description: 'Peak conversation hours' }),
+    }).openapi({ description: 'Engagement statistics' }),
+    responseMetrics: z.object({
+      averageTokensPerResponse: z.number().openapi({ description: 'Average tokens per AI response' }),
+      averageCostPerConversation: z.number().openapi({ description: 'Average cost per conversation in cents' }),
+      totalAssistantMessages: z.number().int().openapi({ description: 'Total AI responses' }),
+      totalUserMessages: z.number().int().openapi({ description: 'Total user messages' }),
+    }).openapi({ description: 'Response metrics' }),
+    timeSeriesData: z.array(timeSeriesPointSchema).openapi({ description: 'Time series data for charts' }),
+  }).openapi({
+    description: 'Comprehensive site analytics response',
+  })
+);
+
+// GET /api/v1/sites/{siteId}/analytics
+registry.registerPath({
+  method: 'get',
+  path: '/sites/{siteId}/analytics',
+  summary: 'Get comprehensive site analytics',
+  description: 'Returns detailed analytics for a site including conversations, knowledge base stats, engagement metrics, and time series data for charts.',
+  tags: ['Sites'],
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: siteParamsSchema,
+    query: siteAnalyticsQuerySchema,
+  },
+  responses: {
+    200: {
+      description: 'Analytics retrieved successfully',
+      content: {
+        'application/json': {
+          schema: siteAnalyticsResponseSchema,
+        },
+      },
+    },
+    401: { description: 'Unauthorized' },
+    404: { description: 'Site not found' },
+  },
+});
+
 // Type exports
 export type CreateSiteInput = z.infer<typeof createSiteSchema>;
 export type UpdateSiteInput = z.infer<typeof updateSiteSchema>;
@@ -931,3 +1047,4 @@ export type UpdateSelectionsInput = z.infer<typeof updateSelectionsSchema>;
 export type BulkSelectInput = z.infer<typeof bulkSelectSchema>;
 export type AddManualUrlsInput = z.infer<typeof addManualUrlsSchema>;
 export type SelectiveCrawlInput = z.infer<typeof selectiveCrawlSchema>;
+export type SiteAnalyticsQuery = z.infer<typeof siteAnalyticsQuerySchema>;

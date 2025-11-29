@@ -1,6 +1,7 @@
 import { PassportStatic } from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { Strategy as GitHubStrategy } from 'passport-github2';
+import { Strategy as MicrosoftStrategy } from 'passport-microsoft';
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 import { prisma } from '../lib/prisma';
 import { AuthProvider, User } from '@prisma/client';
@@ -138,6 +139,33 @@ export const initializePassport = (passport: PassportStatic) => {
             }
 
             const user = await handleOAuthCallback(AuthProvider.GITHUB, profile, email);
+            return done(null, user);
+          } catch (error) {
+            return done(error, false);
+          }
+        }
+      )
+    );
+  }
+
+  // Microsoft OAuth Strategy
+  if (process.env.MICROSOFT_CLIENT_ID && process.env.MICROSOFT_CLIENT_SECRET) {
+    passport.use(
+      new MicrosoftStrategy(
+        {
+          clientID: process.env.MICROSOFT_CLIENT_ID,
+          clientSecret: process.env.MICROSOFT_CLIENT_SECRET,
+          callbackURL: '/api/auth/microsoft/callback',
+          scope: ['user.read'],
+        },
+        async (accessToken: string, refreshToken: string, profile: any, done: any) => {
+          try {
+            const email = profile.emails?.[0]?.value || profile._json?.mail || profile._json?.userPrincipalName;
+            if (!email) {
+              return done(new Error('No email provided by Microsoft OAuth'), undefined);
+            }
+
+            const user = await handleOAuthCallback(AuthProvider.MICROSOFT, profile, email);
             return done(null, user);
           } catch (error) {
             return done(error, false);

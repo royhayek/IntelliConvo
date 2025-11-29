@@ -6,13 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import {
-  useGetApiV1AdminEmails,
-  useGetApiV1AdminEmailsStats,
-  useGetApiV1AdminEmailsProviderStatus,
-  usePostApiV1AdminEmailsIdRetry,
-  usePostApiV1AdminEmailsTest,
-  getGetApiV1AdminEmailsQueryKey,
-  getGetApiV1AdminEmailsStatsQueryKey,
+  useGetAdminEmails,
+  useGetAdminEmailsStats,
+  useGetAdminEmailsProviderStatus,
+  usePostAdminEmailsIdRetry,
+  usePostAdminEmailsTest,
+  getGetAdminEmailsQueryKey,
+  getGetAdminEmailsStatsQueryKey,
 } from "@/lib/api/generated/queries/admin-emails/admin-emails";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -36,18 +36,18 @@ export default function AdminEmailsPage() {
     data: statsResponse,
     isLoading: statsLoading,
     error: statsError,
-  } = useGetApiV1AdminEmailsStats();
+  } = useGetAdminEmailsStats();
 
   const {
     data: providerResponse,
     isLoading: providerLoading,
-  } = useGetApiV1AdminEmailsProviderStatus();
+  } = useGetAdminEmailsProviderStatus();
 
   const {
     data: logsResponse,
     isLoading: logsLoading,
     error: logsError,
-  } = useGetApiV1AdminEmails({
+  } = useGetAdminEmails({
     page: String(page),
     limit: "50",
     type: typeFilter !== "all" ? typeFilter as never : undefined,
@@ -55,12 +55,12 @@ export default function AdminEmailsPage() {
     sortOrder: "desc",
   });
 
-  const retryMutation = usePostApiV1AdminEmailsIdRetry({
+  const retryMutation = usePostAdminEmailsIdRetry({
     mutation: {
       onSuccess: () => {
         setSuccessMessage("Email retry queued successfully");
-        queryClient.invalidateQueries({ queryKey: getGetApiV1AdminEmailsQueryKey() });
-        queryClient.invalidateQueries({ queryKey: getGetApiV1AdminEmailsStatsQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetAdminEmailsQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetAdminEmailsStatsQueryKey() });
         setTimeout(() => setSuccessMessage(null), 3000);
       },
       onError: () => {
@@ -70,7 +70,7 @@ export default function AdminEmailsPage() {
     },
   });
 
-  const testEmailMutation = usePostApiV1AdminEmailsTest({
+  const testEmailMutation = usePostAdminEmailsTest({
     mutation: {
       onSuccess: () => {
         setSuccessMessage("Test email sent successfully!");
@@ -94,8 +94,8 @@ export default function AdminEmailsPage() {
   const displayError = actionError || (statsError || logsError ? "Failed to load email data" : null);
 
   const handleRefresh = () => {
-    queryClient.invalidateQueries({ queryKey: getGetApiV1AdminEmailsQueryKey() });
-    queryClient.invalidateQueries({ queryKey: getGetApiV1AdminEmailsStatsQueryKey() });
+    queryClient.invalidateQueries({ queryKey: getGetAdminEmailsQueryKey() });
+    queryClient.invalidateQueries({ queryKey: getGetAdminEmailsStatsQueryKey() });
   };
 
   const handleRetry = (emailId: string) => {

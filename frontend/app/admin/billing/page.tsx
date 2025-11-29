@@ -23,15 +23,15 @@ import { TransactionsTable } from "@/components/admin/billing/transactions-table
 import { RefundDialog } from "@/components/admin/billing/refund-dialog";
 
 import {
-  useGetApiV1AdminBillingTransactions,
-  useDeleteApiV1AdminBillingTransactionsTransactionId,
-  usePostApiV1AdminBillingTransactionsTransactionIdRefund,
-  getGetApiV1AdminBillingTransactionsQueryKey,
+  useGetAdminBillingTransactions,
+  useDeleteAdminBillingTransactionsTransactionId,
+  usePostAdminBillingTransactionsTransactionIdRefund,
+  getGetAdminBillingTransactionsQueryKey,
 } from "@/lib/api/generated/queries/admin-billing/admin-billing";
 
 import type {
   AdminTransaction,
-  GetApiV1AdminBillingTransactionsParams,
+  GetAdminBillingTransactionsParams,
 } from "@/lib/api/generated/models";
 
 export default function AdminBillingPage() {
@@ -45,7 +45,7 @@ export default function AdminBillingPage() {
   const [refundAmount, setRefundAmount] = useState<string>("");
   const [refundReason, setRefundReason] = useState<string>("requested_by_customer");
 
-  const queryParams: GetApiV1AdminBillingTransactionsParams = {
+  const queryParams: GetAdminBillingTransactionsParams = {
     page: page.toString(),
     limit: "20",
     ...(status !== "all" && { status }),
@@ -57,20 +57,20 @@ export default function AdminBillingPage() {
     data: transactionsResponse,
     isLoading,
     error,
-  } = useGetApiV1AdminBillingTransactions(queryParams);
+  } = useGetAdminBillingTransactions(queryParams);
 
-  const deleteTransactionMutation = useDeleteApiV1AdminBillingTransactionsTransactionId({
+  const deleteTransactionMutation = useDeleteAdminBillingTransactionsTransactionId({
     mutation: {
       onSuccess: () => {
         setDeleteTransaction(null);
         queryClient.invalidateQueries({
-          queryKey: getGetApiV1AdminBillingTransactionsQueryKey(queryParams),
+          queryKey: getGetAdminBillingTransactionsQueryKey(queryParams),
         });
       },
     },
   });
 
-  const refundTransactionMutation = usePostApiV1AdminBillingTransactionsTransactionIdRefund({
+  const refundTransactionMutation = usePostAdminBillingTransactionsTransactionIdRefund({
     mutation: {
       onSuccess: (data) => {
         setRefundTransaction(null);
@@ -78,7 +78,7 @@ export default function AdminBillingPage() {
         setRefundReason("requested_by_customer");
         toast.success(`Refund of ${formatCurrency(data.data.amount, "usd")} issued successfully`);
         queryClient.invalidateQueries({
-          queryKey: getGetApiV1AdminBillingTransactionsQueryKey(queryParams),
+          queryKey: getGetAdminBillingTransactionsQueryKey(queryParams),
         });
       },
       onError: () => {

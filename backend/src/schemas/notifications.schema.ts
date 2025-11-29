@@ -75,7 +75,7 @@ export const notificationMessageResponseSchema = registry.register(
 // GET /api/v1/notifications
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/notifications',
+  path: '/notifications',
   summary: 'Get user notifications',
   tags: ['Notifications'],
   security: [{ bearerAuth: [] }],
@@ -105,7 +105,7 @@ registry.registerPath({
 // GET /api/v1/notifications/unread-count
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/notifications/unread-count',
+  path: '/notifications/unread-count',
   summary: 'Get unread notification count',
   tags: ['Notifications'],
   security: [{ bearerAuth: [] }],
@@ -127,7 +127,7 @@ registry.registerPath({
 // PATCH /api/v1/notifications/{notificationId}/read
 registry.registerPath({
   method: 'patch',
-  path: '/api/v1/notifications/{notificationId}/read',
+  path: '/notifications/{notificationId}/read',
   summary: 'Mark a notification as read',
   tags: ['Notifications'],
   security: [{ bearerAuth: [] }],
@@ -157,7 +157,7 @@ registry.registerPath({
 // PATCH /api/v1/notifications/read-all
 registry.registerPath({
   method: 'patch',
-  path: '/api/v1/notifications/read-all',
+  path: '/notifications/read-all',
   summary: 'Mark all notifications as read',
   tags: ['Notifications'],
   security: [{ bearerAuth: [] }],
@@ -179,7 +179,7 @@ registry.registerPath({
 // DELETE /api/v1/notifications/{notificationId}
 registry.registerPath({
   method: 'delete',
-  path: '/api/v1/notifications/{notificationId}',
+  path: '/notifications/{notificationId}',
   summary: 'Delete a notification',
   tags: ['Notifications'],
   security: [{ bearerAuth: [] }],

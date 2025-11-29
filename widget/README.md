@@ -1,4 +1,4 @@
-# IntelligentConvo Widget
+# IntelliConvo Widget
 
 A production-ready, accessible chat widget that integrates seamlessly with any website. Built with TypeScript, Socket.IO, and modern web standards.
 
@@ -60,7 +60,7 @@ npm run preview
     <script src="path/to/widget.js"></script>
     <script>
         // Initialize the widget
-        intelligentconvo('init', {
+        intelliconvo('init', {
             siteId: 'your-site-id-here',
             apiUrl: 'https://your-api-endpoint.com'
         });
@@ -97,24 +97,24 @@ interface WidgetConfig {
 ### Floating Button Mode (Default)
 
 ```javascript
-intelligentconvo('init', {
+intelliconvo('init', {
     siteId: 'site_123',
     mode: 'button',
     position: 'bottom-right',
-    apiUrl: 'https://api.intelligentconvo.com'
+    apiUrl: 'https://api.intelliconvo.com'
 });
 ```
 
 ### Embedded Widget Mode
 
 ```html
-<div id="intelligentconvo-container"></div>
+<div id="intelliconvo-container"></div>
 
 <script>
-intelligentconvo('init', {
+intelliconvo('init', {
     siteId: 'site_123',
     mode: 'widget',
-    apiUrl: 'https://api.intelligentconvo.com'
+    apiUrl: 'https://api.intelliconvo.com'
 });
 </script>
 ```
@@ -122,9 +122,9 @@ intelligentconvo('init', {
 ### With Event Callbacks
 
 ```javascript
-intelligentconvo('init', {
+intelliconvo('init', {
     siteId: 'site_123',
-    apiUrl: 'https://api.intelligentconvo.com',
+    apiUrl: 'https://api.intelliconvo.com',
     onMessage: (message) => {
         console.log('New message:', message);
         // Analytics tracking
@@ -148,9 +148,9 @@ intelligentconvo('init', {
 ### Custom Styling
 
 ```javascript
-intelligentconvo('init', {
+intelliconvo('init', {
     siteId: 'site_123',
-    apiUrl: 'https://api.intelligentconvo.com',
+    apiUrl: 'https://api.intelliconvo.com',
     theme: 'dark',
     customStyles: {
         '--widget-primary-color': '#6366f1',
@@ -267,7 +267,7 @@ WIDGET_API_URL=http://localhost:5001
 #### `.env.production`
 ```bash
 # Production environment
-WIDGET_API_URL=https://api.intelligentconvo.com
+WIDGET_API_URL=https://api.intelliconvo.com
 ```
 
 **How it works:**
@@ -280,7 +280,7 @@ WIDGET_API_URL=https://api.intelligentconvo.com
 ```bash
 # Check production build
 npm run build
-grep -o "https://api.intelligentconvo.com" dist/widget.*.js
+grep -o "https://api.intelliconvo.com" dist/widget.*.js
 
 # Check development build
 rm -rf dist && webpack --mode development
@@ -326,9 +326,9 @@ Enable debug logging:
 
 ```javascript
 // Set before widget initialization
-window.INTELLIGENTCONVO_DEBUG = true;
+window.INTELLICONVO_DEBUG = true;
 
-intelligentconvo('init', { /* config */ });
+intelliconvo('init', { /* config */ });
 ```
 
 ## Contributing
@@ -347,6 +347,6 @@ MIT License - see LICENSE file for details.
 ## Support
 
 For technical support or questions:
-- Documentation: https://docs.intelligentconvo.com
-- Email: support@intelligentconvo.com
-- Issues: https://github.com/intelligentconvo/widget/issues
+- Documentation: https://docs.intelliconvo.com
+- Email: support@intelliconvo.com
+- Issues: https://github.com/intelliconvo/widget/issues

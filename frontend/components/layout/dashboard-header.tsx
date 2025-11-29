@@ -90,7 +90,7 @@ export function DashboardHeader({
             )}
 
             {/* Brand Logo */}
-            <BrandLogo size="md" showText={true} href="/dashboard" />
+            <BrandLogo size="xs" showText={true} href="/dashboard" />
           </div>
 
           {/* Navigation & Actions */}

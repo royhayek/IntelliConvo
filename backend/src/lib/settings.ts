@@ -100,8 +100,8 @@ const ENV_FALLBACKS: Record<string, string | undefined> = {
 
 // Default values for each setting
 const DEFAULTS: Record<string, unknown> = {
-  [SettingKeys.PLATFORM_NAME]: 'IntelligentConvo',
-  [SettingKeys.SUPPORT_EMAIL]: 'support@intelligentconvo.com',
+  [SettingKeys.PLATFORM_NAME]: 'IntelliConvo',
+  [SettingKeys.SUPPORT_EMAIL]: 'support@intelliconvo.com',
   [SettingKeys.MAINTENANCE_MODE]: false,
   [SettingKeys.AI_DEFAULT_MODEL]: 'gpt-4o-mini',
   [SettingKeys.AI_EMBEDDING_MODEL]: 'text-embedding-3-small',
@@ -126,8 +126,8 @@ const DEFAULTS: Record<string, unknown> = {
   [SettingKeys.RATE_LIMIT_MAX_REQUESTS]: 100,
   [SettingKeys.AUTH_RATE_LIMIT_WINDOW_MS]: 900000,
   [SettingKeys.AUTH_RATE_LIMIT_MAX_REQUESTS]: 5,
-  [SettingKeys.EMAIL_FROM_ADDRESS]: 'noreply@intelligentconvo.ai',
-  [SettingKeys.EMAIL_FROM_NAME]: 'IntelligentConvo',
+  [SettingKeys.EMAIL_FROM_ADDRESS]: 'noreply@intelliconvo.ai',
+  [SettingKeys.EMAIL_FROM_NAME]: 'IntelliConvo',
   [SettingKeys.EMAIL_PROVIDER]: 'auto',
   [SettingKeys.EMAIL_VERIFICATION_ENABLED]: false,
   [SettingKeys.BILLING_TRIAL_DAYS]: 2,

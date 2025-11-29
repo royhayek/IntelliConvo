@@ -20,15 +20,15 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  DeleteApiV1AdminUrlsUrlId200,
-  DeleteApiV1AdminUrlsUrlIdEmbeddings200,
-  GetApiV1AdminUrls200,
-  GetApiV1AdminUrlsParams,
-  GetApiV1AdminUrlsUrlId200,
-  PatchApiV1AdminUrlsUrlId200,
-  PatchApiV1AdminUrlsUrlIdBody,
-  PostApiV1AdminUrlsBulkUpdate200,
-  PostApiV1AdminUrlsBulkUpdateBody
+  DeleteAdminUrlsUrlId200,
+  DeleteAdminUrlsUrlIdEmbeddings200,
+  GetAdminUrls200,
+  GetAdminUrlsParams,
+  GetAdminUrlsUrlId200,
+  PatchAdminUrlsUrlId200,
+  PatchAdminUrlsUrlIdBody,
+  PostAdminUrlsBulkUpdate200,
+  PostAdminUrlsBulkUpdateBody
 } from '../../models';
 
 import { customInstance } from '../../../axios-instance';
@@ -42,14 +42,14 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 /**
  * @summary Get paginated list of URLs
  */
-export const getApiV1AdminUrls = (
-    params?: GetApiV1AdminUrlsParams,
+export const getAdminUrls = (
+    params?: GetAdminUrlsParams,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<GetApiV1AdminUrls200>(
-      {url: `/api/v1/admin/urls`, method: 'GET',
+      return customInstance<GetAdminUrls200>(
+      {url: `/admin/urls`, method: 'GET',
         params, signal
     },
       options);
@@ -58,69 +58,69 @@ export const getApiV1AdminUrls = (
 
 
 
-export const getGetApiV1AdminUrlsQueryKey = (params?: GetApiV1AdminUrlsParams,) => {
+export const getGetAdminUrlsQueryKey = (params?: GetAdminUrlsParams,) => {
     return [
-    `/api/v1/admin/urls`, ...(params ? [params]: [])
+    `/admin/urls`, ...(params ? [params]: [])
     ] as const;
     }
 
     
-export const getGetApiV1AdminUrlsQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminUrls>>, TError = ErrorType<void>>(params?: GetApiV1AdminUrlsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminUrls>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminUrlsQueryOptions = <TData = Awaited<ReturnType<typeof getAdminUrls>>, TError = ErrorType<void>>(params?: GetAdminUrlsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminUrls>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminUrlsQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminUrlsQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminUrls>>> = ({ signal }) => getApiV1AdminUrls(params, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminUrls>>> = ({ signal }) => getAdminUrls(params, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminUrls>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminUrls>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminUrlsQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminUrls>>>
-export type GetApiV1AdminUrlsQueryError = ErrorType<void>
+export type GetAdminUrlsQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminUrls>>>
+export type GetAdminUrlsQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminUrls<TData = Awaited<ReturnType<typeof getApiV1AdminUrls>>, TError = ErrorType<void>>(
- params: undefined |  GetApiV1AdminUrlsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminUrls>>, TError, TData>> & Pick<
+export function useGetAdminUrls<TData = Awaited<ReturnType<typeof getAdminUrls>>, TError = ErrorType<void>>(
+ params: undefined |  GetAdminUrlsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminUrls>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminUrls>>,
+          Awaited<ReturnType<typeof getAdminUrls>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminUrls>>
+          Awaited<ReturnType<typeof getAdminUrls>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminUrls<TData = Awaited<ReturnType<typeof getApiV1AdminUrls>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminUrlsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminUrls>>, TError, TData>> & Pick<
+export function useGetAdminUrls<TData = Awaited<ReturnType<typeof getAdminUrls>>, TError = ErrorType<void>>(
+ params?: GetAdminUrlsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminUrls>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminUrls>>,
+          Awaited<ReturnType<typeof getAdminUrls>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminUrls>>
+          Awaited<ReturnType<typeof getAdminUrls>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminUrls<TData = Awaited<ReturnType<typeof getApiV1AdminUrls>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminUrlsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminUrls>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminUrls<TData = Awaited<ReturnType<typeof getAdminUrls>>, TError = ErrorType<void>>(
+ params?: GetAdminUrlsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminUrls>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get paginated list of URLs
  */
 
-export function useGetApiV1AdminUrls<TData = Awaited<ReturnType<typeof getApiV1AdminUrls>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminUrlsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminUrls>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminUrls<TData = Awaited<ReturnType<typeof getAdminUrls>>, TError = ErrorType<void>>(
+ params?: GetAdminUrlsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminUrls>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminUrlsQueryOptions(params,options)
+  const queryOptions = getGetAdminUrlsQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -135,14 +135,14 @@ export function useGetApiV1AdminUrls<TData = Awaited<ReturnType<typeof getApiV1A
 /**
  * @summary Get URL by ID
  */
-export const getApiV1AdminUrlsUrlId = (
+export const getAdminUrlsUrlId = (
     urlId: string,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<GetApiV1AdminUrlsUrlId200>(
-      {url: `/api/v1/admin/urls/${urlId}`, method: 'GET', signal
+      return customInstance<GetAdminUrlsUrlId200>(
+      {url: `/admin/urls/${urlId}`, method: 'GET', signal
     },
       options);
     }
@@ -150,69 +150,69 @@ export const getApiV1AdminUrlsUrlId = (
 
 
 
-export const getGetApiV1AdminUrlsUrlIdQueryKey = (urlId?: string,) => {
+export const getGetAdminUrlsUrlIdQueryKey = (urlId?: string,) => {
     return [
-    `/api/v1/admin/urls/${urlId}`
+    `/admin/urls/${urlId}`
     ] as const;
     }
 
     
-export const getGetApiV1AdminUrlsUrlIdQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminUrlsUrlId>>, TError = ErrorType<void>>(urlId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminUrlsUrlId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminUrlsUrlIdQueryOptions = <TData = Awaited<ReturnType<typeof getAdminUrlsUrlId>>, TError = ErrorType<void>>(urlId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminUrlsUrlId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminUrlsUrlIdQueryKey(urlId);
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminUrlsUrlIdQueryKey(urlId);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminUrlsUrlId>>> = ({ signal }) => getApiV1AdminUrlsUrlId(urlId, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminUrlsUrlId>>> = ({ signal }) => getAdminUrlsUrlId(urlId, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(urlId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminUrlsUrlId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: !!(urlId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminUrlsUrlId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminUrlsUrlIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminUrlsUrlId>>>
-export type GetApiV1AdminUrlsUrlIdQueryError = ErrorType<void>
+export type GetAdminUrlsUrlIdQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminUrlsUrlId>>>
+export type GetAdminUrlsUrlIdQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminUrlsUrlId<TData = Awaited<ReturnType<typeof getApiV1AdminUrlsUrlId>>, TError = ErrorType<void>>(
- urlId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminUrlsUrlId>>, TError, TData>> & Pick<
+export function useGetAdminUrlsUrlId<TData = Awaited<ReturnType<typeof getAdminUrlsUrlId>>, TError = ErrorType<void>>(
+ urlId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminUrlsUrlId>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminUrlsUrlId>>,
+          Awaited<ReturnType<typeof getAdminUrlsUrlId>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminUrlsUrlId>>
+          Awaited<ReturnType<typeof getAdminUrlsUrlId>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminUrlsUrlId<TData = Awaited<ReturnType<typeof getApiV1AdminUrlsUrlId>>, TError = ErrorType<void>>(
- urlId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminUrlsUrlId>>, TError, TData>> & Pick<
+export function useGetAdminUrlsUrlId<TData = Awaited<ReturnType<typeof getAdminUrlsUrlId>>, TError = ErrorType<void>>(
+ urlId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminUrlsUrlId>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminUrlsUrlId>>,
+          Awaited<ReturnType<typeof getAdminUrlsUrlId>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminUrlsUrlId>>
+          Awaited<ReturnType<typeof getAdminUrlsUrlId>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminUrlsUrlId<TData = Awaited<ReturnType<typeof getApiV1AdminUrlsUrlId>>, TError = ErrorType<void>>(
- urlId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminUrlsUrlId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminUrlsUrlId<TData = Awaited<ReturnType<typeof getAdminUrlsUrlId>>, TError = ErrorType<void>>(
+ urlId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminUrlsUrlId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get URL by ID
  */
 
-export function useGetApiV1AdminUrlsUrlId<TData = Awaited<ReturnType<typeof getApiV1AdminUrlsUrlId>>, TError = ErrorType<void>>(
- urlId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminUrlsUrlId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminUrlsUrlId<TData = Awaited<ReturnType<typeof getAdminUrlsUrlId>>, TError = ErrorType<void>>(
+ urlId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminUrlsUrlId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminUrlsUrlIdQueryOptions(urlId,options)
+  const queryOptions = getGetAdminUrlsUrlIdQueryOptions(urlId,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -227,27 +227,27 @@ export function useGetApiV1AdminUrlsUrlId<TData = Awaited<ReturnType<typeof getA
 /**
  * @summary Update URL
  */
-export const patchApiV1AdminUrlsUrlId = (
+export const patchAdminUrlsUrlId = (
     urlId: string,
-    patchApiV1AdminUrlsUrlIdBody: BodyType<PatchApiV1AdminUrlsUrlIdBody>,
+    patchAdminUrlsUrlIdBody: BodyType<PatchAdminUrlsUrlIdBody>,
  options?: SecondParameter<typeof customInstance>,) => {
       
       
-      return customInstance<PatchApiV1AdminUrlsUrlId200>(
-      {url: `/api/v1/admin/urls/${urlId}`, method: 'PATCH',
+      return customInstance<PatchAdminUrlsUrlId200>(
+      {url: `/admin/urls/${urlId}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
-      data: patchApiV1AdminUrlsUrlIdBody
+      data: patchAdminUrlsUrlIdBody
     },
       options);
     }
   
 
 
-export const getPatchApiV1AdminUrlsUrlIdMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchApiV1AdminUrlsUrlId>>, TError,{urlId: string;data: BodyType<PatchApiV1AdminUrlsUrlIdBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof patchApiV1AdminUrlsUrlId>>, TError,{urlId: string;data: BodyType<PatchApiV1AdminUrlsUrlIdBody>}, TContext> => {
+export const getPatchAdminUrlsUrlIdMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchAdminUrlsUrlId>>, TError,{urlId: string;data: BodyType<PatchAdminUrlsUrlIdBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof patchAdminUrlsUrlId>>, TError,{urlId: string;data: BodyType<PatchAdminUrlsUrlIdBody>}, TContext> => {
 
-const mutationKey = ['patchApiV1AdminUrlsUrlId'];
+const mutationKey = ['patchAdminUrlsUrlId'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -257,10 +257,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchApiV1AdminUrlsUrlId>>, {urlId: string;data: BodyType<PatchApiV1AdminUrlsUrlIdBody>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchAdminUrlsUrlId>>, {urlId: string;data: BodyType<PatchAdminUrlsUrlIdBody>}> = (props) => {
           const {urlId,data} = props ?? {};
 
-          return  patchApiV1AdminUrlsUrlId(urlId,data,requestOptions)
+          return  patchAdminUrlsUrlId(urlId,data,requestOptions)
         }
 
         
@@ -268,47 +268,47 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PatchApiV1AdminUrlsUrlIdMutationResult = NonNullable<Awaited<ReturnType<typeof patchApiV1AdminUrlsUrlId>>>
-    export type PatchApiV1AdminUrlsUrlIdMutationBody = BodyType<PatchApiV1AdminUrlsUrlIdBody>
-    export type PatchApiV1AdminUrlsUrlIdMutationError = ErrorType<void>
+    export type PatchAdminUrlsUrlIdMutationResult = NonNullable<Awaited<ReturnType<typeof patchAdminUrlsUrlId>>>
+    export type PatchAdminUrlsUrlIdMutationBody = BodyType<PatchAdminUrlsUrlIdBody>
+    export type PatchAdminUrlsUrlIdMutationError = ErrorType<void>
 
     /**
  * @summary Update URL
  */
-export const usePatchApiV1AdminUrlsUrlId = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchApiV1AdminUrlsUrlId>>, TError,{urlId: string;data: BodyType<PatchApiV1AdminUrlsUrlIdBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePatchAdminUrlsUrlId = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchAdminUrlsUrlId>>, TError,{urlId: string;data: BodyType<PatchAdminUrlsUrlIdBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof patchApiV1AdminUrlsUrlId>>,
+        Awaited<ReturnType<typeof patchAdminUrlsUrlId>>,
         TError,
-        {urlId: string;data: BodyType<PatchApiV1AdminUrlsUrlIdBody>},
+        {urlId: string;data: BodyType<PatchAdminUrlsUrlIdBody>},
         TContext
       > => {
 
-      const mutationOptions = getPatchApiV1AdminUrlsUrlIdMutationOptions(options);
+      const mutationOptions = getPatchAdminUrlsUrlIdMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
     /**
  * @summary Delete URL
  */
-export const deleteApiV1AdminUrlsUrlId = (
+export const deleteAdminUrlsUrlId = (
     urlId: string,
  options?: SecondParameter<typeof customInstance>,) => {
       
       
-      return customInstance<DeleteApiV1AdminUrlsUrlId200>(
-      {url: `/api/v1/admin/urls/${urlId}`, method: 'DELETE'
+      return customInstance<DeleteAdminUrlsUrlId200>(
+      {url: `/admin/urls/${urlId}`, method: 'DELETE'
     },
       options);
     }
   
 
 
-export const getDeleteApiV1AdminUrlsUrlIdMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1AdminUrlsUrlId>>, TError,{urlId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1AdminUrlsUrlId>>, TError,{urlId: string}, TContext> => {
+export const getDeleteAdminUrlsUrlIdMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAdminUrlsUrlId>>, TError,{urlId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteAdminUrlsUrlId>>, TError,{urlId: string}, TContext> => {
 
-const mutationKey = ['deleteApiV1AdminUrlsUrlId'];
+const mutationKey = ['deleteAdminUrlsUrlId'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -318,10 +318,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteApiV1AdminUrlsUrlId>>, {urlId: string}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteAdminUrlsUrlId>>, {urlId: string}> = (props) => {
           const {urlId} = props ?? {};
 
-          return  deleteApiV1AdminUrlsUrlId(urlId,requestOptions)
+          return  deleteAdminUrlsUrlId(urlId,requestOptions)
         }
 
         
@@ -329,50 +329,50 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type DeleteApiV1AdminUrlsUrlIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteApiV1AdminUrlsUrlId>>>
+    export type DeleteAdminUrlsUrlIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteAdminUrlsUrlId>>>
     
-    export type DeleteApiV1AdminUrlsUrlIdMutationError = ErrorType<void>
+    export type DeleteAdminUrlsUrlIdMutationError = ErrorType<void>
 
     /**
  * @summary Delete URL
  */
-export const useDeleteApiV1AdminUrlsUrlId = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1AdminUrlsUrlId>>, TError,{urlId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const useDeleteAdminUrlsUrlId = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAdminUrlsUrlId>>, TError,{urlId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof deleteApiV1AdminUrlsUrlId>>,
+        Awaited<ReturnType<typeof deleteAdminUrlsUrlId>>,
         TError,
         {urlId: string},
         TContext
       > => {
 
-      const mutationOptions = getDeleteApiV1AdminUrlsUrlIdMutationOptions(options);
+      const mutationOptions = getDeleteAdminUrlsUrlIdMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
     /**
  * @summary Bulk update URLs status
  */
-export const postApiV1AdminUrlsBulkUpdate = (
-    postApiV1AdminUrlsBulkUpdateBody: BodyType<PostApiV1AdminUrlsBulkUpdateBody>,
+export const postAdminUrlsBulkUpdate = (
+    postAdminUrlsBulkUpdateBody: BodyType<PostAdminUrlsBulkUpdateBody>,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<PostApiV1AdminUrlsBulkUpdate200>(
-      {url: `/api/v1/admin/urls/bulk/update`, method: 'POST',
+      return customInstance<PostAdminUrlsBulkUpdate200>(
+      {url: `/admin/urls/bulk/update`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: postApiV1AdminUrlsBulkUpdateBody, signal
+      data: postAdminUrlsBulkUpdateBody, signal
     },
       options);
     }
   
 
 
-export const getPostApiV1AdminUrlsBulkUpdateMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminUrlsBulkUpdate>>, TError,{data: BodyType<PostApiV1AdminUrlsBulkUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminUrlsBulkUpdate>>, TError,{data: BodyType<PostApiV1AdminUrlsBulkUpdateBody>}, TContext> => {
+export const getPostAdminUrlsBulkUpdateMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminUrlsBulkUpdate>>, TError,{data: BodyType<PostAdminUrlsBulkUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postAdminUrlsBulkUpdate>>, TError,{data: BodyType<PostAdminUrlsBulkUpdateBody>}, TContext> => {
 
-const mutationKey = ['postApiV1AdminUrlsBulkUpdate'];
+const mutationKey = ['postAdminUrlsBulkUpdate'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -382,10 +382,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1AdminUrlsBulkUpdate>>, {data: BodyType<PostApiV1AdminUrlsBulkUpdateBody>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postAdminUrlsBulkUpdate>>, {data: BodyType<PostAdminUrlsBulkUpdateBody>}> = (props) => {
           const {data} = props ?? {};
 
-          return  postApiV1AdminUrlsBulkUpdate(data,requestOptions)
+          return  postAdminUrlsBulkUpdate(data,requestOptions)
         }
 
         
@@ -393,47 +393,47 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiV1AdminUrlsBulkUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1AdminUrlsBulkUpdate>>>
-    export type PostApiV1AdminUrlsBulkUpdateMutationBody = BodyType<PostApiV1AdminUrlsBulkUpdateBody>
-    export type PostApiV1AdminUrlsBulkUpdateMutationError = ErrorType<void>
+    export type PostAdminUrlsBulkUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof postAdminUrlsBulkUpdate>>>
+    export type PostAdminUrlsBulkUpdateMutationBody = BodyType<PostAdminUrlsBulkUpdateBody>
+    export type PostAdminUrlsBulkUpdateMutationError = ErrorType<void>
 
     /**
  * @summary Bulk update URLs status
  */
-export const usePostApiV1AdminUrlsBulkUpdate = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminUrlsBulkUpdate>>, TError,{data: BodyType<PostApiV1AdminUrlsBulkUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePostAdminUrlsBulkUpdate = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminUrlsBulkUpdate>>, TError,{data: BodyType<PostAdminUrlsBulkUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiV1AdminUrlsBulkUpdate>>,
+        Awaited<ReturnType<typeof postAdminUrlsBulkUpdate>>,
         TError,
-        {data: BodyType<PostApiV1AdminUrlsBulkUpdateBody>},
+        {data: BodyType<PostAdminUrlsBulkUpdateBody>},
         TContext
       > => {
 
-      const mutationOptions = getPostApiV1AdminUrlsBulkUpdateMutationOptions(options);
+      const mutationOptions = getPostAdminUrlsBulkUpdateMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
     /**
  * @summary Delete all embeddings for a URL
  */
-export const deleteApiV1AdminUrlsUrlIdEmbeddings = (
+export const deleteAdminUrlsUrlIdEmbeddings = (
     urlId: string,
  options?: SecondParameter<typeof customInstance>,) => {
       
       
-      return customInstance<DeleteApiV1AdminUrlsUrlIdEmbeddings200>(
-      {url: `/api/v1/admin/urls/${urlId}/embeddings`, method: 'DELETE'
+      return customInstance<DeleteAdminUrlsUrlIdEmbeddings200>(
+      {url: `/admin/urls/${urlId}/embeddings`, method: 'DELETE'
     },
       options);
     }
   
 
 
-export const getDeleteApiV1AdminUrlsUrlIdEmbeddingsMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1AdminUrlsUrlIdEmbeddings>>, TError,{urlId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1AdminUrlsUrlIdEmbeddings>>, TError,{urlId: string}, TContext> => {
+export const getDeleteAdminUrlsUrlIdEmbeddingsMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAdminUrlsUrlIdEmbeddings>>, TError,{urlId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteAdminUrlsUrlIdEmbeddings>>, TError,{urlId: string}, TContext> => {
 
-const mutationKey = ['deleteApiV1AdminUrlsUrlIdEmbeddings'];
+const mutationKey = ['deleteAdminUrlsUrlIdEmbeddings'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -443,10 +443,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteApiV1AdminUrlsUrlIdEmbeddings>>, {urlId: string}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteAdminUrlsUrlIdEmbeddings>>, {urlId: string}> = (props) => {
           const {urlId} = props ?? {};
 
-          return  deleteApiV1AdminUrlsUrlIdEmbeddings(urlId,requestOptions)
+          return  deleteAdminUrlsUrlIdEmbeddings(urlId,requestOptions)
         }
 
         
@@ -454,23 +454,23 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type DeleteApiV1AdminUrlsUrlIdEmbeddingsMutationResult = NonNullable<Awaited<ReturnType<typeof deleteApiV1AdminUrlsUrlIdEmbeddings>>>
+    export type DeleteAdminUrlsUrlIdEmbeddingsMutationResult = NonNullable<Awaited<ReturnType<typeof deleteAdminUrlsUrlIdEmbeddings>>>
     
-    export type DeleteApiV1AdminUrlsUrlIdEmbeddingsMutationError = ErrorType<void>
+    export type DeleteAdminUrlsUrlIdEmbeddingsMutationError = ErrorType<void>
 
     /**
  * @summary Delete all embeddings for a URL
  */
-export const useDeleteApiV1AdminUrlsUrlIdEmbeddings = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1AdminUrlsUrlIdEmbeddings>>, TError,{urlId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const useDeleteAdminUrlsUrlIdEmbeddings = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAdminUrlsUrlIdEmbeddings>>, TError,{urlId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof deleteApiV1AdminUrlsUrlIdEmbeddings>>,
+        Awaited<ReturnType<typeof deleteAdminUrlsUrlIdEmbeddings>>,
         TError,
         {urlId: string},
         TContext
       > => {
 
-      const mutationOptions = getDeleteApiV1AdminUrlsUrlIdEmbeddingsMutationOptions(options);
+      const mutationOptions = getDeleteAdminUrlsUrlIdEmbeddingsMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }

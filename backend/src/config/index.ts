@@ -22,7 +22,7 @@ const configSchema = z.object({
 
   // Pinecone
   PINECONE_API_KEY: z.string().min(1, 'PINECONE_API_KEY is required'),
-  PINECONE_INDEX_NAME: z.string().default('intelligentconvo'),
+  PINECONE_INDEX_NAME: z.string().default('intelliconvo'),
   PINECONE_DIMENSIONS: z.string().transform(Number).pipe(z.number().int().positive()).default('512'),
 
   // External URLs

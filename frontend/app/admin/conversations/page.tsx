@@ -10,20 +10,21 @@ import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-di
 import { TablePagination } from "@/components/ui/table-pagination";
 
 import {
-  useGetApiV1AdminConversations,
-  useDeleteApiV1AdminConversationsConversationId,
-  getGetApiV1AdminConversationsQueryKey,
+  useGetAdminConversations,
+  useDeleteAdminConversationsConversationId,
+  getGetAdminConversationsQueryKey,
 } from "@/lib/api/generated/queries/admin-conversations/admin-conversations";
-import { useGetApiV1AdminStatsConversations } from "@/lib/api/generated/queries/admin/admin";
-import type {
-  AdminConversation,
-  GetApiV1AdminConversationsParams,
-} from "@/lib/api/generated/models";
+import {
+  getGetAdminStatsConversationsQueryKey,
+  useGetAdminStatsConversations,
+} from "@/lib/api/generated/queries/admin/admin";
+import type { AdminConversation } from "@/lib/api/generated/models";
 import {
   ConversationsStatsGrid,
   ConversationsTable,
   ConversationsFilters,
 } from "@/components/admin/conversations";
+import { GetAdminConversationsParams } from "@/lib/api/generated/models/getAdminConversationsParams";
 
 interface ConversationStats {
   total: number;
@@ -40,11 +41,14 @@ export default function AdminConversationsPage() {
   const queryClient = useQueryClient();
 
   const [search, setSearch] = useState(searchParams.get("search") || "");
-  const [siteId, setSiteId] = useState<string | null>(searchParams.get("siteId") || null);
+  const [siteId, setSiteId] = useState<string | null>(
+    searchParams.get("siteId") || null
+  );
   const [page, setPage] = useState(parseInt(searchParams.get("page") || "1"));
-  const [deleteConversation, setDeleteConversation] = useState<AdminConversation | null>(null);
+  const [deleteConversation, setDeleteConversation] =
+    useState<AdminConversation | null>(null);
 
-  const queryParams: GetApiV1AdminConversationsParams = {
+  const queryParams: GetAdminConversationsParams = {
     page: page.toString(),
     limit: "20",
     ...(search && { search }),
@@ -55,19 +59,19 @@ export default function AdminConversationsPage() {
     data: conversationsResponse,
     isLoading: loading,
     error: conversationsError,
-  } = useGetApiV1AdminConversations(queryParams);
+  } = useGetAdminConversations(queryParams);
 
-  const { data: statsResponse } = useGetApiV1AdminStatsConversations();
+  const { data: statsResponse } = useGetAdminStatsConversations();
 
-  const deleteConversationMutation = useDeleteApiV1AdminConversationsConversationId({
+  const deleteConversationMutation = useDeleteAdminConversationsConversationId({
     mutation: {
       onSuccess: () => {
         setDeleteConversation(null);
         queryClient.invalidateQueries({
-          queryKey: [getGetApiV1AdminConversationsQueryKey()[0]],
+          queryKey: [getGetAdminConversationsQueryKey()[0]],
         });
         queryClient.invalidateQueries({
-          queryKey: ["/api/v1/admin/stats/conversations"],
+          queryKey: getGetAdminStatsConversationsQueryKey(),
         });
       },
     },
@@ -94,7 +98,9 @@ export default function AdminConversationsPage() {
 
   const handleDelete = async () => {
     if (!deleteConversation) return;
-    deleteConversationMutation.mutate({ conversationId: deleteConversation.id });
+    deleteConversationMutation.mutate({
+      conversationId: deleteConversation.id,
+    });
   };
 
   return (
@@ -150,7 +156,9 @@ export default function AdminConversationsPage() {
         onConfirm={handleDelete}
         isDeleting={deleteConversationMutation.isPending}
         title="Delete Conversation"
-        description={`Are you sure you want to delete this conversation with ${deleteConversation?.messageCount || 0} messages? This action cannot be undone.`}
+        description={`Are you sure you want to delete this conversation with ${
+          deleteConversation?.messageCount || 0
+        } messages? This action cannot be undone.`}
       />
     </div>
   );

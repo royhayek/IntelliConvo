@@ -13,21 +13,21 @@ import { SitesFilters } from "@/components/admin/sites/sites-filters";
 import { SitesStats } from "@/components/admin/sites/sites-stats";
 
 import {
-  useGetApiV1AdminSites,
-  useDeleteApiV1AdminSitesSiteId,
-  usePostApiV1AdminSitesSiteIdRecrawl,
-  usePostApiV1AdminSitesSiteIdCacheClear,
-  getGetApiV1AdminSitesQueryKey,
+  useGetAdminSites,
+  useDeleteAdminSitesSiteId,
+  usePostAdminSitesSiteIdRecrawl,
+  usePostAdminSitesSiteIdCacheClear,
+  getGetAdminSitesQueryKey,
 } from "@/lib/api/generated/queries/admin-sites/admin-sites";
 import {
-  useGetApiV1AdminStatsSites,
-  getGetApiV1AdminStatsSitesQueryKey,
+  useGetAdminStatsSites,
+  getGetAdminStatsSitesQueryKey,
 } from "@/lib/api/generated/queries/admin/admin";
 
 import type {
   AdminSite,
-  GetApiV1AdminSitesParams,
-  GetApiV1AdminSitesCrawlStatus,
+  GetAdminSitesParams,
+  GetAdminSitesCrawlStatus,
 } from "@/lib/api/generated/models";
 
 interface SiteStats {
@@ -43,62 +43,82 @@ export default function AdminSitesPage() {
   const queryClient = useQueryClient();
 
   const [search, setSearch] = useState(searchParams.get("search") || "");
-  const [searchInput, setSearchInput] = useState(searchParams.get("search") || "");
-  const [crawlStatus, setCrawlStatus] = useState(searchParams.get("crawlStatus") || "all");
-  const [userId, setUserId] = useState<string | null>(searchParams.get("userId") || null);
+  const [searchInput, setSearchInput] = useState(
+    searchParams.get("search") || ""
+  );
+  const [crawlStatus, setCrawlStatus] = useState(
+    searchParams.get("crawlStatus") || "all"
+  );
+  const [userId, setUserId] = useState<string | null>(
+    searchParams.get("userId") || null
+  );
   const [page, setPage] = useState(parseInt(searchParams.get("page") || "1"));
   const [deleteSite, setDeleteSite] = useState<AdminSite | null>(null);
   const [mutationError, setMutationError] = useState<string | null>(null);
 
-  const queryParams: GetApiV1AdminSitesParams = {
+  const queryParams: GetAdminSitesParams = {
     page: page.toString(),
     limit: "20",
     ...(search && { search }),
     ...(userId && { userId }),
-    ...(crawlStatus !== "all" && { crawlStatus: crawlStatus as GetApiV1AdminSitesCrawlStatus }),
+    ...(crawlStatus !== "all" && {
+      crawlStatus: crawlStatus as GetAdminSitesCrawlStatus,
+    }),
   };
 
   const {
     data: sitesResponse,
     isLoading,
     error: sitesError,
-  } = useGetApiV1AdminSites(queryParams);
+  } = useGetAdminSites(queryParams);
 
-  const { data: statsResponse } = useGetApiV1AdminStatsSites();
+  const { data: statsResponse } = useGetAdminStatsSites();
 
-  const deleteMutation = useDeleteApiV1AdminSitesSiteId({
+  const deleteMutation = useDeleteAdminSitesSiteId({
     mutation: {
       onSuccess: () => {
         setDeleteSite(null);
         setMutationError(null);
-        queryClient.invalidateQueries({ queryKey: getGetApiV1AdminSitesQueryKey(queryParams) });
-        queryClient.invalidateQueries({ queryKey: getGetApiV1AdminStatsSitesQueryKey() });
+        queryClient.invalidateQueries({
+          queryKey: getGetAdminSitesQueryKey(queryParams),
+        });
+        queryClient.invalidateQueries({
+          queryKey: getGetAdminStatsSitesQueryKey(),
+        });
       },
       onError: (error) => {
-        setMutationError(error instanceof Error ? error.message : "Failed to delete site");
+        setMutationError(
+          error instanceof Error ? error.message : "Failed to delete site"
+        );
       },
     },
   });
 
-  const recrawlMutation = usePostApiV1AdminSitesSiteIdRecrawl({
+  const recrawlMutation = usePostAdminSitesSiteIdRecrawl({
     mutation: {
       onSuccess: () => {
         setMutationError(null);
-        queryClient.invalidateQueries({ queryKey: getGetApiV1AdminSitesQueryKey(queryParams) });
+        queryClient.invalidateQueries({
+          queryKey: getGetAdminSitesQueryKey(queryParams),
+        });
       },
       onError: (error) => {
-        setMutationError(error instanceof Error ? error.message : "Failed to trigger recrawl");
+        setMutationError(
+          error instanceof Error ? error.message : "Failed to trigger recrawl"
+        );
       },
     },
   });
 
-  const clearCacheMutation = usePostApiV1AdminSitesSiteIdCacheClear({
+  const clearCacheMutation = usePostAdminSitesSiteIdCacheClear({
     mutation: {
       onSuccess: () => {
         setMutationError(null);
       },
       onError: (error) => {
-        setMutationError(error instanceof Error ? error.message : "Failed to clear cache");
+        setMutationError(
+          error instanceof Error ? error.message : "Failed to clear cache"
+        );
       },
     },
   });
@@ -135,7 +155,9 @@ export default function AdminSitesPage() {
   };
 
   const error = sitesError
-    ? (sitesError instanceof Error ? sitesError.message : "An error occurred")
+    ? sitesError instanceof Error
+      ? sitesError.message
+      : "An error occurred"
     : mutationError;
 
   return (

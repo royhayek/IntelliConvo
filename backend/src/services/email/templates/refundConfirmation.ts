@@ -26,8 +26,8 @@ export function refundConfirmationEmail(data: RefundConfirmationData): { subject
     refundDate,
     reason,
     transactionId,
-    platformName = 'IntelligentConvo',
-    supportEmail = 'support@intelligentconvo.com',
+    platformName = 'IntelliConvo',
+    supportEmail = 'support@intelliconvo.com',
   } = data;
 
   const displayName = userName || email.split('@')[0];

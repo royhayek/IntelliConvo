@@ -54,7 +54,7 @@ async function fetchFaviconFromHtml(baseUrl: string): Promise<string | null> {
     const response = await fetch(baseUrl, {
       signal: controller.signal,
       headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; IntelligentConvo/1.0)',
+        'User-Agent': 'Mozilla/5.0 (compatible; IntelliConvo/1.0)',
       },
       redirect: 'follow',
     });

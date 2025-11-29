@@ -27,28 +27,28 @@ import {
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
-  useGetApiV1AdminSubscriptionsSubscriptionId,
-  usePatchApiV1AdminSubscriptionsSubscriptionId,
-  getGetApiV1AdminSubscriptionsSubscriptionIdQueryKey,
+  useGetAdminSubscriptionsSubscriptionId,
+  usePatchAdminSubscriptionsSubscriptionId,
+  getGetAdminSubscriptionsSubscriptionIdQueryKey,
 } from "@/lib/api/generated/queries/admin-subscriptions/admin-subscriptions";
 import type {
-  PatchApiV1AdminSubscriptionsSubscriptionIdBody,
-  PatchApiV1AdminSubscriptionsSubscriptionIdBodyStatus,
-  PatchApiV1AdminSubscriptionsSubscriptionIdBodyPlanType,
+  PatchAdminSubscriptionsSubscriptionIdBody,
+  PatchAdminSubscriptionsSubscriptionIdBodyStatus,
+  PatchAdminSubscriptionsSubscriptionIdBodyPlanType,
 } from "@/lib/api/generated/models";
 import {
-  PatchApiV1AdminSubscriptionsSubscriptionIdBodyStatus as StatusEnum,
-  PatchApiV1AdminSubscriptionsSubscriptionIdBodyPlanType as PlanTypeEnum,
+  PatchAdminSubscriptionsSubscriptionIdBodyStatus as StatusEnum,
+  PatchAdminSubscriptionsSubscriptionIdBodyPlanType as PlanTypeEnum,
 } from "@/lib/api/generated/models";
 
-const STATUS_OPTIONS: { value: PatchApiV1AdminSubscriptionsSubscriptionIdBodyStatus; label: string }[] = [
+const STATUS_OPTIONS: { value: PatchAdminSubscriptionsSubscriptionIdBodyStatus; label: string }[] = [
   { value: "TRIAL", label: "Trial" },
   { value: "ACTIVE", label: "Active" },
   { value: "CANCELLED", label: "Cancelled" },
   { value: "EXPIRED", label: "Expired" },
 ];
 
-const PLAN_TYPE_OPTIONS: { value: PatchApiV1AdminSubscriptionsSubscriptionIdBodyPlanType; label: string }[] = [
+const PLAN_TYPE_OPTIONS: { value: PatchAdminSubscriptionsSubscriptionIdBodyPlanType; label: string }[] = [
   { value: "PREMIUM_MONTHLY", label: "Premium Monthly" },
   { value: "PREMIUM_ANNUAL", label: "Premium Annual" },
 ];
@@ -59,7 +59,7 @@ export default function AdminSubscriptionEditPage() {
   const queryClient = useQueryClient();
   const subscriptionId = params.subscriptionId as string;
 
-  const [formData, setFormData] = useState<PatchApiV1AdminSubscriptionsSubscriptionIdBody>({
+  const [formData, setFormData] = useState<PatchAdminSubscriptionsSubscriptionIdBody>({
     status: "ACTIVE",
     planType: "PREMIUM_MONTHLY",
     currentPeriodEnd: "",
@@ -73,16 +73,16 @@ export default function AdminSubscriptionEditPage() {
     data: subscriptionResponse,
     isLoading,
     error: fetchError,
-  } = useGetApiV1AdminSubscriptionsSubscriptionId(subscriptionId);
+  } = useGetAdminSubscriptionsSubscriptionId(subscriptionId);
 
   const subscription = subscriptionResponse?.data;
 
   // Update mutation
-  const updateMutation = usePatchApiV1AdminSubscriptionsSubscriptionId({
+  const updateMutation = usePatchAdminSubscriptionsSubscriptionId({
     mutation: {
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: getGetApiV1AdminSubscriptionsSubscriptionIdQueryKey(subscriptionId),
+          queryKey: getGetAdminSubscriptionsSubscriptionIdQueryKey(subscriptionId),
         });
         router.push(`/admin/subscriptions/${subscriptionId}`);
       },
@@ -98,8 +98,8 @@ export default function AdminSubscriptionEditPage() {
   useEffect(() => {
     if (subscription) {
       setFormData({
-        status: subscription.status as PatchApiV1AdminSubscriptionsSubscriptionIdBodyStatus,
-        planType: subscription.planType as PatchApiV1AdminSubscriptionsSubscriptionIdBodyPlanType,
+        status: subscription.status as PatchAdminSubscriptionsSubscriptionIdBodyStatus,
+        planType: subscription.planType as PatchAdminSubscriptionsSubscriptionIdBodyPlanType,
         currentPeriodEnd: subscription.currentPeriodEnd
           ? new Date(subscription.currentPeriodEnd).toISOString().split("T")[0]
           : "",
@@ -131,7 +131,7 @@ export default function AdminSubscriptionEditPage() {
     setMutationError(null);
 
     // Only send changed fields
-    const updates: PatchApiV1AdminSubscriptionsSubscriptionIdBody = {};
+    const updates: PatchAdminSubscriptionsSubscriptionIdBody = {};
 
     if (formData.status !== subscription?.status) {
       updates.status = formData.status;
@@ -248,7 +248,7 @@ export default function AdminSubscriptionEditPage() {
               <Label htmlFor="planType">Plan Type</Label>
               <Select
                 value={formData.planType}
-                onValueChange={(value: PatchApiV1AdminSubscriptionsSubscriptionIdBodyPlanType) =>
+                onValueChange={(value: PatchAdminSubscriptionsSubscriptionIdBodyPlanType) =>
                   setFormData({ ...formData, planType: value })
                 }
               >
@@ -270,7 +270,7 @@ export default function AdminSubscriptionEditPage() {
               <Label htmlFor="status">Status</Label>
               <Select
                 value={formData.status}
-                onValueChange={(value: PatchApiV1AdminSubscriptionsSubscriptionIdBodyStatus) =>
+                onValueChange={(value: PatchAdminSubscriptionsSubscriptionIdBodyStatus) =>
                   setFormData({ ...formData, status: value })
                 }
               >

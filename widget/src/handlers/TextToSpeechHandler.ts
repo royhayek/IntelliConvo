@@ -193,13 +193,13 @@ export class TextToSpeechHandler {
    * Updates the UI to show speaking indicator
    */
   private updateSpeakingIndicator(speaking: boolean): void {
-    const indicator = document.getElementById('intelligentconvo-speaking-indicator');
+    const indicator = document.getElementById('intelliconvo-speaking-indicator');
     if (indicator) {
       indicator.style.display = speaking ? 'flex' : 'none';
     }
 
     // Update speak button if in speak mode
-    const speakBtn = document.getElementById('intelligentconvo-speak-btn');
+    const speakBtn = document.getElementById('intelliconvo-speak-btn');
     if (speakBtn) {
       if (speaking) {
         speakBtn.classList.add('speaking');

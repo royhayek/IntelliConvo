@@ -34,11 +34,11 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
 import { TimeAgo } from "@/components/ui/time-ago";
 import {
-  useGetApiV1AdminUrlsUrlId,
-  usePatchApiV1AdminUrlsUrlId,
-  useDeleteApiV1AdminUrlsUrlId,
-  useDeleteApiV1AdminUrlsUrlIdEmbeddings,
-  getGetApiV1AdminUrlsUrlIdQueryKey,
+  useGetAdminUrlsUrlId,
+  usePatchAdminUrlsUrlId,
+  useDeleteAdminUrlsUrlId,
+  useDeleteAdminUrlsUrlIdEmbeddings,
+  getGetAdminUrlsUrlIdQueryKey,
 } from "@/lib/api/generated/queries/admin-urls/admin-urls";
 
 interface Embedding {
@@ -87,17 +87,17 @@ export default function AdminUrlDetailPage() {
     data: response,
     isLoading,
     error,
-  } = useGetApiV1AdminUrlsUrlId(urlId);
+  } = useGetAdminUrlsUrlId(urlId);
 
   // Cast the response data to our detailed type since API returns more than generated type
   const data = response?.data as UrlDetails | undefined;
 
   // Update URL mutation
-  const updateUrlMutation = usePatchApiV1AdminUrlsUrlId({
+  const updateUrlMutation = usePatchAdminUrlsUrlId({
     mutation: {
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: getGetApiV1AdminUrlsUrlIdQueryKey(urlId),
+          queryKey: getGetAdminUrlsUrlIdQueryKey(urlId),
         });
         setMutationError(null);
       },
@@ -108,7 +108,7 @@ export default function AdminUrlDetailPage() {
   });
 
   // Delete URL mutation
-  const deleteUrlMutation = useDeleteApiV1AdminUrlsUrlId({
+  const deleteUrlMutation = useDeleteAdminUrlsUrlId({
     mutation: {
       onSuccess: () => {
         router.push("/admin/urls");
@@ -120,11 +120,11 @@ export default function AdminUrlDetailPage() {
   });
 
   // Delete embeddings mutation
-  const deleteEmbeddingsMutation = useDeleteApiV1AdminUrlsUrlIdEmbeddings({
+  const deleteEmbeddingsMutation = useDeleteAdminUrlsUrlIdEmbeddings({
     mutation: {
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: getGetApiV1AdminUrlsUrlIdQueryKey(urlId),
+          queryKey: getGetAdminUrlsUrlIdQueryKey(urlId),
         });
         setShowDeleteEmbeddingsDialog(false);
         setMutationError(null);

@@ -26,11 +26,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm run build` - Build for production
 - `npm run serve` - Start webpack dev server with HMR
 
-### Docker
-- `docker-compose up -d` - Start all services (PostgreSQL, Redis, Backend, Frontend, Widget)
-- `docker-compose logs -f [service]` - View service logs
-- `docker-compose down` - Stop all services
-
 ## Architecture Overview
 
 This is a SaaS conversational AI platform with three main components:

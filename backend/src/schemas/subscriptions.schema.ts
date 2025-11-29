@@ -170,7 +170,7 @@ export const portalUrlResponseSchema = registry.register(
 // GET /api/v1/billing/subscriptions
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/billing/subscriptions',
+  path: '/billing/subscriptions',
   summary: 'Get user subscriptions',
   description: 'Retrieve user subscriptions, optionally filtered by site',
   tags: ['Subscriptions'],
@@ -196,7 +196,7 @@ registry.registerPath({
 // POST /api/v1/billing/subscriptions
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/billing/subscriptions',
+  path: '/billing/subscriptions',
   summary: 'Create subscription',
   tags: ['Subscriptions'],
   security: [{ bearerAuth: [] }],
@@ -230,7 +230,7 @@ registry.registerPath({
 // POST /api/v1/billing/subscriptions/{subscriptionId}/cancel
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/billing/subscriptions/{subscriptionId}/cancel',
+  path: '/billing/subscriptions/{subscriptionId}/cancel',
   summary: 'Cancel subscription',
   tags: ['Subscriptions'],
   security: [{ bearerAuth: [] }],
@@ -258,7 +258,7 @@ registry.registerPath({
 // POST /api/v1/billing/subscriptions/{subscriptionId}/reactivate
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/billing/subscriptions/{subscriptionId}/reactivate',
+  path: '/billing/subscriptions/{subscriptionId}/reactivate',
   summary: 'Reactivate subscription',
   description: 'Removes the pending cancellation from a subscription. Only works if subscription has cancelAtPeriodEnd set to true.',
   tags: ['Subscriptions'],
@@ -290,7 +290,7 @@ registry.registerPath({
 // POST /api/v1/billing/subscriptions/{subscriptionId}/portal
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/billing/subscriptions/{subscriptionId}/portal',
+  path: '/billing/subscriptions/{subscriptionId}/portal',
   summary: 'Get customer portal URL',
   tags: ['Subscriptions'],
   security: [{ bearerAuth: [] }],
@@ -318,7 +318,7 @@ registry.registerPath({
 // GET /api/v1/billing/plans
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/billing/plans',
+  path: '/billing/plans',
   summary: 'Get available plans',
   tags: ['Subscriptions'],
   responses: {
@@ -385,7 +385,7 @@ export const changePlanResponseSchema = registry.register(
 // POST /api/v1/billing/subscriptions/{subscriptionId}/change-plan
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/billing/subscriptions/{subscriptionId}/change-plan',
+  path: '/billing/subscriptions/{subscriptionId}/change-plan',
   summary: 'Change subscription plan',
   description: 'Upgrade or downgrade subscription plan. Stripe handles proration automatically.',
   tags: ['Subscriptions'],
@@ -424,7 +424,7 @@ registry.registerPath({
 // GET /api/v1/billing/subscriptions/{subscriptionId}/preview-change
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/billing/subscriptions/{subscriptionId}/preview-change',
+  path: '/billing/subscriptions/{subscriptionId}/preview-change',
   summary: 'Preview plan change proration',
   description: 'Get a preview of charges/credits for changing to a different plan',
   tags: ['Subscriptions'],

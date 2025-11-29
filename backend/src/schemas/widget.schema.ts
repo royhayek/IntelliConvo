@@ -158,7 +158,10 @@ export const widgetSettingsSchema = registry.register(
 
     // Launcher
     launcherIcon: z.string().openapi({ description: 'Launcher icon type', example: 'chat' }),
-    launcherCustomIconUrl: z.string().nullable().openapi({ description: 'Custom launcher icon URL' }),
+    launcherCustomIconUrl: z.string().refine(
+      (val) => !val || val === '' || val.startsWith('/') || z.string().url().safeParse(val).success,
+      { message: 'Must be a valid URL or path' }
+    ).nullable().openapi({ description: 'Custom launcher icon URL or path' }),
     launcherSize: z.number().int().openapi({ description: 'Launcher size in pixels', example: 56 }),
     launcherPosition: z.string().openapi({ description: 'Launcher position', example: 'bottom-right' }),
     launcherOffsetX: z.number().int().openapi({ description: 'Horizontal offset', example: 20 }),
@@ -175,7 +178,7 @@ export const widgetSettingsSchema = registry.register(
     headerTextColor: z.string().openapi({ description: 'Header text color' }),
     headerHeight: z.number().int().openapi({ description: 'Header height', example: 64 }),
     headerTitle: z.string().openapi({ description: 'Header title', example: 'Chat with us' }),
-    headerSubtitle: z.string().nullable().openapi({ description: 'Header subtitle' }),
+    headerSubtitle: z.string().or(z.literal('')).nullable().openapi({ description: 'Header subtitle' }),
 
     // Message Bubbles
     userBubbleBackgroundColor: z.string().openapi({ description: 'User bubble background color' }),
@@ -235,7 +238,7 @@ export const updateWidgetSettingsSchema = registry.register(
 // GET /api/v1/widget/{siteId}/starters (Public)
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/widget/{siteId}/starters',
+  path: '/widget/{siteId}/starters',
   summary: 'Get conversation starters (public)',
   tags: ['Widget'],
   request: {
@@ -261,7 +264,7 @@ registry.registerPath({
 // GET /api/v1/widget/{siteId}/config (Public)
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/widget/{siteId}/config',
+  path: '/widget/{siteId}/config',
   summary: 'Get site configuration (public)',
   tags: ['Widget'],
   request: {
@@ -287,7 +290,7 @@ registry.registerPath({
 // GET /api/v1/widget/{siteId}/validate (Public)
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/widget/{siteId}/validate',
+  path: '/widget/{siteId}/validate',
   summary: 'Validate site exists (public)',
   tags: ['Widget'],
   request: {
@@ -313,7 +316,7 @@ registry.registerPath({
 // GET /api/v1/widget/{siteId}/settings (Public)
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/widget/{siteId}/settings',
+  path: '/widget/{siteId}/settings',
   summary: 'Get public widget settings',
   tags: ['Widget'],
   request: {
@@ -339,7 +342,7 @@ registry.registerPath({
 // PATCH /api/v1/widget/{siteId}/settings
 registry.registerPath({
   method: 'patch',
-  path: '/api/v1/widget/{siteId}/settings',
+  path: '/widget/{siteId}/settings',
   summary: 'Update widget settings (partial)',
   tags: ['Widget'],
   security: [{ bearerAuth: [] }],
@@ -376,7 +379,7 @@ registry.registerPath({
 // PUT /api/v1/widget/{siteId}/settings
 registry.registerPath({
   method: 'put',
-  path: '/api/v1/widget/{siteId}/settings',
+  path: '/widget/{siteId}/settings',
   summary: 'Update widget settings (full replace)',
   tags: ['Widget'],
   security: [{ bearerAuth: [] }],
@@ -413,7 +416,7 @@ registry.registerPath({
 // GET /api/v1/widget/{siteId}/settings/admin
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/widget/{siteId}/settings/admin',
+  path: '/widget/{siteId}/settings/admin',
   summary: 'Get admin widget settings',
   tags: ['Widget'],
   security: [{ bearerAuth: [] }],
@@ -443,7 +446,7 @@ registry.registerPath({
 // GET /api/v1/widget/{siteId}/settings/category/{category}
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/widget/{siteId}/settings/category/{category}',
+  path: '/widget/{siteId}/settings/category/{category}',
   summary: 'Get widget settings by category',
   tags: ['Widget'],
   security: [{ bearerAuth: [] }],
@@ -474,7 +477,7 @@ registry.registerPath({
 // PUT /api/v1/widget/{siteId}/settings/reset
 registry.registerPath({
   method: 'put',
-  path: '/api/v1/widget/{siteId}/settings/reset',
+  path: '/widget/{siteId}/settings/reset',
   summary: 'Reset widget settings to defaults',
   tags: ['Widget'],
   security: [{ bearerAuth: [] }],

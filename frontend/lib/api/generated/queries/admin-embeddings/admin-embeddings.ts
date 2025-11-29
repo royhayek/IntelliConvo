@@ -20,14 +20,14 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  DeleteApiV1AdminEmbeddingsEmbeddingId200,
-  DeleteApiV1AdminEmbeddingsPineconeAll200,
-  DeleteApiV1AdminEmbeddingsSiteSiteId200,
-  GetApiV1AdminEmbeddings200,
-  GetApiV1AdminEmbeddingsEmbeddingId200,
-  GetApiV1AdminEmbeddingsParams,
-  PostApiV1AdminEmbeddingsBulkDelete200,
-  PostApiV1AdminEmbeddingsBulkDeleteBody
+  DeleteAdminEmbeddingsEmbeddingId200,
+  DeleteAdminEmbeddingsPineconeAll200,
+  DeleteAdminEmbeddingsSiteSiteId200,
+  GetAdminEmbeddings200,
+  GetAdminEmbeddingsEmbeddingId200,
+  GetAdminEmbeddingsParams,
+  PostAdminEmbeddingsBulkDelete200,
+  PostAdminEmbeddingsBulkDeleteBody
 } from '../../models';
 
 import { customInstance } from '../../../axios-instance';
@@ -41,14 +41,14 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 /**
  * @summary Get paginated list of embeddings
  */
-export const getApiV1AdminEmbeddings = (
-    params?: GetApiV1AdminEmbeddingsParams,
+export const getAdminEmbeddings = (
+    params?: GetAdminEmbeddingsParams,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<GetApiV1AdminEmbeddings200>(
-      {url: `/api/v1/admin/embeddings`, method: 'GET',
+      return customInstance<GetAdminEmbeddings200>(
+      {url: `/admin/embeddings`, method: 'GET',
         params, signal
     },
       options);
@@ -57,69 +57,69 @@ export const getApiV1AdminEmbeddings = (
 
 
 
-export const getGetApiV1AdminEmbeddingsQueryKey = (params?: GetApiV1AdminEmbeddingsParams,) => {
+export const getGetAdminEmbeddingsQueryKey = (params?: GetAdminEmbeddingsParams,) => {
     return [
-    `/api/v1/admin/embeddings`, ...(params ? [params]: [])
+    `/admin/embeddings`, ...(params ? [params]: [])
     ] as const;
     }
 
     
-export const getGetApiV1AdminEmbeddingsQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminEmbeddings>>, TError = ErrorType<void>>(params?: GetApiV1AdminEmbeddingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminEmbeddings>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminEmbeddingsQueryOptions = <TData = Awaited<ReturnType<typeof getAdminEmbeddings>>, TError = ErrorType<void>>(params?: GetAdminEmbeddingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminEmbeddings>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminEmbeddingsQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminEmbeddingsQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminEmbeddings>>> = ({ signal }) => getApiV1AdminEmbeddings(params, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminEmbeddings>>> = ({ signal }) => getAdminEmbeddings(params, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminEmbeddings>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminEmbeddings>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminEmbeddingsQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminEmbeddings>>>
-export type GetApiV1AdminEmbeddingsQueryError = ErrorType<void>
+export type GetAdminEmbeddingsQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminEmbeddings>>>
+export type GetAdminEmbeddingsQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminEmbeddings<TData = Awaited<ReturnType<typeof getApiV1AdminEmbeddings>>, TError = ErrorType<void>>(
- params: undefined |  GetApiV1AdminEmbeddingsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminEmbeddings>>, TError, TData>> & Pick<
+export function useGetAdminEmbeddings<TData = Awaited<ReturnType<typeof getAdminEmbeddings>>, TError = ErrorType<void>>(
+ params: undefined |  GetAdminEmbeddingsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminEmbeddings>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminEmbeddings>>,
+          Awaited<ReturnType<typeof getAdminEmbeddings>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminEmbeddings>>
+          Awaited<ReturnType<typeof getAdminEmbeddings>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminEmbeddings<TData = Awaited<ReturnType<typeof getApiV1AdminEmbeddings>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminEmbeddingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminEmbeddings>>, TError, TData>> & Pick<
+export function useGetAdminEmbeddings<TData = Awaited<ReturnType<typeof getAdminEmbeddings>>, TError = ErrorType<void>>(
+ params?: GetAdminEmbeddingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminEmbeddings>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminEmbeddings>>,
+          Awaited<ReturnType<typeof getAdminEmbeddings>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminEmbeddings>>
+          Awaited<ReturnType<typeof getAdminEmbeddings>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminEmbeddings<TData = Awaited<ReturnType<typeof getApiV1AdminEmbeddings>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminEmbeddingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminEmbeddings>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminEmbeddings<TData = Awaited<ReturnType<typeof getAdminEmbeddings>>, TError = ErrorType<void>>(
+ params?: GetAdminEmbeddingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminEmbeddings>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get paginated list of embeddings
  */
 
-export function useGetApiV1AdminEmbeddings<TData = Awaited<ReturnType<typeof getApiV1AdminEmbeddings>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminEmbeddingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminEmbeddings>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminEmbeddings<TData = Awaited<ReturnType<typeof getAdminEmbeddings>>, TError = ErrorType<void>>(
+ params?: GetAdminEmbeddingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminEmbeddings>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminEmbeddingsQueryOptions(params,options)
+  const queryOptions = getGetAdminEmbeddingsQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -134,14 +134,14 @@ export function useGetApiV1AdminEmbeddings<TData = Awaited<ReturnType<typeof get
 /**
  * @summary Get embedding by ID
  */
-export const getApiV1AdminEmbeddingsEmbeddingId = (
+export const getAdminEmbeddingsEmbeddingId = (
     embeddingId: string,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<GetApiV1AdminEmbeddingsEmbeddingId200>(
-      {url: `/api/v1/admin/embeddings/${embeddingId}`, method: 'GET', signal
+      return customInstance<GetAdminEmbeddingsEmbeddingId200>(
+      {url: `/admin/embeddings/${embeddingId}`, method: 'GET', signal
     },
       options);
     }
@@ -149,69 +149,69 @@ export const getApiV1AdminEmbeddingsEmbeddingId = (
 
 
 
-export const getGetApiV1AdminEmbeddingsEmbeddingIdQueryKey = (embeddingId?: string,) => {
+export const getGetAdminEmbeddingsEmbeddingIdQueryKey = (embeddingId?: string,) => {
     return [
-    `/api/v1/admin/embeddings/${embeddingId}`
+    `/admin/embeddings/${embeddingId}`
     ] as const;
     }
 
     
-export const getGetApiV1AdminEmbeddingsEmbeddingIdQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminEmbeddingsEmbeddingId>>, TError = ErrorType<void>>(embeddingId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminEmbeddingsEmbeddingId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminEmbeddingsEmbeddingIdQueryOptions = <TData = Awaited<ReturnType<typeof getAdminEmbeddingsEmbeddingId>>, TError = ErrorType<void>>(embeddingId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminEmbeddingsEmbeddingId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminEmbeddingsEmbeddingIdQueryKey(embeddingId);
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminEmbeddingsEmbeddingIdQueryKey(embeddingId);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminEmbeddingsEmbeddingId>>> = ({ signal }) => getApiV1AdminEmbeddingsEmbeddingId(embeddingId, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminEmbeddingsEmbeddingId>>> = ({ signal }) => getAdminEmbeddingsEmbeddingId(embeddingId, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(embeddingId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminEmbeddingsEmbeddingId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: !!(embeddingId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminEmbeddingsEmbeddingId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminEmbeddingsEmbeddingIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminEmbeddingsEmbeddingId>>>
-export type GetApiV1AdminEmbeddingsEmbeddingIdQueryError = ErrorType<void>
+export type GetAdminEmbeddingsEmbeddingIdQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminEmbeddingsEmbeddingId>>>
+export type GetAdminEmbeddingsEmbeddingIdQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminEmbeddingsEmbeddingId<TData = Awaited<ReturnType<typeof getApiV1AdminEmbeddingsEmbeddingId>>, TError = ErrorType<void>>(
- embeddingId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminEmbeddingsEmbeddingId>>, TError, TData>> & Pick<
+export function useGetAdminEmbeddingsEmbeddingId<TData = Awaited<ReturnType<typeof getAdminEmbeddingsEmbeddingId>>, TError = ErrorType<void>>(
+ embeddingId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminEmbeddingsEmbeddingId>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminEmbeddingsEmbeddingId>>,
+          Awaited<ReturnType<typeof getAdminEmbeddingsEmbeddingId>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminEmbeddingsEmbeddingId>>
+          Awaited<ReturnType<typeof getAdminEmbeddingsEmbeddingId>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminEmbeddingsEmbeddingId<TData = Awaited<ReturnType<typeof getApiV1AdminEmbeddingsEmbeddingId>>, TError = ErrorType<void>>(
- embeddingId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminEmbeddingsEmbeddingId>>, TError, TData>> & Pick<
+export function useGetAdminEmbeddingsEmbeddingId<TData = Awaited<ReturnType<typeof getAdminEmbeddingsEmbeddingId>>, TError = ErrorType<void>>(
+ embeddingId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminEmbeddingsEmbeddingId>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminEmbeddingsEmbeddingId>>,
+          Awaited<ReturnType<typeof getAdminEmbeddingsEmbeddingId>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminEmbeddingsEmbeddingId>>
+          Awaited<ReturnType<typeof getAdminEmbeddingsEmbeddingId>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminEmbeddingsEmbeddingId<TData = Awaited<ReturnType<typeof getApiV1AdminEmbeddingsEmbeddingId>>, TError = ErrorType<void>>(
- embeddingId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminEmbeddingsEmbeddingId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminEmbeddingsEmbeddingId<TData = Awaited<ReturnType<typeof getAdminEmbeddingsEmbeddingId>>, TError = ErrorType<void>>(
+ embeddingId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminEmbeddingsEmbeddingId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get embedding by ID
  */
 
-export function useGetApiV1AdminEmbeddingsEmbeddingId<TData = Awaited<ReturnType<typeof getApiV1AdminEmbeddingsEmbeddingId>>, TError = ErrorType<void>>(
- embeddingId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminEmbeddingsEmbeddingId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminEmbeddingsEmbeddingId<TData = Awaited<ReturnType<typeof getAdminEmbeddingsEmbeddingId>>, TError = ErrorType<void>>(
+ embeddingId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminEmbeddingsEmbeddingId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminEmbeddingsEmbeddingIdQueryOptions(embeddingId,options)
+  const queryOptions = getGetAdminEmbeddingsEmbeddingIdQueryOptions(embeddingId,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -226,24 +226,24 @@ export function useGetApiV1AdminEmbeddingsEmbeddingId<TData = Awaited<ReturnType
 /**
  * @summary Delete embedding
  */
-export const deleteApiV1AdminEmbeddingsEmbeddingId = (
+export const deleteAdminEmbeddingsEmbeddingId = (
     embeddingId: string,
  options?: SecondParameter<typeof customInstance>,) => {
       
       
-      return customInstance<DeleteApiV1AdminEmbeddingsEmbeddingId200>(
-      {url: `/api/v1/admin/embeddings/${embeddingId}`, method: 'DELETE'
+      return customInstance<DeleteAdminEmbeddingsEmbeddingId200>(
+      {url: `/admin/embeddings/${embeddingId}`, method: 'DELETE'
     },
       options);
     }
   
 
 
-export const getDeleteApiV1AdminEmbeddingsEmbeddingIdMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1AdminEmbeddingsEmbeddingId>>, TError,{embeddingId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1AdminEmbeddingsEmbeddingId>>, TError,{embeddingId: string}, TContext> => {
+export const getDeleteAdminEmbeddingsEmbeddingIdMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAdminEmbeddingsEmbeddingId>>, TError,{embeddingId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteAdminEmbeddingsEmbeddingId>>, TError,{embeddingId: string}, TContext> => {
 
-const mutationKey = ['deleteApiV1AdminEmbeddingsEmbeddingId'];
+const mutationKey = ['deleteAdminEmbeddingsEmbeddingId'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -253,10 +253,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteApiV1AdminEmbeddingsEmbeddingId>>, {embeddingId: string}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteAdminEmbeddingsEmbeddingId>>, {embeddingId: string}> = (props) => {
           const {embeddingId} = props ?? {};
 
-          return  deleteApiV1AdminEmbeddingsEmbeddingId(embeddingId,requestOptions)
+          return  deleteAdminEmbeddingsEmbeddingId(embeddingId,requestOptions)
         }
 
         
@@ -264,50 +264,50 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type DeleteApiV1AdminEmbeddingsEmbeddingIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteApiV1AdminEmbeddingsEmbeddingId>>>
+    export type DeleteAdminEmbeddingsEmbeddingIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteAdminEmbeddingsEmbeddingId>>>
     
-    export type DeleteApiV1AdminEmbeddingsEmbeddingIdMutationError = ErrorType<void>
+    export type DeleteAdminEmbeddingsEmbeddingIdMutationError = ErrorType<void>
 
     /**
  * @summary Delete embedding
  */
-export const useDeleteApiV1AdminEmbeddingsEmbeddingId = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1AdminEmbeddingsEmbeddingId>>, TError,{embeddingId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const useDeleteAdminEmbeddingsEmbeddingId = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAdminEmbeddingsEmbeddingId>>, TError,{embeddingId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof deleteApiV1AdminEmbeddingsEmbeddingId>>,
+        Awaited<ReturnType<typeof deleteAdminEmbeddingsEmbeddingId>>,
         TError,
         {embeddingId: string},
         TContext
       > => {
 
-      const mutationOptions = getDeleteApiV1AdminEmbeddingsEmbeddingIdMutationOptions(options);
+      const mutationOptions = getDeleteAdminEmbeddingsEmbeddingIdMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
     /**
  * @summary Bulk delete embeddings
  */
-export const postApiV1AdminEmbeddingsBulkDelete = (
-    postApiV1AdminEmbeddingsBulkDeleteBody: BodyType<PostApiV1AdminEmbeddingsBulkDeleteBody>,
+export const postAdminEmbeddingsBulkDelete = (
+    postAdminEmbeddingsBulkDeleteBody: BodyType<PostAdminEmbeddingsBulkDeleteBody>,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<PostApiV1AdminEmbeddingsBulkDelete200>(
-      {url: `/api/v1/admin/embeddings/bulk/delete`, method: 'POST',
+      return customInstance<PostAdminEmbeddingsBulkDelete200>(
+      {url: `/admin/embeddings/bulk/delete`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: postApiV1AdminEmbeddingsBulkDeleteBody, signal
+      data: postAdminEmbeddingsBulkDeleteBody, signal
     },
       options);
     }
   
 
 
-export const getPostApiV1AdminEmbeddingsBulkDeleteMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminEmbeddingsBulkDelete>>, TError,{data: BodyType<PostApiV1AdminEmbeddingsBulkDeleteBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminEmbeddingsBulkDelete>>, TError,{data: BodyType<PostApiV1AdminEmbeddingsBulkDeleteBody>}, TContext> => {
+export const getPostAdminEmbeddingsBulkDeleteMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminEmbeddingsBulkDelete>>, TError,{data: BodyType<PostAdminEmbeddingsBulkDeleteBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postAdminEmbeddingsBulkDelete>>, TError,{data: BodyType<PostAdminEmbeddingsBulkDeleteBody>}, TContext> => {
 
-const mutationKey = ['postApiV1AdminEmbeddingsBulkDelete'];
+const mutationKey = ['postAdminEmbeddingsBulkDelete'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -317,10 +317,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1AdminEmbeddingsBulkDelete>>, {data: BodyType<PostApiV1AdminEmbeddingsBulkDeleteBody>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postAdminEmbeddingsBulkDelete>>, {data: BodyType<PostAdminEmbeddingsBulkDeleteBody>}> = (props) => {
           const {data} = props ?? {};
 
-          return  postApiV1AdminEmbeddingsBulkDelete(data,requestOptions)
+          return  postAdminEmbeddingsBulkDelete(data,requestOptions)
         }
 
         
@@ -328,47 +328,47 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiV1AdminEmbeddingsBulkDeleteMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1AdminEmbeddingsBulkDelete>>>
-    export type PostApiV1AdminEmbeddingsBulkDeleteMutationBody = BodyType<PostApiV1AdminEmbeddingsBulkDeleteBody>
-    export type PostApiV1AdminEmbeddingsBulkDeleteMutationError = ErrorType<void>
+    export type PostAdminEmbeddingsBulkDeleteMutationResult = NonNullable<Awaited<ReturnType<typeof postAdminEmbeddingsBulkDelete>>>
+    export type PostAdminEmbeddingsBulkDeleteMutationBody = BodyType<PostAdminEmbeddingsBulkDeleteBody>
+    export type PostAdminEmbeddingsBulkDeleteMutationError = ErrorType<void>
 
     /**
  * @summary Bulk delete embeddings
  */
-export const usePostApiV1AdminEmbeddingsBulkDelete = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminEmbeddingsBulkDelete>>, TError,{data: BodyType<PostApiV1AdminEmbeddingsBulkDeleteBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePostAdminEmbeddingsBulkDelete = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminEmbeddingsBulkDelete>>, TError,{data: BodyType<PostAdminEmbeddingsBulkDeleteBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiV1AdminEmbeddingsBulkDelete>>,
+        Awaited<ReturnType<typeof postAdminEmbeddingsBulkDelete>>,
         TError,
-        {data: BodyType<PostApiV1AdminEmbeddingsBulkDeleteBody>},
+        {data: BodyType<PostAdminEmbeddingsBulkDeleteBody>},
         TContext
       > => {
 
-      const mutationOptions = getPostApiV1AdminEmbeddingsBulkDeleteMutationOptions(options);
+      const mutationOptions = getPostAdminEmbeddingsBulkDeleteMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
     /**
  * @summary Delete all embeddings for a site
  */
-export const deleteApiV1AdminEmbeddingsSiteSiteId = (
+export const deleteAdminEmbeddingsSiteSiteId = (
     siteId: string,
  options?: SecondParameter<typeof customInstance>,) => {
       
       
-      return customInstance<DeleteApiV1AdminEmbeddingsSiteSiteId200>(
-      {url: `/api/v1/admin/embeddings/site/${siteId}`, method: 'DELETE'
+      return customInstance<DeleteAdminEmbeddingsSiteSiteId200>(
+      {url: `/admin/embeddings/site/${siteId}`, method: 'DELETE'
     },
       options);
     }
   
 
 
-export const getDeleteApiV1AdminEmbeddingsSiteSiteIdMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1AdminEmbeddingsSiteSiteId>>, TError,{siteId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1AdminEmbeddingsSiteSiteId>>, TError,{siteId: string}, TContext> => {
+export const getDeleteAdminEmbeddingsSiteSiteIdMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAdminEmbeddingsSiteSiteId>>, TError,{siteId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteAdminEmbeddingsSiteSiteId>>, TError,{siteId: string}, TContext> => {
 
-const mutationKey = ['deleteApiV1AdminEmbeddingsSiteSiteId'];
+const mutationKey = ['deleteAdminEmbeddingsSiteSiteId'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -378,10 +378,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteApiV1AdminEmbeddingsSiteSiteId>>, {siteId: string}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteAdminEmbeddingsSiteSiteId>>, {siteId: string}> = (props) => {
           const {siteId} = props ?? {};
 
-          return  deleteApiV1AdminEmbeddingsSiteSiteId(siteId,requestOptions)
+          return  deleteAdminEmbeddingsSiteSiteId(siteId,requestOptions)
         }
 
         
@@ -389,37 +389,37 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type DeleteApiV1AdminEmbeddingsSiteSiteIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteApiV1AdminEmbeddingsSiteSiteId>>>
+    export type DeleteAdminEmbeddingsSiteSiteIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteAdminEmbeddingsSiteSiteId>>>
     
-    export type DeleteApiV1AdminEmbeddingsSiteSiteIdMutationError = ErrorType<void>
+    export type DeleteAdminEmbeddingsSiteSiteIdMutationError = ErrorType<void>
 
     /**
  * @summary Delete all embeddings for a site
  */
-export const useDeleteApiV1AdminEmbeddingsSiteSiteId = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1AdminEmbeddingsSiteSiteId>>, TError,{siteId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const useDeleteAdminEmbeddingsSiteSiteId = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAdminEmbeddingsSiteSiteId>>, TError,{siteId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof deleteApiV1AdminEmbeddingsSiteSiteId>>,
+        Awaited<ReturnType<typeof deleteAdminEmbeddingsSiteSiteId>>,
         TError,
         {siteId: string},
         TContext
       > => {
 
-      const mutationOptions = getDeleteApiV1AdminEmbeddingsSiteSiteIdMutationOptions(options);
+      const mutationOptions = getDeleteAdminEmbeddingsSiteSiteIdMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
     /**
  * @summary Get embedding statistics for a site
  */
-export const getApiV1AdminEmbeddingsSiteSiteIdStats = (
+export const getAdminEmbeddingsSiteSiteIdStats = (
     siteId: string,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<void>(
-      {url: `/api/v1/admin/embeddings/site/${siteId}/stats`, method: 'GET', signal
+      {url: `/admin/embeddings/site/${siteId}/stats`, method: 'GET', signal
     },
       options);
     }
@@ -427,69 +427,69 @@ export const getApiV1AdminEmbeddingsSiteSiteIdStats = (
 
 
 
-export const getGetApiV1AdminEmbeddingsSiteSiteIdStatsQueryKey = (siteId?: string,) => {
+export const getGetAdminEmbeddingsSiteSiteIdStatsQueryKey = (siteId?: string,) => {
     return [
-    `/api/v1/admin/embeddings/site/${siteId}/stats`
+    `/admin/embeddings/site/${siteId}/stats`
     ] as const;
     }
 
     
-export const getGetApiV1AdminEmbeddingsSiteSiteIdStatsQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminEmbeddingsSiteSiteIdStats>>, TError = ErrorType<void>>(siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminEmbeddingsSiteSiteIdStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminEmbeddingsSiteSiteIdStatsQueryOptions = <TData = Awaited<ReturnType<typeof getAdminEmbeddingsSiteSiteIdStats>>, TError = ErrorType<void>>(siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminEmbeddingsSiteSiteIdStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminEmbeddingsSiteSiteIdStatsQueryKey(siteId);
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminEmbeddingsSiteSiteIdStatsQueryKey(siteId);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminEmbeddingsSiteSiteIdStats>>> = ({ signal }) => getApiV1AdminEmbeddingsSiteSiteIdStats(siteId, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminEmbeddingsSiteSiteIdStats>>> = ({ signal }) => getAdminEmbeddingsSiteSiteIdStats(siteId, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(siteId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminEmbeddingsSiteSiteIdStats>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: !!(siteId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminEmbeddingsSiteSiteIdStats>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminEmbeddingsSiteSiteIdStatsQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminEmbeddingsSiteSiteIdStats>>>
-export type GetApiV1AdminEmbeddingsSiteSiteIdStatsQueryError = ErrorType<void>
+export type GetAdminEmbeddingsSiteSiteIdStatsQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminEmbeddingsSiteSiteIdStats>>>
+export type GetAdminEmbeddingsSiteSiteIdStatsQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminEmbeddingsSiteSiteIdStats<TData = Awaited<ReturnType<typeof getApiV1AdminEmbeddingsSiteSiteIdStats>>, TError = ErrorType<void>>(
- siteId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminEmbeddingsSiteSiteIdStats>>, TError, TData>> & Pick<
+export function useGetAdminEmbeddingsSiteSiteIdStats<TData = Awaited<ReturnType<typeof getAdminEmbeddingsSiteSiteIdStats>>, TError = ErrorType<void>>(
+ siteId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminEmbeddingsSiteSiteIdStats>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminEmbeddingsSiteSiteIdStats>>,
+          Awaited<ReturnType<typeof getAdminEmbeddingsSiteSiteIdStats>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminEmbeddingsSiteSiteIdStats>>
+          Awaited<ReturnType<typeof getAdminEmbeddingsSiteSiteIdStats>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminEmbeddingsSiteSiteIdStats<TData = Awaited<ReturnType<typeof getApiV1AdminEmbeddingsSiteSiteIdStats>>, TError = ErrorType<void>>(
- siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminEmbeddingsSiteSiteIdStats>>, TError, TData>> & Pick<
+export function useGetAdminEmbeddingsSiteSiteIdStats<TData = Awaited<ReturnType<typeof getAdminEmbeddingsSiteSiteIdStats>>, TError = ErrorType<void>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminEmbeddingsSiteSiteIdStats>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminEmbeddingsSiteSiteIdStats>>,
+          Awaited<ReturnType<typeof getAdminEmbeddingsSiteSiteIdStats>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminEmbeddingsSiteSiteIdStats>>
+          Awaited<ReturnType<typeof getAdminEmbeddingsSiteSiteIdStats>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminEmbeddingsSiteSiteIdStats<TData = Awaited<ReturnType<typeof getApiV1AdminEmbeddingsSiteSiteIdStats>>, TError = ErrorType<void>>(
- siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminEmbeddingsSiteSiteIdStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminEmbeddingsSiteSiteIdStats<TData = Awaited<ReturnType<typeof getAdminEmbeddingsSiteSiteIdStats>>, TError = ErrorType<void>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminEmbeddingsSiteSiteIdStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get embedding statistics for a site
  */
 
-export function useGetApiV1AdminEmbeddingsSiteSiteIdStats<TData = Awaited<ReturnType<typeof getApiV1AdminEmbeddingsSiteSiteIdStats>>, TError = ErrorType<void>>(
- siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminEmbeddingsSiteSiteIdStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminEmbeddingsSiteSiteIdStats<TData = Awaited<ReturnType<typeof getAdminEmbeddingsSiteSiteIdStats>>, TError = ErrorType<void>>(
+ siteId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminEmbeddingsSiteSiteIdStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminEmbeddingsSiteSiteIdStatsQueryOptions(siteId,options)
+  const queryOptions = getGetAdminEmbeddingsSiteSiteIdStatsQueryOptions(siteId,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -505,24 +505,24 @@ export function useGetApiV1AdminEmbeddingsSiteSiteIdStats<TData = Awaited<Return
  * This is a destructive operation that wipes the entire Pinecone index and clears all embedding records from the database. Use with extreme caution.
  * @summary Delete ALL vectors from Pinecone index (DANGER ZONE)
  */
-export const deleteApiV1AdminEmbeddingsPineconeAll = (
+export const deleteAdminEmbeddingsPineconeAll = (
     
  options?: SecondParameter<typeof customInstance>,) => {
       
       
-      return customInstance<DeleteApiV1AdminEmbeddingsPineconeAll200>(
-      {url: `/api/v1/admin/embeddings/pinecone/all`, method: 'DELETE'
+      return customInstance<DeleteAdminEmbeddingsPineconeAll200>(
+      {url: `/admin/embeddings/pinecone/all`, method: 'DELETE'
     },
       options);
     }
   
 
 
-export const getDeleteApiV1AdminEmbeddingsPineconeAllMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1AdminEmbeddingsPineconeAll>>, TError,void, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1AdminEmbeddingsPineconeAll>>, TError,void, TContext> => {
+export const getDeleteAdminEmbeddingsPineconeAllMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAdminEmbeddingsPineconeAll>>, TError,void, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteAdminEmbeddingsPineconeAll>>, TError,void, TContext> => {
 
-const mutationKey = ['deleteApiV1AdminEmbeddingsPineconeAll'];
+const mutationKey = ['deleteAdminEmbeddingsPineconeAll'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -532,10 +532,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteApiV1AdminEmbeddingsPineconeAll>>, void> = () => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteAdminEmbeddingsPineconeAll>>, void> = () => {
           
 
-          return  deleteApiV1AdminEmbeddingsPineconeAll(requestOptions)
+          return  deleteAdminEmbeddingsPineconeAll(requestOptions)
         }
 
         
@@ -543,23 +543,23 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type DeleteApiV1AdminEmbeddingsPineconeAllMutationResult = NonNullable<Awaited<ReturnType<typeof deleteApiV1AdminEmbeddingsPineconeAll>>>
+    export type DeleteAdminEmbeddingsPineconeAllMutationResult = NonNullable<Awaited<ReturnType<typeof deleteAdminEmbeddingsPineconeAll>>>
     
-    export type DeleteApiV1AdminEmbeddingsPineconeAllMutationError = ErrorType<void>
+    export type DeleteAdminEmbeddingsPineconeAllMutationError = ErrorType<void>
 
     /**
  * @summary Delete ALL vectors from Pinecone index (DANGER ZONE)
  */
-export const useDeleteApiV1AdminEmbeddingsPineconeAll = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1AdminEmbeddingsPineconeAll>>, TError,void, TContext>, request?: SecondParameter<typeof customInstance>}
+export const useDeleteAdminEmbeddingsPineconeAll = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAdminEmbeddingsPineconeAll>>, TError,void, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof deleteApiV1AdminEmbeddingsPineconeAll>>,
+        Awaited<ReturnType<typeof deleteAdminEmbeddingsPineconeAll>>,
         TError,
         void,
         TContext
       > => {
 
-      const mutationOptions = getDeleteApiV1AdminEmbeddingsPineconeAllMutationOptions(options);
+      const mutationOptions = getDeleteAdminEmbeddingsPineconeAllMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }

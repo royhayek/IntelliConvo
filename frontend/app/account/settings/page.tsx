@@ -8,10 +8,10 @@ import { useAuthStore } from "@/lib/store";
 import { useRequireAuth } from "@/lib/hooks/useAuth";
 import { AuthLoading } from "@/components/auth/auth-loading";
 import {
-  usePatchApiV1Account,
-  usePatchApiV1AccountPassword,
-  useDeleteApiV1Account,
-  getGetApiV1AccountQueryKey,
+  usePatchAccount,
+  usePatchAccountPassword,
+  useDeleteAccount,
+  getGetAccountQueryKey,
 } from "@/lib/api/generated/queries/account/account";
 import {
   ProfileFormCard,
@@ -30,7 +30,7 @@ function AccountSettingsPageContent() {
 
   const { isLoading: isAuthLoading, user } = useRequireAuth();
 
-  const updateProfileMutation = usePatchApiV1Account({
+  const updateProfileMutation = usePatchAccount({
     mutation: {
       onSuccess: (data) => {
         if (data.user && data.user.id) {
@@ -40,14 +40,14 @@ function AccountSettingsPageContent() {
             fullName: data.user.fullName,
           });
         }
-        queryClient.invalidateQueries({ queryKey: getGetApiV1AccountQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetAccountQueryKey() });
       },
     },
   });
 
-  const changePasswordMutation = usePatchApiV1AccountPassword();
+  const changePasswordMutation = usePatchAccountPassword();
 
-  const deleteAccountMutation = useDeleteApiV1Account({
+  const deleteAccountMutation = useDeleteAccount({
     mutation: {
       onSuccess: () => {
         logout();

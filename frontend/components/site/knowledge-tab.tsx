@@ -12,12 +12,12 @@ import { KnowledgeFileItem } from "@/components/site/knowledge-file-item";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import {
-  useGetApiV1SitesSiteIdFiles,
-  usePostApiV1SitesSiteIdFiles,
-  useDeleteApiV1SitesSiteIdFilesFileId,
-  usePostApiV1SitesSiteIdFilesFileIdReprocess,
-  useGetApiV1SitesSiteIdFilesFileId,
-  getGetApiV1SitesSiteIdFilesQueryKey,
+  useGetSitesSiteIdFiles,
+  usePostSitesSiteIdFiles,
+  useDeleteSitesSiteIdFilesFileId,
+  usePostSitesSiteIdFilesFileIdReprocess,
+  useGetSitesSiteIdFilesFileId,
+  getGetSitesSiteIdFilesQueryKey,
 } from "@/lib/api/generated/queries/files/files";
 import { type SiteResponse } from "@/lib/api/generated/models";
 
@@ -30,21 +30,22 @@ export function KnowledgeTab({ site }: KnowledgeTabProps) {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [selectedFileId, setSelectedFileId] = useState<string | null>(null);
 
-  const { data: filesData, isLoading: isLoadingFiles } =
-    useGetApiV1SitesSiteIdFiles(site.id);
+  const { data: filesData, isLoading: isLoadingFiles } = useGetSitesSiteIdFiles(
+    site.id
+  );
 
   // Query for fetching single file with content
   const { data: selectedFileData, isLoading: isLoadingContent } =
-    useGetApiV1SitesSiteIdFilesFileId(site.id, selectedFileId || "", {
+    useGetSitesSiteIdFilesFileId(site.id, selectedFileId || "", {
       query: { enabled: !!selectedFileId },
     });
   const files = filesData?.files;
 
-  const uploadMutation = usePostApiV1SitesSiteIdFiles({
+  const uploadMutation = usePostSitesSiteIdFiles({
     mutation: {
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: getGetApiV1SitesSiteIdFilesQueryKey(site.id),
+          queryKey: getGetSitesSiteIdFilesQueryKey(site.id),
         });
         toast.success("File uploaded successfully!");
         setUploadProgress(0);
@@ -56,11 +57,11 @@ export function KnowledgeTab({ site }: KnowledgeTabProps) {
     },
   });
 
-  const deleteMutation = useDeleteApiV1SitesSiteIdFilesFileId({
+  const deleteMutation = useDeleteSitesSiteIdFilesFileId({
     mutation: {
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: getGetApiV1SitesSiteIdFilesQueryKey(site.id),
+          queryKey: getGetSitesSiteIdFilesQueryKey(site.id),
         });
         toast.success("File deleted successfully!");
       },
@@ -70,11 +71,11 @@ export function KnowledgeTab({ site }: KnowledgeTabProps) {
     },
   });
 
-  const reprocessMutation = usePostApiV1SitesSiteIdFilesFileIdReprocess({
+  const reprocessMutation = usePostSitesSiteIdFilesFileIdReprocess({
     mutation: {
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: getGetApiV1SitesSiteIdFilesQueryKey(site.id),
+          queryKey: getGetSitesSiteIdFilesQueryKey(site.id),
         });
         toast.success("File reprocessing started!");
       },
@@ -115,10 +116,10 @@ export function KnowledgeTab({ site }: KnowledgeTabProps) {
     <div className="space-y-6">
       <div>
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-          PDFs & Knowledge
+          Uploaded Documents
         </h2>
         <p className="text-gray-600 dark:text-gray-400">
-          Upload additional documents to enhance your AI's knowledge
+          Upload additional documents to enhance your AI assistant's knowledge
         </p>
       </div>
 

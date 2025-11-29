@@ -587,7 +587,7 @@ const adminWidgetsListSchema = registry.register(
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/stats/users',
+  path: '/admin/stats/users',
   summary: 'Get user statistics',
   tags: ['Admin'],
   security: [{ bearerAuth: [] }],
@@ -600,7 +600,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/stats/sites',
+  path: '/admin/stats/sites',
   summary: 'Get site statistics',
   tags: ['Admin'],
   security: [{ bearerAuth: [] }],
@@ -613,7 +613,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/stats/embeddings',
+  path: '/admin/stats/embeddings',
   summary: 'Get embedding statistics',
   tags: ['Admin'],
   security: [{ bearerAuth: [] }],
@@ -626,7 +626,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/stats/files',
+  path: '/admin/stats/files',
   summary: 'Get file statistics',
   tags: ['Admin'],
   security: [{ bearerAuth: [] }],
@@ -639,7 +639,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/stats/conversations',
+  path: '/admin/stats/conversations',
   summary: 'Get conversation statistics',
   tags: ['Admin'],
   security: [{ bearerAuth: [] }],
@@ -652,7 +652,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/stats/subscriptions',
+  path: '/admin/stats/subscriptions',
   summary: 'Get subscription statistics',
   tags: ['Admin'],
   security: [{ bearerAuth: [] }],
@@ -665,7 +665,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/stats/security',
+  path: '/admin/stats/security',
   summary: 'Get security statistics',
   tags: ['Admin'],
   security: [{ bearerAuth: [] }],
@@ -678,7 +678,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/stats/billing',
+  path: '/admin/stats/billing',
   summary: 'Get billing statistics',
   tags: ['Admin'],
   security: [{ bearerAuth: [] }],
@@ -695,7 +695,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/users',
+  path: '/admin/users',
   summary: 'Get paginated list of users',
   tags: ['Admin - Users'],
   security: [{ bearerAuth: [] }],
@@ -719,7 +719,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/admin/users',
+  path: '/admin/users',
   summary: 'Create a new user',
   tags: ['Admin - Users'],
   security: [{ bearerAuth: [] }],
@@ -747,7 +747,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/users/export',
+  path: '/admin/users/export',
   summary: 'Export users',
   tags: ['Admin - Users'],
   security: [{ bearerAuth: [] }],
@@ -768,7 +768,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/users/{userId}',
+  path: '/admin/users/{userId}',
   summary: 'Get user by ID with full details',
   tags: ['Admin - Users'],
   security: [{ bearerAuth: [] }],
@@ -784,7 +784,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'patch',
-  path: '/api/v1/admin/users/{userId}',
+  path: '/admin/users/{userId}',
   summary: 'Update user',
   tags: ['Admin - Users'],
   security: [{ bearerAuth: [] }],
@@ -811,7 +811,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'delete',
-  path: '/api/v1/admin/users/{userId}',
+  path: '/admin/users/{userId}',
   summary: 'Delete user',
   tags: ['Admin - Users'],
   security: [{ bearerAuth: [] }],
@@ -827,7 +827,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/admin/users/{userId}/force-logout',
+  path: '/admin/users/{userId}/force-logout',
   summary: 'Force logout user from all sessions',
   tags: ['Admin - Users'],
   security: [{ bearerAuth: [] }],
@@ -847,7 +847,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/sites',
+  path: '/admin/sites',
   summary: 'Get paginated list of sites',
   tags: ['Admin - Sites'],
   security: [{ bearerAuth: [] }],
@@ -871,7 +871,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/sites/export',
+  path: '/admin/sites/export',
   summary: 'Export sites',
   tags: ['Admin - Sites'],
   security: [{ bearerAuth: [] }],
@@ -892,7 +892,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/sites/{siteId}',
+  path: '/admin/sites/{siteId}',
   summary: 'Get site by ID with full details',
   tags: ['Admin - Sites'],
   security: [{ bearerAuth: [] }],
@@ -908,7 +908,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'patch',
-  path: '/api/v1/admin/sites/{siteId}',
+  path: '/admin/sites/{siteId}',
   summary: 'Update site',
   tags: ['Admin - Sites'],
   security: [{ bearerAuth: [] }],
@@ -939,7 +939,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'delete',
-  path: '/api/v1/admin/sites/{siteId}',
+  path: '/admin/sites/{siteId}',
   summary: 'Delete site',
   tags: ['Admin - Sites'],
   security: [{ bearerAuth: [] }],
@@ -955,7 +955,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/admin/sites/{siteId}/recrawl',
+  path: '/admin/sites/{siteId}/recrawl',
   summary: 'Trigger site recrawl',
   tags: ['Admin - Sites'],
   security: [{ bearerAuth: [] }],
@@ -971,7 +971,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/admin/sites/{siteId}/cache/clear',
+  path: '/admin/sites/{siteId}/cache/clear',
   summary: 'Clear site cache',
   description: 'Clear all cached data for a specific site',
   tags: ['Admin - Sites'],
@@ -992,7 +992,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/billing/transactions',
+  path: '/admin/billing/transactions',
   summary: 'Get paginated list of transactions',
   tags: ['Admin - Billing'],
   security: [{ bearerAuth: [] }],
@@ -1018,7 +1018,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/admin/billing/transactions',
+  path: '/admin/billing/transactions',
   summary: 'Create manual transaction',
   tags: ['Admin - Billing'],
   security: [{ bearerAuth: [] }],
@@ -1047,7 +1047,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/billing/transactions/export',
+  path: '/admin/billing/transactions/export',
   summary: 'Export transactions',
   tags: ['Admin - Billing'],
   security: [{ bearerAuth: [] }],
@@ -1070,7 +1070,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/billing/transactions/{transactionId}',
+  path: '/admin/billing/transactions/{transactionId}',
   summary: 'Get transaction by ID',
   tags: ['Admin - Billing'],
   security: [{ bearerAuth: [] }],
@@ -1086,7 +1086,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'delete',
-  path: '/api/v1/admin/billing/transactions/{transactionId}',
+  path: '/admin/billing/transactions/{transactionId}',
   summary: 'Delete transaction',
   tags: ['Admin - Billing'],
   security: [{ bearerAuth: [] }],
@@ -1102,7 +1102,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'patch',
-  path: '/api/v1/admin/billing/transactions/{transactionId}/status',
+  path: '/admin/billing/transactions/{transactionId}/status',
   summary: 'Update transaction status',
   tags: ['Admin - Billing'],
   security: [{ bearerAuth: [] }],
@@ -1126,7 +1126,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/billing/info',
+  path: '/admin/billing/info',
   summary: 'Get paginated list of billing info records',
   tags: ['Admin - Billing'],
   security: [{ bearerAuth: [] }],
@@ -1148,7 +1148,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/billing/info/{billingInfoId}',
+  path: '/admin/billing/info/{billingInfoId}',
   summary: 'Get billing info by ID',
   tags: ['Admin - Billing'],
   security: [{ bearerAuth: [] }],
@@ -1164,7 +1164,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/billing/stats',
+  path: '/admin/billing/stats',
   summary: 'Get billing statistics',
   tags: ['Admin - Billing'],
   security: [{ bearerAuth: [] }],
@@ -1178,7 +1178,7 @@ registry.registerPath({
 // Refund endpoint
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/admin/billing/transactions/{transactionId}/refund',
+  path: '/admin/billing/transactions/{transactionId}/refund',
   summary: 'Issue a refund for a transaction',
   description: 'Issues a full or partial refund via Stripe API',
   tags: ['Admin - Billing'],
@@ -1248,7 +1248,7 @@ const adminDisputeSchema = registry.register(
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/billing/disputes',
+  path: '/admin/billing/disputes',
   summary: 'Get list of disputes from Stripe',
   description: 'Fetches disputes directly from Stripe API with local enrichment',
   tags: ['Admin - Billing'],
@@ -1282,7 +1282,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/billing/disputes/{disputeId}',
+  path: '/admin/billing/disputes/{disputeId}',
   summary: 'Get dispute details by ID',
   description: 'Fetches detailed dispute information from Stripe with local data',
   tags: ['Admin - Billing'],
@@ -1310,7 +1310,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/conversations',
+  path: '/admin/conversations',
   summary: 'Get paginated list of conversations',
   tags: ['Admin - Conversations'],
   security: [{ bearerAuth: [] }],
@@ -1335,7 +1335,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/conversations/{conversationId}',
+  path: '/admin/conversations/{conversationId}',
   summary: 'Get conversation by ID with messages',
   tags: ['Admin - Conversations'],
   security: [{ bearerAuth: [] }],
@@ -1351,7 +1351,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'delete',
-  path: '/api/v1/admin/conversations/{conversationId}',
+  path: '/admin/conversations/{conversationId}',
   summary: 'Delete conversation',
   tags: ['Admin - Conversations'],
   security: [{ bearerAuth: [] }],
@@ -1367,7 +1367,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'delete',
-  path: '/api/v1/admin/conversations/site/{siteId}',
+  path: '/admin/conversations/site/{siteId}',
   summary: 'Delete all conversations for a site',
   tags: ['Admin - Conversations'],
   security: [{ bearerAuth: [] }],
@@ -1383,7 +1383,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/conversations/site/{siteId}/stats',
+  path: '/admin/conversations/site/{siteId}/stats',
   summary: 'Get conversation statistics for a site',
   tags: ['Admin - Conversations'],
   security: [{ bearerAuth: [] }],
@@ -1403,7 +1403,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/embeddings',
+  path: '/admin/embeddings',
   summary: 'Get paginated list of embeddings',
   tags: ['Admin - Embeddings'],
   security: [{ bearerAuth: [] }],
@@ -1426,7 +1426,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/embeddings/{embeddingId}',
+  path: '/admin/embeddings/{embeddingId}',
   summary: 'Get embedding by ID',
   tags: ['Admin - Embeddings'],
   security: [{ bearerAuth: [] }],
@@ -1442,7 +1442,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'delete',
-  path: '/api/v1/admin/embeddings/{embeddingId}',
+  path: '/admin/embeddings/{embeddingId}',
   summary: 'Delete embedding',
   tags: ['Admin - Embeddings'],
   security: [{ bearerAuth: [] }],
@@ -1458,7 +1458,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/admin/embeddings/bulk/delete',
+  path: '/admin/embeddings/bulk/delete',
   summary: 'Bulk delete embeddings',
   tags: ['Admin - Embeddings'],
   security: [{ bearerAuth: [] }],
@@ -1480,7 +1480,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'delete',
-  path: '/api/v1/admin/embeddings/site/{siteId}',
+  path: '/admin/embeddings/site/{siteId}',
   summary: 'Delete all embeddings for a site',
   tags: ['Admin - Embeddings'],
   security: [{ bearerAuth: [] }],
@@ -1496,7 +1496,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/embeddings/site/{siteId}/stats',
+  path: '/admin/embeddings/site/{siteId}/stats',
   summary: 'Get embedding statistics for a site',
   tags: ['Admin - Embeddings'],
   security: [{ bearerAuth: [] }],
@@ -1512,7 +1512,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'delete',
-  path: '/api/v1/admin/embeddings/pinecone/all',
+  path: '/admin/embeddings/pinecone/all',
   summary: 'Delete ALL vectors from Pinecone index (DANGER ZONE)',
   description: 'This is a destructive operation that wipes the entire Pinecone index and clears all embedding records from the database. Use with extreme caution.',
   tags: ['Admin - Embeddings'],
@@ -1531,7 +1531,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/files',
+  path: '/admin/files',
   summary: 'Get paginated list of knowledge files',
   tags: ['Admin - Files'],
   security: [{ bearerAuth: [] }],
@@ -1556,7 +1556,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/files/types',
+  path: '/admin/files/types',
   summary: 'Get distinct file types for filtering',
   tags: ['Admin - Files'],
   security: [{ bearerAuth: [] }],
@@ -1569,7 +1569,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/files/stuck',
+  path: '/admin/files/stuck',
   summary: 'Get files stuck in processing',
   tags: ['Admin - Files'],
   security: [{ bearerAuth: [] }],
@@ -1585,7 +1585,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/files/{fileId}',
+  path: '/admin/files/{fileId}',
   summary: 'Get file by ID',
   tags: ['Admin - Files'],
   security: [{ bearerAuth: [] }],
@@ -1601,7 +1601,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'patch',
-  path: '/api/v1/admin/files/{fileId}',
+  path: '/admin/files/{fileId}',
   summary: 'Update file status',
   tags: ['Admin - Files'],
   security: [{ bearerAuth: [] }],
@@ -1627,7 +1627,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'delete',
-  path: '/api/v1/admin/files/{fileId}',
+  path: '/admin/files/{fileId}',
   summary: 'Delete file',
   tags: ['Admin - Files'],
   security: [{ bearerAuth: [] }],
@@ -1643,7 +1643,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/admin/files/{fileId}/reprocess',
+  path: '/admin/files/{fileId}/reprocess',
   summary: 'Mark file for reprocessing',
   tags: ['Admin - Files'],
   security: [{ bearerAuth: [] }],
@@ -1659,7 +1659,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/admin/files/bulk/status',
+  path: '/admin/files/bulk/status',
   summary: 'Bulk update file status',
   tags: ['Admin - Files'],
   security: [{ bearerAuth: [] }],
@@ -1688,7 +1688,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/messages',
+  path: '/admin/messages',
   summary: 'Get paginated list of messages',
   tags: ['Admin - Messages'],
   security: [{ bearerAuth: [] }],
@@ -1713,7 +1713,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/messages/stats',
+  path: '/admin/messages/stats',
   summary: 'Get message statistics',
   tags: ['Admin - Messages'],
   security: [{ bearerAuth: [] }],
@@ -1726,7 +1726,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/messages/{messageId}',
+  path: '/admin/messages/{messageId}',
   summary: 'Get message by ID',
   tags: ['Admin - Messages'],
   security: [{ bearerAuth: [] }],
@@ -1742,7 +1742,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'delete',
-  path: '/api/v1/admin/messages/{messageId}',
+  path: '/admin/messages/{messageId}',
   summary: 'Delete message',
   tags: ['Admin - Messages'],
   security: [{ bearerAuth: [] }],
@@ -1762,7 +1762,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/subscriptions',
+  path: '/admin/subscriptions',
   summary: 'Get paginated list of subscriptions',
   tags: ['Admin - Subscriptions'],
   security: [{ bearerAuth: [] }],
@@ -1787,7 +1787,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/subscriptions/stats',
+  path: '/admin/subscriptions/stats',
   summary: 'Get subscription statistics',
   tags: ['Admin - Subscriptions'],
   security: [{ bearerAuth: [] }],
@@ -1800,7 +1800,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/subscriptions/export',
+  path: '/admin/subscriptions/export',
   summary: 'Export subscriptions',
   tags: ['Admin - Subscriptions'],
   security: [{ bearerAuth: [] }],
@@ -1822,7 +1822,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/subscriptions/{subscriptionId}',
+  path: '/admin/subscriptions/{subscriptionId}',
   summary: 'Get subscription by ID',
   tags: ['Admin - Subscriptions'],
   security: [{ bearerAuth: [] }],
@@ -1838,7 +1838,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'patch',
-  path: '/api/v1/admin/subscriptions/{subscriptionId}',
+  path: '/admin/subscriptions/{subscriptionId}',
   summary: 'Update subscription',
   tags: ['Admin - Subscriptions'],
   security: [{ bearerAuth: [] }],
@@ -1866,7 +1866,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'delete',
-  path: '/api/v1/admin/subscriptions/{subscriptionId}',
+  path: '/admin/subscriptions/{subscriptionId}',
   summary: 'Delete subscription',
   tags: ['Admin - Subscriptions'],
   security: [{ bearerAuth: [] }],
@@ -1882,7 +1882,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/admin/subscriptions/{subscriptionId}/cancel',
+  path: '/admin/subscriptions/{subscriptionId}/cancel',
   summary: 'Cancel subscription',
   tags: ['Admin - Subscriptions'],
   security: [{ bearerAuth: [] }],
@@ -1898,7 +1898,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/admin/subscriptions/{subscriptionId}/reactivate',
+  path: '/admin/subscriptions/{subscriptionId}/reactivate',
   summary: 'Reactivate cancelled subscription',
   tags: ['Admin - Subscriptions'],
   security: [{ bearerAuth: [] }],
@@ -1914,7 +1914,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/admin/subscriptions/{subscriptionId}/extend-trial',
+  path: '/admin/subscriptions/{subscriptionId}/extend-trial',
   summary: 'Extend trial period',
   tags: ['Admin - Subscriptions'],
   security: [{ bearerAuth: [] }],
@@ -1942,7 +1942,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/urls',
+  path: '/admin/urls',
   summary: 'Get paginated list of URLs',
   tags: ['Admin - URLs'],
   security: [{ bearerAuth: [] }],
@@ -1968,7 +1968,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/urls/{urlId}',
+  path: '/admin/urls/{urlId}',
   summary: 'Get URL by ID',
   tags: ['Admin - URLs'],
   security: [{ bearerAuth: [] }],
@@ -1984,7 +1984,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'patch',
-  path: '/api/v1/admin/urls/{urlId}',
+  path: '/admin/urls/{urlId}',
   summary: 'Update URL',
   tags: ['Admin - URLs'],
   security: [{ bearerAuth: [] }],
@@ -2011,7 +2011,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'delete',
-  path: '/api/v1/admin/urls/{urlId}',
+  path: '/admin/urls/{urlId}',
   summary: 'Delete URL',
   tags: ['Admin - URLs'],
   security: [{ bearerAuth: [] }],
@@ -2027,7 +2027,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/admin/urls/bulk/update',
+  path: '/admin/urls/bulk/update',
   summary: 'Bulk update URLs status',
   tags: ['Admin - URLs'],
   security: [{ bearerAuth: [] }],
@@ -2053,7 +2053,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'delete',
-  path: '/api/v1/admin/urls/{urlId}/embeddings',
+  path: '/admin/urls/{urlId}/embeddings',
   summary: 'Delete all embeddings for a URL',
   tags: ['Admin - URLs'],
   security: [{ bearerAuth: [] }],
@@ -2073,7 +2073,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/widgets',
+  path: '/admin/widgets',
   summary: 'Get paginated list of widget settings',
   tags: ['Admin - Widgets'],
   security: [{ bearerAuth: [] }],
@@ -2096,7 +2096,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/widgets/stats',
+  path: '/admin/widgets/stats',
   summary: 'Get widget statistics',
   tags: ['Admin - Widgets'],
   security: [{ bearerAuth: [] }],
@@ -2109,7 +2109,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/widgets/site/{siteId}',
+  path: '/admin/widgets/site/{siteId}',
   summary: 'Get widget settings by site ID',
   tags: ['Admin - Widgets'],
   security: [{ bearerAuth: [] }],
@@ -2125,7 +2125,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/widgets/{widgetId}',
+  path: '/admin/widgets/{widgetId}',
   summary: 'Get widget settings by ID',
   tags: ['Admin - Widgets'],
   security: [{ bearerAuth: [] }],
@@ -2141,7 +2141,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'patch',
-  path: '/api/v1/admin/widgets/{widgetId}',
+  path: '/admin/widgets/{widgetId}',
   summary: 'Update widget settings',
   tags: ['Admin - Widgets'],
   security: [{ bearerAuth: [] }],
@@ -2164,7 +2164,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'delete',
-  path: '/api/v1/admin/widgets/{widgetId}',
+  path: '/admin/widgets/{widgetId}',
   summary: 'Delete widget settings',
   tags: ['Admin - Widgets'],
   security: [{ bearerAuth: [] }],
@@ -2180,7 +2180,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/admin/widgets/{widgetId}/reset',
+  path: '/admin/widgets/{widgetId}/reset',
   summary: 'Reset widget settings to defaults',
   tags: ['Admin - Widgets'],
   security: [{ bearerAuth: [] }],
@@ -2196,7 +2196,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'patch',
-  path: '/api/v1/admin/widgets/bulk',
+  path: '/admin/widgets/bulk',
   summary: 'Bulk update widget settings',
   tags: ['Admin - Widgets'],
   security: [{ bearerAuth: [] }],
@@ -2262,7 +2262,7 @@ const adminSystemSettingsByCategorySchema = registry.register(
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/settings',
+  path: '/admin/settings',
   summary: 'Get all system settings',
   tags: ['Admin - Settings'],
   security: [{ bearerAuth: [] }],
@@ -2280,7 +2280,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/settings/by-category',
+  path: '/admin/settings/by-category',
   summary: 'Get all system settings grouped by category',
   tags: ['Admin - Settings'],
   security: [{ bearerAuth: [] }],
@@ -2293,7 +2293,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/v1/admin/settings/{key}',
+  path: '/admin/settings/{key}',
   summary: 'Get a specific setting by key',
   tags: ['Admin - Settings'],
   security: [{ bearerAuth: [] }],
@@ -2309,7 +2309,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'patch',
-  path: '/api/v1/admin/settings/{key}',
+  path: '/admin/settings/{key}',
   summary: 'Update a specific setting',
   tags: ['Admin - Settings'],
   security: [{ bearerAuth: [] }],
@@ -2334,7 +2334,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'patch',
-  path: '/api/v1/admin/settings/bulk',
+  path: '/admin/settings/bulk',
   summary: 'Bulk update multiple settings',
   tags: ['Admin - Settings'],
   security: [{ bearerAuth: [] }],
@@ -2370,7 +2370,7 @@ const cachesClearedResponseSchema = registry.register(
 
 registry.registerPath({
   method: 'post',
-  path: '/api/v1/admin/settings/cache/clear',
+  path: '/admin/settings/cache/clear',
   summary: 'Clear all system caches',
   description: 'Clears all caches except user sessions. Safe to run anytime - caches will repopulate on next request.',
   tags: ['Admin - Settings'],

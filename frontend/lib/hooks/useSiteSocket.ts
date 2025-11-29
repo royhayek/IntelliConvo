@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useCallback, useState } from "react";
 import { io, Socket } from "socket.io-client";
+import { getSocketUrl } from "@/lib/utils";
 
 export interface CrawlStatusUpdate {
   siteId: string;
@@ -88,10 +89,10 @@ export function useSiteSocket(options: UseSiteSocketOptions) {
   const connect = useCallback(() => {
     if (socketRef.current?.connected || !siteId) return;
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    const socketUrl = getSocketUrl();
     const token = localStorage.getItem("accessToken");
 
-    socketRef.current = io(apiUrl, {
+    socketRef.current = io(socketUrl, {
       auth: { token },
       transports: ["websocket", "polling"],
       reconnection: true,

@@ -166,10 +166,10 @@ import { AuthLoading } from "@/components/auth/auth-loading";
 "use client";
 
 import { GlobalLoading } from "@/components/ui/global-loading";
-import { useGetApiV1Sites } from "@/lib/api/generated/queries/sites/sites";
+import { useGetSites } from "@/lib/api/generated/queries/sites/sites";
 
 export default function DashboardPage() {
-  const { data: sites, isLoading } = useGetApiV1Sites();
+  const { data: sites, isLoading } = useGetSites();
 
   if (isLoading) {
     return <GlobalLoading message="Loading your dashboard..." />;

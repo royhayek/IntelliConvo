@@ -16,7 +16,7 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  GetApiV1ConfigPublic200
+  GetConfigPublic200
 } from '../../models';
 
 import { customInstance } from '../../../axios-instance';
@@ -31,14 +31,14 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
  * Returns public configuration settings for the frontend
  * @summary Get public configuration
  */
-export const getApiV1ConfigPublic = (
+export const getConfigPublic = (
     
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<GetApiV1ConfigPublic200>(
-      {url: `/api/v1/config/public`, method: 'GET', signal
+      return customInstance<GetConfigPublic200>(
+      {url: `/config/public`, method: 'GET', signal
     },
       options);
     }
@@ -46,69 +46,69 @@ export const getApiV1ConfigPublic = (
 
 
 
-export const getGetApiV1ConfigPublicQueryKey = () => {
+export const getGetConfigPublicQueryKey = () => {
     return [
-    `/api/v1/config/public`
+    `/config/public`
     ] as const;
     }
 
     
-export const getGetApiV1ConfigPublicQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1ConfigPublic>>, TError = ErrorType<unknown>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1ConfigPublic>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetConfigPublicQueryOptions = <TData = Awaited<ReturnType<typeof getConfigPublic>>, TError = ErrorType<unknown>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getConfigPublic>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1ConfigPublicQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getGetConfigPublicQueryKey();
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1ConfigPublic>>> = ({ signal }) => getApiV1ConfigPublic(requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getConfigPublic>>> = ({ signal }) => getConfigPublic(requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1ConfigPublic>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getConfigPublic>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1ConfigPublicQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1ConfigPublic>>>
-export type GetApiV1ConfigPublicQueryError = ErrorType<unknown>
+export type GetConfigPublicQueryResult = NonNullable<Awaited<ReturnType<typeof getConfigPublic>>>
+export type GetConfigPublicQueryError = ErrorType<unknown>
 
 
-export function useGetApiV1ConfigPublic<TData = Awaited<ReturnType<typeof getApiV1ConfigPublic>>, TError = ErrorType<unknown>>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1ConfigPublic>>, TError, TData>> & Pick<
+export function useGetConfigPublic<TData = Awaited<ReturnType<typeof getConfigPublic>>, TError = ErrorType<unknown>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getConfigPublic>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1ConfigPublic>>,
+          Awaited<ReturnType<typeof getConfigPublic>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1ConfigPublic>>
+          Awaited<ReturnType<typeof getConfigPublic>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1ConfigPublic<TData = Awaited<ReturnType<typeof getApiV1ConfigPublic>>, TError = ErrorType<unknown>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1ConfigPublic>>, TError, TData>> & Pick<
+export function useGetConfigPublic<TData = Awaited<ReturnType<typeof getConfigPublic>>, TError = ErrorType<unknown>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getConfigPublic>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1ConfigPublic>>,
+          Awaited<ReturnType<typeof getConfigPublic>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1ConfigPublic>>
+          Awaited<ReturnType<typeof getConfigPublic>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1ConfigPublic<TData = Awaited<ReturnType<typeof getApiV1ConfigPublic>>, TError = ErrorType<unknown>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1ConfigPublic>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetConfigPublic<TData = Awaited<ReturnType<typeof getConfigPublic>>, TError = ErrorType<unknown>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getConfigPublic>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get public configuration
  */
 
-export function useGetApiV1ConfigPublic<TData = Awaited<ReturnType<typeof getApiV1ConfigPublic>>, TError = ErrorType<unknown>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1ConfigPublic>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetConfigPublic<TData = Awaited<ReturnType<typeof getConfigPublic>>, TError = ErrorType<unknown>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getConfigPublic>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1ConfigPublicQueryOptions(options)
+  const queryOptions = getGetConfigPublicQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

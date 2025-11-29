@@ -26,16 +26,16 @@ import {
   TransactionsTable,
 } from "@/components/admin/transactions";
 import {
-  useGetApiV1AdminBillingTransactions,
-  useDeleteApiV1AdminBillingTransactionsTransactionId,
-  getGetApiV1AdminBillingTransactionsQueryKey,
-  getApiV1AdminBillingTransactionsExport,
+  useGetAdminBillingTransactions,
+  useDeleteAdminBillingTransactionsTransactionId,
+  getGetAdminBillingTransactionsQueryKey,
+  getAdminBillingTransactionsExport,
 } from "@/lib/api/generated/queries/admin-billing/admin-billing";
-import { useGetApiV1AdminStatsBilling } from "@/lib/api/generated/queries/admin/admin";
+import { useGetAdminStatsBilling } from "@/lib/api/generated/queries/admin/admin";
 import type {
   AdminTransaction,
-  GetApiV1AdminBillingTransactionsParams,
-  GetApiV1AdminBillingTransactionsExportFormat,
+  GetAdminBillingTransactionsParams,
+  GetAdminBillingTransactionsExportFormat,
 } from "@/lib/api/generated/models";
 
 interface BillingStats {
@@ -54,7 +54,7 @@ export default function AdminTransactionsPage() {
     useState<AdminTransaction | null>(null);
   const [exportError, setExportError] = useState<string | null>(null);
 
-  const queryParams: GetApiV1AdminBillingTransactionsParams = {
+  const queryParams: GetAdminBillingTransactionsParams = {
     page: page.toString(),
     limit: "20",
     ...(status !== "all" && { status }),
@@ -65,16 +65,16 @@ export default function AdminTransactionsPage() {
     data: transactionsResponse,
     isLoading,
     error: transactionsError,
-  } = useGetApiV1AdminBillingTransactions(queryParams);
+  } = useGetAdminBillingTransactions(queryParams);
 
-  const { data: statsResponse } = useGetApiV1AdminStatsBilling();
+  const { data: statsResponse } = useGetAdminStatsBilling();
 
-  const deleteMutation = useDeleteApiV1AdminBillingTransactionsTransactionId({
+  const deleteMutation = useDeleteAdminBillingTransactionsTransactionId({
     mutation: {
       onSuccess: () => {
         setDeleteTransaction(null);
         queryClient.invalidateQueries({
-          queryKey: getGetApiV1AdminBillingTransactionsQueryKey(queryParams),
+          queryKey: getGetAdminBillingTransactionsQueryKey(queryParams),
         });
       },
       onError: (error) => {
@@ -94,7 +94,7 @@ export default function AdminTransactionsPage() {
     : exportError;
 
   const handleExport = async (
-    format: GetApiV1AdminBillingTransactionsExportFormat
+    format: GetAdminBillingTransactionsExportFormat
   ) => {
     try {
       setExportError(null);
@@ -103,7 +103,7 @@ export default function AdminTransactionsPage() {
         ...(status !== "all" && { status }),
       };
 
-      const response = await getApiV1AdminBillingTransactionsExport(params, {
+      const response = await getAdminBillingTransactionsExport(params, {
         responseType: format === "csv" ? "blob" : "json",
       });
 

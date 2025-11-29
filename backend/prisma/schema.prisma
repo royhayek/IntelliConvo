@@ -265,7 +265,7 @@ model WidgetSettings {
   userBubbleAlignment       String      @default("right")
 
   // Message bubbles - Assistant
-  assistantBubbleBackgroundColor String @default("#f1f5f9")
+  assistantBubbleBackgroundColor String @default("#ffffff")
   assistantBubbleTextColor  String      @default("#1e293b")
   assistantBubbleBorderRadius Int       @default(16)
   assistantBubbleAlignment  String      @default("left")
@@ -370,8 +370,8 @@ model WidgetSettings {
 
   // Branding
   showPoweredBy             Boolean     @default(false)
-  poweredByText             String      @default("Powered by Intelligentconvo")
-  poweredByUrl              String      @default("https://intelligentconvo.com")
+  poweredByText             String      @default("Powered by IntelliConvo")
+  poweredByUrl              String      @default("https://intelliconvo.com")
 
   // ============================================
   // CATEGORY F: RESPONSIVE / MOBILE
@@ -551,6 +551,7 @@ model Conversation {
   userIdentifier  String?     // Can be anonymous
   userAgent       String?
   ipAddress       String?
+  isTest          Boolean     @default(false)  // True for playground/test conversations
 
   startedAt       DateTime    @default(now())
   lastMessageAt   DateTime    @default(now())
@@ -562,6 +563,7 @@ model Conversation {
   @@index([sessionId])
   @@index([startedAt])
   @@index([siteId, lastMessageAt])
+  @@index([siteId, isTest])
 }
 
 model Message {

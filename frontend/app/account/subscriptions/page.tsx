@@ -7,13 +7,14 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useRequireUser } from "@/lib/hooks/useAuth";
 import { AuthLoading } from "@/components/auth/auth-loading";
 import {
-  useGetApiV1BillingSubscriptions,
-  useGetApiV1BillingPlans,
-  usePostApiV1BillingSubscriptions,
-  usePostApiV1BillingSubscriptionsSubscriptionIdPortal,
-  usePostApiV1BillingSubscriptionsSubscriptionIdReactivate,
+  useGetBillingSubscriptions,
+  useGetBillingPlans,
+  usePostBillingSubscriptions,
+  usePostBillingSubscriptionsSubscriptionIdPortal,
+  usePostBillingSubscriptionsSubscriptionIdReactivate,
+  getGetBillingSubscriptionsQueryKey,
 } from "@/lib/api/generated/queries/subscriptions/subscriptions";
-import { useGetApiV1SitesSiteId } from "@/lib/api/generated/queries/sites/sites";
+import { getGetSitesQueryKey, useGetSitesSiteId } from "@/lib/api/generated/queries/sites/sites";
 import { getBackLinkConfig } from "@/lib/utils/navigation";
 import { NoSiteSelected } from "@/components/account";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
@@ -30,23 +31,23 @@ function SubscriptionsPageContent() {
 
   const { isLoading: isAuthLoading, isAuthenticated, user } = useRequireUser();
 
-  const { data: site } = useGetApiV1SitesSiteId(siteId || "", {
+  const { data: site } = useGetSitesSiteId(siteId || "", {
     query: { enabled: isAuthenticated && !!siteId },
   });
 
-  const { data: subscriptions = [], isLoading } = useGetApiV1BillingSubscriptions(
+  const { data: subscriptions = [], isLoading } = useGetBillingSubscriptions(
     { siteId: siteId || undefined },
     { query: { enabled: isAuthenticated && !!siteId } }
   );
 
-  const { data: plans = [] } = useGetApiV1BillingPlans({
+  const { data: plans = [] } = useGetBillingPlans({
     query: { enabled: isAuthenticated },
   });
 
   const queryClient = useQueryClient();
-  const portalMutation = usePostApiV1BillingSubscriptionsSubscriptionIdPortal();
-  const createSubscriptionMutation = usePostApiV1BillingSubscriptions();
-  const reactivateMutation = usePostApiV1BillingSubscriptionsSubscriptionIdReactivate();
+  const portalMutation = usePostBillingSubscriptionsSubscriptionIdPortal();
+  const createSubscriptionMutation = usePostBillingSubscriptions();
+  const reactivateMutation = usePostBillingSubscriptionsSubscriptionIdReactivate();
 
   const siteSubscription = subscriptions.find((sub: Subscription) =>
     sub.status === "ACTIVE" || sub.status === "TRIAL"
@@ -84,8 +85,8 @@ function SubscriptionsPageContent() {
   const handleReactivate = async (subscriptionId: string) => {
     try {
       await reactivateMutation.mutateAsync({ subscriptionId });
-      queryClient.invalidateQueries({ queryKey: ["/api/v1/billing/subscriptions"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/v1/sites"] });
+      queryClient.invalidateQueries({ queryKey: getGetBillingSubscriptionsQueryKey() });
+      queryClient.invalidateQueries({ queryKey: getGetSitesQueryKey() });
     } catch (error) {
       console.error("Failed to reactivate subscription:", error);
     }

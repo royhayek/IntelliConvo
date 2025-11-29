@@ -24,12 +24,12 @@ import {
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
 import {
-  useGetApiV1SitesSiteIdUrlsUrlId,
-  useDeleteApiV1SitesSiteIdUrlsUrlId,
-  usePatchApiV1SitesSiteIdUrlsUrlId,
-  usePutApiV1SitesSiteIdUrlsUrlIdContent,
-  getGetApiV1SitesSiteIdUrlsQueryKey,
-  getGetApiV1SitesSiteIdUrlsUrlIdQueryKey,
+  useGetSitesSiteIdUrlsUrlId,
+  useDeleteSitesSiteIdUrlsUrlId,
+  usePatchSitesSiteIdUrlsUrlId,
+  usePutSitesSiteIdUrlsUrlIdContent,
+  getGetSitesSiteIdUrlsQueryKey,
+  getGetSitesSiteIdUrlsUrlIdQueryKey,
 } from "@/lib/api/generated/queries/urls/urls";
 import { Site, SiteUrl } from "./types";
 
@@ -70,7 +70,7 @@ export const SitemapStep = memo(function SitemapStep({
   });
 
   // Fetch URL content for preview
-  const { data: selectedUrlData, isLoading: isLoadingContent } = useGetApiV1SitesSiteIdUrlsUrlId(
+  const { data: selectedUrlData, isLoading: isLoadingContent } = useGetSitesSiteIdUrlsUrlId(
     site?.id || "",
     selectedUrlId || "",
     { query: { enabled: !!site?.id && !!selectedUrlId } }
@@ -85,12 +85,12 @@ export const SitemapStep = memo(function SitemapStep({
   }, [isEditMode, selectedUrlData, editContentForm]);
 
   // Delete mutation
-  const deleteUrlMutation = useDeleteApiV1SitesSiteIdUrlsUrlId({
+  const deleteUrlMutation = useDeleteSitesSiteIdUrlsUrlId({
     mutation: {
       onSuccess: () => {
         if (site?.id) {
           queryClient.invalidateQueries({
-            queryKey: getGetApiV1SitesSiteIdUrlsQueryKey(site.id),
+            queryKey: getGetSitesSiteIdUrlsQueryKey(site.id),
           });
         }
         setUrlToDelete(null);
@@ -99,12 +99,12 @@ export const SitemapStep = memo(function SitemapStep({
   });
 
   // Update mutation for excluding URLs
-  const updateUrlMutation = usePatchApiV1SitesSiteIdUrlsUrlId({
+  const updateUrlMutation = usePatchSitesSiteIdUrlsUrlId({
     mutation: {
       onSuccess: () => {
         if (site?.id) {
           queryClient.invalidateQueries({
-            queryKey: getGetApiV1SitesSiteIdUrlsQueryKey(site.id),
+            queryKey: getGetSitesSiteIdUrlsQueryKey(site.id),
           });
         }
       },
@@ -112,17 +112,17 @@ export const SitemapStep = memo(function SitemapStep({
   });
 
   // Update content mutation
-  const updateContentMutation = usePutApiV1SitesSiteIdUrlsUrlIdContent({
+  const updateContentMutation = usePutSitesSiteIdUrlsUrlIdContent({
     mutation: {
       onSuccess: () => {
         if (site?.id) {
           queryClient.invalidateQueries({
-            queryKey: getGetApiV1SitesSiteIdUrlsQueryKey(site.id),
+            queryKey: getGetSitesSiteIdUrlsQueryKey(site.id),
           });
         }
         if (selectedUrlId && site?.id) {
           queryClient.invalidateQueries({
-            queryKey: getGetApiV1SitesSiteIdUrlsUrlIdQueryKey(site.id, selectedUrlId),
+            queryKey: getGetSitesSiteIdUrlsUrlIdQueryKey(site.id, selectedUrlId),
           });
         }
         setIsEditMode(false);

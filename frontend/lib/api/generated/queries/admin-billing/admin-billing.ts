@@ -20,21 +20,21 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  DeleteApiV1AdminBillingTransactionsTransactionId200,
-  GetApiV1AdminBillingDisputes200,
-  GetApiV1AdminBillingDisputesDisputeId200,
-  GetApiV1AdminBillingDisputesParams,
-  GetApiV1AdminBillingInfoParams,
-  GetApiV1AdminBillingTransactions200,
-  GetApiV1AdminBillingTransactionsExportParams,
-  GetApiV1AdminBillingTransactionsParams,
-  GetApiV1AdminBillingTransactionsTransactionId200,
-  PatchApiV1AdminBillingTransactionsTransactionIdStatus200,
-  PatchApiV1AdminBillingTransactionsTransactionIdStatusBody,
-  PostApiV1AdminBillingTransactions200,
-  PostApiV1AdminBillingTransactionsBody,
-  PostApiV1AdminBillingTransactionsTransactionIdRefund200,
-  PostApiV1AdminBillingTransactionsTransactionIdRefundBody
+  DeleteAdminBillingTransactionsTransactionId200,
+  GetAdminBillingDisputes200,
+  GetAdminBillingDisputesDisputeId200,
+  GetAdminBillingDisputesParams,
+  GetAdminBillingInfoParams,
+  GetAdminBillingTransactions200,
+  GetAdminBillingTransactionsExportParams,
+  GetAdminBillingTransactionsParams,
+  GetAdminBillingTransactionsTransactionId200,
+  PatchAdminBillingTransactionsTransactionIdStatus200,
+  PatchAdminBillingTransactionsTransactionIdStatusBody,
+  PostAdminBillingTransactions200,
+  PostAdminBillingTransactionsBody,
+  PostAdminBillingTransactionsTransactionIdRefund200,
+  PostAdminBillingTransactionsTransactionIdRefundBody
 } from '../../models';
 
 import { customInstance } from '../../../axios-instance';
@@ -48,14 +48,14 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 /**
  * @summary Get paginated list of transactions
  */
-export const getApiV1AdminBillingTransactions = (
-    params?: GetApiV1AdminBillingTransactionsParams,
+export const getAdminBillingTransactions = (
+    params?: GetAdminBillingTransactionsParams,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<GetApiV1AdminBillingTransactions200>(
-      {url: `/api/v1/admin/billing/transactions`, method: 'GET',
+      return customInstance<GetAdminBillingTransactions200>(
+      {url: `/admin/billing/transactions`, method: 'GET',
         params, signal
     },
       options);
@@ -64,69 +64,69 @@ export const getApiV1AdminBillingTransactions = (
 
 
 
-export const getGetApiV1AdminBillingTransactionsQueryKey = (params?: GetApiV1AdminBillingTransactionsParams,) => {
+export const getGetAdminBillingTransactionsQueryKey = (params?: GetAdminBillingTransactionsParams,) => {
     return [
-    `/api/v1/admin/billing/transactions`, ...(params ? [params]: [])
+    `/admin/billing/transactions`, ...(params ? [params]: [])
     ] as const;
     }
 
     
-export const getGetApiV1AdminBillingTransactionsQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminBillingTransactions>>, TError = ErrorType<void>>(params?: GetApiV1AdminBillingTransactionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingTransactions>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminBillingTransactionsQueryOptions = <TData = Awaited<ReturnType<typeof getAdminBillingTransactions>>, TError = ErrorType<void>>(params?: GetAdminBillingTransactionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingTransactions>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminBillingTransactionsQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminBillingTransactionsQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminBillingTransactions>>> = ({ signal }) => getApiV1AdminBillingTransactions(params, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminBillingTransactions>>> = ({ signal }) => getAdminBillingTransactions(params, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingTransactions>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingTransactions>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminBillingTransactionsQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminBillingTransactions>>>
-export type GetApiV1AdminBillingTransactionsQueryError = ErrorType<void>
+export type GetAdminBillingTransactionsQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminBillingTransactions>>>
+export type GetAdminBillingTransactionsQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminBillingTransactions<TData = Awaited<ReturnType<typeof getApiV1AdminBillingTransactions>>, TError = ErrorType<void>>(
- params: undefined |  GetApiV1AdminBillingTransactionsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingTransactions>>, TError, TData>> & Pick<
+export function useGetAdminBillingTransactions<TData = Awaited<ReturnType<typeof getAdminBillingTransactions>>, TError = ErrorType<void>>(
+ params: undefined |  GetAdminBillingTransactionsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingTransactions>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminBillingTransactions>>,
+          Awaited<ReturnType<typeof getAdminBillingTransactions>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminBillingTransactions>>
+          Awaited<ReturnType<typeof getAdminBillingTransactions>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminBillingTransactions<TData = Awaited<ReturnType<typeof getApiV1AdminBillingTransactions>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminBillingTransactionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingTransactions>>, TError, TData>> & Pick<
+export function useGetAdminBillingTransactions<TData = Awaited<ReturnType<typeof getAdminBillingTransactions>>, TError = ErrorType<void>>(
+ params?: GetAdminBillingTransactionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingTransactions>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminBillingTransactions>>,
+          Awaited<ReturnType<typeof getAdminBillingTransactions>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminBillingTransactions>>
+          Awaited<ReturnType<typeof getAdminBillingTransactions>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminBillingTransactions<TData = Awaited<ReturnType<typeof getApiV1AdminBillingTransactions>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminBillingTransactionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingTransactions>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminBillingTransactions<TData = Awaited<ReturnType<typeof getAdminBillingTransactions>>, TError = ErrorType<void>>(
+ params?: GetAdminBillingTransactionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingTransactions>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get paginated list of transactions
  */
 
-export function useGetApiV1AdminBillingTransactions<TData = Awaited<ReturnType<typeof getApiV1AdminBillingTransactions>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminBillingTransactionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingTransactions>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminBillingTransactions<TData = Awaited<ReturnType<typeof getAdminBillingTransactions>>, TError = ErrorType<void>>(
+ params?: GetAdminBillingTransactionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingTransactions>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminBillingTransactionsQueryOptions(params,options)
+  const queryOptions = getGetAdminBillingTransactionsQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -141,27 +141,27 @@ export function useGetApiV1AdminBillingTransactions<TData = Awaited<ReturnType<t
 /**
  * @summary Create manual transaction
  */
-export const postApiV1AdminBillingTransactions = (
-    postApiV1AdminBillingTransactionsBody: BodyType<PostApiV1AdminBillingTransactionsBody>,
+export const postAdminBillingTransactions = (
+    postAdminBillingTransactionsBody: BodyType<PostAdminBillingTransactionsBody>,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<PostApiV1AdminBillingTransactions200>(
-      {url: `/api/v1/admin/billing/transactions`, method: 'POST',
+      return customInstance<PostAdminBillingTransactions200>(
+      {url: `/admin/billing/transactions`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: postApiV1AdminBillingTransactionsBody, signal
+      data: postAdminBillingTransactionsBody, signal
     },
       options);
     }
   
 
 
-export const getPostApiV1AdminBillingTransactionsMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminBillingTransactions>>, TError,{data: BodyType<PostApiV1AdminBillingTransactionsBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminBillingTransactions>>, TError,{data: BodyType<PostApiV1AdminBillingTransactionsBody>}, TContext> => {
+export const getPostAdminBillingTransactionsMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminBillingTransactions>>, TError,{data: BodyType<PostAdminBillingTransactionsBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postAdminBillingTransactions>>, TError,{data: BodyType<PostAdminBillingTransactionsBody>}, TContext> => {
 
-const mutationKey = ['postApiV1AdminBillingTransactions'];
+const mutationKey = ['postAdminBillingTransactions'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -171,10 +171,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1AdminBillingTransactions>>, {data: BodyType<PostApiV1AdminBillingTransactionsBody>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postAdminBillingTransactions>>, {data: BodyType<PostAdminBillingTransactionsBody>}> = (props) => {
           const {data} = props ?? {};
 
-          return  postApiV1AdminBillingTransactions(data,requestOptions)
+          return  postAdminBillingTransactions(data,requestOptions)
         }
 
         
@@ -182,37 +182,37 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiV1AdminBillingTransactionsMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1AdminBillingTransactions>>>
-    export type PostApiV1AdminBillingTransactionsMutationBody = BodyType<PostApiV1AdminBillingTransactionsBody>
-    export type PostApiV1AdminBillingTransactionsMutationError = ErrorType<void>
+    export type PostAdminBillingTransactionsMutationResult = NonNullable<Awaited<ReturnType<typeof postAdminBillingTransactions>>>
+    export type PostAdminBillingTransactionsMutationBody = BodyType<PostAdminBillingTransactionsBody>
+    export type PostAdminBillingTransactionsMutationError = ErrorType<void>
 
     /**
  * @summary Create manual transaction
  */
-export const usePostApiV1AdminBillingTransactions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminBillingTransactions>>, TError,{data: BodyType<PostApiV1AdminBillingTransactionsBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePostAdminBillingTransactions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminBillingTransactions>>, TError,{data: BodyType<PostAdminBillingTransactionsBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiV1AdminBillingTransactions>>,
+        Awaited<ReturnType<typeof postAdminBillingTransactions>>,
         TError,
-        {data: BodyType<PostApiV1AdminBillingTransactionsBody>},
+        {data: BodyType<PostAdminBillingTransactionsBody>},
         TContext
       > => {
 
-      const mutationOptions = getPostApiV1AdminBillingTransactionsMutationOptions(options);
+      const mutationOptions = getPostAdminBillingTransactionsMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
     /**
  * @summary Export transactions
  */
-export const getApiV1AdminBillingTransactionsExport = (
-    params?: GetApiV1AdminBillingTransactionsExportParams,
+export const getAdminBillingTransactionsExport = (
+    params?: GetAdminBillingTransactionsExportParams,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<void>(
-      {url: `/api/v1/admin/billing/transactions/export`, method: 'GET',
+      {url: `/admin/billing/transactions/export`, method: 'GET',
         params, signal
     },
       options);
@@ -221,69 +221,69 @@ export const getApiV1AdminBillingTransactionsExport = (
 
 
 
-export const getGetApiV1AdminBillingTransactionsExportQueryKey = (params?: GetApiV1AdminBillingTransactionsExportParams,) => {
+export const getGetAdminBillingTransactionsExportQueryKey = (params?: GetAdminBillingTransactionsExportParams,) => {
     return [
-    `/api/v1/admin/billing/transactions/export`, ...(params ? [params]: [])
+    `/admin/billing/transactions/export`, ...(params ? [params]: [])
     ] as const;
     }
 
     
-export const getGetApiV1AdminBillingTransactionsExportQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminBillingTransactionsExport>>, TError = ErrorType<void>>(params?: GetApiV1AdminBillingTransactionsExportParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingTransactionsExport>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminBillingTransactionsExportQueryOptions = <TData = Awaited<ReturnType<typeof getAdminBillingTransactionsExport>>, TError = ErrorType<void>>(params?: GetAdminBillingTransactionsExportParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingTransactionsExport>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminBillingTransactionsExportQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminBillingTransactionsExportQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminBillingTransactionsExport>>> = ({ signal }) => getApiV1AdminBillingTransactionsExport(params, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminBillingTransactionsExport>>> = ({ signal }) => getAdminBillingTransactionsExport(params, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingTransactionsExport>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingTransactionsExport>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminBillingTransactionsExportQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminBillingTransactionsExport>>>
-export type GetApiV1AdminBillingTransactionsExportQueryError = ErrorType<void>
+export type GetAdminBillingTransactionsExportQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminBillingTransactionsExport>>>
+export type GetAdminBillingTransactionsExportQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminBillingTransactionsExport<TData = Awaited<ReturnType<typeof getApiV1AdminBillingTransactionsExport>>, TError = ErrorType<void>>(
- params: undefined |  GetApiV1AdminBillingTransactionsExportParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingTransactionsExport>>, TError, TData>> & Pick<
+export function useGetAdminBillingTransactionsExport<TData = Awaited<ReturnType<typeof getAdminBillingTransactionsExport>>, TError = ErrorType<void>>(
+ params: undefined |  GetAdminBillingTransactionsExportParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingTransactionsExport>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminBillingTransactionsExport>>,
+          Awaited<ReturnType<typeof getAdminBillingTransactionsExport>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminBillingTransactionsExport>>
+          Awaited<ReturnType<typeof getAdminBillingTransactionsExport>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminBillingTransactionsExport<TData = Awaited<ReturnType<typeof getApiV1AdminBillingTransactionsExport>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminBillingTransactionsExportParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingTransactionsExport>>, TError, TData>> & Pick<
+export function useGetAdminBillingTransactionsExport<TData = Awaited<ReturnType<typeof getAdminBillingTransactionsExport>>, TError = ErrorType<void>>(
+ params?: GetAdminBillingTransactionsExportParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingTransactionsExport>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminBillingTransactionsExport>>,
+          Awaited<ReturnType<typeof getAdminBillingTransactionsExport>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminBillingTransactionsExport>>
+          Awaited<ReturnType<typeof getAdminBillingTransactionsExport>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminBillingTransactionsExport<TData = Awaited<ReturnType<typeof getApiV1AdminBillingTransactionsExport>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminBillingTransactionsExportParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingTransactionsExport>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminBillingTransactionsExport<TData = Awaited<ReturnType<typeof getAdminBillingTransactionsExport>>, TError = ErrorType<void>>(
+ params?: GetAdminBillingTransactionsExportParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingTransactionsExport>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Export transactions
  */
 
-export function useGetApiV1AdminBillingTransactionsExport<TData = Awaited<ReturnType<typeof getApiV1AdminBillingTransactionsExport>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminBillingTransactionsExportParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingTransactionsExport>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminBillingTransactionsExport<TData = Awaited<ReturnType<typeof getAdminBillingTransactionsExport>>, TError = ErrorType<void>>(
+ params?: GetAdminBillingTransactionsExportParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingTransactionsExport>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminBillingTransactionsExportQueryOptions(params,options)
+  const queryOptions = getGetAdminBillingTransactionsExportQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -298,14 +298,14 @@ export function useGetApiV1AdminBillingTransactionsExport<TData = Awaited<Return
 /**
  * @summary Get transaction by ID
  */
-export const getApiV1AdminBillingTransactionsTransactionId = (
+export const getAdminBillingTransactionsTransactionId = (
     transactionId: string,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<GetApiV1AdminBillingTransactionsTransactionId200>(
-      {url: `/api/v1/admin/billing/transactions/${transactionId}`, method: 'GET', signal
+      return customInstance<GetAdminBillingTransactionsTransactionId200>(
+      {url: `/admin/billing/transactions/${transactionId}`, method: 'GET', signal
     },
       options);
     }
@@ -313,69 +313,69 @@ export const getApiV1AdminBillingTransactionsTransactionId = (
 
 
 
-export const getGetApiV1AdminBillingTransactionsTransactionIdQueryKey = (transactionId?: string,) => {
+export const getGetAdminBillingTransactionsTransactionIdQueryKey = (transactionId?: string,) => {
     return [
-    `/api/v1/admin/billing/transactions/${transactionId}`
+    `/admin/billing/transactions/${transactionId}`
     ] as const;
     }
 
     
-export const getGetApiV1AdminBillingTransactionsTransactionIdQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminBillingTransactionsTransactionId>>, TError = ErrorType<void>>(transactionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingTransactionsTransactionId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminBillingTransactionsTransactionIdQueryOptions = <TData = Awaited<ReturnType<typeof getAdminBillingTransactionsTransactionId>>, TError = ErrorType<void>>(transactionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingTransactionsTransactionId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminBillingTransactionsTransactionIdQueryKey(transactionId);
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminBillingTransactionsTransactionIdQueryKey(transactionId);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminBillingTransactionsTransactionId>>> = ({ signal }) => getApiV1AdminBillingTransactionsTransactionId(transactionId, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminBillingTransactionsTransactionId>>> = ({ signal }) => getAdminBillingTransactionsTransactionId(transactionId, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(transactionId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingTransactionsTransactionId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: !!(transactionId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingTransactionsTransactionId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminBillingTransactionsTransactionIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminBillingTransactionsTransactionId>>>
-export type GetApiV1AdminBillingTransactionsTransactionIdQueryError = ErrorType<void>
+export type GetAdminBillingTransactionsTransactionIdQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminBillingTransactionsTransactionId>>>
+export type GetAdminBillingTransactionsTransactionIdQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminBillingTransactionsTransactionId<TData = Awaited<ReturnType<typeof getApiV1AdminBillingTransactionsTransactionId>>, TError = ErrorType<void>>(
- transactionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingTransactionsTransactionId>>, TError, TData>> & Pick<
+export function useGetAdminBillingTransactionsTransactionId<TData = Awaited<ReturnType<typeof getAdminBillingTransactionsTransactionId>>, TError = ErrorType<void>>(
+ transactionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingTransactionsTransactionId>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminBillingTransactionsTransactionId>>,
+          Awaited<ReturnType<typeof getAdminBillingTransactionsTransactionId>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminBillingTransactionsTransactionId>>
+          Awaited<ReturnType<typeof getAdminBillingTransactionsTransactionId>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminBillingTransactionsTransactionId<TData = Awaited<ReturnType<typeof getApiV1AdminBillingTransactionsTransactionId>>, TError = ErrorType<void>>(
- transactionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingTransactionsTransactionId>>, TError, TData>> & Pick<
+export function useGetAdminBillingTransactionsTransactionId<TData = Awaited<ReturnType<typeof getAdminBillingTransactionsTransactionId>>, TError = ErrorType<void>>(
+ transactionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingTransactionsTransactionId>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminBillingTransactionsTransactionId>>,
+          Awaited<ReturnType<typeof getAdminBillingTransactionsTransactionId>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminBillingTransactionsTransactionId>>
+          Awaited<ReturnType<typeof getAdminBillingTransactionsTransactionId>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminBillingTransactionsTransactionId<TData = Awaited<ReturnType<typeof getApiV1AdminBillingTransactionsTransactionId>>, TError = ErrorType<void>>(
- transactionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingTransactionsTransactionId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminBillingTransactionsTransactionId<TData = Awaited<ReturnType<typeof getAdminBillingTransactionsTransactionId>>, TError = ErrorType<void>>(
+ transactionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingTransactionsTransactionId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get transaction by ID
  */
 
-export function useGetApiV1AdminBillingTransactionsTransactionId<TData = Awaited<ReturnType<typeof getApiV1AdminBillingTransactionsTransactionId>>, TError = ErrorType<void>>(
- transactionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingTransactionsTransactionId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminBillingTransactionsTransactionId<TData = Awaited<ReturnType<typeof getAdminBillingTransactionsTransactionId>>, TError = ErrorType<void>>(
+ transactionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingTransactionsTransactionId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminBillingTransactionsTransactionIdQueryOptions(transactionId,options)
+  const queryOptions = getGetAdminBillingTransactionsTransactionIdQueryOptions(transactionId,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -390,24 +390,24 @@ export function useGetApiV1AdminBillingTransactionsTransactionId<TData = Awaited
 /**
  * @summary Delete transaction
  */
-export const deleteApiV1AdminBillingTransactionsTransactionId = (
+export const deleteAdminBillingTransactionsTransactionId = (
     transactionId: string,
  options?: SecondParameter<typeof customInstance>,) => {
       
       
-      return customInstance<DeleteApiV1AdminBillingTransactionsTransactionId200>(
-      {url: `/api/v1/admin/billing/transactions/${transactionId}`, method: 'DELETE'
+      return customInstance<DeleteAdminBillingTransactionsTransactionId200>(
+      {url: `/admin/billing/transactions/${transactionId}`, method: 'DELETE'
     },
       options);
     }
   
 
 
-export const getDeleteApiV1AdminBillingTransactionsTransactionIdMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1AdminBillingTransactionsTransactionId>>, TError,{transactionId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1AdminBillingTransactionsTransactionId>>, TError,{transactionId: string}, TContext> => {
+export const getDeleteAdminBillingTransactionsTransactionIdMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAdminBillingTransactionsTransactionId>>, TError,{transactionId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteAdminBillingTransactionsTransactionId>>, TError,{transactionId: string}, TContext> => {
 
-const mutationKey = ['deleteApiV1AdminBillingTransactionsTransactionId'];
+const mutationKey = ['deleteAdminBillingTransactionsTransactionId'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -417,10 +417,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteApiV1AdminBillingTransactionsTransactionId>>, {transactionId: string}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteAdminBillingTransactionsTransactionId>>, {transactionId: string}> = (props) => {
           const {transactionId} = props ?? {};
 
-          return  deleteApiV1AdminBillingTransactionsTransactionId(transactionId,requestOptions)
+          return  deleteAdminBillingTransactionsTransactionId(transactionId,requestOptions)
         }
 
         
@@ -428,50 +428,50 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type DeleteApiV1AdminBillingTransactionsTransactionIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteApiV1AdminBillingTransactionsTransactionId>>>
+    export type DeleteAdminBillingTransactionsTransactionIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteAdminBillingTransactionsTransactionId>>>
     
-    export type DeleteApiV1AdminBillingTransactionsTransactionIdMutationError = ErrorType<void>
+    export type DeleteAdminBillingTransactionsTransactionIdMutationError = ErrorType<void>
 
     /**
  * @summary Delete transaction
  */
-export const useDeleteApiV1AdminBillingTransactionsTransactionId = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1AdminBillingTransactionsTransactionId>>, TError,{transactionId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const useDeleteAdminBillingTransactionsTransactionId = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAdminBillingTransactionsTransactionId>>, TError,{transactionId: string}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof deleteApiV1AdminBillingTransactionsTransactionId>>,
+        Awaited<ReturnType<typeof deleteAdminBillingTransactionsTransactionId>>,
         TError,
         {transactionId: string},
         TContext
       > => {
 
-      const mutationOptions = getDeleteApiV1AdminBillingTransactionsTransactionIdMutationOptions(options);
+      const mutationOptions = getDeleteAdminBillingTransactionsTransactionIdMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
     /**
  * @summary Update transaction status
  */
-export const patchApiV1AdminBillingTransactionsTransactionIdStatus = (
+export const patchAdminBillingTransactionsTransactionIdStatus = (
     transactionId: string,
-    patchApiV1AdminBillingTransactionsTransactionIdStatusBody: BodyType<PatchApiV1AdminBillingTransactionsTransactionIdStatusBody>,
+    patchAdminBillingTransactionsTransactionIdStatusBody: BodyType<PatchAdminBillingTransactionsTransactionIdStatusBody>,
  options?: SecondParameter<typeof customInstance>,) => {
       
       
-      return customInstance<PatchApiV1AdminBillingTransactionsTransactionIdStatus200>(
-      {url: `/api/v1/admin/billing/transactions/${transactionId}/status`, method: 'PATCH',
+      return customInstance<PatchAdminBillingTransactionsTransactionIdStatus200>(
+      {url: `/admin/billing/transactions/${transactionId}/status`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
-      data: patchApiV1AdminBillingTransactionsTransactionIdStatusBody
+      data: patchAdminBillingTransactionsTransactionIdStatusBody
     },
       options);
     }
   
 
 
-export const getPatchApiV1AdminBillingTransactionsTransactionIdStatusMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchApiV1AdminBillingTransactionsTransactionIdStatus>>, TError,{transactionId: string;data: BodyType<PatchApiV1AdminBillingTransactionsTransactionIdStatusBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof patchApiV1AdminBillingTransactionsTransactionIdStatus>>, TError,{transactionId: string;data: BodyType<PatchApiV1AdminBillingTransactionsTransactionIdStatusBody>}, TContext> => {
+export const getPatchAdminBillingTransactionsTransactionIdStatusMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchAdminBillingTransactionsTransactionIdStatus>>, TError,{transactionId: string;data: BodyType<PatchAdminBillingTransactionsTransactionIdStatusBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof patchAdminBillingTransactionsTransactionIdStatus>>, TError,{transactionId: string;data: BodyType<PatchAdminBillingTransactionsTransactionIdStatusBody>}, TContext> => {
 
-const mutationKey = ['patchApiV1AdminBillingTransactionsTransactionIdStatus'];
+const mutationKey = ['patchAdminBillingTransactionsTransactionIdStatus'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -481,10 +481,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchApiV1AdminBillingTransactionsTransactionIdStatus>>, {transactionId: string;data: BodyType<PatchApiV1AdminBillingTransactionsTransactionIdStatusBody>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchAdminBillingTransactionsTransactionIdStatus>>, {transactionId: string;data: BodyType<PatchAdminBillingTransactionsTransactionIdStatusBody>}> = (props) => {
           const {transactionId,data} = props ?? {};
 
-          return  patchApiV1AdminBillingTransactionsTransactionIdStatus(transactionId,data,requestOptions)
+          return  patchAdminBillingTransactionsTransactionIdStatus(transactionId,data,requestOptions)
         }
 
         
@@ -492,37 +492,37 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PatchApiV1AdminBillingTransactionsTransactionIdStatusMutationResult = NonNullable<Awaited<ReturnType<typeof patchApiV1AdminBillingTransactionsTransactionIdStatus>>>
-    export type PatchApiV1AdminBillingTransactionsTransactionIdStatusMutationBody = BodyType<PatchApiV1AdminBillingTransactionsTransactionIdStatusBody>
-    export type PatchApiV1AdminBillingTransactionsTransactionIdStatusMutationError = ErrorType<void>
+    export type PatchAdminBillingTransactionsTransactionIdStatusMutationResult = NonNullable<Awaited<ReturnType<typeof patchAdminBillingTransactionsTransactionIdStatus>>>
+    export type PatchAdminBillingTransactionsTransactionIdStatusMutationBody = BodyType<PatchAdminBillingTransactionsTransactionIdStatusBody>
+    export type PatchAdminBillingTransactionsTransactionIdStatusMutationError = ErrorType<void>
 
     /**
  * @summary Update transaction status
  */
-export const usePatchApiV1AdminBillingTransactionsTransactionIdStatus = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchApiV1AdminBillingTransactionsTransactionIdStatus>>, TError,{transactionId: string;data: BodyType<PatchApiV1AdminBillingTransactionsTransactionIdStatusBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePatchAdminBillingTransactionsTransactionIdStatus = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchAdminBillingTransactionsTransactionIdStatus>>, TError,{transactionId: string;data: BodyType<PatchAdminBillingTransactionsTransactionIdStatusBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof patchApiV1AdminBillingTransactionsTransactionIdStatus>>,
+        Awaited<ReturnType<typeof patchAdminBillingTransactionsTransactionIdStatus>>,
         TError,
-        {transactionId: string;data: BodyType<PatchApiV1AdminBillingTransactionsTransactionIdStatusBody>},
+        {transactionId: string;data: BodyType<PatchAdminBillingTransactionsTransactionIdStatusBody>},
         TContext
       > => {
 
-      const mutationOptions = getPatchApiV1AdminBillingTransactionsTransactionIdStatusMutationOptions(options);
+      const mutationOptions = getPatchAdminBillingTransactionsTransactionIdStatusMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
     /**
  * @summary Get paginated list of billing info records
  */
-export const getApiV1AdminBillingInfo = (
-    params?: GetApiV1AdminBillingInfoParams,
+export const getAdminBillingInfo = (
+    params?: GetAdminBillingInfoParams,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<void>(
-      {url: `/api/v1/admin/billing/info`, method: 'GET',
+      {url: `/admin/billing/info`, method: 'GET',
         params, signal
     },
       options);
@@ -531,69 +531,69 @@ export const getApiV1AdminBillingInfo = (
 
 
 
-export const getGetApiV1AdminBillingInfoQueryKey = (params?: GetApiV1AdminBillingInfoParams,) => {
+export const getGetAdminBillingInfoQueryKey = (params?: GetAdminBillingInfoParams,) => {
     return [
-    `/api/v1/admin/billing/info`, ...(params ? [params]: [])
+    `/admin/billing/info`, ...(params ? [params]: [])
     ] as const;
     }
 
     
-export const getGetApiV1AdminBillingInfoQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminBillingInfo>>, TError = ErrorType<void>>(params?: GetApiV1AdminBillingInfoParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingInfo>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminBillingInfoQueryOptions = <TData = Awaited<ReturnType<typeof getAdminBillingInfo>>, TError = ErrorType<void>>(params?: GetAdminBillingInfoParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingInfo>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminBillingInfoQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminBillingInfoQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminBillingInfo>>> = ({ signal }) => getApiV1AdminBillingInfo(params, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminBillingInfo>>> = ({ signal }) => getAdminBillingInfo(params, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingInfo>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingInfo>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminBillingInfoQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminBillingInfo>>>
-export type GetApiV1AdminBillingInfoQueryError = ErrorType<void>
+export type GetAdminBillingInfoQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminBillingInfo>>>
+export type GetAdminBillingInfoQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminBillingInfo<TData = Awaited<ReturnType<typeof getApiV1AdminBillingInfo>>, TError = ErrorType<void>>(
- params: undefined |  GetApiV1AdminBillingInfoParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingInfo>>, TError, TData>> & Pick<
+export function useGetAdminBillingInfo<TData = Awaited<ReturnType<typeof getAdminBillingInfo>>, TError = ErrorType<void>>(
+ params: undefined |  GetAdminBillingInfoParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingInfo>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminBillingInfo>>,
+          Awaited<ReturnType<typeof getAdminBillingInfo>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminBillingInfo>>
+          Awaited<ReturnType<typeof getAdminBillingInfo>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminBillingInfo<TData = Awaited<ReturnType<typeof getApiV1AdminBillingInfo>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminBillingInfoParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingInfo>>, TError, TData>> & Pick<
+export function useGetAdminBillingInfo<TData = Awaited<ReturnType<typeof getAdminBillingInfo>>, TError = ErrorType<void>>(
+ params?: GetAdminBillingInfoParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingInfo>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminBillingInfo>>,
+          Awaited<ReturnType<typeof getAdminBillingInfo>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminBillingInfo>>
+          Awaited<ReturnType<typeof getAdminBillingInfo>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminBillingInfo<TData = Awaited<ReturnType<typeof getApiV1AdminBillingInfo>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminBillingInfoParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingInfo>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminBillingInfo<TData = Awaited<ReturnType<typeof getAdminBillingInfo>>, TError = ErrorType<void>>(
+ params?: GetAdminBillingInfoParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingInfo>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get paginated list of billing info records
  */
 
-export function useGetApiV1AdminBillingInfo<TData = Awaited<ReturnType<typeof getApiV1AdminBillingInfo>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminBillingInfoParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingInfo>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminBillingInfo<TData = Awaited<ReturnType<typeof getAdminBillingInfo>>, TError = ErrorType<void>>(
+ params?: GetAdminBillingInfoParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingInfo>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminBillingInfoQueryOptions(params,options)
+  const queryOptions = getGetAdminBillingInfoQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -608,14 +608,14 @@ export function useGetApiV1AdminBillingInfo<TData = Awaited<ReturnType<typeof ge
 /**
  * @summary Get billing info by ID
  */
-export const getApiV1AdminBillingInfoBillingInfoId = (
+export const getAdminBillingInfoBillingInfoId = (
     billingInfoId: string,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<void>(
-      {url: `/api/v1/admin/billing/info/${billingInfoId}`, method: 'GET', signal
+      {url: `/admin/billing/info/${billingInfoId}`, method: 'GET', signal
     },
       options);
     }
@@ -623,69 +623,69 @@ export const getApiV1AdminBillingInfoBillingInfoId = (
 
 
 
-export const getGetApiV1AdminBillingInfoBillingInfoIdQueryKey = (billingInfoId?: string,) => {
+export const getGetAdminBillingInfoBillingInfoIdQueryKey = (billingInfoId?: string,) => {
     return [
-    `/api/v1/admin/billing/info/${billingInfoId}`
+    `/admin/billing/info/${billingInfoId}`
     ] as const;
     }
 
     
-export const getGetApiV1AdminBillingInfoBillingInfoIdQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminBillingInfoBillingInfoId>>, TError = ErrorType<void>>(billingInfoId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingInfoBillingInfoId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminBillingInfoBillingInfoIdQueryOptions = <TData = Awaited<ReturnType<typeof getAdminBillingInfoBillingInfoId>>, TError = ErrorType<void>>(billingInfoId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingInfoBillingInfoId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminBillingInfoBillingInfoIdQueryKey(billingInfoId);
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminBillingInfoBillingInfoIdQueryKey(billingInfoId);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminBillingInfoBillingInfoId>>> = ({ signal }) => getApiV1AdminBillingInfoBillingInfoId(billingInfoId, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminBillingInfoBillingInfoId>>> = ({ signal }) => getAdminBillingInfoBillingInfoId(billingInfoId, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(billingInfoId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingInfoBillingInfoId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: !!(billingInfoId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingInfoBillingInfoId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminBillingInfoBillingInfoIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminBillingInfoBillingInfoId>>>
-export type GetApiV1AdminBillingInfoBillingInfoIdQueryError = ErrorType<void>
+export type GetAdminBillingInfoBillingInfoIdQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminBillingInfoBillingInfoId>>>
+export type GetAdminBillingInfoBillingInfoIdQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminBillingInfoBillingInfoId<TData = Awaited<ReturnType<typeof getApiV1AdminBillingInfoBillingInfoId>>, TError = ErrorType<void>>(
- billingInfoId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingInfoBillingInfoId>>, TError, TData>> & Pick<
+export function useGetAdminBillingInfoBillingInfoId<TData = Awaited<ReturnType<typeof getAdminBillingInfoBillingInfoId>>, TError = ErrorType<void>>(
+ billingInfoId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingInfoBillingInfoId>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminBillingInfoBillingInfoId>>,
+          Awaited<ReturnType<typeof getAdminBillingInfoBillingInfoId>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminBillingInfoBillingInfoId>>
+          Awaited<ReturnType<typeof getAdminBillingInfoBillingInfoId>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminBillingInfoBillingInfoId<TData = Awaited<ReturnType<typeof getApiV1AdminBillingInfoBillingInfoId>>, TError = ErrorType<void>>(
- billingInfoId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingInfoBillingInfoId>>, TError, TData>> & Pick<
+export function useGetAdminBillingInfoBillingInfoId<TData = Awaited<ReturnType<typeof getAdminBillingInfoBillingInfoId>>, TError = ErrorType<void>>(
+ billingInfoId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingInfoBillingInfoId>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminBillingInfoBillingInfoId>>,
+          Awaited<ReturnType<typeof getAdminBillingInfoBillingInfoId>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminBillingInfoBillingInfoId>>
+          Awaited<ReturnType<typeof getAdminBillingInfoBillingInfoId>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminBillingInfoBillingInfoId<TData = Awaited<ReturnType<typeof getApiV1AdminBillingInfoBillingInfoId>>, TError = ErrorType<void>>(
- billingInfoId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingInfoBillingInfoId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminBillingInfoBillingInfoId<TData = Awaited<ReturnType<typeof getAdminBillingInfoBillingInfoId>>, TError = ErrorType<void>>(
+ billingInfoId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingInfoBillingInfoId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get billing info by ID
  */
 
-export function useGetApiV1AdminBillingInfoBillingInfoId<TData = Awaited<ReturnType<typeof getApiV1AdminBillingInfoBillingInfoId>>, TError = ErrorType<void>>(
- billingInfoId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingInfoBillingInfoId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminBillingInfoBillingInfoId<TData = Awaited<ReturnType<typeof getAdminBillingInfoBillingInfoId>>, TError = ErrorType<void>>(
+ billingInfoId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingInfoBillingInfoId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminBillingInfoBillingInfoIdQueryOptions(billingInfoId,options)
+  const queryOptions = getGetAdminBillingInfoBillingInfoIdQueryOptions(billingInfoId,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -700,14 +700,14 @@ export function useGetApiV1AdminBillingInfoBillingInfoId<TData = Awaited<ReturnT
 /**
  * @summary Get billing statistics
  */
-export const getApiV1AdminBillingStats = (
+export const getAdminBillingStats = (
     
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<void>(
-      {url: `/api/v1/admin/billing/stats`, method: 'GET', signal
+      {url: `/admin/billing/stats`, method: 'GET', signal
     },
       options);
     }
@@ -715,69 +715,69 @@ export const getApiV1AdminBillingStats = (
 
 
 
-export const getGetApiV1AdminBillingStatsQueryKey = () => {
+export const getGetAdminBillingStatsQueryKey = () => {
     return [
-    `/api/v1/admin/billing/stats`
+    `/admin/billing/stats`
     ] as const;
     }
 
     
-export const getGetApiV1AdminBillingStatsQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminBillingStats>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminBillingStatsQueryOptions = <TData = Awaited<ReturnType<typeof getAdminBillingStats>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminBillingStatsQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminBillingStatsQueryKey();
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminBillingStats>>> = ({ signal }) => getApiV1AdminBillingStats(requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminBillingStats>>> = ({ signal }) => getAdminBillingStats(requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingStats>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingStats>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminBillingStatsQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminBillingStats>>>
-export type GetApiV1AdminBillingStatsQueryError = ErrorType<void>
+export type GetAdminBillingStatsQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminBillingStats>>>
+export type GetAdminBillingStatsQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminBillingStats<TData = Awaited<ReturnType<typeof getApiV1AdminBillingStats>>, TError = ErrorType<void>>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingStats>>, TError, TData>> & Pick<
+export function useGetAdminBillingStats<TData = Awaited<ReturnType<typeof getAdminBillingStats>>, TError = ErrorType<void>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingStats>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminBillingStats>>,
+          Awaited<ReturnType<typeof getAdminBillingStats>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminBillingStats>>
+          Awaited<ReturnType<typeof getAdminBillingStats>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminBillingStats<TData = Awaited<ReturnType<typeof getApiV1AdminBillingStats>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingStats>>, TError, TData>> & Pick<
+export function useGetAdminBillingStats<TData = Awaited<ReturnType<typeof getAdminBillingStats>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingStats>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminBillingStats>>,
+          Awaited<ReturnType<typeof getAdminBillingStats>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminBillingStats>>
+          Awaited<ReturnType<typeof getAdminBillingStats>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminBillingStats<TData = Awaited<ReturnType<typeof getApiV1AdminBillingStats>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminBillingStats<TData = Awaited<ReturnType<typeof getAdminBillingStats>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get billing statistics
  */
 
-export function useGetApiV1AdminBillingStats<TData = Awaited<ReturnType<typeof getApiV1AdminBillingStats>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminBillingStats<TData = Awaited<ReturnType<typeof getAdminBillingStats>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminBillingStatsQueryOptions(options)
+  const queryOptions = getGetAdminBillingStatsQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -793,28 +793,28 @@ export function useGetApiV1AdminBillingStats<TData = Awaited<ReturnType<typeof g
  * Issues a full or partial refund via Stripe API
  * @summary Issue a refund for a transaction
  */
-export const postApiV1AdminBillingTransactionsTransactionIdRefund = (
+export const postAdminBillingTransactionsTransactionIdRefund = (
     transactionId: string,
-    postApiV1AdminBillingTransactionsTransactionIdRefundBody: BodyType<PostApiV1AdminBillingTransactionsTransactionIdRefundBody>,
+    postAdminBillingTransactionsTransactionIdRefundBody: BodyType<PostAdminBillingTransactionsTransactionIdRefundBody>,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<PostApiV1AdminBillingTransactionsTransactionIdRefund200>(
-      {url: `/api/v1/admin/billing/transactions/${transactionId}/refund`, method: 'POST',
+      return customInstance<PostAdminBillingTransactionsTransactionIdRefund200>(
+      {url: `/admin/billing/transactions/${transactionId}/refund`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: postApiV1AdminBillingTransactionsTransactionIdRefundBody, signal
+      data: postAdminBillingTransactionsTransactionIdRefundBody, signal
     },
       options);
     }
   
 
 
-export const getPostApiV1AdminBillingTransactionsTransactionIdRefundMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminBillingTransactionsTransactionIdRefund>>, TError,{transactionId: string;data: BodyType<PostApiV1AdminBillingTransactionsTransactionIdRefundBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminBillingTransactionsTransactionIdRefund>>, TError,{transactionId: string;data: BodyType<PostApiV1AdminBillingTransactionsTransactionIdRefundBody>}, TContext> => {
+export const getPostAdminBillingTransactionsTransactionIdRefundMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminBillingTransactionsTransactionIdRefund>>, TError,{transactionId: string;data: BodyType<PostAdminBillingTransactionsTransactionIdRefundBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postAdminBillingTransactionsTransactionIdRefund>>, TError,{transactionId: string;data: BodyType<PostAdminBillingTransactionsTransactionIdRefundBody>}, TContext> => {
 
-const mutationKey = ['postApiV1AdminBillingTransactionsTransactionIdRefund'];
+const mutationKey = ['postAdminBillingTransactionsTransactionIdRefund'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -824,10 +824,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1AdminBillingTransactionsTransactionIdRefund>>, {transactionId: string;data: BodyType<PostApiV1AdminBillingTransactionsTransactionIdRefundBody>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postAdminBillingTransactionsTransactionIdRefund>>, {transactionId: string;data: BodyType<PostAdminBillingTransactionsTransactionIdRefundBody>}> = (props) => {
           const {transactionId,data} = props ?? {};
 
-          return  postApiV1AdminBillingTransactionsTransactionIdRefund(transactionId,data,requestOptions)
+          return  postAdminBillingTransactionsTransactionIdRefund(transactionId,data,requestOptions)
         }
 
         
@@ -835,23 +835,23 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiV1AdminBillingTransactionsTransactionIdRefundMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1AdminBillingTransactionsTransactionIdRefund>>>
-    export type PostApiV1AdminBillingTransactionsTransactionIdRefundMutationBody = BodyType<PostApiV1AdminBillingTransactionsTransactionIdRefundBody>
-    export type PostApiV1AdminBillingTransactionsTransactionIdRefundMutationError = ErrorType<void>
+    export type PostAdminBillingTransactionsTransactionIdRefundMutationResult = NonNullable<Awaited<ReturnType<typeof postAdminBillingTransactionsTransactionIdRefund>>>
+    export type PostAdminBillingTransactionsTransactionIdRefundMutationBody = BodyType<PostAdminBillingTransactionsTransactionIdRefundBody>
+    export type PostAdminBillingTransactionsTransactionIdRefundMutationError = ErrorType<void>
 
     /**
  * @summary Issue a refund for a transaction
  */
-export const usePostApiV1AdminBillingTransactionsTransactionIdRefund = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminBillingTransactionsTransactionIdRefund>>, TError,{transactionId: string;data: BodyType<PostApiV1AdminBillingTransactionsTransactionIdRefundBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePostAdminBillingTransactionsTransactionIdRefund = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminBillingTransactionsTransactionIdRefund>>, TError,{transactionId: string;data: BodyType<PostAdminBillingTransactionsTransactionIdRefundBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiV1AdminBillingTransactionsTransactionIdRefund>>,
+        Awaited<ReturnType<typeof postAdminBillingTransactionsTransactionIdRefund>>,
         TError,
-        {transactionId: string;data: BodyType<PostApiV1AdminBillingTransactionsTransactionIdRefundBody>},
+        {transactionId: string;data: BodyType<PostAdminBillingTransactionsTransactionIdRefundBody>},
         TContext
       > => {
 
-      const mutationOptions = getPostApiV1AdminBillingTransactionsTransactionIdRefundMutationOptions(options);
+      const mutationOptions = getPostAdminBillingTransactionsTransactionIdRefundMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
@@ -859,14 +859,14 @@ export const usePostApiV1AdminBillingTransactionsTransactionIdRefund = <TError =
  * Fetches disputes directly from Stripe API with local enrichment
  * @summary Get list of disputes from Stripe
  */
-export const getApiV1AdminBillingDisputes = (
-    params?: GetApiV1AdminBillingDisputesParams,
+export const getAdminBillingDisputes = (
+    params?: GetAdminBillingDisputesParams,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<GetApiV1AdminBillingDisputes200>(
-      {url: `/api/v1/admin/billing/disputes`, method: 'GET',
+      return customInstance<GetAdminBillingDisputes200>(
+      {url: `/admin/billing/disputes`, method: 'GET',
         params, signal
     },
       options);
@@ -875,69 +875,69 @@ export const getApiV1AdminBillingDisputes = (
 
 
 
-export const getGetApiV1AdminBillingDisputesQueryKey = (params?: GetApiV1AdminBillingDisputesParams,) => {
+export const getGetAdminBillingDisputesQueryKey = (params?: GetAdminBillingDisputesParams,) => {
     return [
-    `/api/v1/admin/billing/disputes`, ...(params ? [params]: [])
+    `/admin/billing/disputes`, ...(params ? [params]: [])
     ] as const;
     }
 
     
-export const getGetApiV1AdminBillingDisputesQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminBillingDisputes>>, TError = ErrorType<void>>(params?: GetApiV1AdminBillingDisputesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingDisputes>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminBillingDisputesQueryOptions = <TData = Awaited<ReturnType<typeof getAdminBillingDisputes>>, TError = ErrorType<void>>(params?: GetAdminBillingDisputesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingDisputes>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminBillingDisputesQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminBillingDisputesQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminBillingDisputes>>> = ({ signal }) => getApiV1AdminBillingDisputes(params, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminBillingDisputes>>> = ({ signal }) => getAdminBillingDisputes(params, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingDisputes>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingDisputes>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminBillingDisputesQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminBillingDisputes>>>
-export type GetApiV1AdminBillingDisputesQueryError = ErrorType<void>
+export type GetAdminBillingDisputesQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminBillingDisputes>>>
+export type GetAdminBillingDisputesQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminBillingDisputes<TData = Awaited<ReturnType<typeof getApiV1AdminBillingDisputes>>, TError = ErrorType<void>>(
- params: undefined |  GetApiV1AdminBillingDisputesParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingDisputes>>, TError, TData>> & Pick<
+export function useGetAdminBillingDisputes<TData = Awaited<ReturnType<typeof getAdminBillingDisputes>>, TError = ErrorType<void>>(
+ params: undefined |  GetAdminBillingDisputesParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingDisputes>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminBillingDisputes>>,
+          Awaited<ReturnType<typeof getAdminBillingDisputes>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminBillingDisputes>>
+          Awaited<ReturnType<typeof getAdminBillingDisputes>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminBillingDisputes<TData = Awaited<ReturnType<typeof getApiV1AdminBillingDisputes>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminBillingDisputesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingDisputes>>, TError, TData>> & Pick<
+export function useGetAdminBillingDisputes<TData = Awaited<ReturnType<typeof getAdminBillingDisputes>>, TError = ErrorType<void>>(
+ params?: GetAdminBillingDisputesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingDisputes>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminBillingDisputes>>,
+          Awaited<ReturnType<typeof getAdminBillingDisputes>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminBillingDisputes>>
+          Awaited<ReturnType<typeof getAdminBillingDisputes>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminBillingDisputes<TData = Awaited<ReturnType<typeof getApiV1AdminBillingDisputes>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminBillingDisputesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingDisputes>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminBillingDisputes<TData = Awaited<ReturnType<typeof getAdminBillingDisputes>>, TError = ErrorType<void>>(
+ params?: GetAdminBillingDisputesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingDisputes>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get list of disputes from Stripe
  */
 
-export function useGetApiV1AdminBillingDisputes<TData = Awaited<ReturnType<typeof getApiV1AdminBillingDisputes>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminBillingDisputesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingDisputes>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminBillingDisputes<TData = Awaited<ReturnType<typeof getAdminBillingDisputes>>, TError = ErrorType<void>>(
+ params?: GetAdminBillingDisputesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingDisputes>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminBillingDisputesQueryOptions(params,options)
+  const queryOptions = getGetAdminBillingDisputesQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -953,14 +953,14 @@ export function useGetApiV1AdminBillingDisputes<TData = Awaited<ReturnType<typeo
  * Fetches detailed dispute information from Stripe with local data
  * @summary Get dispute details by ID
  */
-export const getApiV1AdminBillingDisputesDisputeId = (
+export const getAdminBillingDisputesDisputeId = (
     disputeId: string,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<GetApiV1AdminBillingDisputesDisputeId200>(
-      {url: `/api/v1/admin/billing/disputes/${disputeId}`, method: 'GET', signal
+      return customInstance<GetAdminBillingDisputesDisputeId200>(
+      {url: `/admin/billing/disputes/${disputeId}`, method: 'GET', signal
     },
       options);
     }
@@ -968,69 +968,69 @@ export const getApiV1AdminBillingDisputesDisputeId = (
 
 
 
-export const getGetApiV1AdminBillingDisputesDisputeIdQueryKey = (disputeId?: string,) => {
+export const getGetAdminBillingDisputesDisputeIdQueryKey = (disputeId?: string,) => {
     return [
-    `/api/v1/admin/billing/disputes/${disputeId}`
+    `/admin/billing/disputes/${disputeId}`
     ] as const;
     }
 
     
-export const getGetApiV1AdminBillingDisputesDisputeIdQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminBillingDisputesDisputeId>>, TError = ErrorType<void>>(disputeId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingDisputesDisputeId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminBillingDisputesDisputeIdQueryOptions = <TData = Awaited<ReturnType<typeof getAdminBillingDisputesDisputeId>>, TError = ErrorType<void>>(disputeId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingDisputesDisputeId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminBillingDisputesDisputeIdQueryKey(disputeId);
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminBillingDisputesDisputeIdQueryKey(disputeId);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminBillingDisputesDisputeId>>> = ({ signal }) => getApiV1AdminBillingDisputesDisputeId(disputeId, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminBillingDisputesDisputeId>>> = ({ signal }) => getAdminBillingDisputesDisputeId(disputeId, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(disputeId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingDisputesDisputeId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: !!(disputeId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingDisputesDisputeId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminBillingDisputesDisputeIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminBillingDisputesDisputeId>>>
-export type GetApiV1AdminBillingDisputesDisputeIdQueryError = ErrorType<void>
+export type GetAdminBillingDisputesDisputeIdQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminBillingDisputesDisputeId>>>
+export type GetAdminBillingDisputesDisputeIdQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminBillingDisputesDisputeId<TData = Awaited<ReturnType<typeof getApiV1AdminBillingDisputesDisputeId>>, TError = ErrorType<void>>(
- disputeId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingDisputesDisputeId>>, TError, TData>> & Pick<
+export function useGetAdminBillingDisputesDisputeId<TData = Awaited<ReturnType<typeof getAdminBillingDisputesDisputeId>>, TError = ErrorType<void>>(
+ disputeId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingDisputesDisputeId>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminBillingDisputesDisputeId>>,
+          Awaited<ReturnType<typeof getAdminBillingDisputesDisputeId>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminBillingDisputesDisputeId>>
+          Awaited<ReturnType<typeof getAdminBillingDisputesDisputeId>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminBillingDisputesDisputeId<TData = Awaited<ReturnType<typeof getApiV1AdminBillingDisputesDisputeId>>, TError = ErrorType<void>>(
- disputeId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingDisputesDisputeId>>, TError, TData>> & Pick<
+export function useGetAdminBillingDisputesDisputeId<TData = Awaited<ReturnType<typeof getAdminBillingDisputesDisputeId>>, TError = ErrorType<void>>(
+ disputeId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingDisputesDisputeId>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminBillingDisputesDisputeId>>,
+          Awaited<ReturnType<typeof getAdminBillingDisputesDisputeId>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminBillingDisputesDisputeId>>
+          Awaited<ReturnType<typeof getAdminBillingDisputesDisputeId>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminBillingDisputesDisputeId<TData = Awaited<ReturnType<typeof getApiV1AdminBillingDisputesDisputeId>>, TError = ErrorType<void>>(
- disputeId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingDisputesDisputeId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminBillingDisputesDisputeId<TData = Awaited<ReturnType<typeof getAdminBillingDisputesDisputeId>>, TError = ErrorType<void>>(
+ disputeId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingDisputesDisputeId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get dispute details by ID
  */
 
-export function useGetApiV1AdminBillingDisputesDisputeId<TData = Awaited<ReturnType<typeof getApiV1AdminBillingDisputesDisputeId>>, TError = ErrorType<void>>(
- disputeId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminBillingDisputesDisputeId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminBillingDisputesDisputeId<TData = Awaited<ReturnType<typeof getAdminBillingDisputesDisputeId>>, TError = ErrorType<void>>(
+ disputeId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminBillingDisputesDisputeId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminBillingDisputesDisputeIdQueryOptions(disputeId,options)
+  const queryOptions = getGetAdminBillingDisputesDisputeIdQueryOptions(disputeId,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

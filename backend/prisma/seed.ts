@@ -23,7 +23,7 @@ const defaultSettings: Array<{
   // General Settings
   {
     key: 'general.platformName',
-    value: 'IntelligentConvo',
+    value: 'IntelliConvo',
     type: 'STRING',
     category: 'GENERAL',
     label: 'Platform Name',
@@ -31,7 +31,7 @@ const defaultSettings: Array<{
   },
   {
     key: 'general.supportEmail',
-    value: 'support@intelligentconvo.com',
+    value: 'support@intelliconvo.com',
     type: 'STRING',
     category: 'GENERAL',
     label: 'Support Email',
@@ -251,7 +251,7 @@ const defaultSettings: Array<{
   },
   {
     key: 'email.fromName',
-    value: 'IntelligentConvo',
+    value: 'IntelliConvo',
     type: 'STRING',
     category: 'EMAIL',
     label: 'From Name',
@@ -365,7 +365,7 @@ async function main() {
   }
 
   // Create initial admin user
-  const adminEmail = process.env.ADMIN_EMAIL || 'admin@intelligentconvo.com';
+  const adminEmail = process.env.ADMIN_EMAIL || 'admin@intelliconvo.com';
   const adminPassword = process.env.ADMIN_PASSWORD || 'Admin123!@#';
 
   // Check if admin already exists

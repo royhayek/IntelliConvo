@@ -20,14 +20,14 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  GetApiV1AdminEmails200,
-  GetApiV1AdminEmailsId200,
-  GetApiV1AdminEmailsParams,
-  GetApiV1AdminEmailsProviderStatus200,
-  GetApiV1AdminEmailsStats200,
-  PostApiV1AdminEmailsIdRetry200,
-  PostApiV1AdminEmailsTest200,
-  PostApiV1AdminEmailsTestBody
+  GetAdminEmails200,
+  GetAdminEmailsId200,
+  GetAdminEmailsParams,
+  GetAdminEmailsProviderStatus200,
+  GetAdminEmailsStats200,
+  PostAdminEmailsIdRetry200,
+  PostAdminEmailsTest200,
+  PostAdminEmailsTestBody
 } from '../../models';
 
 import { customInstance } from '../../../axios-instance';
@@ -41,14 +41,14 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 /**
  * @summary Get paginated list of email logs
  */
-export const getApiV1AdminEmails = (
-    params?: GetApiV1AdminEmailsParams,
+export const getAdminEmails = (
+    params?: GetAdminEmailsParams,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<GetApiV1AdminEmails200>(
-      {url: `/api/v1/admin/emails`, method: 'GET',
+      return customInstance<GetAdminEmails200>(
+      {url: `/admin/emails`, method: 'GET',
         params, signal
     },
       options);
@@ -57,69 +57,69 @@ export const getApiV1AdminEmails = (
 
 
 
-export const getGetApiV1AdminEmailsQueryKey = (params?: GetApiV1AdminEmailsParams,) => {
+export const getGetAdminEmailsQueryKey = (params?: GetAdminEmailsParams,) => {
     return [
-    `/api/v1/admin/emails`, ...(params ? [params]: [])
+    `/admin/emails`, ...(params ? [params]: [])
     ] as const;
     }
 
     
-export const getGetApiV1AdminEmailsQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminEmails>>, TError = ErrorType<void>>(params?: GetApiV1AdminEmailsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminEmails>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminEmailsQueryOptions = <TData = Awaited<ReturnType<typeof getAdminEmails>>, TError = ErrorType<void>>(params?: GetAdminEmailsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminEmails>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminEmailsQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminEmailsQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminEmails>>> = ({ signal }) => getApiV1AdminEmails(params, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminEmails>>> = ({ signal }) => getAdminEmails(params, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminEmails>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminEmails>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminEmailsQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminEmails>>>
-export type GetApiV1AdminEmailsQueryError = ErrorType<void>
+export type GetAdminEmailsQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminEmails>>>
+export type GetAdminEmailsQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminEmails<TData = Awaited<ReturnType<typeof getApiV1AdminEmails>>, TError = ErrorType<void>>(
- params: undefined |  GetApiV1AdminEmailsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminEmails>>, TError, TData>> & Pick<
+export function useGetAdminEmails<TData = Awaited<ReturnType<typeof getAdminEmails>>, TError = ErrorType<void>>(
+ params: undefined |  GetAdminEmailsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminEmails>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminEmails>>,
+          Awaited<ReturnType<typeof getAdminEmails>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminEmails>>
+          Awaited<ReturnType<typeof getAdminEmails>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminEmails<TData = Awaited<ReturnType<typeof getApiV1AdminEmails>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminEmailsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminEmails>>, TError, TData>> & Pick<
+export function useGetAdminEmails<TData = Awaited<ReturnType<typeof getAdminEmails>>, TError = ErrorType<void>>(
+ params?: GetAdminEmailsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminEmails>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminEmails>>,
+          Awaited<ReturnType<typeof getAdminEmails>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminEmails>>
+          Awaited<ReturnType<typeof getAdminEmails>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminEmails<TData = Awaited<ReturnType<typeof getApiV1AdminEmails>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminEmailsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminEmails>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminEmails<TData = Awaited<ReturnType<typeof getAdminEmails>>, TError = ErrorType<void>>(
+ params?: GetAdminEmailsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminEmails>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get paginated list of email logs
  */
 
-export function useGetApiV1AdminEmails<TData = Awaited<ReturnType<typeof getApiV1AdminEmails>>, TError = ErrorType<void>>(
- params?: GetApiV1AdminEmailsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminEmails>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminEmails<TData = Awaited<ReturnType<typeof getAdminEmails>>, TError = ErrorType<void>>(
+ params?: GetAdminEmailsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminEmails>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminEmailsQueryOptions(params,options)
+  const queryOptions = getGetAdminEmailsQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -134,14 +134,14 @@ export function useGetApiV1AdminEmails<TData = Awaited<ReturnType<typeof getApiV
 /**
  * @summary Get email statistics
  */
-export const getApiV1AdminEmailsStats = (
+export const getAdminEmailsStats = (
     
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<GetApiV1AdminEmailsStats200>(
-      {url: `/api/v1/admin/emails/stats`, method: 'GET', signal
+      return customInstance<GetAdminEmailsStats200>(
+      {url: `/admin/emails/stats`, method: 'GET', signal
     },
       options);
     }
@@ -149,69 +149,69 @@ export const getApiV1AdminEmailsStats = (
 
 
 
-export const getGetApiV1AdminEmailsStatsQueryKey = () => {
+export const getGetAdminEmailsStatsQueryKey = () => {
     return [
-    `/api/v1/admin/emails/stats`
+    `/admin/emails/stats`
     ] as const;
     }
 
     
-export const getGetApiV1AdminEmailsStatsQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminEmailsStats>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminEmailsStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminEmailsStatsQueryOptions = <TData = Awaited<ReturnType<typeof getAdminEmailsStats>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminEmailsStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminEmailsStatsQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminEmailsStatsQueryKey();
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminEmailsStats>>> = ({ signal }) => getApiV1AdminEmailsStats(requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminEmailsStats>>> = ({ signal }) => getAdminEmailsStats(requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminEmailsStats>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminEmailsStats>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminEmailsStatsQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminEmailsStats>>>
-export type GetApiV1AdminEmailsStatsQueryError = ErrorType<void>
+export type GetAdminEmailsStatsQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminEmailsStats>>>
+export type GetAdminEmailsStatsQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminEmailsStats<TData = Awaited<ReturnType<typeof getApiV1AdminEmailsStats>>, TError = ErrorType<void>>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminEmailsStats>>, TError, TData>> & Pick<
+export function useGetAdminEmailsStats<TData = Awaited<ReturnType<typeof getAdminEmailsStats>>, TError = ErrorType<void>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminEmailsStats>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminEmailsStats>>,
+          Awaited<ReturnType<typeof getAdminEmailsStats>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminEmailsStats>>
+          Awaited<ReturnType<typeof getAdminEmailsStats>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminEmailsStats<TData = Awaited<ReturnType<typeof getApiV1AdminEmailsStats>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminEmailsStats>>, TError, TData>> & Pick<
+export function useGetAdminEmailsStats<TData = Awaited<ReturnType<typeof getAdminEmailsStats>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminEmailsStats>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminEmailsStats>>,
+          Awaited<ReturnType<typeof getAdminEmailsStats>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminEmailsStats>>
+          Awaited<ReturnType<typeof getAdminEmailsStats>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminEmailsStats<TData = Awaited<ReturnType<typeof getApiV1AdminEmailsStats>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminEmailsStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminEmailsStats<TData = Awaited<ReturnType<typeof getAdminEmailsStats>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminEmailsStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get email statistics
  */
 
-export function useGetApiV1AdminEmailsStats<TData = Awaited<ReturnType<typeof getApiV1AdminEmailsStats>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminEmailsStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminEmailsStats<TData = Awaited<ReturnType<typeof getAdminEmailsStats>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminEmailsStats>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminEmailsStatsQueryOptions(options)
+  const queryOptions = getGetAdminEmailsStatsQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -226,14 +226,14 @@ export function useGetApiV1AdminEmailsStats<TData = Awaited<ReturnType<typeof ge
 /**
  * @summary Get email provider status
  */
-export const getApiV1AdminEmailsProviderStatus = (
+export const getAdminEmailsProviderStatus = (
     
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<GetApiV1AdminEmailsProviderStatus200>(
-      {url: `/api/v1/admin/emails/provider/status`, method: 'GET', signal
+      return customInstance<GetAdminEmailsProviderStatus200>(
+      {url: `/admin/emails/provider/status`, method: 'GET', signal
     },
       options);
     }
@@ -241,69 +241,69 @@ export const getApiV1AdminEmailsProviderStatus = (
 
 
 
-export const getGetApiV1AdminEmailsProviderStatusQueryKey = () => {
+export const getGetAdminEmailsProviderStatusQueryKey = () => {
     return [
-    `/api/v1/admin/emails/provider/status`
+    `/admin/emails/provider/status`
     ] as const;
     }
 
     
-export const getGetApiV1AdminEmailsProviderStatusQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminEmailsProviderStatus>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminEmailsProviderStatus>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminEmailsProviderStatusQueryOptions = <TData = Awaited<ReturnType<typeof getAdminEmailsProviderStatus>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminEmailsProviderStatus>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminEmailsProviderStatusQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminEmailsProviderStatusQueryKey();
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminEmailsProviderStatus>>> = ({ signal }) => getApiV1AdminEmailsProviderStatus(requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminEmailsProviderStatus>>> = ({ signal }) => getAdminEmailsProviderStatus(requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminEmailsProviderStatus>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminEmailsProviderStatus>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminEmailsProviderStatusQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminEmailsProviderStatus>>>
-export type GetApiV1AdminEmailsProviderStatusQueryError = ErrorType<void>
+export type GetAdminEmailsProviderStatusQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminEmailsProviderStatus>>>
+export type GetAdminEmailsProviderStatusQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminEmailsProviderStatus<TData = Awaited<ReturnType<typeof getApiV1AdminEmailsProviderStatus>>, TError = ErrorType<void>>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminEmailsProviderStatus>>, TError, TData>> & Pick<
+export function useGetAdminEmailsProviderStatus<TData = Awaited<ReturnType<typeof getAdminEmailsProviderStatus>>, TError = ErrorType<void>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminEmailsProviderStatus>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminEmailsProviderStatus>>,
+          Awaited<ReturnType<typeof getAdminEmailsProviderStatus>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminEmailsProviderStatus>>
+          Awaited<ReturnType<typeof getAdminEmailsProviderStatus>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminEmailsProviderStatus<TData = Awaited<ReturnType<typeof getApiV1AdminEmailsProviderStatus>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminEmailsProviderStatus>>, TError, TData>> & Pick<
+export function useGetAdminEmailsProviderStatus<TData = Awaited<ReturnType<typeof getAdminEmailsProviderStatus>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminEmailsProviderStatus>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminEmailsProviderStatus>>,
+          Awaited<ReturnType<typeof getAdminEmailsProviderStatus>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminEmailsProviderStatus>>
+          Awaited<ReturnType<typeof getAdminEmailsProviderStatus>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminEmailsProviderStatus<TData = Awaited<ReturnType<typeof getApiV1AdminEmailsProviderStatus>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminEmailsProviderStatus>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminEmailsProviderStatus<TData = Awaited<ReturnType<typeof getAdminEmailsProviderStatus>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminEmailsProviderStatus>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get email provider status
  */
 
-export function useGetApiV1AdminEmailsProviderStatus<TData = Awaited<ReturnType<typeof getApiV1AdminEmailsProviderStatus>>, TError = ErrorType<void>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminEmailsProviderStatus>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminEmailsProviderStatus<TData = Awaited<ReturnType<typeof getAdminEmailsProviderStatus>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminEmailsProviderStatus>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminEmailsProviderStatusQueryOptions(options)
+  const queryOptions = getGetAdminEmailsProviderStatusQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -318,14 +318,14 @@ export function useGetApiV1AdminEmailsProviderStatus<TData = Awaited<ReturnType<
 /**
  * @summary Get a single email log by ID
  */
-export const getApiV1AdminEmailsId = (
+export const getAdminEmailsId = (
     id: string,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<GetApiV1AdminEmailsId200>(
-      {url: `/api/v1/admin/emails/${id}`, method: 'GET', signal
+      return customInstance<GetAdminEmailsId200>(
+      {url: `/admin/emails/${id}`, method: 'GET', signal
     },
       options);
     }
@@ -333,69 +333,69 @@ export const getApiV1AdminEmailsId = (
 
 
 
-export const getGetApiV1AdminEmailsIdQueryKey = (id?: string,) => {
+export const getGetAdminEmailsIdQueryKey = (id?: string,) => {
     return [
-    `/api/v1/admin/emails/${id}`
+    `/admin/emails/${id}`
     ] as const;
     }
 
     
-export const getGetApiV1AdminEmailsIdQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AdminEmailsId>>, TError = ErrorType<void>>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminEmailsId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetAdminEmailsIdQueryOptions = <TData = Awaited<ReturnType<typeof getAdminEmailsId>>, TError = ErrorType<void>>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminEmailsId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AdminEmailsIdQueryKey(id);
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminEmailsIdQueryKey(id);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AdminEmailsId>>> = ({ signal }) => getApiV1AdminEmailsId(id, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminEmailsId>>> = ({ signal }) => getAdminEmailsId(id, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminEmailsId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminEmailsId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1AdminEmailsIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AdminEmailsId>>>
-export type GetApiV1AdminEmailsIdQueryError = ErrorType<void>
+export type GetAdminEmailsIdQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminEmailsId>>>
+export type GetAdminEmailsIdQueryError = ErrorType<void>
 
 
-export function useGetApiV1AdminEmailsId<TData = Awaited<ReturnType<typeof getApiV1AdminEmailsId>>, TError = ErrorType<void>>(
- id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminEmailsId>>, TError, TData>> & Pick<
+export function useGetAdminEmailsId<TData = Awaited<ReturnType<typeof getAdminEmailsId>>, TError = ErrorType<void>>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminEmailsId>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminEmailsId>>,
+          Awaited<ReturnType<typeof getAdminEmailsId>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminEmailsId>>
+          Awaited<ReturnType<typeof getAdminEmailsId>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminEmailsId<TData = Awaited<ReturnType<typeof getApiV1AdminEmailsId>>, TError = ErrorType<void>>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminEmailsId>>, TError, TData>> & Pick<
+export function useGetAdminEmailsId<TData = Awaited<ReturnType<typeof getAdminEmailsId>>, TError = ErrorType<void>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminEmailsId>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminEmailsId>>,
+          Awaited<ReturnType<typeof getAdminEmailsId>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminEmailsId>>
+          Awaited<ReturnType<typeof getAdminEmailsId>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1AdminEmailsId<TData = Awaited<ReturnType<typeof getApiV1AdminEmailsId>>, TError = ErrorType<void>>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminEmailsId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminEmailsId<TData = Awaited<ReturnType<typeof getAdminEmailsId>>, TError = ErrorType<void>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminEmailsId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get a single email log by ID
  */
 
-export function useGetApiV1AdminEmailsId<TData = Awaited<ReturnType<typeof getApiV1AdminEmailsId>>, TError = ErrorType<void>>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1AdminEmailsId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGetAdminEmailsId<TData = Awaited<ReturnType<typeof getAdminEmailsId>>, TError = ErrorType<void>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminEmailsId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1AdminEmailsIdQueryOptions(id,options)
+  const queryOptions = getGetAdminEmailsIdQueryOptions(id,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -410,25 +410,25 @@ export function useGetApiV1AdminEmailsId<TData = Awaited<ReturnType<typeof getAp
 /**
  * @summary Retry a failed email
  */
-export const postApiV1AdminEmailsIdRetry = (
+export const postAdminEmailsIdRetry = (
     id: string,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<PostApiV1AdminEmailsIdRetry200>(
-      {url: `/api/v1/admin/emails/${id}/retry`, method: 'POST', signal
+      return customInstance<PostAdminEmailsIdRetry200>(
+      {url: `/admin/emails/${id}/retry`, method: 'POST', signal
     },
       options);
     }
   
 
 
-export const getPostApiV1AdminEmailsIdRetryMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminEmailsIdRetry>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminEmailsIdRetry>>, TError,{id: string}, TContext> => {
+export const getPostAdminEmailsIdRetryMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminEmailsIdRetry>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postAdminEmailsIdRetry>>, TError,{id: string}, TContext> => {
 
-const mutationKey = ['postApiV1AdminEmailsIdRetry'];
+const mutationKey = ['postAdminEmailsIdRetry'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -438,10 +438,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1AdminEmailsIdRetry>>, {id: string}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postAdminEmailsIdRetry>>, {id: string}> = (props) => {
           const {id} = props ?? {};
 
-          return  postApiV1AdminEmailsIdRetry(id,requestOptions)
+          return  postAdminEmailsIdRetry(id,requestOptions)
         }
 
         
@@ -449,50 +449,50 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiV1AdminEmailsIdRetryMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1AdminEmailsIdRetry>>>
+    export type PostAdminEmailsIdRetryMutationResult = NonNullable<Awaited<ReturnType<typeof postAdminEmailsIdRetry>>>
     
-    export type PostApiV1AdminEmailsIdRetryMutationError = ErrorType<void>
+    export type PostAdminEmailsIdRetryMutationError = ErrorType<void>
 
     /**
  * @summary Retry a failed email
  */
-export const usePostApiV1AdminEmailsIdRetry = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminEmailsIdRetry>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePostAdminEmailsIdRetry = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminEmailsIdRetry>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiV1AdminEmailsIdRetry>>,
+        Awaited<ReturnType<typeof postAdminEmailsIdRetry>>,
         TError,
         {id: string},
         TContext
       > => {
 
-      const mutationOptions = getPostApiV1AdminEmailsIdRetryMutationOptions(options);
+      const mutationOptions = getPostAdminEmailsIdRetryMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
     /**
  * @summary Send a test email
  */
-export const postApiV1AdminEmailsTest = (
-    postApiV1AdminEmailsTestBody: BodyType<PostApiV1AdminEmailsTestBody>,
+export const postAdminEmailsTest = (
+    postAdminEmailsTestBody: BodyType<PostAdminEmailsTestBody>,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<PostApiV1AdminEmailsTest200>(
-      {url: `/api/v1/admin/emails/test`, method: 'POST',
+      return customInstance<PostAdminEmailsTest200>(
+      {url: `/admin/emails/test`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: postApiV1AdminEmailsTestBody, signal
+      data: postAdminEmailsTestBody, signal
     },
       options);
     }
   
 
 
-export const getPostApiV1AdminEmailsTestMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminEmailsTest>>, TError,{data: BodyType<PostApiV1AdminEmailsTestBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminEmailsTest>>, TError,{data: BodyType<PostApiV1AdminEmailsTestBody>}, TContext> => {
+export const getPostAdminEmailsTestMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminEmailsTest>>, TError,{data: BodyType<PostAdminEmailsTestBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postAdminEmailsTest>>, TError,{data: BodyType<PostAdminEmailsTestBody>}, TContext> => {
 
-const mutationKey = ['postApiV1AdminEmailsTest'];
+const mutationKey = ['postAdminEmailsTest'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -502,10 +502,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1AdminEmailsTest>>, {data: BodyType<PostApiV1AdminEmailsTestBody>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postAdminEmailsTest>>, {data: BodyType<PostAdminEmailsTestBody>}> = (props) => {
           const {data} = props ?? {};
 
-          return  postApiV1AdminEmailsTest(data,requestOptions)
+          return  postAdminEmailsTest(data,requestOptions)
         }
 
         
@@ -513,23 +513,23 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiV1AdminEmailsTestMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1AdminEmailsTest>>>
-    export type PostApiV1AdminEmailsTestMutationBody = BodyType<PostApiV1AdminEmailsTestBody>
-    export type PostApiV1AdminEmailsTestMutationError = ErrorType<void>
+    export type PostAdminEmailsTestMutationResult = NonNullable<Awaited<ReturnType<typeof postAdminEmailsTest>>>
+    export type PostAdminEmailsTestMutationBody = BodyType<PostAdminEmailsTestBody>
+    export type PostAdminEmailsTestMutationError = ErrorType<void>
 
     /**
  * @summary Send a test email
  */
-export const usePostApiV1AdminEmailsTest = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1AdminEmailsTest>>, TError,{data: BodyType<PostApiV1AdminEmailsTestBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const usePostAdminEmailsTest = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminEmailsTest>>, TError,{data: BodyType<PostAdminEmailsTestBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiV1AdminEmailsTest>>,
+        Awaited<ReturnType<typeof postAdminEmailsTest>>,
         TError,
-        {data: BodyType<PostApiV1AdminEmailsTestBody>},
+        {data: BodyType<PostAdminEmailsTestBody>},
         TContext
       > => {
 
-      const mutationOptions = getPostApiV1AdminEmailsTestMutationOptions(options);
+      const mutationOptions = getPostAdminEmailsTestMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }

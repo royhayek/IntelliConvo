@@ -20,8 +20,8 @@ import {
 import { useAuthStore } from "@/lib/store";
 import { useAuthRedirect } from "@/lib/hooks/useAuth";
 import { AuthLoading } from "@/components/auth/auth-loading";
-import { usePostApiV1AuthSignup } from "@/lib/api/generated/queries/authentication/authentication";
-import { useGetApiV1ConfigPublic } from "@/lib/api/generated/queries/config/config";
+import { usePostAuthSignup } from "@/lib/api/generated/queries/authentication/authentication";
+import { useGetConfigPublic } from "@/lib/api/generated/queries/config/config";
 import { AlertCircle } from "lucide-react";
 import { OAuthButtons, AuthProvider } from "@/components/auth/oauth-buttons";
 import { BrandLogo } from "@/components/ui/brand-logo";
@@ -42,7 +42,7 @@ export default function SignupPage() {
   const { isLoading: isAuthLoading } = useAuthRedirect("/dashboard");
 
   // Fetch public config to get enabled auth providers
-  const { data: configData } = useGetApiV1ConfigPublic();
+  const { data: configData } = useGetConfigPublic();
   const enabledProviders = configData?.data?.enabledAuthProviders ?? [];
 
   const form = useForm<SignupForm>({
@@ -55,7 +55,7 @@ export default function SignupPage() {
   });
 
   // Signup mutation
-  const signupMutation = usePostApiV1AuthSignup({
+  const signupMutation = usePostAuthSignup({
     mutation: {
       onSuccess: (data) => {
         const { user, accessToken, refreshToken } = data;
@@ -96,7 +96,7 @@ export default function SignupPage() {
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="space-y-1 text-center">
           <div className="flex justify-center mb-4">
-            <BrandLogo size="lg" showText={false} href={null} animated={false} />
+            <BrandLogo size="md" showText={false} href={null} animated={false} />
           </div>
           <CardTitle className="text-3xl font-bold">Create your account</CardTitle>
           <CardDescription>

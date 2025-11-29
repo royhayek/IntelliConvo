@@ -104,8 +104,8 @@ export class AuthService {
 
     // Create welcome in-app notification
     const welcomeMessage = requireVerification
-      ? `Welcome to IntelligentConvo! Please check your email to verify your account and get full access.`
-      : `Welcome to IntelligentConvo! You're all set to create your first AI assistant.`;
+      ? `Welcome to IntelliConvo! Please check your email to verify your account and get full access.`
+      : `Welcome to IntelliConvo! You're all set to create your first AI assistant.`;
 
     await prisma.notification.create({
       data: {
