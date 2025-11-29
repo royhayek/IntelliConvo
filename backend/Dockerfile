@@ -29,6 +29,7 @@ RUN npx prisma generate
 # ==========================================
 # Stage 2: Builder
 # ==========================================
+# Cache bust: v2
 FROM node:20-slim AS builder
 
 WORKDIR /app
