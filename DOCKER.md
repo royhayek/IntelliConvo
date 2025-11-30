@@ -5,13 +5,11 @@ This guide covers deploying IntelliConvo using Docker for both development and p
 ## Table of Contents
 
 - [Prerequisites](#prerequisites)
-- [Quick Start (Development)](#quick-start-development)
+- [Quick Start](#quick-start)
 - [Production Deployment](#production-deployment)
 - [Configuration Reference](#configuration-reference)
 - [Commands Reference](#commands-reference)
 - [Troubleshooting](#troubleshooting)
-
----
 
 ## Prerequisites
 
@@ -22,44 +20,41 @@ This guide covers deploying IntelliConvo using Docker for both development and p
 
 ### Required API Keys
 
-Before starting, you'll need:
-
-1. **OpenAI API Key** - Get from [platform.openai.com](https://platform.openai.com/api-keys)
-2. **Pinecone API Key** - Get from [app.pinecone.io](https://app.pinecone.io/)
+1. **OpenAI API Key** - [platform.openai.com](https://platform.openai.com/api-keys)
+2. **Pinecone API Key** - [app.pinecone.io](https://app.pinecone.io/)
 
 ### Optional API Keys
 
-- **Stripe** - For payment processing ([dashboard.stripe.com](https://dashboard.stripe.com/apikeys))
-- **Resend** - For email sending ([resend.com](https://resend.com/))
+- **Stripe** - Payment processing ([dashboard.stripe.com](https://dashboard.stripe.com/apikeys))
+- **Resend** - Email delivery ([resend.com](https://resend.com/))
 - **OAuth Providers** - Google, GitHub, Microsoft for social login
-- **AWS S3** - For cloud file storage
+- **AWS S3** - Cloud file storage (or S3-compatible: R2, Railway, MinIO)
 
----
+## Quick Start
 
-## Quick Start (Development)
-
-### 1. Clone and Configure
+### 1. Configure Environment
 
 ```bash
-# Navigate to project directory
-cd IntelligentConvo
-
 # Copy environment template
 cp .env.docker.example .env
 
-# Edit .env and add your API keys (minimum required):
-# - OPENAI_API_KEY
-# - PINECONE_API_KEY
+# Edit .env and add your API keys
+nano .env
 ```
+
+Minimum required variables:
+- `JWT_SECRET` - Generate with `openssl rand -base64 32`
+- `OPENAI_API_KEY` - Your OpenAI API key
+- `PINECONE_API_KEY` - Your Pinecone API key
 
 ### 2. Start Services
 
 ```bash
-# Start all services (PostgreSQL, Redis, Backend, Frontend, Widget)
-docker-compose -f docker-compose.dev.yml up -d
+# Start all services
+docker-compose up -d
 
 # View logs
-docker-compose -f docker-compose.dev.yml logs -f
+docker-compose logs -f
 ```
 
 ### 3. Access Application
@@ -76,23 +71,15 @@ docker-compose -f docker-compose.dev.yml logs -f
 - **Email:** admin@intelliconvo.com
 - **Password:** Admin123!@#
 
-> ⚠️ Change these credentials immediately after first login!
-
----
+Change these credentials immediately after first login, or set custom credentials via `ADMIN_EMAIL` and `ADMIN_PASSWORD` in `.env`.
 
 ## Production Deployment
 
-### Option A: Simple Deployment (Separate Ports)
+### Option A: Default Configuration
 
-Use `docker-compose.yml` when you want each service on its own port:
+The default `docker-compose.yml` exposes each service on its own port:
 
 ```bash
-# Copy and configure environment
-cp .env.docker.example .env
-
-# Edit .env with production values
-nano .env
-
 # Build and start
 docker-compose up -d --build
 
@@ -102,7 +89,7 @@ docker-compose ps
 
 ### Option B: Production with Nginx (Recommended)
 
-Use `docker-compose.prod.yml` for a proper production setup with nginx reverse proxy:
+Use `docker-compose.prod.yml` for a production setup with nginx reverse proxy:
 
 ```bash
 # Copy and configure environment
@@ -175,8 +162,6 @@ ports:
 docker-compose -f docker-compose.prod.yml up -d --build
 ```
 
----
-
 ## Configuration Reference
 
 ### Environment Variables
@@ -185,10 +170,11 @@ docker-compose -f docker-compose.prod.yml up -d --build
 
 | Variable | Description | Example |
 |----------|-------------|---------|
-| `JWT_SECRET` | Secret for JWT tokens (min 32 chars) | `your-super-secure-secret...` |
+| `JWT_SECRET` | Secret for JWT tokens (min 32 chars) | Generate: `openssl rand -base64 32` |
 | `OPENAI_API_KEY` | OpenAI API key | `sk-...` |
 | `PINECONE_API_KEY` | Pinecone API key | `pc-...` |
 | `PINECONE_INDEX_NAME` | Pinecone index name | `intelliconvo` |
+| `PINECONE_DIMENSIONS` | Embedding dimensions | `512` |
 
 #### Database Variables
 
@@ -203,21 +189,31 @@ docker-compose -f docker-compose.prod.yml up -d --build
 
 | Variable | Description |
 |----------|-------------|
-| `FRONTEND_URL` | Public URL of frontend (e.g., `https://app.yourdomain.com`) |
-| `WIDGET_CDN_URL` | Public URL of widget (e.g., `https://yourdomain.com/widget`) |
-| `NEXT_PUBLIC_API_URL` | API URL for frontend build (e.g., `https://api.yourdomain.com/api/v1`) |
-| `WIDGET_API_URL` | API URL for widget build (e.g., `https://api.yourdomain.com`) |
+| `FRONTEND_URL` | Public URL of frontend for CORS |
+| `WIDGET_CDN_URL` | Public URL of widget for CORS |
+| `NEXT_PUBLIC_API_URL` | API URL for frontend build |
+| `NEXT_PUBLIC_WIDGET_URL` | Widget URL for frontend preview |
+| `WIDGET_API_URL` | API URL for widget build |
 
 #### Optional Variables
 
 | Variable | Description |
 |----------|-------------|
-| `STRIPE_SECRET_KEY` | Stripe API key for payments |
+| `STRIPE_SECRET_KEY` | Stripe API key |
 | `STRIPE_WEBHOOK_SECRET` | Stripe webhook verification |
-| `RESEND_API_KEY` | Resend API key for emails |
-| `AWS_ACCESS_KEY_ID` | AWS credentials for S3 storage |
-| `ADMIN_EMAIL` | Custom admin email (default: admin@intelliconvo.com) |
-| `ADMIN_PASSWORD` | Custom admin password (default: Admin123!@#) |
+| `STRIPE_PRICE_MONTHLY` | Monthly plan price ID |
+| `STRIPE_PRICE_ANNUAL` | Annual plan price ID |
+| `RESEND_API_KEY` | Resend email API key |
+| `SMTP_HOST/PORT/USER/PASS` | SMTP email configuration |
+| `AWS_ACCESS_KEY_ID` | S3 storage access key |
+| `AWS_SECRET_ACCESS_KEY` | S3 storage secret key |
+| `AWS_S3_BUCKET` | S3 bucket name |
+| `AWS_ENDPOINT_URL` | S3-compatible endpoint URL |
+| `ADMIN_EMAIL` | Custom admin email |
+| `ADMIN_PASSWORD` | Custom admin password |
+| `GOOGLE_CLIENT_ID/SECRET` | Google OAuth |
+| `GITHUB_CLIENT_ID/SECRET` | GitHub OAuth |
+| `MICROSOFT_CLIENT_ID/SECRET` | Microsoft OAuth |
 
 ### Port Configuration
 
@@ -229,34 +225,32 @@ docker-compose -f docker-compose.prod.yml up -d --build
 | PostgreSQL | 5432 | `POSTGRES_PORT` |
 | Redis | 6379 | `REDIS_PORT` |
 
----
-
 ## Commands Reference
 
-### Development
+### Basic Operations
 
 ```bash
 # Start all services
-docker-compose -f docker-compose.dev.yml up -d
+docker-compose up -d
 
-# Start specific service
-docker-compose -f docker-compose.dev.yml up -d backend
+# Start with rebuild
+docker-compose up -d --build
 
 # View logs
-docker-compose -f docker-compose.dev.yml logs -f
-docker-compose -f docker-compose.dev.yml logs -f backend
+docker-compose logs -f
+docker-compose logs -f backend
 
 # Stop all services
-docker-compose -f docker-compose.dev.yml down
-
-# Rebuild after code changes
-docker-compose -f docker-compose.dev.yml up -d --build
+docker-compose down
 
 # Reset everything (including data)
-docker-compose -f docker-compose.dev.yml down -v
+docker-compose down -v
+
+# Restart single service
+docker-compose restart backend
 ```
 
-### Production
+### Production (with nginx)
 
 ```bash
 # Start
@@ -270,9 +264,6 @@ docker-compose -f docker-compose.prod.yml logs -f
 
 # Stop
 docker-compose -f docker-compose.prod.yml down
-
-# Restart single service
-docker-compose -f docker-compose.prod.yml restart backend
 ```
 
 ### Database Operations
@@ -320,13 +311,11 @@ docker system prune -a
 docker logs intelliconvo-backend --tail 100 -f
 ```
 
----
-
 ## Troubleshooting
 
 ### Common Issues
 
-#### 1. "Database connection refused"
+#### Database connection refused
 
 The backend is trying to connect before PostgreSQL is ready.
 
@@ -334,11 +323,11 @@ The backend is trying to connect before PostgreSQL is ready.
 # Check PostgreSQL status
 docker-compose logs postgres
 
-# Restart backend
+# Restart backend after PostgreSQL is healthy
 docker-compose restart backend
 ```
 
-#### 2. "Redis connection failed"
+#### Redis connection failed
 
 ```bash
 # Check Redis status
@@ -348,9 +337,7 @@ docker-compose logs redis
 docker exec intelliconvo-redis redis-cli ping
 ```
 
-#### 3. "Port already in use"
-
-Another service is using the port.
+#### Port already in use
 
 ```bash
 # Find process using port 5001
@@ -360,33 +347,33 @@ lsof -i :5001
 BACKEND_PORT=5002
 ```
 
-#### 4. "Build failed - out of memory"
+#### Build failed - out of memory
 
 Docker needs more memory (common on VPS with low RAM).
 
 ```bash
-# Add swap space
+# Add swap space (Linux)
 sudo fallocate -l 2G /swapfile
 sudo chmod 600 /swapfile
 sudo mkswap /swapfile
 sudo swapon /swapfile
 ```
 
-#### 5. "Prisma migration failed"
+#### Prisma migration failed
 
 ```bash
-# Reset database and re-migrate
+# Reset database and re-apply schema
 docker exec intelliconvo-backend npx prisma db push --force-reset
 docker exec intelliconvo-backend npx prisma db seed
 ```
 
-#### 6. "Widget not loading on external site"
+#### Widget not loading on external site
 
 CORS issue - ensure your domain is properly configured:
 
 ```bash
-# Check WIDGET_CDN_URL in .env
-WIDGET_CDN_URL=https://yourdomain.com/widget
+# In .env, set the public URL where the widget is served
+WIDGET_CDN_URL=https://cdn.yourdomain.com
 ```
 
 ### Viewing Logs
@@ -406,13 +393,13 @@ docker-compose -f docker-compose.prod.yml logs --tail 100 backend
 
 ```bash
 # Check all services
-docker-compose -f docker-compose.prod.yml ps
+docker-compose ps
 
 # Backend health
-curl http://localhost:5001/api/health
+curl http://localhost:5001/health
 
-# Frontend health
-curl http://localhost:3000/
+# Backend detailed health
+curl http://localhost:5001/health/detailed
 
 # PostgreSQL health
 docker exec intelliconvo-postgres pg_isready
@@ -420,8 +407,6 @@ docker exec intelliconvo-postgres pg_isready
 # Redis health
 docker exec intelliconvo-redis redis-cli ping
 ```
-
----
 
 ## Architecture Overview
 
@@ -432,7 +417,7 @@ docker exec intelliconvo-redis redis-cli ping
                                            │
                                     ┌──────▼──────┐
                                     │    Nginx    │
-                                    │  (Port 80)  │
+                                    │  (Port 80)  │  (production only)
                                     └──────┬──────┘
                           ┌────────────────┼────────────────┐
                           │                │                │
@@ -450,8 +435,6 @@ docker exec intelliconvo-redis redis-cli ping
                    └─────────────┘  └─────────────┘  └─────────────┘
 ```
 
----
-
 ## Updating
 
 To update to a new version:
@@ -461,17 +444,8 @@ To update to a new version:
 git pull origin main
 
 # Rebuild and restart
-docker-compose -f docker-compose.prod.yml up -d --build
+docker-compose up -d --build
 
 # Run any new migrations
 docker exec intelliconvo-backend npx prisma db push
 ```
-
----
-
-## Support
-
-For issues and questions:
-- Check the [Troubleshooting](#troubleshooting) section above
-- Review container logs for error messages
-- Ensure all required environment variables are set

@@ -27,7 +27,7 @@ export class ResendProvider implements EmailProvider {
     }
 
     this.defaultFrom = defaultFrom || {
-      email: process.env.EMAIL_FROM_ADDRESS || 'noreply@intelliconvo.ai',
+      email: process.env.EMAIL_FROM_ADDRESS || 'noreply@intelliconvo.com',
       name: process.env.EMAIL_FROM_NAME || 'IntelliConvo',
     };
   }
