@@ -18,6 +18,7 @@ let isConfigured = false;
 let s3Bucket: string | null = null;
 let s3Region: string | null = null;
 let s3PublicUrl: string | null = null;
+let s3Endpoint: string | null = null;
 
 /**
  * Initialize S3 client with AWS credentials
@@ -28,6 +29,7 @@ export function initializeS3(): void {
   const region = process.env.AWS_REGION || 'us-east-1';
   const bucket = process.env.AWS_S3_BUCKET;
   const publicUrl = process.env.AWS_S3_PUBLIC_URL; // Optional CDN URL
+  const endpoint = process.env.AWS_ENDPOINT_URL; // For S3-compatible services (Railway, R2, MinIO, etc.)
 
   // Check if all required credentials are provided
   if (!accessKeyId || !secretAccessKey || !bucket) {
@@ -50,23 +52,33 @@ export function initializeS3(): void {
   }
 
   try {
-    s3Client = new S3Client({
+    const clientConfig: ConstructorParameters<typeof S3Client>[0] = {
       region,
       credentials: {
         accessKeyId,
         secretAccessKey,
       },
-    });
+    };
+
+    // Add custom endpoint for S3-compatible services (Railway, Cloudflare R2, MinIO, etc.)
+    if (endpoint) {
+      clientConfig.endpoint = endpoint;
+      clientConfig.forcePathStyle = true; // Required for most S3-compatible services
+    }
+
+    s3Client = new S3Client(clientConfig);
 
     s3Bucket = bucket;
     s3Region = region;
     s3PublicUrl = publicUrl || null;
+    s3Endpoint = endpoint || null;
     isConfigured = true;
 
     logger.info('📦 S3 storage initialized', {
       bucket,
       region,
       hasCustomUrl: !!publicUrl,
+      endpoint: endpoint || 'AWS S3',
     });
   } catch (error) {
     logger.error('Failed to initialize S3 client:', error);
@@ -91,6 +103,7 @@ export function getS3Config() {
     bucket: s3Bucket,
     region: s3Region,
     publicUrl: s3PublicUrl,
+    endpoint: s3Endpoint,
   };
 }
 
@@ -124,10 +137,13 @@ export async function uploadToS3(
 
     // Return public URL
     if (s3PublicUrl) {
-      // Use custom CDN URL if provided
+      // Use custom CDN/public URL if provided
       return `${s3PublicUrl}/${key}`;
+    } else if (s3Endpoint) {
+      // Use endpoint URL for S3-compatible services (path-style)
+      return `${s3Endpoint}/${s3Bucket}/${key}`;
     } else {
-      // Use standard S3 URL
+      // Use standard AWS S3 URL
       return `https://${s3Bucket}.s3.${s3Region}.amazonaws.com/${key}`;
     }
   } catch (error) {
@@ -191,6 +207,14 @@ export function extractS3Key(url: string): string {
   // Handle custom CDN URL
   if (s3PublicUrl && url.startsWith(s3PublicUrl)) {
     return url.substring(s3PublicUrl.length + 1);
+  }
+
+  // Handle S3-compatible endpoint URL (path-style: endpoint/bucket/key)
+  if (s3Endpoint && url.startsWith(s3Endpoint) && s3Bucket) {
+    const prefix = `${s3Endpoint}/${s3Bucket}/`;
+    if (url.startsWith(prefix)) {
+      return url.substring(prefix.length);
+    }
   }
 
   // Handle standard S3 URL

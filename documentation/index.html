@@ -78,7 +78,7 @@
 					<li><a href="#stripe">Stripe Payments</a></li>
 					<li><a href="#email">Email Providers</a></li>
 					<li><a href="#oauth">OAuth Providers</a></li>
-					<li><a href="#s3">AWS S3 Storage</a></li>
+					<li><a href="#s3">S3-Compatible Storage</a></li>
 				</ul>
 			</li>
 			<li><a href="#admin-guide">Admin Configuration Guide</a></li>
@@ -1255,19 +1255,26 @@ sudo certbot --nginx -d yourdomain.com
 		</div>
 
 		<div class="step">
-			<strong>1.8: Configure File Storage (Optional)</strong>
-			<p>For file uploads (logos, knowledge base documents), you have two options:</p>
+			<strong>1.8: Configure File Storage (Required for File Uploads)</strong>
+			<p>For file uploads (logos, knowledge base documents), you need to configure S3-compatible storage. You have two options:</p>
 
-			<p><strong>Option A: Local Storage with Railway Volume</strong></p>
+			<p><strong>Option A: Railway Object Storage (Easiest)</strong></p>
 			<ol>
-				<li>Go to your backend service → "Settings" → "Volumes"</li>
-				<li>Click "Add Volume"</li>
-				<li>Set Mount Path to <code>/app/uploads</code></li>
-				<li>This persists uploaded files across deployments</li>
+				<li>In your Railway project, click "New" → "Database" → "Object Storage"</li>
+				<li>Railway will create an S3-compatible bucket and provide credentials</li>
+				<li>Add the following environment variables to your backend service (Railway auto-populates these if you link the bucket):</li>
 			</ol>
+			<table class="env-table">
+				<tr><th>Variable</th><th>Value</th></tr>
+				<tr><td><code>AWS_ACCESS_KEY_ID</code></td><td>From Railway bucket credentials</td></tr>
+				<tr><td><code>AWS_SECRET_ACCESS_KEY</code></td><td>From Railway bucket credentials</td></tr>
+				<tr><td><code>AWS_REGION</code></td><td><code>us-east-1</code> (or as specified by Railway)</td></tr>
+				<tr><td><code>AWS_S3_BUCKET</code></td><td>Your Railway bucket name</td></tr>
+				<tr><td><code>AWS_ENDPOINT_URL</code></td><td>Railway endpoint URL (e.g., <code>https://your-bucket.railway.app</code>)</td></tr>
+			</table>
 
-			<p><strong>Option B: AWS S3 Storage (Recommended for Production)</strong></p>
-			<p>Add these environment variables to use S3:</p>
+			<p><strong>Option B: AWS S3 Storage</strong></p>
+			<p>Create an S3 bucket in AWS and add these environment variables:</p>
 			<table class="env-table">
 				<tr><th>Variable</th><th>Value</th></tr>
 				<tr><td><code>AWS_ACCESS_KEY_ID</code></td><td>Your AWS access key</td></tr>
@@ -1275,7 +1282,11 @@ sudo certbot --nginx -d yourdomain.com
 				<tr><td><code>AWS_REGION</code></td><td>Your S3 bucket region (e.g., <code>us-east-1</code>)</td></tr>
 				<tr><td><code>AWS_S3_BUCKET</code></td><td>Your S3 bucket name</td></tr>
 			</table>
-			<p>When S3 credentials are configured, files will automatically be stored in S3 instead of local storage.</p>
+			<p>See the <a href="#s3">AWS S3 Storage</a> section for detailed setup instructions.</p>
+
+			<div class="warning">
+				<strong>Important:</strong> S3-compatible storage is required for file uploads on Railway. Local volume storage is not recommended due to permission issues with containerized deployments.
+			</div>
 		</div>
 
 		<div class="step">
@@ -1862,11 +1873,34 @@ GITHUB_CLIENT_SECRET=your-client-secret</code></pre>
 MICROSOFT_CLIENT_SECRET=your-client-secret</code></pre>
 		</div>
 
-		<!-- AWS S3 -->
-		<h4 id="s3">AWS S3 Storage</h4>
+		<!-- S3 Storage -->
+		<h4 id="s3">S3-Compatible Storage</h4>
 		<div class="step">
-			<p><strong>Purpose:</strong> Store uploaded files (logos, knowledge base documents) in the cloud instead of local storage.</p>
+			<p><strong>Purpose:</strong> Store uploaded files (logos, knowledge base documents) in the cloud. Required for production deployments on Railway and other containerized platforms.</p>
 
+			<p>The application supports AWS S3 and any S3-compatible storage service:</p>
+			<ul>
+				<li><strong>Railway Object Storage</strong> - Easiest option for Railway deployments</li>
+				<li><strong>AWS S3</strong> - Amazon's native object storage</li>
+				<li><strong>Cloudflare R2</strong> - S3-compatible with no egress fees</li>
+				<li><strong>DigitalOcean Spaces</strong> - Simple S3-compatible storage</li>
+				<li><strong>MinIO</strong> - Self-hosted S3-compatible storage</li>
+			</ul>
+
+			<h5>Option A: Railway Object Storage (Recommended for Railway)</h5>
+			<ol>
+				<li>In your Railway project, click "New" → "Database" → "Object Storage"</li>
+				<li>Railway will create an S3-compatible bucket</li>
+				<li>Link the bucket to your backend service to auto-populate environment variables, or manually add them</li>
+			</ol>
+			<p><strong>Environment Variables:</strong></p>
+<pre><code>AWS_ACCESS_KEY_ID=from-railway-credentials
+AWS_SECRET_ACCESS_KEY=from-railway-credentials
+AWS_REGION=us-east-1
+AWS_S3_BUCKET=your-railway-bucket-name
+AWS_ENDPOINT_URL=https://your-bucket-endpoint.railway.app</code></pre>
+
+			<h5>Option B: AWS S3</h5>
 			<p><strong>Step 1:</strong> Create an S3 Bucket:</p>
 			<ol>
 				<li>Go to AWS S3 Console</li>
@@ -1904,8 +1938,19 @@ AWS_REGION=us-east-1
 AWS_S3_BUCKET=your-bucket-name
 AWS_S3_PUBLIC_URL=https://your-bucket-name.s3.amazonaws.com</code></pre>
 
+			<h5>Environment Variables Reference</h5>
+			<table class="env-table">
+				<tr><th>Variable</th><th>Description</th><th>Required</th></tr>
+				<tr><td><code>AWS_ACCESS_KEY_ID</code></td><td>Access key from your storage provider</td><td>Yes</td></tr>
+				<tr><td><code>AWS_SECRET_ACCESS_KEY</code></td><td>Secret key from your storage provider</td><td>Yes</td></tr>
+				<tr><td><code>AWS_REGION</code></td><td>Region (e.g., <code>us-east-1</code>)</td><td>Yes</td></tr>
+				<tr><td><code>AWS_S3_BUCKET</code></td><td>Bucket name</td><td>Yes</td></tr>
+				<tr><td><code>AWS_ENDPOINT_URL</code></td><td>Custom endpoint for S3-compatible services (Railway, R2, etc.)</td><td>For non-AWS only</td></tr>
+				<tr><td><code>AWS_S3_PUBLIC_URL</code></td><td>Custom CDN URL for serving files</td><td>No</td></tr>
+			</table>
+
 			<div class="info">
-				<strong>Note:</strong> If S3 is not configured, files are stored locally in the <code>uploads/</code> directory.
+				<strong>Note:</strong> If S3 credentials are not configured, file uploads will fail on containerized deployments like Railway. Local storage is only suitable for local development.
 			</div>
 		</div>
 
