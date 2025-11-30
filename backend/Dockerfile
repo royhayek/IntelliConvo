@@ -112,9 +112,20 @@ COPY --from=builder /app/prisma ./prisma
 # Create uploads directory
 RUN mkdir -p uploads && chown -R nodejs:nodejs uploads
 
-# Install Playwright browsers as root, then change ownership
-RUN npx playwright install chromium && \
-    chown -R nodejs:nodejs /root/.cache || true
+# Create Playwright cache directory for nodejs user
+RUN mkdir -p /home/nodejs/.cache && chown -R nodejs:nodejs /home/nodejs/.cache
+
+# Switch to non-root user before installing Playwright
+USER nodejs
+
+# Set Playwright cache location
+ENV PLAYWRIGHT_BROWSERS_PATH=/home/nodejs/.cache/ms-playwright
+
+# Install Playwright browsers (chromium only, with dependencies already installed above)
+RUN npx playwright install chromium
+
+# Switch back to root for remaining setup
+USER root
 
 # Copy entrypoint script from builder stage
 COPY --from=builder /app/docker-entrypoint.sh /usr/local/bin/
