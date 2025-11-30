@@ -1,0 +1,431 @@
+<!--
+  IntelliConvo - CodeCanyon Changelog
+  Copy and paste this HTML into your CodeCanyon item description.
+  This file contains styled changelog entries that match the Chattie-style design.
+-->
+
+<style>
+.changelog-container {
+  max-width: 900px;
+  margin: 40px auto;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+.changelog-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+.changelog-title {
+  font-size: 48px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.changelog-title .name {
+  color: #1f2937;
+}
+.changelog-title .version {
+  background: linear-gradient(135deg, #f59e0b, #22c55e);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.changelog-description {
+  color: #6b7280;
+  font-size: 16px;
+  line-height: 1.7;
+  max-width: 700px;
+  margin: 0 auto;
+}
+.feature-section {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 40px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e5e7eb;
+}
+.feature-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.badge-beta {
+  color: #f59e0b;
+  font-size: 14px;
+  font-weight: 600;
+}
+.badge-new {
+  color: #22c55e;
+  font-size: 14px;
+  font-weight: 600;
+}
+.badge-title {
+  background: #374151;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 20px;
+  border-radius: 20px;
+}
+.feature-description {
+  text-align: center;
+  color: #6b7280;
+  font-size: 15px;
+  line-height: 1.8;
+  max-width: 600px;
+  margin: 0 auto 30px;
+}
+.flow-diagram {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+.flow-node {
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px 32px;
+  text-align: center;
+}
+.flow-node.start {
+  background: #22c55e;
+  color: white;
+  border: none;
+  font-weight: 600;
+}
+.flow-connector {
+  width: 2px;
+  height: 30px;
+  background: #6366f1;
+}
+.flow-node-title {
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+.flow-node-subtitle {
+  color: #9ca3af;
+  font-size: 13px;
+}
+.payment-section {
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 30px;
+  margin-top: 20px;
+}
+.payment-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.payment-icon {
+  width: 40px;
+  height: 40px;
+  background: #dbeafe;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #3b82f6;
+  font-size: 20px;
+}
+.payment-title {
+  font-weight: 600;
+  color: #1f2937;
+}
+.payment-subtitle {
+  color: #6b7280;
+  font-size: 14px;
+}
+.payment-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.payment-option {
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+}
+.payment-option.selected {
+  border-color: #3b82f6;
+  background: #eff6ff;
+}
+.payment-option-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.payment-option-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+.payment-option-icon.stripe {
+  background: #635bff;
+  color: white;
+}
+.payment-option-icon.paypal {
+  background: #0070ba;
+  color: white;
+}
+.payment-option-name {
+  font-weight: 600;
+  color: #1f2937;
+}
+.payment-option-desc {
+  color: #6b7280;
+  font-size: 13px;
+}
+.payment-option-features {
+  color: #9ca3af;
+  font-size: 12px;
+}
+.checkout-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: white;
+  border: none;
+  padding: 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 15px;
+  text-align: center;
+}
+.security-badges {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 16px;
+  color: #9ca3af;
+  font-size: 12px;
+}
+.changelog-list {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+}
+.changelog-list li {
+  padding: 12px 0;
+  border-bottom: 1px solid #f3f4f6;
+  color: #4b5563;
+  padding-left: 28px;
+  position: relative;
+}
+.changelog-list li:last-child {
+  border-bottom: none;
+}
+.changelog-list li::before {
+  content: "\2713";
+  color: #22c55e;
+  font-weight: bold;
+  position: absolute;
+  left: 0;
+}
+.version-tag {
+  display: inline-block;
+  background: #f3f4f6;
+  color: #6b7280;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  margin-bottom: 20px;
+}
+</style>
+
+<!-- ============================================
+     VERSION 1.0.0
+     ============================================ -->
+
+<div class="changelog-container">
+  <div class="changelog-header">
+    <h1 class="changelog-title">
+      <span class="name">IntelliConvo</span> <span class="version">1.0.0</span>
+    </h1>
+    <p class="changelog-description">
+      The initial release of IntelliConvo brings you a complete AI-powered conversational chat widget SaaS platform. Build intelligent chatbots for any website with advanced customization, semantic search, and subscription billing.
+    </p>
+  </div>
+
+  <!-- AI Chat Feature -->
+  <div class="feature-section">
+    <div class="feature-header">
+      <span class="badge-new">Core</span>
+      <span class="badge-title">AI-Powered Chat Widget</span>
+    </div>
+    <p class="feature-description">
+      Create intelligent chat experiences powered by OpenAI GPT-4 and GPT-3.5 models. The widget automatically learns from your website content and provides context-aware responses to visitor questions.
+    </p>
+    <div class="flow-diagram">
+      <div class="flow-node start">&#9654; Start</div>
+      <div class="flow-connector"></div>
+      <div class="flow-node">
+        <div class="flow-node-title">&#127760; Website Crawling</div>
+        <div class="flow-node-subtitle">Automatic content indexing</div>
+      </div>
+      <div class="flow-connector"></div>
+      <div class="flow-node">
+        <div class="flow-node-title">&#129504; AI Processing</div>
+        <div class="flow-node-subtitle">Vector embeddings & semantic search</div>
+      </div>
+      <div class="flow-connector"></div>
+      <div class="flow-node">
+        <div class="flow-node-title">&#128172; Smart Responses</div>
+        <div class="flow-node-subtitle">Context-aware answers</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Widget Customization -->
+  <div class="feature-section">
+    <div class="feature-header">
+      <span class="badge-beta">Flexible</span>
+      <span class="badge-title">100+ Customization Options</span>
+    </div>
+    <p class="feature-description">
+      Fully customize the chat widget to match your brand. Control colors, fonts, positioning, messages, behaviors, and more. The widget seamlessly integrates with any website design.
+    </p>
+    <div class="flow-diagram">
+      <div class="flow-node start">&#9654; Customize</div>
+      <div class="flow-connector"></div>
+      <div class="flow-node">
+        <div class="flow-node-title">&#127912; Appearance</div>
+        <div class="flow-node-subtitle">Colors, fonts, themes</div>
+      </div>
+      <div class="flow-connector"></div>
+      <div class="flow-node">
+        <div class="flow-node-title">&#128205; Position & Size</div>
+        <div class="flow-node-subtitle">Flexible placement options</div>
+      </div>
+      <div class="flow-connector"></div>
+      <div class="flow-node">
+        <div class="flow-node-title">&#9889; Behavior</div>
+        <div class="flow-node-subtitle">Triggers, animations, sounds</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stripe Integration -->
+  <div class="feature-section">
+    <div class="feature-header">
+      <span class="badge-new">Built-in</span>
+      <span class="badge-title">Stripe Integration</span>
+    </div>
+    <p class="feature-description">
+      Complete subscription billing with Stripe. Support for monthly and annual plans, free trials, usage-based billing, and automatic invoice generation.
+    </p>
+    <div class="payment-section">
+      <div class="payment-header">
+        <div class="payment-icon">&#128179;</div>
+        <div>
+          <div class="payment-title">Payment Method</div>
+          <div class="payment-subtitle">Select your preferred payment option</div>
+        </div>
+      </div>
+      <div class="payment-options">
+        <div class="payment-option selected">
+          <div class="payment-option-header">
+            <div class="payment-option-icon stripe">S</div>
+            <div>
+              <div class="payment-option-name">Stripe</div>
+              <div class="payment-option-desc">Credit/Debit Card</div>
+            </div>
+          </div>
+          <div class="payment-option-features">&#10003; Visa, Mastercard, Amex</div>
+        </div>
+        <div class="payment-option">
+          <div class="payment-option-header">
+            <div class="payment-option-icon paypal">P</div>
+            <div>
+              <div class="payment-option-name">Coming Soon</div>
+              <div class="payment-option-desc">PayPal Support</div>
+            </div>
+          </div>
+          <div class="payment-option-features">&#10003; Future integration</div>
+        </div>
+      </div>
+      <div class="checkout-btn">&#128274; Complete Secure Checkout</div>
+      <div class="security-badges">
+        <span>&#10003; 256-bit SSL</span>
+        <span>&#128274; PCI Compliant</span>
+        <span>&#9889; Instant Access</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Full Feature List -->
+  <div class="feature-section">
+    <span class="version-tag">November 2025 &bull; Initial Release</span>
+    <h4 style="margin-top: 0; color: #1f2937;">Complete Feature List</h4>
+    <ul class="changelog-list">
+      <li>Full SaaS platform with user authentication and role management</li>
+      <li>Website crawling and automatic content indexing with BullMQ queues</li>
+      <li>AI-powered chat widget with GPT-4 and GPT-3.5 support</li>
+      <li>Vector search using Pinecone for semantic content retrieval</li>
+      <li>100+ widget customization options for appearance and behavior</li>
+      <li>Stripe subscription billing with monthly and annual plans</li>
+      <li>OAuth authentication (Google, GitHub, Microsoft)</li>
+      <li>Complete admin dashboard for user and site management</li>
+      <li>Knowledge base with PDF and document uploads</li>
+      <li>Real-time chat with Socket.io streaming responses</li>
+      <li>Conversation analytics, usage metrics, and cost tracking</li>
+      <li>Email notifications with customizable templates</li>
+      <li>Docker support for easy deployment</li>
+      <li>Comprehensive API with Swagger documentation</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============================================
+     ADD NEW VERSIONS ABOVE THIS LINE
+
+     To add a new version, copy the template below and fill in:
+     1. Update the version number in changelog-title
+     2. Update the description
+     3. Add feature sections as needed
+     4. Update the version-tag date
+
+     TEMPLATE:
+
+<div class="changelog-container">
+  <div class="changelog-header">
+    <h1 class="changelog-title">
+      <span class="name">IntelliConvo</span> <span class="version">X.X.X</span>
+    </h1>
+    <p class="changelog-description">
+      Description of what this update brings...
+    </p>
+  </div>
+
+  <div class="feature-section">
+    <div class="feature-header">
+      <span class="badge-new">New</span>
+      <span class="badge-title">Feature Name</span>
+    </div>
+    <p class="feature-description">
+      Feature description...
+    </p>
+  </div>
+
+  <div class="feature-section">
+    <span class="version-tag">Month Year</span>
+    <h4 style="margin-top: 0; color: #1f2937;">What's New</h4>
+    <ul class="changelog-list">
+      <li>Change 1</li>
+      <li>Change 2</li>
+    </ul>
+  </div>
+</div>
+
+     ============================================ -->

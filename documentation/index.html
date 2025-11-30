@@ -1567,6 +1567,30 @@ sudo certbot --nginx -d yourdomain.com
 				<td class="required">Yes</td>
 				<td>http://localhost:8080</td>
 			</tr>
+			<tr>
+				<td><code>RUN_MIGRATIONS</code></td>
+				<td>Run database migrations on Docker startup</td>
+				<td>No</td>
+				<td>false</td>
+			</tr>
+			<tr>
+				<td><code>RUN_SEED</code></td>
+				<td>Run database seed after migrations (requires RUN_MIGRATIONS=true)</td>
+				<td>No</td>
+				<td>false</td>
+			</tr>
+			<tr>
+				<td><code>ADMIN_EMAIL</code></td>
+				<td>Custom admin email for seeding</td>
+				<td>No</td>
+				<td>admin@intelliconvo.com</td>
+			</tr>
+			<tr>
+				<td><code>ADMIN_PASSWORD</code></td>
+				<td>Custom admin password for seeding</td>
+				<td>No</td>
+				<td>Admin123!@#</td>
+			</tr>
 		</table>
 
 		<h4>Frontend Environment Variables (.env)</h4>

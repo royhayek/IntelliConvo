@@ -60,6 +60,19 @@ if [ "$RUN_MIGRATIONS" = "true" ] || [ "$RUN_MIGRATIONS" = "1" ]; then
     fi
 fi
 
+# Ensure uploads directory structure exists and is writable
+# This is needed because Railway volumes are mounted at runtime and may be owned by root
+UPLOAD_DIR="${UPLOAD_DIR:-uploads}"
+echo "📁 Ensuring upload directories exist..."
+mkdir -p "$UPLOAD_DIR/files" "$UPLOAD_DIR/logos" "$UPLOAD_DIR/avatars" 2>/dev/null || true
+
+# Check if directories are writable
+if [ -w "$UPLOAD_DIR" ]; then
+    echo "✅ Upload directory is writable"
+else
+    echo "⚠️  Warning: Upload directory may not be writable. Consider using S3 storage or fixing volume permissions."
+fi
+
 echo "🎉 Backend initialization complete!"
 
 # Execute the main command

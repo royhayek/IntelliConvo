@@ -109,8 +109,10 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/prisma ./prisma
 
-# Create uploads directory
-RUN mkdir -p uploads && chown -R nodejs:nodejs uploads
+# Create uploads directory structure
+# Note: When using Railway volumes, the volume mount overwrites this directory,
+# so permissions are handled in docker-entrypoint.sh at runtime
+RUN mkdir -p uploads/files uploads/logos uploads/avatars && chown -R nodejs:nodejs uploads
 
 # Create Playwright cache directory for nodejs user
 RUN mkdir -p /home/nodejs/.cache && chown -R nodejs:nodejs /home/nodejs/.cache
