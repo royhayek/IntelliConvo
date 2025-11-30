@@ -29,7 +29,7 @@ export class SettingsManager {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), SETTINGS_TIMEOUT);
 
-      const response = await fetch(`${this.apiUrl}/widget/${this.siteId}/settings`, {
+      const response = await fetch(`${this.apiUrl}/api/v1/widget/${this.siteId}/settings`, {
         signal: controller.signal,
         headers: {
           'Content-Type': 'application/json',

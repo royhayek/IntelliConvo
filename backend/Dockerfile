@@ -126,5 +126,6 @@ USER nodejs
 # Expose port
 EXPOSE 5000
 
-# Start application directly - Railway handles migrations via start command
+# Use entrypoint for service readiness checks, then start the app
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 CMD ["node", "dist/index.js"]

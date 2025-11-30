@@ -1167,9 +1167,8 @@ sudo certbot --nginx -d yourdomain.com
 		<div class="step">
 			<strong>1.2: Create New Project</strong>
 			<ol>
-				<li>Click "New Project" → "Deploy from GitHub repo"</li>
-				<li>Select your IntelliConvo repository</li>
-				<li><strong>Important:</strong> Railway will detect this is a monorepo. You'll need to configure the root directory in the next step.</li>
+				<li>Click "New Project" to create an empty project</li>
+				<li>You'll add services to this project in the following steps</li>
 			</ol>
 		</div>
 
@@ -1194,23 +1193,54 @@ sudo certbot --nginx -d yourdomain.com
 		</div>
 
 		<div class="step">
-			<strong>1.5: Configure Backend Service</strong>
+			<strong>1.5: Add Backend Service</strong>
 			<ol>
-				<li>Click on the backend service</li>
-				<li>Go to "Settings" tab</li>
-				<li>Set the following:
+				<li>Right-click in your project canvas and select "Add New Service" → "GitHub Repo"</li>
+				<li>Select your IntelliConvo repository from the list</li>
+			</ol>
+		</div>
+
+		<div class="step">
+			<strong>1.6: Configure Backend Service</strong>
+			<ol>
+				<li>Click on the backend service you just added</li>
+				<li>Go to the "Settings" tab</li>
+				<li>In the <strong>Source</strong> section:
 					<ul>
-						<li><strong>Root Directory:</strong> Click "Edit" and select <code>backend</code></li>
-						<li><strong>Build Command:</strong> <code>npm install && npx prisma generate && npm run build</code></li>
-						<li><strong>Start Command:</strong> <code>npx prisma db push && npm start</code></li>
+						<li>Set <strong>Root Directory</strong> to <code>/backend</code></li>
+					</ul>
+				</li>
+				<li>In the <strong>Networking</strong> section:
+					<ul>
+						<li>Click "Generate Domain" to create a public URL for your backend</li>
+						<li><strong>Save this URL</strong> - you'll need it for the frontend and widget configuration</li>
+					</ul>
+				</li>
+				<li>In the <strong>Build</strong> section:
+					<ul>
+						<li>Set <strong>Builder</strong> to <code>Dockerfile</code></li>
+						<li>Set <strong>Dockerfile Path</strong> to <code>/backend/Dockerfile</code></li>
+						<li>In <strong>Watch Paths</strong>, enter <code>/backend/**</code> so that only backend code changes trigger a new deploy</li>
 					</ul>
 				</li>
 			</ol>
 		</div>
 
 		<div class="step">
-			<strong>1.6: Add Environment Variables</strong>
-			<p>Go to "Variables" tab and add:</p>
+			<strong>1.7: Add Environment Variables</strong>
+			<p>Go to the "Variables" tab and add the following:</p>
+
+			<p><strong>Database & Redis (Reference Variables):</strong></p>
+			<table class="env-table">
+				<tr><th>Variable</th><th>Value</th></tr>
+				<tr><td><code>DATABASE_URL</code></td><td><code>${{Postgres.DATABASE_URL}}</code></td></tr>
+				<tr><td><code>REDIS_HOST</code></td><td><code>${{Redis.REDISHOST}}</code></td></tr>
+				<tr><td><code>REDIS_PORT</code></td><td><code>${{Redis.REDISPORT}}</code></td></tr>
+				<tr><td><code>REDIS_PASSWORD</code></td><td><code>${{Redis.REDIS_PASSWORD}}</code></td></tr>
+			</table>
+			<p><strong>Note:</strong> The <code>${{ServiceName.VARIABLE}}</code> syntax references variables from other Railway services. Railway will automatically resolve these values at runtime.</p>
+
+			<p><strong>Application Variables:</strong></p>
 			<table class="env-table">
 				<tr><th>Variable</th><th>Value</th></tr>
 				<tr><td><code>NODE_ENV</code></td><td><code>production</code></td></tr>
@@ -1222,11 +1252,10 @@ sudo certbot --nginx -d yourdomain.com
 				<tr><td><code>FRONTEND_URL</code></td><td>Your Vercel frontend URL (add after deploying frontend)</td></tr>
 				<tr><td><code>WIDGET_CDN_URL</code></td><td>Your Vercel widget URL (add after deploying widget)</td></tr>
 			</table>
-			<p><strong>Note:</strong> <code>DATABASE_URL</code> and <code>REDIS_URL</code> are automatically injected by Railway when you link the databases.</p>
 		</div>
 
 		<div class="step">
-			<strong>1.7: Configure File Storage (Optional)</strong>
+			<strong>1.8: Configure File Storage (Optional)</strong>
 			<p>For file uploads (logos, knowledge base documents), you have two options:</p>
 
 			<p><strong>Option A: Local Storage with Railway Volume</strong></p>
@@ -1250,12 +1279,11 @@ sudo certbot --nginx -d yourdomain.com
 		</div>
 
 		<div class="step">
-			<strong>1.8: Generate Domain</strong>
+			<strong>1.9: Deploy</strong>
 			<ol>
-				<li>Go to "Settings" → "Networking"</li>
-				<li>Click "Generate Domain" to get a Railway subdomain</li>
-				<li>Or add your custom domain</li>
-				<li><strong>Save this URL</strong> - you'll need it for the frontend and widget configuration</li>
+				<li>Once all settings and environment variables are configured, Railway will automatically trigger a deployment</li>
+				<li>You can monitor the deployment progress in the "Deployments" tab</li>
+				<li>Wait for the deployment to complete successfully before proceeding to the frontend setup</li>
 			</ol>
 		</div>
 
@@ -2016,7 +2044,7 @@ AWS_S3_PUBLIC_URL=https://your-bucket-name.s3.amazonaws.com</code></pre>
     script.onload = function() {
       window.intelliconvo('init', {
         siteId: 'your-site-id',
-        apiUrl: 'https://yourdomain.com/api/v1'
+        apiUrl: 'https://yourdomain.com'
       });
     };
     document.head.appendChild(script);
@@ -2187,7 +2215,7 @@ AWS_S3_PUBLIC_URL=https://your-bucket-name.s3.amazonaws.com</code></pre>
     script.onload = function() {
       window.intelliconvo('init', {
         siteId: 'your-site-id',
-        apiUrl: 'https://yourdomain.com/api/v1'
+        apiUrl: 'https://yourdomain.com'
       });
     };
     document.head.appendChild(script);
@@ -2650,7 +2678,7 @@ docker-compose up -d --build</code></pre>
     script.onload = function() {
       window.yourbrand('init', {  // Changed from 'intelliconvo'
         siteId: 'your-site-id',
-        apiUrl: 'https://yourdomain.com/api/v1'
+        apiUrl: 'https://yourdomain.com'
       });
     };
     document.head.appendChild(script);

@@ -962,7 +962,7 @@ class IntelliConvoWidget {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), STARTERS_TIMEOUT);
 
-      const response = await fetch(`${this.config.apiUrl}/widget/${this.config.siteId}/starters`, {
+      const response = await fetch(`${this.config.apiUrl}/api/v1/widget/${this.config.siteId}/starters`, {
         signal: controller.signal,
         headers: {
           'Content-Type': 'application/json',

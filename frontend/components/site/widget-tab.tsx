@@ -528,7 +528,7 @@ export function WidgetTab({ site }: WidgetTabProps) {
     script.onload = function() {
       window.intelliconvo('init', {
         siteId: '${site.id}',
-        apiUrl: '${process.env.NEXT_PUBLIC_API_URL || 'https://api.intelliconvo.com/api/v1'}'
+        apiUrl: '${process.env.NEXT_PUBLIC_API_URL || 'https://api.intelliconvo.com'}'
       });
     };
     document.head.appendChild(script);
