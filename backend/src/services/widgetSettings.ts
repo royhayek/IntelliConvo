@@ -165,6 +165,21 @@ export const defaultWidgetSettings: Omit<Prisma.WidgetSettingsCreateInput, 'site
   enableAnalytics: true,
   trackMessageEvents: true,
   trackUserInteractions: true,
+
+  // Human Handoff
+  enableHumanHandoff: true,
+  humanHandoffButtonText: 'Talk to a Human',
+  humanHandoffButtonShow: true,
+  humanHandoffButtonPosition: 'in-chat',
+  agentTypingText: 'Agent is typing...',
+  agentJoinedMessage: 'An agent has joined the conversation',
+  waitingForAgentMessage: 'Please wait while we connect you to an agent...',
+  noAgentsAvailableMessage: "All agents are currently busy. We'll respond as soon as possible.",
+  agentLeftMessage: 'The agent has left the conversation.',
+  showAgentAvatar: true,
+  agentAvatarFallback: 'AG',
+  agentBubbleBackgroundColor: '#10b981',
+  agentBubbleTextColor: '#ffffff',
 };
 
 /**
