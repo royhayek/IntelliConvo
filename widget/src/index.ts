@@ -1365,8 +1365,13 @@ class IntelliConvoWidget {
       this.voiceHandler.stopVoiceInput();
       this.updateSpeakStatus('Ready to listen');
       this.toggleWaveform(false);
+      this.showProcessingIndicator(false);
       return;
     }
+
+    // Stop any ongoing TTS and hide processing indicator before starting new voice input
+    this.textToSpeechHandler.stop();
+    this.showProcessingIndicator(false);
 
     // Update UI to show listening state
     this.updateSpeakStatus('Listening...');
