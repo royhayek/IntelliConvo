@@ -501,7 +501,7 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
 }
 
 async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
-  logger.info(`Invoice payment succeeded: ${invoice.id}`);
+  logger.info(`Invoice payment succeeded: ${invoice.id}, amount: ${invoice.amount_paid}, subscription: ${invoice.subscription}`);
 
   // Create billing transaction record
   if (invoice.subscription) {
@@ -510,38 +510,47 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
     });
 
     if (subscription) {
+      logger.info(`Found subscription ${subscription.id} for invoice ${invoice.id}, status: ${subscription.status}`);
+
       // Check if transaction already exists (avoid duplicates from checkout.session.completed)
       const existingTransaction = await prisma.billingTransaction.findFirst({
         where: { stripeInvoiceId: invoice.id },
       });
 
       if (!existingTransaction) {
+        const transactionAmount = (invoice.amount_paid || 0) / 100;
+        logger.info(`Creating billing transaction for invoice ${invoice.id}, amount: $${transactionAmount}, userId: ${subscription.userId}, siteId: ${subscription.siteId}`);
+
         await prisma.billingTransaction.create({
           data: {
             userId: subscription.userId,
             siteId: subscription.siteId,
             invoiceId: invoice.number || invoice.id,
-            amount: (invoice.amount_paid || 0) / 100, // Convert from cents
+            amount: transactionAmount, // Convert from cents
             currency: invoice.currency.toUpperCase(),
             status: 'paid',
             stripeInvoiceId: invoice.id,
           },
         });
-        logger.info(`Created billing transaction for invoice ${invoice.id}`);
+        logger.info(`✓ Successfully created billing transaction for invoice ${invoice.id}`);
       } else {
-        logger.info(`Transaction already exists for invoice ${invoice.id}, skipping`);
+        logger.info(`Transaction already exists for invoice ${invoice.id} (transaction ID: ${existingTransaction.id}), skipping`);
       }
 
       // Update subscription status if it was a trial
       if (subscription.status === 'TRIAL') {
+        logger.info(`Converting subscription ${subscription.id} from TRIAL to ACTIVE`);
         await prisma.subscription.update({
           where: { id: subscription.id },
           data: { status: 'ACTIVE' },
         });
+        logger.info(`✓ Successfully converted subscription ${subscription.id} to ACTIVE`);
       }
     } else {
-      logger.warn(`No subscription found for stripeSubscriptionId: ${invoice.subscription}`);
+      logger.error(`❌ CRITICAL: No subscription found for stripeSubscriptionId: ${invoice.subscription} - Transaction NOT created for invoice ${invoice.id}`);
     }
+  } else {
+    logger.error(`❌ CRITICAL: Invoice ${invoice.id} has no subscription ID - Transaction NOT created`);
   }
 }
 
