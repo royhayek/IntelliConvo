@@ -13,4 +13,6 @@ export interface AdminMessage {
   timestamp: string;
   /** @nullable */
   tokensUsed: number | null;
+  /** @nullable */
+  agentId?: string | null;
 }

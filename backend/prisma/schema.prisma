@@ -65,6 +65,14 @@ enum NotificationType {
 enum ConversationRole {
   USER
   ASSISTANT
+  AGENT
+}
+
+enum ConversationStatus {
+  ACTIVE        // Normal AI chat
+  NEEDS_AGENT   // Escalated, waiting for agent
+  AGENT_ACTIVE  // Agent is handling
+  RESOLVED      // Closed by agent
 }
 
 enum FileStatus {
@@ -101,6 +109,8 @@ model User {
   billingHistory    BillingTransaction[]
   notifications     Notification[]
   emailLogs         EmailLog[]
+  agentConversations Conversation[]      @relation("AgentConversations")
+  agentMessages     Message[]            @relation("AgentMessages")
 
   @@index([email])
   @@index([authProvider, authProviderId])
@@ -449,6 +459,32 @@ model WidgetSettings {
   trackMessageEvents        Boolean     @default(true)
   trackUserInteractions     Boolean     @default(true)
 
+  // ============================================
+  // CATEGORY H: HUMAN HANDOFF
+  // ============================================
+
+  // Enable/disable human handoff feature
+  enableHumanHandoff              Boolean     @default(true)
+
+  // Button settings
+  humanHandoffButtonText          String      @default("Talk to a Human")
+  humanHandoffButtonShow          Boolean     @default(true)
+  humanHandoffButtonPosition      String      @default("in-chat") // in-chat, header, floating
+
+  // Messages
+  agentTypingText                 String      @default("Agent is typing...")
+  agentJoinedMessage              String      @default("An agent has joined the conversation")
+  waitingForAgentMessage          String      @default("Please wait while we connect you to an agent...")
+  noAgentsAvailableMessage        String      @default("All agents are currently busy. We'll respond as soon as possible.")
+  agentLeftMessage                String      @default("The agent has left the conversation.")
+
+  // Visual indicators
+  showAgentAvatar                 Boolean     @default(true)
+  agentAvatarUrl                  String?
+  agentAvatarFallback             String      @default("AG")
+  agentBubbleBackgroundColor      String      @default("#10b981") // Green for agent
+  agentBubbleTextColor            String      @default("#ffffff")
+
   // Timestamps
   createdAt                 DateTime    @default(now())
   updatedAt                 DateTime    @updatedAt
@@ -543,19 +579,31 @@ model ConversationStarter {
 }
 
 model Conversation {
-  id              String      @id @default(uuid())
+  id              String              @id @default(uuid())
   siteId          String
-  site            Site        @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  site            Site                @relation(fields: [siteId], references: [id], onDelete: Cascade)
 
   sessionId       String
-  userIdentifier  String?     // Can be anonymous
+  userIdentifier  String?             // Can be anonymous
   userAgent       String?
   ipAddress       String?
-  isTest          Boolean     @default(false)  // True for playground/test conversations
+  isTest          Boolean             @default(false)  // True for playground/test conversations
 
-  startedAt       DateTime    @default(now())
-  lastMessageAt   DateTime    @default(now())
-  messageCount    Int         @default(0)
+  startedAt       DateTime            @default(now())
+  lastMessageAt   DateTime            @default(now())
+  messageCount    Int                 @default(0)
+
+  // Human Handoff fields
+  status              ConversationStatus  @default(ACTIVE)
+  escalatedAt         DateTime?
+  escalationReason    String?
+  assignedAgentId     String?
+  assignedAgent       User?               @relation("AgentConversations", fields: [assignedAgentId], references: [id], onDelete: SetNull)
+  agentJoinedAt       DateTime?
+  resolvedAt          DateTime?
+  agentNotes          String?             @db.Text
+  feedbackRating      Int?                // 1-5 star rating
+  feedbackComment     String?             @db.Text
 
   messages        Message[]
 
@@ -564,6 +612,9 @@ model Conversation {
   @@index([startedAt])
   @@index([siteId, lastMessageAt])
   @@index([siteId, isTest])
+  @@index([status])
+  @@index([siteId, status])
+  @@index([assignedAgentId])
 }
 
 model Message {
@@ -578,9 +629,14 @@ model Message {
   tokensUsed      Int?
   costInCents     Float?
 
+  // Human agent tracking
+  agentId         String?
+  agent           User?             @relation("AgentMessages", fields: [agentId], references: [id], onDelete: SetNull)
+
   @@index([conversationId])
   @@index([timestamp])
   @@index([conversationId, timestamp])
+  @@index([agentId])
 }
 
 model KnowledgeFile {

@@ -8,4 +8,5 @@ export type GetAdminMessagesRole = typeof GetAdminMessagesRole[keyof typeof GetA
 export const GetAdminMessagesRole = {
   USER: 'USER',
   ASSISTANT: 'ASSISTANT',
+  AGENT: 'AGENT',
 } as const;

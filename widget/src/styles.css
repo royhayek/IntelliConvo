@@ -1869,3 +1869,216 @@ body.ic-mobile-fullscreen .intelliconvo-widget-container {
     padding: 10px 16px;
   }
 }
+
+/* Human Handoff Styles */
+.intelliconvo-handoff-button-container {
+  padding: 12px 16px;
+  border-top: 1px solid var(--border-color);
+}
+
+.intelliconvo-handoff-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--primary-color, #4f46e5);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-button, 8px);
+  font-family: var(--font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  font-size: var(--font-size, 14px);
+  font-weight: var(--font-weight-medium, 500);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.intelliconvo-handoff-button:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.intelliconvo-handoff-button:active {
+  transform: translateY(0);
+}
+
+.intelliconvo-handoff-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.intelliconvo-handoff-floating {
+  position: absolute;
+  bottom: 80px;
+  right: 16px;
+  padding: 0;
+  border: none;
+  z-index: 10;
+}
+
+.intelliconvo-handoff-floating .intelliconvo-handoff-button {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Agent message styles */
+.intelliconvo-transcript-agent {
+  align-self: flex-start;
+}
+
+.intelliconvo-transcript-agent .intelliconvo-transcript-content {
+  background: var(--assistant-bubble-bg, #10b981);
+  color: var(--assistant-bubble-text, white);
+  border-radius: var(--assistant-bubble-radius, 18px);
+  padding: 12px 16px;
+  max-width: 85%;
+  word-wrap: break-word;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.intelliconvo-transcript-agent .intelliconvo-transcript-avatar {
+  background: var(--primary-color, #10b981);
+}
+
+.intelliconvo-agent-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  color: white;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: var(--font-weight-bold, 600);
+  letter-spacing: -0.5px;
+}
+
+/* System message styles */
+.intelliconvo-system-message {
+  padding: 12px 16px;
+  text-align: center;
+}
+
+.intelliconvo-system-message-content {
+  display: inline-block;
+  padding: 8px 16px;
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--text-secondary-color);
+  border-radius: var(--border-radius);
+  font-size: calc(var(--font-size) - 1px);
+  font-weight: var(--font-weight-normal);
+}
+
+/* Feedback rating styles */
+.intelliconvo-feedback {
+  padding: 16px;
+  text-align: center;
+  margin: 12px 0;
+}
+
+.intelliconvo-feedback-content {
+  background: var(--ic-bg, #ffffff);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: var(--border-radius, 12px);
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.intelliconvo-feedback-title {
+  margin: 0 0 16px 0;
+  font-size: calc(var(--font-size, 14px) + 1px);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--text-primary-color, #1f2937);
+}
+
+.intelliconvo-feedback-stars {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.intelliconvo-star {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: #d1d5db;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.intelliconvo-star:hover {
+  transform: scale(1.1);
+}
+
+.intelliconvo-star:active {
+  transform: scale(0.95);
+}
+
+.intelliconvo-star svg {
+  display: block;
+  width: 32px;
+  height: 32px;
+}
+
+.intelliconvo-feedback-thankyou {
+  margin: 0;
+  font-size: var(--font-size, 14px);
+  color: var(--primary-color, #4f46e5);
+  font-weight: var(--font-weight-medium, 500);
+}
+
+/* Agent typing indicator */
+.intelliconvo-agent-typing {
+  padding: 12px 16px;
+}
+
+.intelliconvo-agent-typing .intelliconvo-typing-bubble {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--assistant-bubble-bg);
+  border-radius: var(--assistant-bubble-radius);
+  max-width: fit-content;
+}
+
+.intelliconvo-agent-typing .intelliconvo-typing-dots {
+  display: flex;
+  gap: 4px;
+}
+
+.intelliconvo-agent-typing .intelliconvo-typing-dots span {
+  width: 6px;
+  height: 6px;
+  background: var(--primary-color);
+  border-radius: 50%;
+  animation: intelliconvo-typing-bounce 1.4s infinite ease-in-out both;
+}
+
+.intelliconvo-agent-typing .intelliconvo-typing-dots span:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.intelliconvo-agent-typing .intelliconvo-typing-dots span:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+.intelliconvo-agent-typing .intelliconvo-typing-text {
+  color: var(--text-secondary-color);
+  font-size: calc(var(--font-size) - 1px);
+}
+
+@keyframes intelliconvo-typing-bounce {
+  0%, 80%, 100% {
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

@@ -16,6 +16,14 @@ export interface ConversationDTO {
   startedAt: string;
   lastMessageAt: string;
   messageCount: number;
+  // Human handoff fields
+  status: 'ACTIVE' | 'NEEDS_AGENT' | 'AGENT_ACTIVE' | 'RESOLVED';
+  escalatedAt?: string | null;
+  escalationReason?: string | null;
+  assignedAgentId?: string | null;
+  agentJoinedAt?: string | null;
+  resolvedAt?: string | null;
+  agentNotes?: string | null;
 }
 
 /**
@@ -35,11 +43,12 @@ export interface ConversationWithSiteDTO extends ConversationDTO {
 export interface MessageDTO {
   id: string;
   conversationId: string;
-  role: 'USER' | 'ASSISTANT';
+  role: 'USER' | 'ASSISTANT' | 'AGENT';
   content: string;
   timestamp: string;
   tokensUsed: number | null;
   costInCents: number | null;
+  agentId?: string | null;
 }
 
 /**
@@ -52,6 +61,11 @@ export interface ConversationDetailsDTO extends ConversationDTO {
     siteUrl: string;
   };
   messages: MessageDTO[];
+  assignedAgent?: {
+    id: string;
+    fullName: string | null;
+    email: string;
+  } | null;
 }
 
 /**
@@ -111,7 +125,7 @@ export interface ConversationAnalyticsResponse {
 export interface MessageSearchResult {
   id: string;
   content: string;
-  role: 'USER' | 'ASSISTANT';
+  role: 'USER' | 'ASSISTANT' | 'AGENT';
   timestamp: string;
   conversation: {
     id: string;

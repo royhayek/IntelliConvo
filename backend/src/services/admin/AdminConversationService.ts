@@ -78,6 +78,19 @@ class AdminConversationService {
               },
             },
           },
+          assignedAgent: {
+            select: {
+              id: true,
+              fullName: true,
+              email: true,
+            },
+          },
+          messages: {
+            select: {
+              tokensUsed: true,
+              costInCents: true,
+            },
+          },
           _count: {
             select: {
               messages: true,
@@ -92,11 +105,20 @@ class AdminConversationService {
     ]);
 
     return {
-      conversations: conversations.map((conv) => ({
-        ...conv,
-        messagesCount: conv._count.messages,
-        _count: undefined,
-      })),
+      conversations: conversations.map((conv) => {
+        // Calculate total tokens and cost from messages
+        const totalTokens = conv.messages.reduce((sum, msg) => sum + (msg.tokensUsed || 0), 0);
+        const totalCostCents = conv.messages.reduce((sum, msg) => sum + (msg.costInCents || 0), 0);
+
+        return {
+          ...conv,
+          messageCount: conv._count.messages,
+          totalTokens,
+          totalCostCents,
+          messages: undefined, // Remove messages from response
+          _count: undefined,
+        };
+      }),
       pagination: {
         page,
         limit,
@@ -129,6 +151,13 @@ class AdminConversationService {
         },
         messages: {
           orderBy: { timestamp: 'asc' },
+        },
+        assignedAgent: {
+          select: {
+            id: true,
+            fullName: true,
+            email: true,
+          },
         },
       },
     });

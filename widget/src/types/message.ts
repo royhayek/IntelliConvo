@@ -4,10 +4,11 @@ export interface MessageMetadata {
 
 export interface Message {
   id: string;
-  role: 'user' | 'assistant';
+  role: 'user' | 'assistant' | 'agent';
   content: string;
   timestamp: string;
   metadata?: MessageMetadata;
+  agentId?: string;
 }
 
 export interface ConversationStarters {

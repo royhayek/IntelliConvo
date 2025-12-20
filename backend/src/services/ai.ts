@@ -75,6 +75,13 @@ function buildSystemPrompt(
 
   prompt += `\n\nGuidelines:\n- Answer based only on provided context\n- Be concise and helpful\n- Admit if you don't know something`;
 
+  // Add human handoff guidance if enabled
+  if (site.widgetSettings?.enableHumanHandoff) {
+    prompt += `\n- ONLY suggest human handoff when truly necessary: "I can connect you with a human agent if you'd like. Just click the button below."`;
+    prompt += `\n- Suggest handoff ONLY for: billing/payment issues, account access problems, complex technical issues you cannot solve, urgent complaints, or explicit requests for human help`;
+    prompt += `\n- DO NOT suggest handoff for: greetings, simple questions, general inquiries, or issues you can help with`;
+  }
+
   if (relevantContent.length > 0) {
     prompt += '\n\nContext:\n';
     for (const content of relevantContent) {
@@ -131,9 +138,16 @@ export async function streamResponseWithUsage(
   onChunk: (chunk: string) => void
 ): Promise<StreamResult> {
   try {
-    // Get site information
+    // Get site information with widget settings for handoff guidance
     const site = await prisma.site.findUnique({
       where: { id: context.siteId },
+      include: {
+        widgetSettings: {
+          select: {
+            enableHumanHandoff: true,
+          },
+        },
+      },
     });
 
     if (!site) {

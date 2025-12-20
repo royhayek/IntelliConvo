@@ -179,4 +179,15 @@ export interface WidgetSettings {
   enableAnalytics: boolean;
   trackMessageEvents: boolean;
   trackUserInteractions: boolean;
+
+  // Human Handoff
+  enableHumanHandoff: boolean;
+  humanHandoffButtonText: string;
+  humanHandoffButtonShow: boolean;
+  humanHandoffButtonPosition: string;
+  agentTypingText: string;
+  agentJoinedMessage: string;
+  waitingForAgentMessage: string;
+  noAgentsAvailableMessage: string;
+  agentLeftMessage: string;
 }

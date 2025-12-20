@@ -145,16 +145,19 @@ export class MessageHandler {
   /**
    * Displays a message in the chat UI
    */
-  public displayMessage(role: 'user' | 'assistant', content: string, messageId?: string): void {
+  public displayMessage(role: 'user' | 'assistant' | 'agent', content: string, messageId?: string, agentId?: string): void {
     const messagesContainer = document.getElementById('intelliconvo-messages');
     if (!messagesContainer) return;
 
     const messageDiv = document.createElement('div');
     messageDiv.className = `intelliconvo-transcript-message intelliconvo-transcript-${role}`;
     messageDiv.setAttribute('data-message-id', messageId || this.generateMessageId());
+    if (agentId) {
+      messageDiv.setAttribute('data-agent-id', agentId);
+    }
 
-    // Sanitize HTML - use configured tags for assistant messages, escape all for user
-    const sanitizedContent = role === 'assistant'
+    // Sanitize HTML - use configured tags for assistant/agent messages, escape all for user
+    const sanitizedContent = (role === 'assistant' || role === 'agent')
       ? sanitizeHtmlWithConfig(content, this.dependencies.settings)
       : sanitizeHtml(content);
 
@@ -175,13 +178,15 @@ export class MessageHandler {
       }
     }
 
-    // Show avatar for assistant messages if enabled
-    const showAvatar = this.dependencies.settings?.showMessageAvatar && role === 'assistant';
+    // Show avatar for assistant/agent messages if enabled
+    const showAvatar = this.dependencies.settings?.showMessageAvatar && (role === 'assistant' || role === 'agent');
     const avatarHtml = showAvatar ? `
       <div class="intelliconvo-transcript-avatar">
-        ${this.dependencies.settings?.botAvatarUrl
-          ? `<img src="${this.dependencies.settings.botAvatarUrl}" alt="${this.dependencies.settings?.botName || 'Assistant'}" />`
-          : `<span>${this.dependencies.settings?.botAvatarFallback || 'AI'}</span>`
+        ${role === 'agent'
+          ? `<span class="intelliconvo-agent-avatar">A</span>`
+          : this.dependencies.settings?.botAvatarUrl
+            ? `<img src="${this.dependencies.settings.botAvatarUrl}" alt="${this.dependencies.settings?.botName || 'Assistant'}" />`
+            : `<span>${this.dependencies.settings?.botAvatarFallback || 'AI'}</span>`
         }
       </div>
     ` : '';
@@ -197,17 +202,20 @@ export class MessageHandler {
     messagesContainer.appendChild(messageDiv);
     this.scrollToBottom();
 
-    if (role === 'assistant') {
+    if (role === 'assistant' || role === 'agent') {
       const message: Message = {
         id: messageId || this.generateMessageId(),
         role,
         content: sanitizedContent,
         timestamp: new Date().toISOString(),
+        agentId,
       };
       this.dependencies.messages.push(message);
 
-      // Store the message element for streaming
-      window.lastAssistantMessage = messageDiv;
+      // Store the message element for streaming (assistant only)
+      if (role === 'assistant') {
+        window.lastAssistantMessage = messageDiv;
+      }
       // Store the message ID for updating content during streaming
       messageDiv.setAttribute('data-message-id', message.id);
 
@@ -216,6 +224,25 @@ export class MessageHandler {
         this.dependencies.onMessage(message);
       }
     }
+  }
+
+  /**
+   * Displays a system message in the chat UI
+   */
+  public displaySystemMessage(content: string): void {
+    const messagesContainer = document.getElementById('intelliconvo-messages');
+    if (!messagesContainer) return;
+
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'intelliconvo-system-message';
+
+    const sanitizedContent = sanitizeHtml(content);
+    messageDiv.innerHTML = `
+      <div class="intelliconvo-system-message-content">${sanitizedContent}</div>
+    `;
+
+    messagesContainer.appendChild(messageDiv);
+    this.scrollToBottom();
   }
 
   /**

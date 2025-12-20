@@ -8,11 +8,16 @@ import {
   User,
   Bot,
   ArrowLeft,
+  UserCog,
+  Clock,
+  AlertCircle,
+  DollarSign,
+  Zap,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { SectionHeader } from "@/components/ui/section-header";
-import { cn } from "@/lib/utils";
+import { cn, formatCents } from "@/lib/utils";
 import {
   useGetConversations,
   useGetConversationsConversationId,
@@ -178,14 +183,22 @@ export function ConversationsTab({ site }: ConversationsTabProps) {
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between mb-0.5 sm:mb-1">
-                              <p className={cn(
-                                "text-xs sm:text-sm font-medium truncate",
-                                isSelected
-                                  ? "text-indigo-900 dark:text-indigo-100"
-                                  : "text-gray-900 dark:text-white"
-                              )}>
-                                {displayName}
-                              </p>
+                              <div className="flex items-center gap-1.5 min-w-0">
+                                <p className={cn(
+                                  "text-xs sm:text-sm font-medium truncate",
+                                  isSelected
+                                    ? "text-indigo-900 dark:text-indigo-100"
+                                    : "text-gray-900 dark:text-white"
+                                )}>
+                                  {displayName}
+                                </p>
+                                {conversation.status === "NEEDS_AGENT" && (
+                                  <span className="flex-shrink-0 h-2 w-2 rounded-full bg-orange-500 animate-pulse" />
+                                )}
+                                {conversation.status === "AGENT_ACTIVE" && (
+                                  <UserCog className="flex-shrink-0 h-3 w-3 text-green-600 dark:text-green-400" />
+                                )}
+                              </div>
                               <span className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 flex-shrink-0 ml-2">
                                 {formatConversationDate(conversation.startedAt)}
                               </span>
@@ -212,35 +225,63 @@ export function ConversationsTab({ site }: ConversationsTabProps) {
               <>
                 {/* Conversation Header */}
                 <div className="p-3 sm:p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 flex-shrink-0">
-                  <div className="flex items-center gap-2 sm:gap-3">
+                  <div className="flex items-start gap-2 sm:gap-3">
                     {/* Back button for mobile */}
                     <button
                       onClick={handleBack}
-                      className="sm:hidden flex items-center justify-center h-8 w-8 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                      className="sm:hidden flex items-center justify-center h-8 w-8 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex-shrink-0"
                     >
                       <ArrowLeft className="h-5 w-5 text-gray-600 dark:text-gray-400" />
                     </button>
-                    <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center">
+                    <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center flex-shrink-0">
                       <span className="text-xs sm:text-sm font-medium text-indigo-700 dark:text-indigo-300">
                         {(selectedConversationData.userIdentifier || "A").charAt(0).toUpperCase()}
                       </span>
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h3 className="text-sm sm:text-base font-medium text-gray-900 dark:text-white truncate">
-                        {selectedConversationData.userIdentifier || "Anonymous User"}
-                      </h3>
-                      <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 truncate">
-                        Started {selectedConversationData.startedAt
-                          ? new Date(selectedConversationData.startedAt).toLocaleDateString([], {
-                              month: "short",
-                              day: "numeric",
-                              year: window.innerWidth < 640 ? undefined : "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit"
-                            })
-                          : "N/A"
-                        }
-                      </p>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="text-sm sm:text-base font-medium text-gray-900 dark:text-white truncate">
+                          {selectedConversationData.userIdentifier || "Anonymous User"}
+                        </h3>
+                        {selectedConversationData.status && (
+                          <span className={cn(
+                            "text-[10px] sm:text-xs px-1.5 py-0.5 rounded-full font-medium",
+                            selectedConversationData.status === "ACTIVE" && "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",
+                            selectedConversationData.status === "NEEDS_AGENT" && "bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300",
+                            selectedConversationData.status === "AGENT_ACTIVE" && "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
+                            selectedConversationData.status === "RESOLVED" && "bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300"
+                          )}>
+                            {selectedConversationData.status.replace(/_/g, " ")}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2 sm:gap-3 text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 mt-0.5 flex-wrap">
+                        <span className="flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          Started {selectedConversationData.startedAt
+                            ? new Date(selectedConversationData.startedAt).toLocaleDateString([], {
+                                month: "short",
+                                day: "numeric",
+                                year: window.innerWidth < 640 ? undefined : "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit"
+                              })
+                            : "N/A"
+                          }
+                        </span>
+                        {selectedConversationData.assignedAgent && (
+                          <span className="flex items-center gap-1">
+                            <UserCog className="h-3 w-3" />
+                            {selectedConversationData.assignedAgent.fullName || selectedConversationData.assignedAgent.email}
+                          </span>
+                        )}
+                      </div>
+                      {selectedConversationData.escalationReason && (
+                        <div className="flex items-start gap-1 mt-1 p-1.5 bg-orange-50 dark:bg-orange-900/20 rounded text-[10px] sm:text-xs text-orange-700 dark:text-orange-300">
+                          <AlertCircle className="h-3 w-3 mt-0.5 flex-shrink-0" />
+                          <span>{selectedConversationData.escalationReason}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -255,22 +296,27 @@ export function ConversationsTab({ site }: ConversationsTabProps) {
                     <div className="space-y-4">
                       {selectedConversationData.messages.map((message: Message) => {
                         const isUser = message.role === "USER";
+                        const isAgent = message.role === "AGENT";
+                        const isAssistant = message.role === "ASSISTANT";
+
                         return (
                           <div
                             key={message.id}
                             className={cn(
                               "flex items-end gap-1.5 sm:gap-2",
-                              isUser ? "flex-row" : "flex-row-reverse"
+                              isUser ? "flex-row-reverse" : "flex-row"
                             )}
                           >
                             <div className={cn(
                               "h-6 w-6 sm:h-8 sm:w-8 rounded-full flex items-center justify-center flex-shrink-0",
-                              isUser
-                                ? "bg-gray-200 dark:bg-gray-700"
-                                : "bg-indigo-600"
+                              isUser && "bg-indigo-600",
+                              isAgent && "bg-green-600",
+                              isAssistant && "bg-gray-600 dark:bg-gray-700"
                             )}>
                               {isUser ? (
-                                <User className="h-3 w-3 sm:h-4 sm:w-4 text-gray-600 dark:text-gray-300" />
+                                <User className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
+                              ) : isAgent ? (
+                                <UserCog className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
                               ) : (
                                 <Bot className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
                               )}
@@ -280,19 +326,43 @@ export function ConversationsTab({ site }: ConversationsTabProps) {
                             )}>
                               <div className={cn(
                                 "px-3 py-2 sm:px-4 sm:py-2.5 rounded-2xl text-xs sm:text-sm",
-                                isUser
-                                  ? "bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-bl-md shadow-sm border border-gray-200 dark:border-gray-700"
-                                  : "bg-indigo-600 text-white rounded-br-md"
+                                isUser && "bg-indigo-600 text-white rounded-br-md",
+                                isAgent && "bg-green-600 text-white rounded-bl-md",
+                                isAssistant && "bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-bl-md shadow-sm border border-gray-200 dark:border-gray-700"
                               )}>
+                                {isAgent && message.agentId && (
+                                  <div className="flex items-center gap-1 mb-1 pb-1 border-b border-green-400/30">
+                                    <UserCog className="h-3 w-3" />
+                                    <span className="text-[10px] font-medium opacity-90">
+                                      Agent
+                                    </span>
+                                  </div>
+                                )}
                                 <p className="whitespace-pre-wrap break-words">{message.content}</p>
                               </div>
-                              <p className={cn(
-                                "text-[9px] sm:text-[10px] mt-0.5 sm:mt-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity",
-                                isUser ? "text-left" : "text-right",
+                              <div className={cn(
+                                "flex items-center gap-2 text-[9px] sm:text-[10px] mt-0.5 sm:mt-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity",
+                                isUser ? "flex-row-reverse" : "flex-row",
                                 "text-gray-500 dark:text-gray-400"
                               )}>
-                                {formatMessageTime(message.timestamp)}
-                              </p>
+                                <span>{formatMessageTime(message.timestamp)}</span>
+                                {(message.tokensUsed || message.costInCents) && (
+                                  <span className="flex items-center gap-1">
+                                    {message.tokensUsed && (
+                                      <span className="flex items-center gap-0.5">
+                                        <Zap className="h-2.5 w-2.5" />
+                                        {message.tokensUsed}
+                                      </span>
+                                    )}
+                                    {message.costInCents && (
+                                      <span className="flex items-center gap-0.5">
+                                        <DollarSign className="h-2.5 w-2.5" />
+                                        {formatCents(message.costInCents)}
+                                      </span>
+                                    )}
+                                  </span>
+                                )}
+                              </div>
                             </div>
                           </div>
                         );

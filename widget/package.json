@@ -1,6 +1,6 @@
 {
   "name": "@intelliconvo/widget",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "IntelliConvo Widget - Embeddable chat widget",
   "main": "dist/widget.js",
   "scripts": {

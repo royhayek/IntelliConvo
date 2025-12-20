@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { MoreHorizontal, Eye, Trash2, User, Bot, Coins } from "lucide-react";
+import { MoreHorizontal, Eye, Trash2, User, Bot, Coins, UserCog } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -65,16 +65,28 @@ function truncateContent(content: string, maxLength: number = 100) {
 }
 
 function getRoleBadge(role: string) {
-  if (role === "user" || role === "USER") {
+  const normalizedRole = role.toUpperCase();
+
+  if (normalizedRole === "USER") {
     return (
-      <Badge variant="outline" className="bg-blue-50 text-blue-700">
+      <Badge variant="outline" className="bg-blue-50 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
         <User className="h-3 w-3 mr-1" />
         User
       </Badge>
     );
   }
+
+  if (normalizedRole === "AGENT") {
+    return (
+      <Badge variant="outline" className="bg-green-50 text-green-700 dark:bg-green-900 dark:text-green-300">
+        <UserCog className="h-3 w-3 mr-1" />
+        Agent
+      </Badge>
+    );
+  }
+
   return (
-    <Badge variant="outline" className="bg-purple-50 text-purple-700">
+    <Badge variant="outline" className="bg-purple-50 text-purple-700 dark:bg-purple-900 dark:text-purple-300">
       <Bot className="h-3 w-3 mr-1" />
       Assistant
     </Badge>

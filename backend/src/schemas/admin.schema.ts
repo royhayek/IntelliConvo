@@ -412,10 +412,20 @@ const adminConversationSchema = registry.register(
     startedAt: z.string(),
     lastMessageAt: z.string(),
     messageCount: z.number().int(),
+    status: z.enum(['ACTIVE', 'NEEDS_AGENT', 'AGENT_ACTIVE', 'RESOLVED']).optional(),
+    assignedAgentId: z.string().uuid().nullable().optional(),
     site: z.object({
       id: z.string().uuid(),
       siteName: z.string(),
     }).optional(),
+    assignedAgent: z.object({
+      id: z.string().uuid(),
+      fullName: z.string().nullable(),
+      email: z.string(),
+    }).nullable().optional(),
+    // Token and cost stats
+    totalTokens: z.number().int().optional(),
+    totalCostCents: z.number().optional(),
   }).openapi({ description: 'Admin conversation information' })
 );
 
@@ -439,6 +449,14 @@ const adminConversationDetailSchema = registry.register(
     messageCount: z.number().int(),
     userAgent: z.string().nullable(),
     ipAddress: z.string().nullable(),
+    // Human handoff fields
+    status: z.enum(['ACTIVE', 'NEEDS_AGENT', 'AGENT_ACTIVE', 'RESOLVED']).optional(),
+    escalatedAt: z.string().nullable().optional(),
+    escalationReason: z.string().nullable().optional(),
+    assignedAgentId: z.string().uuid().nullable().optional(),
+    agentJoinedAt: z.string().nullable().optional(),
+    resolvedAt: z.string().nullable().optional(),
+    agentNotes: z.string().nullable().optional(),
     site: z.object({
       id: z.string().uuid(),
       siteName: z.string(),
@@ -451,17 +469,24 @@ const adminConversationDetailSchema = registry.register(
     }),
     messages: z.array(z.object({
       id: z.string().uuid(),
-      role: z.enum(['USER', 'ASSISTANT']),
+      role: z.enum(['USER', 'ASSISTANT', 'AGENT']),
       content: z.string(),
       timestamp: z.string(),
       tokensUsed: z.number().int().nullable(),
       costInCents: z.number().nullable(),
+      agentId: z.string().uuid().nullable().optional(),
     })),
     stats: z.object({
       messagesCount: z.number().int(),
       totalTokens: z.number().int(),
       totalCostCents: z.number(),
     }),
+    // Assigned agent information
+    assignedAgent: z.object({
+      id: z.string().uuid(),
+      fullName: z.string().nullable(),
+      email: z.string(),
+    }).nullable().optional(),
   }).openapi({ description: 'Detailed admin conversation information with messages' })
 );
 
@@ -474,10 +499,11 @@ const adminMessageItemSchema = registry.register(
   z.object({
     id: z.string().uuid(),
     conversationId: z.string().uuid(),
-    role: z.enum(['USER', 'ASSISTANT']),
+    role: z.enum(['USER', 'ASSISTANT', 'AGENT']),
     content: z.string(),
     timestamp: z.string(),
     tokensUsed: z.number().int().nullable(),
+    agentId: z.string().uuid().nullable().optional(),
   }).openapi({ description: 'Admin message information' })
 );
 
@@ -1698,7 +1724,7 @@ registry.registerPath({
       limit: z.string().optional(),
       conversationId: z.string().optional(),
       siteId: z.string().optional(),
-      role: z.enum(['USER', 'ASSISTANT']).optional(),
+      role: z.enum(['USER', 'ASSISTANT', 'AGENT']).optional(),
       dateFrom: z.string().optional(),
       dateTo: z.string().optional(),
       sortOrder: z.enum(['asc', 'desc']).optional(),

@@ -2,10 +2,11 @@ import { Server, Socket } from 'socket.io';
 import { prisma } from '../lib/prisma';
 import { streamResponseWithUsage } from './ai';
 import { logger } from '../utils/logger';
-import { ConversationRole } from '@prisma/client';
+import { ConversationRole, ConversationStatus } from '@prisma/client';
 import { adminStatsService } from './admin';
 import { isOriginAllowed } from '../utils/hostValidation';
 import { getConfig } from '../config';
+import { conversationHandoffService } from './conversation/ConversationHandoffService';
 
 // Store IO instance for broadcasting from other parts of the app
 let ioInstance: Server | null = null;
@@ -54,6 +55,61 @@ export function emitForceLogout(userId: string): void {
     message: 'Your session has been terminated by an administrator.',
   });
   logger.info(`Force logout event emitted to user ${userId}`);
+}
+
+/**
+ * Broadcast conversation escalation to all agents monitoring a site
+ */
+export async function broadcastConversationEscalated(conversationId: string, siteId: string): Promise<void> {
+  if (!ioInstance) return;
+
+  try {
+    const conversation = await prisma.conversation.findUnique({
+      where: { id: conversationId },
+      include: {
+        site: { select: { siteName: true, siteUrl: true } },
+        messages: {
+          orderBy: { timestamp: 'desc' },
+          take: 1,
+        },
+      },
+    });
+
+    if (conversation) {
+      // Notify all agents monitoring this site
+      ioInstance.to(`site:${siteId}`).emit('conversation-escalated', serializeForJSON(conversation));
+      logger.info(`Conversation ${conversationId} escalation broadcast to site ${siteId}`);
+    }
+  } catch (error) {
+    logger.error('Error broadcasting conversation escalation:', error);
+  }
+}
+
+/**
+ * Broadcast conversation status change
+ */
+export function broadcastConversationStatusChange(
+  conversationId: string,
+  status: ConversationStatus,
+  data?: any
+): void {
+  if (!ioInstance) return;
+
+  ioInstance.to(`conversation:${conversationId}`).emit('conversation-status-changed', {
+    conversationId,
+    status,
+    ...data,
+  });
+  logger.info(`Conversation ${conversationId} status changed to ${status}`);
+}
+
+/**
+ * Broadcast new message in conversation (for real-time updates in dashboard)
+ */
+export function broadcastConversationMessage(conversationId: string, message: any): void {
+  if (!ioInstance) return;
+
+  ioInstance.to(`conversation:${conversationId}`).emit('conversation-message', serializeForJSON(message));
 }
 
 interface ChatMessage {
@@ -170,8 +226,8 @@ export function initializeSocketIO(io: Server): void {
           }
         }
 
-        // Validate origin
-        if (origin && site.activeHosts.length > 0) {
+        // Validate origin (skip validation for test conversations from playground)
+        if (!isTest && origin && site.activeHosts.length > 0) {
           const allowedHosts = site.activeHosts
             .filter((host) => host.isEnabled)
             .map((host) => host.hostName);
@@ -208,7 +264,7 @@ export function initializeSocketIO(io: Server): void {
         }
 
         // Save user message
-        await prisma.message.create({
+        const userMessage = await prisma.message.create({
           data: {
             conversationId: conversation.id,
             role: ConversationRole.USER,
@@ -224,6 +280,23 @@ export function initializeSocketIO(io: Server): void {
             messageCount: { increment: 1 },
           },
         });
+
+        // Check if agent is active - if yes, route to agent instead of AI
+        if (conversation.status === ConversationStatus.AGENT_ACTIVE) {
+          logger.info(`Routing message to agent for conversation ${conversation.id}`);
+
+          // Broadcast user message to agent dashboard
+          broadcastConversationMessage(conversation.id, userMessage);
+
+          // Acknowledge message receipt and stop any typing indicators in the widget
+          socket.emit('message-routed-to-agent', {
+            conversationId: conversation.id,
+            messageId: userMessage.id,
+          });
+
+          // Don't send to AI, agent will handle it
+          return;
+        }
 
         // Send typing indicator
         socket.emit('typing', { isTyping: true });
@@ -263,10 +336,15 @@ export function initializeSocketIO(io: Server): void {
             },
           });
 
+          // Detect if AI suggested handoff
+          const suggestsHandoff = fullResponse.toLowerCase().includes('connect you with a human agent');
+
           // Send complete event
           socket.emit('complete', {
             messageId: message.id,
+            conversationId: conversation.id,
             content: fullResponse,
+            suggestsHandoff,
           });
         } catch (error) {
           logger.error('Error generating AI response:', error);
@@ -280,6 +358,216 @@ export function initializeSocketIO(io: Server): void {
         logger.error('Socket message error:', error);
         socket.emit('error', {
           message: 'An error occurred processing your message.',
+        });
+      }
+    });
+
+    // ============================================
+    // HUMAN HANDOFF EVENTS
+    // ============================================
+
+    // Join a specific conversation room for real-time updates
+    socket.on('join-conversation', (conversationId: string) => {
+      socket.join(`conversation:${conversationId}`);
+      logger.info(`Socket ${socket.id} joined conversation ${conversationId}`);
+    });
+
+    // Leave a conversation room
+    socket.on('leave-conversation', (conversationId: string) => {
+      socket.leave(`conversation:${conversationId}`);
+      logger.info(`Socket ${socket.id} left conversation ${conversationId}`);
+    });
+
+    // User requests human agent (from widget)
+    socket.on('request-agent', async (data: { conversationId: string; reason?: string }) => {
+      try {
+        const { conversationId, reason } = data;
+
+        const result = await conversationHandoffService.escalateConversation(conversationId, reason);
+
+        // Get conversation details to find siteId
+        const conversation = await prisma.conversation.findUnique({
+          where: { id: conversationId },
+          include: {
+            site: {
+              include: {
+                widgetSettings: {
+                  select: {
+                    waitingForAgentMessage: true,
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        if (conversation) {
+          // Notify the user
+          socket.emit('escalation-confirmed', {
+            success: true,
+            message: conversation.site.widgetSettings?.waitingForAgentMessage || 'Please wait while we connect you to an agent...',
+          });
+
+          // Broadcast to agents monitoring this site
+          await broadcastConversationEscalated(conversationId, conversation.siteId);
+        }
+      } catch (error) {
+        logger.error('Error handling agent request:', error);
+        socket.emit('error', {
+          message: 'Failed to request human agent',
+        });
+      }
+    });
+
+    // Agent takes a conversation
+    socket.on('agent-take-conversation', async (data: { conversationId: string; agentId: string }) => {
+      try {
+        const { conversationId, agentId } = data;
+
+        await conversationHandoffService.takeConversation(conversationId, agentId);
+
+        // Get conversation and widget settings
+        const conversation = await prisma.conversation.findUnique({
+          where: { id: conversationId },
+          include: {
+            assignedAgent: {
+              select: {
+                id: true,
+                fullName: true,
+              },
+            },
+            site: {
+              include: {
+                widgetSettings: {
+                  select: {
+                    agentJoinedMessage: true,
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        if (conversation) {
+          // Notify the user in the widget
+          ioInstance?.to(`conversation:${conversationId}`).emit('agent-joined', {
+            agentName: conversation.assignedAgent?.fullName || 'Agent',
+            message: conversation.site.widgetSettings?.agentJoinedMessage || 'An agent has joined the conversation',
+          });
+
+          // Notify dashboard viewers
+          broadcastConversationStatusChange(conversationId, ConversationStatus.AGENT_ACTIVE, {
+            assignedAgentId: agentId,
+          });
+
+          socket.emit('conversation-taken', { success: true, conversationId });
+        }
+      } catch (error) {
+        logger.error('Error taking conversation:', error);
+        socket.emit('error', {
+          message: 'Failed to take conversation',
+        });
+      }
+    });
+
+    // Agent sends a message
+    socket.on('agent-send-message', async (data: { conversationId: string; agentId: string; content: string }) => {
+      try {
+        const { conversationId, agentId, content } = data;
+
+        const message = await conversationHandoffService.sendAgentMessage(conversationId, agentId, content);
+
+        // Broadcast message to all participants (user in widget and dashboard viewers)
+        broadcastConversationMessage(conversationId, message);
+
+        socket.emit('message-sent', { success: true, message });
+      } catch (error) {
+        logger.error('Error sending agent message:', error);
+        socket.emit('error', {
+          message: 'Failed to send message',
+        });
+      }
+    });
+
+    // Agent typing indicator
+    socket.on('agent-typing', (data: { conversationId: string; isTyping: boolean }) => {
+      const { conversationId, isTyping } = data;
+      // Broadcast to user in widget
+      ioInstance?.to(`conversation:${conversationId}`).emit('agent-typing', { isTyping });
+    });
+
+    // Agent resolves conversation
+    socket.on('agent-resolve-conversation', async (data: { conversationId: string; agentId: string; notes?: string }) => {
+      try {
+        const { conversationId, agentId, notes } = data;
+
+        await conversationHandoffService.resolveConversation(conversationId, agentId, notes);
+
+        // Get widget settings for message
+        const conversation = await prisma.conversation.findUnique({
+          where: { id: conversationId },
+          include: {
+            site: {
+              include: {
+                widgetSettings: {
+                  select: {
+                    agentLeftMessage: true,
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        if (conversation) {
+          // Notify user in widget that conversation is resolved
+          ioInstance?.to(`conversation:${conversationId}`).emit('conversation-resolved', {
+            conversationId,
+            message: 'Your conversation has been resolved. Thank you for contacting us!',
+            requestFeedback: true,
+          });
+
+          // Notify dashboard viewers
+          broadcastConversationStatusChange(conversationId, ConversationStatus.RESOLVED);
+
+          socket.emit('conversation-resolved', { success: true });
+        }
+      } catch (error) {
+        logger.error('Error resolving conversation:', error);
+        socket.emit('error', {
+          message: 'Failed to resolve conversation',
+        });
+      }
+    });
+
+    // Submit feedback rating
+    socket.on('submit-feedback', async (data: { conversationId: string; rating: number; comment?: string }) => {
+      try {
+        const { conversationId, rating, comment } = data;
+
+        // Validate rating (1-5 stars)
+        if (rating < 1 || rating > 5) {
+          socket.emit('error', {
+            message: 'Rating must be between 1 and 5',
+          });
+          return;
+        }
+
+        // Update conversation with feedback
+        await prisma.conversation.update({
+          where: { id: conversationId },
+          data: {
+            feedbackRating: rating,
+            feedbackComment: comment || null,
+          },
+        });
+
+        logger.info(`Feedback submitted for conversation ${conversationId}: ${rating} stars`);
+        socket.emit('feedback-submitted', { success: true });
+      } catch (error) {
+        logger.error('Error submitting feedback:', error);
+        socket.emit('error', {
+          message: 'Failed to submit feedback',
         });
       }
     });

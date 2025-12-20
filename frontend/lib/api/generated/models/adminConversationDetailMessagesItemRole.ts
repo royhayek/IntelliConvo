@@ -8,4 +8,5 @@ export type AdminConversationDetailMessagesItemRole = typeof AdminConversationDe
 export const AdminConversationDetailMessagesItemRole = {
   USER: 'USER',
   ASSISTANT: 'ASSISTANT',
+  AGENT: 'AGENT',
 } as const;

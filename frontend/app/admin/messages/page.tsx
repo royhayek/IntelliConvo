@@ -140,6 +140,7 @@ export default function AdminMessagesPage() {
             <SelectItem value="all">All Roles</SelectItem>
             <SelectItem value="user">User</SelectItem>
             <SelectItem value="assistant">Assistant</SelectItem>
+            <SelectItem value="agent">Agent</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -156,7 +157,12 @@ export default function AdminMessagesPage() {
           <LoadingSpinner size="lg" />
         </div>
       ) : data ? (
-        <MessagesTable messages={data.messages} onDelete={setDeleteMessage} />
+        <MessagesTable
+          messages={data.messages}
+          pagination={data.pagination}
+          onPageChange={setPage}
+          onDelete={setDeleteMessage}
+        />
       ) : null}
 
       <DeleteConfirmationDialog

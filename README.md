@@ -1,9 +1,25 @@
-# IntelliConvo Platform
+# IntelliConvo Platform v1.0.1
 
-A SaaS conversational AI platform that enables websites to embed intelligent chat and voice assistants. The platform automatically crawls website content, creates vector embeddings for semantic search, and provides visitors with AI-powered assistance.
+**AI-Powered Conversational Widget with Human Handoff**
+
+A SaaS conversational AI platform that enables websites to embed intelligent chat and voice assistants with seamless human agent escalation. The platform automatically crawls website content, creates vector embeddings for semantic search, and provides visitors with AI-powered assistance that can intelligently escalate to human agents when needed.
+
+## 🆕 What's New in v1.0.1
+
+- **🤖→👤 Human Handoff**: AI intelligently suggests connecting users to live agents when needed
+- **⭐ Customer Feedback**: 5-star rating system with optional comments after resolution
+- **💬 Real-time Agent Chat**: Seamless agent takeover and messaging from dashboard
+- **📊 Enhanced Dashboard**: Complete conversation management for agents
+
+### ⚠️ Updating from v1.0.0?
+
+**If you have v1.0.0 running in production, please read [UPDATE_GUIDE_v1.0.1.md](UPDATE_GUIDE_v1.0.1.md) before proceeding.**
+
+The guide includes step-by-step update instructions, production deployment workflow, database migrations, and rollback procedures.
 
 ## Features
 
+### Core Features
 - **Zero-training required** - Automatically learns from website content through intelligent crawling
 - **Voice + Text modes** - Dual interaction modes (Speak & Chat) with speech-to-text and text-to-speech
 - **Single-script embed** - Integrate with one line of code on any website
@@ -15,6 +31,15 @@ A SaaS conversational AI platform that enables websites to embed intelligent cha
 - **Multi-auth support** - Email, Google, GitHub, and Microsoft OAuth
 - **Subscription billing** - Stripe integration with trial periods and plan management
 - **Admin dashboard** - Complete platform management with audit logging
+
+### Human Handoff Features (v1.0.1+)
+- **Intelligent Escalation** - AI detects when conversations require human assistance
+- **Agent Dashboard** - Real-time conversation management interface
+- **Live Messaging** - Instant message routing between users and agents
+- **Status Management** - Track conversation states (Active, Needs Agent, Agent Active, Resolved)
+- **Typing Indicators** - Agent typing indicators in widget
+- **Customizable Messages** - Configure handoff, join, and resolution messages per site
+- **Customer Feedback** - 5-star rating system with optional comments
 
 ## Architecture
 
@@ -300,6 +325,32 @@ See `.env.example` files in each directory for complete configuration options.
 - Check if site uses JavaScript rendering (Playwright handles this)
 - Verify network connectivity
 
+## Documentation
+
+- **[UPDATE_GUIDE_v1.0.1.md](UPDATE_GUIDE_v1.0.1.md)** - Update instructions for v1.0.0 → v1.0.1
+- **[CHANGELOG.md](CHANGELOG.md)** - Detailed version history and changes
+- **[DOCKER.md](DOCKER.md)** - Docker deployment instructions
+- **[CLAUDE.md](CLAUDE.md)** - Development guidance for AI code assistants
+- **[widget/README.md](widget/README.md)** - Widget documentation and integration guide
+
+## Support
+
+- **Email**: your-support-email@example.com
+- **Documentation**: See `/docs` folder
+- **Issues**: Contact via CodeCanyon support tab
+
+## Version History
+
+- **v1.0.1** (2025-12-01): Human handoff and feedback system
+- **v1.0.0** (2025-11-29): Initial release
+
+See [CHANGELOG.md](CHANGELOG.md) for detailed version history.
+
 ## License
 
-This project is proprietary software. All rights reserved.
+This project is licensed under the CodeCanyon Regular/Extended License (as per your purchase).
+
+- **Regular License**: Single end product (not for resale)
+- **Extended License**: Single end product (can charge users)
+
+See LICENSE.txt for full terms.

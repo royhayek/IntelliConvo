@@ -22,10 +22,7 @@ import { getGetSitesSiteIdQueryKey, useGetSitesSiteId } from "@/lib/api/generate
 import { getDisplayStatus } from "@/lib/utils/status-labels";
 import { SITE_TABS } from "@/lib/constants/site-tabs";
 import type { SiteResponse } from "@/lib/api/generated/models";
-import type {
-  CrawlStatus,
-  SubscriptionStatus,
-} from "@/lib/utils/status-labels";
+import type { CrawlStatus, SubscriptionStatus } from "@/lib/utils/status-labels";
 
 import { OverviewTab } from "@/components/site/overview-tab";
 import { SitemapTab } from "@/components/site/sitemap-tab";
@@ -35,15 +32,13 @@ import { PreferencesTab } from "@/components/site/preferences-tab";
 import { WidgetTab } from "@/components/site/widget-tab";
 import { PlaygroundTab } from "@/components/site/playground-tab";
 import { HostsTab } from "@/components/site/hosts-tab";
+import { ConversationsTabEnhanced } from "@/components/site/conversations-tab-enhanced";
 
-const TAB_COMPONENTS: Record<
-  string,
-  React.ComponentType<{ site: SiteResponse }>
-> = {
-  "overview": OverviewTab,
+const TAB_COMPONENTS: Record<string, React.ComponentType<{ site: SiteResponse }>> = {
+  overview: OverviewTab,
   "website-content": SitemapTab,
   "uploaded-documents": KnowledgeTab,
-  "conversations": ConversationsTab,
+  conversations: ConversationsTabEnhanced,
   "site-settings": PreferencesTab,
   "allowed-domains": HostsTab,
   "widget-customization": WidgetTab,
@@ -65,7 +60,7 @@ export default function SiteManagePage() {
     [router, siteId]
   );
 
-  const { isLoading: isAuthLoading, isAuthenticated } = useRequireUser();
+  const { isLoading: isAuthLoading, isAuthenticated, user } = useRequireUser();
   const { navigationLayout } = useUIStore();
   const queryClient = useQueryClient();
 
@@ -99,13 +94,10 @@ export default function SiteManagePage() {
     (update: { siteId: string; crawlStatus: string }) => {
       if (update.siteId !== siteId) return;
 
-      queryClient.setQueryData(
-        getGetSitesSiteIdQueryKey(siteId),
-        (oldData: SiteResponse | undefined) => {
-          if (!oldData) return oldData;
-          return { ...oldData, crawlStatus: update.crawlStatus };
-        }
-      );
+      queryClient.setQueryData(getGetSitesSiteIdQueryKey(siteId), (oldData: SiteResponse | undefined) => {
+        if (!oldData) return oldData;
+        return { ...oldData, crawlStatus: update.crawlStatus };
+      });
     },
     [siteId, queryClient]
   );
@@ -134,14 +126,10 @@ export default function SiteManagePage() {
   }
 
   const subscriptionStatus = site.subscription?.status as SubscriptionStatus;
-  const isSubscriptionBlocked =
-    subscriptionStatus === "CANCELLED" || subscriptionStatus === "EXPIRED";
+  const isSubscriptionBlocked = subscriptionStatus === "CANCELLED" || subscriptionStatus === "EXPIRED";
   const isExpired = subscriptionStatus === "EXPIRED";
 
-  const displayStatus = getDisplayStatus(
-    subscriptionStatus,
-    site.crawlStatus as CrawlStatus
-  );
+  const displayStatus = getDisplayStatus(subscriptionStatus, site.crawlStatus as CrawlStatus);
 
   const renderTabContents = (site: SiteResponse) => (
     <>
@@ -149,7 +137,11 @@ export default function SiteManagePage() {
         const TabComponent = TAB_COMPONENTS[tab.id];
         return (
           <AnimatedTabContent key={tab.id} value={tab.id}>
-            <TabComponent site={site} />
+            {tab.id === 'conversations' ? (
+              <ConversationsTabEnhanced site={site} userId={user?.id} />
+            ) : (
+              <TabComponent site={site} />
+            )}
           </AnimatedTabContent>
         );
       })}
@@ -179,26 +171,12 @@ export default function SiteManagePage() {
 
       <SiteHeader site={site} displayStatus={displayStatus} />
 
-      <main
-        className={
-          effectiveLayout === "vertical"
-            ? ""
-            : "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-8"
-        }
-      >
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-        >
+      <main className={effectiveLayout === "vertical" ? "" : "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-8"}>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
           {isSubscriptionBlocked ? (
             <SubscriptionBlockedMessage siteId={siteId} isExpired={isExpired} />
           ) : (
-            <Tabs
-              value={activeTab}
-              onValueChange={setActiveTab}
-              className="space-y-8"
-            >
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
               {effectiveLayout === "vertical" ? (
                 <div className="flex">
                   <TabsList className="hidden">
@@ -210,11 +188,7 @@ export default function SiteManagePage() {
                   </TabsList>
 
                   <div className="w-64 flex-shrink-0 pl-4 sm:pl-2 lg:pl-4 pt-2">
-                    <SiteNavigationSidebar
-                      tabs={SITE_TABS}
-                      activeTab={activeTab}
-                      onTabChange={setActiveTab}
-                    />
+                    <SiteNavigationSidebar tabs={SITE_TABS} activeTab={activeTab} onTabChange={setActiveTab} />
                   </div>
 
                   <div className="flex-1 min-w-0 pr-4 sm:pr-6 lg:pr-8 pt-2 pb-8">

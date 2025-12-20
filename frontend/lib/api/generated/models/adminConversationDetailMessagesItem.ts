@@ -11,4 +11,6 @@ export type AdminConversationDetailMessagesItem = {
   tokensUsed: number | null;
   /** @nullable */
   costInCents: number | null;
+  /** @nullable */
+  agentId?: string | null;
 };

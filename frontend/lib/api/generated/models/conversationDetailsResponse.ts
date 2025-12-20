@@ -2,6 +2,8 @@
 // Do not edit manually
 import type { ConversationDetailsResponseSite } from './conversationDetailsResponseSite';
 import type { Message } from './message';
+import type { ConversationDetailsResponseStatus } from './conversationDetailsResponseStatus';
+import type { ConversationDetailsResponseAssignedAgent } from './conversationDetailsResponseAssignedAgent';
 
 /**
  * Conversation details with messages
@@ -26,4 +28,41 @@ export interface ConversationDetailsResponse {
   messageCount?: number;
   /** Conversation messages */
   messages: Message[];
+  /** Conversation status */
+  status?: ConversationDetailsResponseStatus;
+  /**
+   * When conversation was escalated
+   * @nullable
+   */
+  escalatedAt?: string | null;
+  /**
+   * Reason for escalation
+   * @nullable
+   */
+  escalationReason?: string | null;
+  /**
+   * Assigned agent user ID
+   * @nullable
+   */
+  assignedAgentId?: string | null;
+  /**
+   * When agent joined
+   * @nullable
+   */
+  agentJoinedAt?: string | null;
+  /**
+   * When conversation was resolved
+   * @nullable
+   */
+  resolvedAt?: string | null;
+  /**
+   * Private agent notes
+   * @nullable
+   */
+  agentNotes?: string | null;
+  /**
+   * Assigned agent information
+   * @nullable
+   */
+  assignedAgent?: ConversationDetailsResponseAssignedAgent;
 }

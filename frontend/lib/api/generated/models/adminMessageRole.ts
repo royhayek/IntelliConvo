@@ -8,4 +8,5 @@ export type AdminMessageRole = typeof AdminMessageRole[keyof typeof AdminMessage
 export const AdminMessageRole = {
   USER: 'USER',
   ASSISTANT: 'ASSISTANT',
+  AGENT: 'AGENT',
 } as const;

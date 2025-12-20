@@ -1,87 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>IntelliConvo Widget Demo</title>
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 40px 20px;
-            background: #f5f5f5;
-            min-height: 100vh;
-        }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 40px 20px;
+        background: #f5f5f5;
+        min-height: 100vh;
+      }
 
-        h1 { color: #333; }
+      h1 {
+        color: #333;
+      }
 
-        .card {
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
+      .card {
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
 
-        code {
-            background: #e8e8e8;
-            padding: 2px 6px;
-            border-radius: 4px;
-        }
+      code {
+        background: #e8e8e8;
+        padding: 2px 6px;
+        border-radius: 4px;
+      }
 
-        .status {
-            padding: 10px;
-            border-radius: 4px;
-            margin-top: 10px;
-        }
+      .status {
+        padding: 10px;
+        border-radius: 4px;
+        margin-top: 10px;
+      }
 
-        .status.success { background: #d4edda; color: #155724; }
-        .status.error { background: #f8d7da; color: #721c24; }
+      .status.success {
+        background: #d4edda;
+        color: #155724;
+      }
+      .status.error {
+        background: #f8d7da;
+        color: #721c24;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <h1>IntelliConvo Widget Demo</h1>
 
     <div class="card">
-        <h2>Configuration</h2>
-        <p>Backend API: <code id="api-url"><%= API_URL %></code></p>
-        <div id="status" class="status">Widget loading...</div>
+      <h2>Configuration</h2>
+      <p>Backend API: <code id="api-url"><%= API_URL %></code></p>
+      <div id="status" class="status">Widget loading...</div>
     </div>
 
     <div class="card">
-        <h2>Test the Widget</h2>
-        <p>Click the chat button in the bottom-right corner to start a conversation.</p>
+      <h2>Test the Widget</h2>
+      <p>Click the chat button in the bottom-right corner to start a conversation.</p>
     </div>
 
     <script>
-        window.addEventListener('load', function() {
-            if (typeof intelliconvo === 'function') {
-                intelliconvo('init', {
-                    siteId: '0d08c679-ed1f-48b4-9fe4-845cc2e464b9',
-                    mode: 'button',
-                    position: 'bottom-right',
-                    // apiUrl removed - uses DEFAULT_API_URL from environment build
-                    // Development build: http://localhost:5001
-                    // Production build: https://api.intelliconvo.com
-                    onConnect: function() {
-                        document.getElementById('status').className = 'status success';
-                        document.getElementById('status').textContent = 'Widget connected successfully!';
+      window.addEventListener("load", function () {
+        if (typeof intelliconvo === "function") {
+          intelliconvo("init", {
+            siteId: "b7110770-a839-4486-8340-2e1f73f2ffb3",
+            mode: "button",
+            position: "bottom-right",
+            // apiUrl removed - uses DEFAULT_API_URL from environment build
+            // Development build: http://localhost:5001
+            // Production build: https://api.intelliconvo.com
+            onConnect: function () {
+              document.getElementById("status").className = "status success";
+              document.getElementById("status").textContent = "Widget connected successfully!";
 
-                        // Show which API URL is being used (for demo purposes)
-                        // This requires exposing the config in the widget - we'll show it in the console instead
-                        console.log('Widget initialized with default API URL from build');
-                    },
-                    onError: function(error) {
-                        document.getElementById('status').className = 'status error';
-                        document.getElementById('status').textContent = 'Error: ' + error.message;
-                    }
-                });
-            } else {
-                document.getElementById('status').className = 'status error';
-                document.getElementById('status').textContent = 'Widget failed to load';
-            }
-        });
+              // Show which API URL is being used (for demo purposes)
+              // This requires exposing the config in the widget - we'll show it in the console instead
+              console.log("Widget initialized with default API URL from build");
+            },
+            onError: function (error) {
+              document.getElementById("status").className = "status error";
+              document.getElementById("status").textContent = "Error: " + error.message;
+            },
+          });
+        } else {
+          document.getElementById("status").className = "status error";
+          document.getElementById("status").textContent = "Widget failed to load";
+        }
+      });
     </script>
-</body>
+  </body>
 </html>

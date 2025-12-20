@@ -26,4 +26,9 @@ export interface Message {
    * @nullable
    */
   costInCents: number | null;
+  /**
+   * Agent user ID if role is AGENT
+   * @nullable
+   */
+  agentId?: string | null;
 }

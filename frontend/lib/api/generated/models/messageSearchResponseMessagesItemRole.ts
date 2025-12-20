@@ -11,4 +11,5 @@ export type MessageSearchResponseMessagesItemRole = typeof MessageSearchResponse
 export const MessageSearchResponseMessagesItemRole = {
   USER: 'USER',
   ASSISTANT: 'ASSISTANT',
+  AGENT: 'AGENT',
 } as const;

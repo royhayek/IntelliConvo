@@ -73,6 +73,7 @@ declare global {
 class IntelliConvoWidget {
   private config: WidgetConfig;
   private sessionId: string;
+  private conversationId: string | null = null;
   private container: HTMLElement | null = null;
   private messages: Message[] = [];
   private stateManager: StateManager;
@@ -219,10 +220,24 @@ class IntelliConvoWidget {
             this.handleError(new Error('Failed to process message stream'), 'stream');
           }
         },
-        onComplete: (content: string, quickReplies?: string[]) => {
+        onComplete: (content: string, conversationId: string, quickReplies?: string[], suggestsHandoff?: boolean) => {
           this.setTyping(false);
           // Hide processing indicator when response completes
           this.showProcessingIndicator(false);
+
+          // Store conversationId for handoff
+          if (!this.conversationId) {
+            this.conversationId = conversationId;
+            // Join conversation room for real-time updates
+            this.socketManager.joinConversation(conversationId);
+            console.log('[Widget] Joined conversation room:', conversationId);
+          }
+
+          // Show handoff button only if AI suggests it
+          if (suggestsHandoff) {
+            console.log('[Widget] AI suggests handoff, showing button');
+            this.renderHandoffButton();
+          }
 
           // If in speak mode, speak the response and add to transcript
           if (this.stateManager.getState().currentMode === 'speak') {
@@ -276,6 +291,32 @@ class IntelliConvoWidget {
             ),
             'connect'
           );
+        },
+        onMessageRoutedToAgent: (data) => {
+          console.log('[Widget] Message routed to agent, stopping typing indicator');
+          this.setTyping(false);
+        },
+        // Human handoff event handlers
+        onConversationStatusChanged: (data) => {
+          this.handleConversationStatusChanged(data);
+        },
+        onAgentJoined: (data) => {
+          this.handleAgentJoined(data);
+        },
+        onAgentTyping: (data) => {
+          this.handleAgentTyping(data);
+        },
+        onAgentMessage: (data) => {
+          this.handleAgentMessage(data);
+        },
+        onAgentLeft: (data) => {
+          this.handleAgentLeft(data);
+        },
+        onConversationMessage: (data) => {
+          this.handleConversationMessage(data);
+        },
+        onConversationResolved: (data) => {
+          this.handleConversationResolved(data);
         }
       }
     );
@@ -1006,8 +1047,8 @@ class IntelliConvoWidget {
   }
 
 
-  private displayMessage(role: 'user' | 'assistant', content: string, messageId?: string): void {
-    this.messageHandler.displayMessage(role, content, messageId);
+  private displayMessage(role: 'user' | 'assistant' | 'agent', content: string, messageId?: string, agentId?: string): void {
+    this.messageHandler.displayMessage(role, content, messageId, agentId);
   }
 
   private sanitizeHtml(html: string): string {
@@ -1503,6 +1544,372 @@ class IntelliConvoWidget {
     this.voiceHandler.stopVoiceInput();
     this.toggleWaveform(false);
     this.updateSpeakStatus('Stopped');
+  }
+
+  /**
+   * Renders the "Talk to Human" button
+   */
+  private renderHandoffButton(): void {
+    this.componentRenderer.renderHandoffButton(
+      () => this.requestHumanAgent(),
+      (html: string) => sanitizeHtml(html)
+    );
+  }
+
+  /**
+   * Requests a human agent
+   */
+  private requestHumanAgent(): void {
+    try {
+      if (!this.stateManager.getState().isConnected) {
+        this.showErrorMessage('Not connected to chat service. Please wait while we reconnect.');
+        return;
+      }
+
+      // Check if we have a conversationId
+      if (!this.conversationId) {
+        this.showErrorMessage('Please send a message first before requesting an agent.');
+        return;
+      }
+
+      // Emit request-agent event
+      this.socketManager.requestAgent(this.conversationId, 'User requested human agent');
+
+      // Show waiting message
+      const waitingMessage = this.settings?.waitingForAgentMessage || 'Please wait while we connect you to an agent...';
+      this.messageHandler.displaySystemMessage(waitingMessage);
+
+      // Hide the handoff button
+      this.componentRenderer.hideHandoffButton();
+
+      // Track analytics
+      this.trackAnalyticsEvent('handoff_requested', { conversationId: this.conversationId });
+    } catch (error) {
+      console.error('[Widget] Failed to request agent:', error);
+      this.showErrorMessage('Failed to request agent. Please try again.');
+    }
+  }
+
+  /**
+   * Handles conversation status change events
+   */
+  private handleConversationStatusChanged(data: {
+    conversationId: string;
+    status: 'ACTIVE' | 'NEEDS_AGENT' | 'AGENT_ACTIVE' | 'RESOLVED';
+    previousStatus: 'ACTIVE' | 'NEEDS_AGENT' | 'AGENT_ACTIVE' | 'RESOLVED';
+  }): void {
+    console.log('[Widget] Conversation status changed:', data);
+
+    // Track analytics
+    this.trackAnalyticsEvent('conversation_status_changed', {
+      conversationId: data.conversationId,
+      status: data.status,
+      previousStatus: data.previousStatus,
+    });
+
+    // Show appropriate message based on status
+    if (data.status === 'NEEDS_AGENT' && data.previousStatus === 'ACTIVE') {
+      const message = this.settings?.waitingForAgentMessage || 'Please wait while we connect you to an agent...';
+      this.messageHandler.displaySystemMessage(message);
+    } else if (data.status === 'RESOLVED' && data.previousStatus === 'AGENT_ACTIVE') {
+      // Show handoff button again if conversation is resolved
+      this.componentRenderer.showHandoffButton();
+    }
+  }
+
+  /**
+   * Handles agent joined events
+   */
+  private handleAgentJoined(data: {
+    agentId: string;
+    agentName: string;
+    agentEmail: string;
+  }): void {
+    console.log('[Widget] Agent joined:', data);
+
+    // Show agent joined message
+    const message = this.settings?.agentJoinedMessage || 'An agent has joined the conversation';
+    this.messageHandler.displaySystemMessage(message);
+
+    // Play notification
+    this.playNotificationSound();
+
+    // Track analytics
+    this.trackAnalyticsEvent('agent_joined', {
+      agentId: data.agentId,
+      agentName: data.agentName,
+    });
+  }
+
+  /**
+   * Handles agent typing events
+   */
+  private handleAgentTyping(data: {
+    agentId: string;
+    isTyping: boolean;
+  }): void {
+    if (data.isTyping) {
+      this.componentRenderer.showAgentTyping((html: string) => sanitizeHtml(html));
+    } else {
+      this.componentRenderer.hideAgentTyping();
+    }
+  }
+
+  /**
+   * Handles agent message events
+   */
+  private handleAgentMessage(data: {
+    messageId: string;
+    agentId: string;
+    content: string;
+    timestamp: string;
+  }): void {
+    console.log('[Widget] Agent message received:', data);
+
+    // Hide agent typing indicator
+    this.componentRenderer.hideAgentTyping();
+
+    // Display agent message
+    this.messageHandler.displayMessage('agent', data.content, data.messageId, data.agentId);
+
+    // Play notification sound and show desktop notification
+    this.playNotificationSound();
+    this.showDesktopNotification(
+      'Agent',
+      data.content.substring(0, NOTIFICATION_PREVIEW_LENGTH) + (data.content.length > NOTIFICATION_PREVIEW_LENGTH ? '...' : '')
+    );
+
+    // Track analytics
+    this.trackAnalyticsEvent('agent_message_received', {
+      messageId: data.messageId,
+      agentId: data.agentId,
+      length: data.content.length,
+    });
+
+    // Save conversation
+    this.saveConversation();
+
+    // Mark messages as read if chat is open
+    if (this.stateManager.getState().isOpen) {
+      this.markAllMessagesAsRead();
+    }
+  }
+
+  /**
+   * Handles agent left events
+   */
+  private handleAgentLeft(data: {
+    agentId: string;
+    agentName: string;
+  }): void {
+    console.log('[Widget] Agent left:', data);
+
+    // Hide agent typing indicator
+    this.componentRenderer.hideAgentTyping();
+
+    // Show agent left message
+    const message = this.settings?.agentLeftMessage || 'The agent has left the conversation.';
+    this.messageHandler.displaySystemMessage(message);
+
+    // Show handoff button again
+    this.componentRenderer.showHandoffButton();
+
+    // Track analytics
+    this.trackAnalyticsEvent('agent_left', {
+      agentId: data.agentId,
+      agentName: data.agentName,
+    });
+  }
+
+  /**
+   * Handles conversation message events (for real-time updates from backend)
+   */
+  private handleConversationMessage(data: {
+    id: string;
+    role: 'USER' | 'ASSISTANT' | 'AGENT';
+    content: string;
+    timestamp: string;
+    agentId?: string;
+  }): void {
+    console.log('[Widget] Conversation message received:', data);
+
+    // Only handle AGENT role messages here (USER and ASSISTANT are handled elsewhere)
+    if (data.role === 'AGENT') {
+      // Hide agent typing indicator
+      this.componentRenderer.hideAgentTyping();
+
+      // Display agent message with proper styling
+      this.messageHandler.displayMessage('agent', data.content, data.id, data.agentId);
+
+      // Play notification sound and show desktop notification
+      this.playNotificationSound();
+      this.showDesktopNotification(
+        'Agent',
+        data.content.substring(0, NOTIFICATION_PREVIEW_LENGTH) + (data.content.length > NOTIFICATION_PREVIEW_LENGTH ? '...' : '')
+      );
+
+      // Track analytics
+      this.trackAnalyticsEvent('agent_message_received', {
+        messageId: data.id,
+        agentId: data.agentId || 'unknown',
+        length: data.content.length,
+      });
+
+      // Save conversation
+      this.saveConversation();
+
+      // Mark messages as read if chat is open
+      if (this.stateManager.getState().isOpen) {
+        this.markAllMessagesAsRead();
+      }
+    }
+  }
+
+  /**
+   * Handles conversation resolved events
+   */
+  private handleConversationResolved(data: {
+    conversationId: string;
+    message: string;
+    requestFeedback: boolean;
+  }): void {
+    console.log('[Widget] Conversation resolved:', data);
+
+    // Show resolution message
+    this.messageHandler.displaySystemMessage(data.message);
+
+    // Show feedback UI if requested
+    if (data.requestFeedback) {
+      this.showFeedbackUI();
+    }
+
+    // Hide handoff button
+    this.componentRenderer.hideHandoffButton();
+  }
+
+  /**
+   * Shows the feedback rating UI
+   */
+  private showFeedbackUI(): void {
+    const messagesContainer = document.getElementById('intelliconvo-messages');
+    if (!messagesContainer) return;
+
+    // Check if feedback already shown
+    if (document.getElementById('intelliconvo-feedback')) return;
+
+    const feedbackDiv = document.createElement('div');
+    feedbackDiv.id = 'intelliconvo-feedback';
+    feedbackDiv.className = 'intelliconvo-feedback';
+
+    feedbackDiv.innerHTML = `
+      <div class="intelliconvo-feedback-content">
+        <p class="intelliconvo-feedback-title">How was your experience?</p>
+        <div class="intelliconvo-feedback-stars">
+          ${[1, 2, 3, 4, 5].map(rating => `
+            <button class="intelliconvo-star" data-rating="${rating}" aria-label="${rating} stars">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          `).join('')}
+        </div>
+        <p class="intelliconvo-feedback-thankyou" style="display: none;">Thank you for your feedback!</p>
+      </div>
+    `;
+
+    messagesContainer.appendChild(feedbackDiv);
+
+    // Add click handlers for stars
+    const stars = feedbackDiv.querySelectorAll('.intelliconvo-star');
+    stars.forEach((star, index) => {
+      star.addEventListener('click', () => {
+        const rating = index + 1;
+        this.submitFeedback(rating);
+
+        // Fill stars up to selected rating
+        stars.forEach((s, i) => {
+          const path = s.querySelector('path');
+          if (path) {
+            if (i <= index) {
+              path.setAttribute('fill', '#fbbf24');
+            } else {
+              path.setAttribute('fill', 'none');
+            }
+          }
+        });
+
+        // Show thank you message and hide stars after a delay
+        setTimeout(() => {
+          const starsContainer = feedbackDiv.querySelector('.intelliconvo-feedback-stars');
+          const thankYou = feedbackDiv.querySelector('.intelliconvo-feedback-thankyou');
+          if (starsContainer && thankYou) {
+            (starsContainer as HTMLElement).style.display = 'none';
+            (thankYou as HTMLElement).style.display = 'block';
+          }
+
+          // Remove feedback UI after 3 seconds
+          setTimeout(() => {
+            feedbackDiv.remove();
+          }, 3000);
+        }, 500);
+      });
+
+      // Hover effect
+      star.addEventListener('mouseenter', () => {
+        stars.forEach((s, i) => {
+          const path = s.querySelector('path');
+          if (path) {
+            if (i <= index) {
+              path.setAttribute('fill', '#fbbf24');
+              path.setAttribute('opacity', '0.5');
+            } else {
+              path.setAttribute('fill', 'none');
+            }
+          }
+        });
+      });
+
+      star.addEventListener('mouseleave', () => {
+        stars.forEach((s) => {
+          const path = s.querySelector('path');
+          if (path) {
+            path.setAttribute('fill', 'none');
+            path.setAttribute('opacity', '1');
+          }
+        });
+      });
+    });
+
+    this.scrollToBottom();
+  }
+
+  /**
+   * Submits feedback rating
+   */
+  private submitFeedback(rating: number): void {
+    if (!this.conversationId) {
+      console.error('[Widget] Cannot submit feedback: No conversation ID');
+      return;
+    }
+
+    console.log('[Widget] Submitting feedback:', rating);
+    this.socketManager.submitFeedback(this.conversationId, rating);
+
+    // Track analytics
+    this.trackAnalyticsEvent('feedback_submitted', {
+      rating,
+      conversationId: this.conversationId,
+    });
+  }
+
+  /**
+   * Scrolls messages container to bottom
+   */
+  private scrollToBottom(): void {
+    const messagesContainer = document.getElementById('intelliconvo-messages');
+    if (messagesContainer) {
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
   }
 
 }

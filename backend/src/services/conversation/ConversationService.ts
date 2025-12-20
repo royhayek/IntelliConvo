@@ -3,9 +3,9 @@
  * Business logic for conversation and message management
  */
 
-import { prisma } from '../../lib/prisma';
-import { NotFoundError, ForbiddenError } from '../../middleware/errors';
-import { AppError, ErrorCode } from '../../middleware/errors';
+import { prisma } from "../../lib/prisma";
+import { NotFoundError, ForbiddenError } from "../../middleware/errors";
+import { AppError, ErrorCode } from "../../middleware/errors";
 import {
   ConversationListResponse,
   ConversationDetailsDTO,
@@ -18,12 +18,8 @@ import {
   ConversationTimeSeriesPoint,
   TopSiteStats,
   MessageSearchResult,
-} from '../../dto/conversation.dto';
-import {
-  calculatePagination,
-  calculateOffset,
-  normalizePagination,
-} from '../../utils/response';
+} from "../../dto/conversation.dto";
+import { calculatePagination, calculateOffset, normalizePagination } from "../../utils/response";
 
 /**
  * ConversationService class
@@ -36,25 +32,11 @@ export class ConversationService {
    * @param query - Query parameters (page, limit, search, dates, siteId)
    * @returns Paginated conversation list
    */
-  async getConversations(
-    userId: string,
-    query: ConversationQueryParams
-  ): Promise<ConversationListResponse> {
-    const {
-      page = 1,
-      limit = 20,
-      search,
-      startDate,
-      endDate,
-      siteId,
-    } = query;
+  async getConversations(userId: string, query: ConversationQueryParams): Promise<ConversationListResponse> {
+    const { page = 1, limit = 20, search, startDate, endDate, siteId } = query;
 
     // Normalize pagination
-    const { page: normalizedPage, limit: normalizedLimit } = normalizePagination(
-      page,
-      limit,
-      100
-    );
+    const { page: normalizedPage, limit: normalizedLimit } = normalizePagination(page, limit, 100);
     const offset = calculateOffset(normalizedPage, normalizedLimit);
 
     // Build where clause (excludes test conversations)
@@ -72,7 +54,7 @@ export class ConversationService {
       });
 
       if (!site) {
-        throw new NotFoundError('Site', siteId);
+        throw new NotFoundError("Site", siteId);
       }
 
       where.siteId = siteId;
@@ -97,7 +79,7 @@ export class ConversationService {
         some: {
           content: {
             contains: search,
-            mode: 'insensitive',
+            mode: "insensitive",
           },
         },
       };
@@ -119,7 +101,7 @@ export class ConversationService {
             select: { messages: true },
           },
         },
-        orderBy: { lastMessageAt: 'desc' },
+        orderBy: { lastMessageAt: "desc" },
         skip: offset,
         take: normalizedLimit,
       }),
@@ -138,6 +120,14 @@ export class ConversationService {
       lastMessageAt: conv.lastMessageAt.toISOString(),
       messageCount: conv._count.messages,
       site: conv.site,
+      // Human handoff fields
+      status: conv.status,
+      escalatedAt: conv.escalatedAt?.toISOString() ?? null,
+      escalationReason: conv.escalationReason,
+      assignedAgentId: conv.assignedAgentId,
+      agentJoinedAt: conv.agentJoinedAt?.toISOString() ?? null,
+      resolvedAt: conv.resolvedAt?.toISOString() ?? null,
+      agentNotes: conv.agentNotes,
     }));
 
     return {
@@ -153,11 +143,7 @@ export class ConversationService {
    * @param period - Time period (7d, 30d, 90d, 1y)
    * @returns Conversation analytics with time series data
    */
-  async getAnalytics(
-    userId: string,
-    siteId?: string,
-    period: string = '30d'
-  ): Promise<ConversationAnalyticsResponse> {
+  async getAnalytics(userId: string, siteId?: string, period: string = "30d"): Promise<ConversationAnalyticsResponse> {
     // Calculate date range
     const endDate = new Date();
     const startDate = this.calculateStartDate(period);
@@ -176,7 +162,7 @@ export class ConversationService {
       });
 
       if (!site) {
-        throw new NotFoundError('Site', siteId);
+        throw new NotFoundError("Site", siteId);
       }
 
       baseWhere.siteId = siteId;
@@ -190,11 +176,7 @@ export class ConversationService {
     ]);
 
     // Get time series data
-    const timeSeriesData = await this.getTimeSeriesData(
-      startDate,
-      endDate,
-      baseWhere
-    );
+    const timeSeriesData = await this.getTimeSeriesData(startDate, endDate, baseWhere);
 
     // Get top sites (if not filtering by specific site)
     const topSites = await this.getTopSites(userId, siteId, startDate, endDate);
@@ -217,10 +199,7 @@ export class ConversationService {
    * @param query - Search query parameters
    * @returns Search results with messages
    */
-  async searchMessages(
-    userId: string,
-    query: MessageSearchQueryParams
-  ): Promise<MessageSearchResponse> {
+  async searchMessages(userId: string, query: MessageSearchQueryParams): Promise<MessageSearchResponse> {
     const { query: searchQuery, siteId, limit = 20 } = query;
 
     const limitNumber = Math.min(100, Math.max(1, limit));
@@ -229,7 +208,7 @@ export class ConversationService {
     const where: any = {
       content: {
         contains: searchQuery,
-        mode: 'insensitive',
+        mode: "insensitive",
       },
       conversation: {
         isTest: false,
@@ -246,7 +225,7 @@ export class ConversationService {
       });
 
       if (!site) {
-        throw new NotFoundError('Site', siteId);
+        throw new NotFoundError("Site", siteId);
       }
 
       where.conversation.siteId = siteId;
@@ -270,7 +249,7 @@ export class ConversationService {
             },
           },
         },
-        orderBy: { timestamp: 'desc' },
+        orderBy: { timestamp: "desc" },
         take: limitNumber,
       }),
       prisma.message.count({ where }),
@@ -280,7 +259,7 @@ export class ConversationService {
     const messageResults: MessageSearchResult[] = messages.map((msg) => ({
       id: msg.id,
       content: msg.content,
-      role: msg.role as 'USER' | 'ASSISTANT',
+      role: msg.role as "USER" | "ASSISTANT",
       timestamp: msg.timestamp.toISOString(),
       conversation: msg.conversation,
     }));
@@ -297,10 +276,7 @@ export class ConversationService {
    * @param userId - User ID (for authorization)
    * @returns Conversation details with all messages
    */
-  async getConversationDetails(
-    conversationId: string,
-    userId: string
-  ): Promise<ConversationDetailsDTO> {
+  async getConversationDetails(conversationId: string, userId: string): Promise<ConversationDetailsDTO> {
     const conversation = await prisma.conversation.findUnique({
       where: { id: conversationId },
       include: {
@@ -313,7 +289,7 @@ export class ConversationService {
           },
         },
         messages: {
-          orderBy: { timestamp: 'asc' },
+          orderBy: { timestamp: "asc" },
           select: {
             id: true,
             role: true,
@@ -321,18 +297,26 @@ export class ConversationService {
             timestamp: true,
             tokensUsed: true,
             costInCents: true,
+            agentId: true,
+          },
+        },
+        assignedAgent: {
+          select: {
+            id: true,
+            fullName: true,
+            email: true,
           },
         },
       },
     });
 
     if (!conversation) {
-      throw new NotFoundError('Conversation', conversationId);
+      throw new NotFoundError("Conversation", conversationId);
     }
 
     // Verify user owns the site
     if (conversation.site.userId !== userId) {
-      throw new AppError(403, ErrorCode.FORBIDDEN, 'Access denied');
+      throw new AppError(403, ErrorCode.FORBIDDEN, "Access denied");
     }
 
     // Map to DTO
@@ -341,11 +325,12 @@ export class ConversationService {
     const messageDTOs: MessageDTO[] = conversation.messages.map((msg) => ({
       id: msg.id,
       conversationId: conversation.id,
-      role: msg.role as 'USER' | 'ASSISTANT',
+      role: msg.role as "USER" | "ASSISTANT" | "AGENT",
       content: msg.content,
       timestamp: msg.timestamp.toISOString(),
       tokensUsed: msg.tokensUsed,
       costInCents: msg.costInCents,
+      agentId: msg.agentId,
     }));
 
     return {
@@ -360,6 +345,15 @@ export class ConversationService {
       messageCount: conversation.messageCount,
       site: siteInfo,
       messages: messageDTOs,
+      // Human handoff fields
+      status: conversation.status,
+      escalatedAt: conversation.escalatedAt?.toISOString() ?? null,
+      escalationReason: conversation.escalationReason,
+      assignedAgentId: conversation.assignedAgentId,
+      agentJoinedAt: conversation.agentJoinedAt?.toISOString() ?? null,
+      resolvedAt: conversation.resolvedAt?.toISOString() ?? null,
+      agentNotes: conversation.agentNotes,
+      assignedAgent: conversation.assignedAgent,
     };
   }
 
@@ -374,16 +368,16 @@ export class ConversationService {
     const startDate = new Date();
 
     switch (period) {
-      case '7d':
+      case "7d":
         startDate.setDate(startDate.getDate() - 7);
         break;
-      case '30d':
+      case "30d":
         startDate.setDate(startDate.getDate() - 30);
         break;
-      case '90d':
+      case "90d":
         startDate.setDate(startDate.getDate() - 90);
         break;
-      case '1y':
+      case "1y":
         startDate.setFullYear(startDate.getFullYear() - 1);
         break;
       default:
@@ -426,7 +420,7 @@ export class ConversationService {
         userIdentifier: { not: null },
       },
       select: { userIdentifier: true },
-      distinct: ['userIdentifier'],
+      distinct: ["userIdentifier"],
     });
   }
 
@@ -470,7 +464,7 @@ export class ConversationService {
       ]);
 
       timeSeriesData.push({
-        date: dayStart.toISOString().split('T')[0],
+        date: dayStart.toISOString().split("T")[0],
         conversations: dailyConversations,
         messages: dailyMessages,
       });
@@ -525,10 +519,7 @@ export class ConversationService {
 
     // Calculate message counts and map to DTOs
     const topSites: TopSiteStats[] = sitesWithStats.map((site) => {
-      const messageCount = site.conversations.reduce(
-        (sum, conv) => sum + conv._count.messages,
-        0
-      );
+      const messageCount = site.conversations.reduce((sum, conv) => sum + conv._count.messages, 0);
 
       return {
         siteId: site.id,

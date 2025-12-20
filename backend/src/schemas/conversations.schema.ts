@@ -92,6 +92,14 @@ export const conversationSchema = registry.register(
     startedAt: z.string().openapi({ description: 'Conversation start timestamp' }),
     lastMessageAt: z.string().openapi({ description: 'Last message timestamp' }),
     messageCount: z.number().int().openapi({ description: 'Number of messages' }),
+    // Human handoff fields
+    status: z.enum(['ACTIVE', 'NEEDS_AGENT', 'AGENT_ACTIVE', 'RESOLVED']).optional().openapi({ description: 'Conversation status' }),
+    escalatedAt: z.string().datetime().nullable().optional().openapi({ description: 'When conversation was escalated' }),
+    escalationReason: z.string().nullable().optional().openapi({ description: 'Reason for escalation' }),
+    assignedAgentId: z.string().uuid().nullable().optional().openapi({ description: 'Assigned agent user ID' }),
+    agentJoinedAt: z.string().datetime().nullable().optional().openapi({ description: 'When agent joined' }),
+    resolvedAt: z.string().datetime().nullable().optional().openapi({ description: 'When conversation was resolved' }),
+    agentNotes: z.string().nullable().optional().openapi({ description: 'Private agent notes' }),
   }).openapi({
     description: 'Conversation information',
   })
@@ -102,11 +110,12 @@ export const messageSchema = registry.register(
   z.object({
     id: z.string().uuid().openapi({ description: 'Message ID' }),
     conversationId: z.string().uuid().openapi({ description: 'Associated conversation ID' }),
-    role: z.enum(['USER', 'ASSISTANT']).openapi({ description: 'Message sender role' }),
+    role: z.enum(['USER', 'ASSISTANT', 'AGENT']).openapi({ description: 'Message sender role' }),
     content: z.string().openapi({ description: 'Message content' }),
     timestamp: z.string().openapi({ description: 'Message timestamp' }),
     tokensUsed: z.number().int().nullable().openapi({ description: 'Number of tokens used' }),
     costInCents: z.number().nullable().openapi({ description: 'Cost in cents' }),
+    agentId: z.string().uuid().nullable().optional().openapi({ description: 'Agent user ID if role is AGENT' }),
   }).openapi({
     description: 'Message information',
   })
@@ -172,6 +181,19 @@ export const conversationDetailsResponseSchema = registry.register(
     lastMessageAt: z.string().openapi({ description: 'Last message timestamp' }),
     messageCount: z.number().int().optional().openapi({ description: 'Number of messages' }),
     messages: z.array(messageSchema).openapi({ description: 'Conversation messages' }),
+    // Human handoff fields
+    status: z.enum(['ACTIVE', 'NEEDS_AGENT', 'AGENT_ACTIVE', 'RESOLVED']).optional().openapi({ description: 'Conversation status' }),
+    escalatedAt: z.string().datetime().nullable().optional().openapi({ description: 'When conversation was escalated' }),
+    escalationReason: z.string().nullable().optional().openapi({ description: 'Reason for escalation' }),
+    assignedAgentId: z.string().uuid().nullable().optional().openapi({ description: 'Assigned agent user ID' }),
+    agentJoinedAt: z.string().datetime().nullable().optional().openapi({ description: 'When agent joined' }),
+    resolvedAt: z.string().datetime().nullable().optional().openapi({ description: 'When conversation was resolved' }),
+    agentNotes: z.string().nullable().optional().openapi({ description: 'Private agent notes' }),
+    assignedAgent: z.object({
+      id: z.string().uuid().openapi({ description: 'Agent user ID' }),
+      fullName: z.string().nullable().openapi({ description: 'Agent full name' }),
+      email: z.string().email().openapi({ description: 'Agent email' }),
+    }).nullable().optional().openapi({ description: 'Assigned agent information' }),
   }).openapi({
     description: 'Conversation details with messages',
   })
@@ -184,7 +206,7 @@ export const messageSearchResponseSchema = registry.register(
     messages: z.array(z.object({
       id: z.string().uuid().openapi({ description: 'Message ID' }),
       content: z.string().openapi({ description: 'Message content' }),
-      role: z.enum(['USER', 'ASSISTANT']).openapi({ description: 'Message role' }),
+      role: z.enum(['USER', 'ASSISTANT', 'AGENT']).openapi({ description: 'Message role' }),
       timestamp: z.string().openapi({ description: 'Timestamp' }),
       conversation: z.object({
         id: z.string().uuid().openapi({ description: 'Conversation ID' }),
