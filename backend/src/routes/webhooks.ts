@@ -501,7 +501,7 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
 }
 
 async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
-  logger.info(`Invoice payment succeeded: ${invoice.id}, amount: ${invoice.amount_paid}, subscription: ${invoice.subscription}`);
+  logger.info(`Invoice payment succeeded: ${invoice.id}, amount: ${invoice.amount_paid}, subscription: ${invoice.subscription}, customer: ${invoice.customer}`);
 
   // Create billing transaction record
   if (invoice.subscription) {
@@ -550,7 +550,62 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
       logger.error(`❌ CRITICAL: No subscription found for stripeSubscriptionId: ${invoice.subscription} - Transaction NOT created for invoice ${invoice.id}`);
     }
   } else {
-    logger.error(`❌ CRITICAL: Invoice ${invoice.id} has no subscription ID - Transaction NOT created`);
+    // Invoice has no subscription ID - try to find subscription by customer ID
+    logger.warn(`⚠️  Invoice ${invoice.id} has no subscription ID, attempting to find subscription by customer`);
+
+    if (invoice.customer) {
+      const customerId = typeof invoice.customer === 'string' ? invoice.customer : invoice.customer.id;
+
+      // Find the user's billing info by Stripe customer ID
+      const billingInfo = await prisma.billingInfo.findUnique({
+        where: { stripeCustomerId: customerId },
+      });
+
+      if (billingInfo) {
+        // Find the user's most recent active subscription
+        const subscription = await prisma.subscription.findFirst({
+          where: {
+            userId: billingInfo.userId,
+            status: { in: ['TRIAL', 'ACTIVE'] }
+          },
+          orderBy: { createdAt: 'desc' },
+        });
+
+        if (subscription) {
+          logger.info(`Found subscription ${subscription.id} for customer ${customerId}, creating transaction`);
+
+          // Check if transaction already exists
+          const existingTransaction = await prisma.billingTransaction.findFirst({
+            where: { stripeInvoiceId: invoice.id },
+          });
+
+          if (!existingTransaction) {
+            const transactionAmount = (invoice.amount_paid || 0) / 100;
+
+            await prisma.billingTransaction.create({
+              data: {
+                userId: subscription.userId,
+                siteId: subscription.siteId,
+                invoiceId: invoice.number || invoice.id,
+                amount: transactionAmount,
+                currency: invoice.currency.toUpperCase(),
+                status: 'paid',
+                stripeInvoiceId: invoice.id,
+              },
+            });
+            logger.info(`✓ Successfully created billing transaction for invoice ${invoice.id} (customer-based lookup)`);
+          } else {
+            logger.info(`Transaction already exists for invoice ${invoice.id}, skipping`);
+          }
+        } else {
+          logger.error(`❌ No active subscription found for customer ${customerId} - Transaction NOT created for invoice ${invoice.id}`);
+        }
+      } else {
+        logger.error(`❌ No billing info found for customer ${customerId} - Transaction NOT created for invoice ${invoice.id}`);
+      }
+    } else {
+      logger.error(`❌ CRITICAL: Invoice ${invoice.id} has no subscription ID and no customer ID - Transaction NOT created`);
+    }
   }
 }
 
