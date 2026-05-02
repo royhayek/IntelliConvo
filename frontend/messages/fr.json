@@ -1,0 +1,317 @@
+{
+  "common": {
+    "loading": "Chargement...",
+    "initializing": "Initialisation de votre espace de travail…",
+    "pleaseWait": "Veuillez patienter...",
+    "freeTrial_one": "Essai gratuit de {{count}} jour",
+    "freeTrial_other": "Essai gratuit de {{count}} jours"
+  },
+  "language": {
+    "toggle": "Changer de langue",
+    "en": "English",
+    "fr": "Français"
+  },
+  "theme": {
+    "dark": "Mode sombre (cliquer pour système)",
+    "system": "Thème système (cliquer pour clair)",
+    "light": "Mode clair (cliquer pour sombre)",
+    "toggle": "Changer de thème"
+  },
+  "nav": {
+    "features": "Fonctionnalités",
+    "howItWorks": "Comment ça marche",
+    "useCases": "Cas d'usage",
+    "signIn": "Connexion",
+    "signUp": "S'inscrire",
+    "getStarted": "Démarrer",
+    "backToDashboard": "Retour au tableau de bord"
+  },
+  "hero": {
+    "title": "L'IA qui propulse",
+    "typewriterWords": [
+      "Support Client",
+      "Génération de Leads",
+      "Automatisation des Ventes",
+      "Flux d'Onboarding"
+    ],
+    "description": "IntelliConvo apprend de votre site web, répond instantanément aux questions des visiteurs et continue de travailler longtemps après votre déconnexion. Aucune formation requise. Collez simplement votre URL et lancez-vous.",
+    "startFreeTrial": "Démarrer l'essai",
+    "exploreFeatures": "Voir les fonctions",
+    "cancelAnytime": "Annulez à tout moment",
+    "gdprCompliant": "Conforme RGPD",
+    "setupIn5Minutes": "Configuration en 5 minutes"
+  },
+  "features": {
+    "badge": "Fonctionnalités",
+    "title": "Tout ce dont vous avez besoin pour",
+    "titleHighlight": "Convertir",
+    "subtitle": "Conçu pour les sites à fort trafic qui exigent précision, rapidité et zéro maintenance.",
+    "selfLearningAI": {
+      "title": "IA Auto-apprenante",
+      "description": "Ingère et apprend automatiquement de votre contenu web, gardant les réponses précises à mesure que votre contenu évolue."
+    },
+    "sub100ms": {
+      "title": "Réponses en moins de 100ms",
+      "description": "La récupération basée sur la recherche vectorielle garantit des réponses instantanées et pertinentes. Aucun utilisateur ne patiente."
+    },
+    "multiLanguage": {
+      "title": "Multilingue",
+      "description": "Détection automatique et réponse dans n'importe quelle langue. Votre IA parle au monde entier."
+    },
+    "voiceText": {
+      "title": "Voix + Texte",
+      "description": "Interaction vocale complète en plus du texte, rendant votre widget accessible à tous les types de visiteurs."
+    },
+    "secure": {
+      "title": "Sécurisé par conception",
+      "description": "Chiffrement AES-256 en transit et au repos. Vos données et les conversations de vos visiteurs sont protégées par défaut."
+    },
+    "analytics": {
+      "title": "Analytiques approfondies",
+      "description": "Suivez les flux de conversation, le sentiment, les questions sans réponse et les événements de conversion en temps réel."
+    }
+  },
+  "howItWorks": {
+    "badge": "Comment ça marche",
+    "title": "En ligne en moins de",
+    "titleHighlight": "5 Minutes",
+    "subtitle": "De la page blanche à un assistant IA prêt pour la production. Aucune équipe technique requise.",
+    "connect": {
+      "title": "Connectez votre site",
+      "body": "Entrez votre URL et notre crawler cartographie chaque page, créant automatiquement une base de connaissances sémantique."
+    },
+    "tune": {
+      "title": "Personnalisez le persona",
+      "body": "Nommez votre assistant, définissez son ton, configurez les règles d'escalade. Personnalisez tout pour correspondre à votre marque."
+    },
+    "deploy": {
+      "title": "Déployez en quelques secondes",
+      "body": "Copiez une ligne de JavaScript. Le widget est en ligne immédiatement. Aucune étape de build, aucun DevOps requis."
+    }
+  },
+  "useCases": {
+    "badge": "Cas d'usage",
+    "title": "Conçu pour",
+    "titleHighlight": "chaque site web",
+    "subtitle": "Que vous gériez une boutique, un SaaS ou un site de contenu, IntelliConvo s'adapte à vos visiteurs et à vos objectifs.",
+    "ecommerce": {
+      "tag": "E-Commerce",
+      "headline": "Transformez les visiteurs en acheteurs",
+      "description": "Répondez instantanément aux questions sur les produits, guidez les visiteurs vers le bon article et ne perdez jamais une vente à cause d'une question sans réponse. Votre IA agit comme un conseiller personnel, disponible 24h/24 et 7j/7."
+    },
+    "saas": {
+      "tag": "SaaS & Startups",
+      "headline": "Qualifiez les leads pendant que vous dormez",
+      "description": "Capturez et pré-qualifiez des prospects en permanence. Votre IA gère la première conversation pour que votre équipe reste concentrée sur la conclusion des ventes."
+    },
+    "blogs": {
+      "tag": "Blogs & Sites de contenu",
+      "headline": "Aidez les lecteurs à trouver ce dont ils ont besoin",
+      "description": "Mettez en avant votre meilleur contenu de manière contextuelle. Les visiteurs obtiennent des réponses instantanées et pertinentes au lieu de partir vers les moteurs de recherche."
+    }
+  },
+  "cta": {
+    "title": "Prêt à donner une voix",
+    "titleHighlight": "à votre site ?",
+    "subtitle": "Configurez votre assistant IA en moins de 5 minutes. Aucune équipe technique requise. Collez simplement une ligne de code et lancez-vous.",
+    "startTrial": "Démarrer votre essai gratuit",
+    "cancelAnytime": "Annulez à tout moment",
+    "gdprCompliant": "Conforme RGPD",
+    "setupIn5Minutes": "Configuration en 5 minutes"
+  },
+  "footer": {
+    "tagline": "Rendre les sites web plus intelligents, une conversation à la fois.",
+    "company": "Micro-entreprise · France",
+    "product": "Produit",
+    "legal": "Légal",
+    "copyright": "© {{year}} IntelliConvo. Tous droits réservés.",
+    "features": "Fonctionnalités",
+    "howItWorks": "Comment ça marche",
+    "useCases": "Cas d'usage",
+    "pricing": "Tarifs",
+    "terms": "Conditions Générales de Vente (CGV)",
+    "privacy": "Politique de Confidentialité (RGPD)",
+    "legalNotice": "Mentions légales"
+  },
+  "chatDemo": {
+    "chatTab": "Chat",
+    "speakTab": "Parler",
+    "hello": "👋 Bonjour ! Comment puis-je vous aider aujourd'hui ?",
+    "typeMessage": "Tapez votre message...",
+    "demoQ1": "Que peut faire ce chatbot pour moi ?",
+    "demoA1": "Je réponds aux questions sur vos produits, qualifie les leads et soutient les clients 24h/24. Tout est entraîné sur le contenu de votre site web.",
+    "demoQ2": "Combien de temps prend la configuration ?",
+    "demoA2": "Moins de 5 minutes ! Collez votre URL, nous l'explorons, et votre IA est en ligne instantanément. 🚀",
+    "chatAssistant": "Assistant de chat"
+  },
+  "showcase": {
+    "badge": "Visite guidée",
+    "title": "Découvrez IntelliConvo",
+    "titleHighlight": "En Action",
+    "subtitle": "Un aperçu réel du tableau de bord — de l'ingestion de contenu aux conversations en direct et à la personnalisation du widget.",
+    "tabs": {
+      "dashboard": "Tableau de bord",
+      "overview": "Vue d'ensemble",
+      "content": "Contenu du site",
+      "conversations": "Conversations",
+      "widget": "Personnalisation du widget",
+      "management": "Gestion du site"
+    },
+    "descriptions": {
+      "dashboard": "Vue d'ensemble de tous vos sites connectés, du volume de conversations et des indicateurs de performance en un coup d'œil.",
+      "overview": "Plongez dans les statistiques par site : nombre de messages, questions fréquentes, scores de qualité et tendances d'engagement.",
+      "content": "Parcourez chaque page et document que votre IA a appris. Ajoutez, supprimez ou re-crawlez le contenu à la demande — sans ré-entraînement.",
+      "conversations": "Consultez chaque conversation en détail. Filtrez par date, note ou statut. Exportez les transcriptions pour revue d'équipe.",
+      "widget": "Personnalisez couleurs, position, avatar et message d'accueil de votre widget — avec un aperçu en direct qui se met à jour instantanément.",
+      "management": "Gérez les paramètres du site, les codes d'intégration, les planifications de crawl et les accès équipe depuis un seul panneau."
+    }
+  },
+  "auth": {
+    "checkingAuth": "Vérification de l'authentification",
+    "orContinueWith": "Ou continuer avec",
+    "orSignUpWith": "Ou s'inscrire avec",
+    "login": {
+      "title": "Se connecter",
+      "noAccount": "Vous n'avez pas de compte ?",
+      "startFreeTrial": "Commencer l'essai gratuit",
+      "emailLabel": "Adresse e-mail",
+      "emailPlaceholder": "vous@entreprise.com",
+      "passwordLabel": "Mot de passe",
+      "forgotPassword": "Mot de passe oublié ?",
+      "passwordPlaceholder": "Entrez votre mot de passe",
+      "signingIn": "Connexion en cours…",
+      "signIn": "Se connecter",
+      "termsText": "En vous connectant, vous acceptez nos",
+      "terms": "Conditions",
+      "privacy": "Politique de confidentialité",
+      "legalNotice": "Mentions légales",
+      "invalidCredentials": "Identifiants invalides"
+    },
+    "signup": {
+      "title": "Créer un compte",
+      "hasAccount": "Vous avez déjà un compte ?",
+      "signIn": "Se connecter",
+      "fullNameLabel": "Nom complet",
+      "fullNameOptional": "(optionnel)",
+      "fullNamePlaceholder": "Jean Dupont",
+      "emailLabel": "Adresse e-mail",
+      "emailPlaceholder": "vous@entreprise.com",
+      "passwordLabel": "Mot de passe",
+      "passwordPlaceholder": "Min. 8 caractères",
+      "creatingAccount": "Création du compte…",
+      "startFreeTrial": "Commencer l'essai gratuit",
+      "termsText": "En créant un compte, vous acceptez nos",
+      "termsOfService": "Conditions d'utilisation",
+      "privacy": "Politique de confidentialité",
+      "legalNotice": "Mentions légales",
+      "failedToCreate": "Échec de la création du compte"
+    },
+    "forgotPassword": {
+      "title": "Mot de passe oublié ?",
+      "subtitle": "Entrez votre adresse e-mail et nous vous enverrons un lien pour réinitialiser votre mot de passe.",
+      "emailLabel": "Adresse e-mail",
+      "emailPlaceholder": "Entrez votre e-mail",
+      "sending": "Envoi en cours...",
+      "sendResetLink": "Envoyer le lien de réinitialisation",
+      "backToLogin": "Retour à la connexion",
+      "checkEmail": "Vérifiez votre e-mail",
+      "checkEmailDesc": "Si un compte existe pour {{email}}, vous recevrez un lien de réinitialisation de mot de passe sous peu.",
+      "linkExpires": "Le lien expirera dans 1 heure pour des raisons de sécurité.",
+      "somethingWrong": "Une erreur s'est produite. Veuillez réessayer.",
+      "invalidEmail": "Adresse e-mail invalide"
+    },
+    "resetPassword": {
+      "title": "Réinitialiser votre mot de passe",
+      "subtitle": "Entrez votre nouveau mot de passe ci-dessous.",
+      "newPassword": "Nouveau mot de passe",
+      "newPasswordPlaceholder": "Entrez le nouveau mot de passe",
+      "confirmPassword": "Confirmer le nouveau mot de passe",
+      "confirmPasswordPlaceholder": "Confirmez le nouveau mot de passe",
+      "requirements": "Exigences du mot de passe :",
+      "req8chars": "Au moins 8 caractères",
+      "reqUppercase": "Au moins une lettre majuscule",
+      "reqLowercase": "Au moins une lettre minuscule",
+      "reqNumber": "Au moins un chiffre",
+      "resetting": "Réinitialisation...",
+      "resetPasswordBtn": "Réinitialiser le mot de passe",
+      "backToLogin": "Retour à la connexion",
+      "invalidLink": "Lien invalide",
+      "invalidLinkDesc": "Ce lien de réinitialisation de mot de passe est invalide ou a expiré. Veuillez en demander un nouveau.",
+      "requestNewLink": "Demander un nouveau lien",
+      "successTitle": "Réinitialisation réussie",
+      "successDesc": "Votre mot de passe a été mis à jour. Redirection vers la connexion...",
+      "continueToLogin": "Continuer vers la connexion",
+      "somethingWrong": "Une erreur s'est produite. Veuillez réessayer."
+    },
+    "verifyEmail": {
+      "title": "Vérification d'e-mail",
+      "missingToken": "Jeton de vérification manquant",
+      "verifying": "Vérification de votre adresse e-mail...",
+      "verified": "Votre e-mail a été vérifié !",
+      "unableToVerify": "Impossible de vérifier l'e-mail",
+      "pleaseWait": "Veuillez patienter pendant que nous vérifions votre e-mail...",
+      "successDesc": "Votre adresse e-mail a été vérifiée avec succès.",
+      "accessFeatures": " Vous pouvez maintenant accéder à toutes les fonctionnalités.",
+      "signInAccount": " Vous pouvez maintenant vous connecter à votre compte.",
+      "goToDashboard": "Aller au tableau de bord",
+      "signInBtn": "Se connecter à votre compte",
+      "linkExpired": "Lien de vérification expiré",
+      "linkExpiredDesc": "Ce lien de vérification a expiré ou a déjà été utilisé. Veuillez vous connecter et demander un nouvel e-mail de vérification depuis votre tableau de bord.",
+      "goToSignIn": "Aller à la connexion",
+      "createNewAccount": "Créer un nouveau compte",
+      "noTokenDesc": "Aucun jeton de vérification fourni. Veuillez cliquer sur le lien dans votre e-mail de vérification ou demander un nouvel e-mail de vérification.",
+      "failedToVerify": "Échec de la vérification de l'e-mail. Le lien est peut-être invalide ou expiré."
+    },
+    "loginPanel": {
+      "heading": "Bon retour parmi nous",
+      "sub": "Connectez-vous pour gérer votre assistant IA et voir comment il convertit les visiteurs en clients.",
+      "feature1": "IA entraînée sur le contenu de votre site",
+      "feature2": "Analytiques en temps réel et journaux de conversations",
+      "feature3": "Sécurité et confidentialité de niveau entreprise",
+      "stat": "taux de satisfaction client"
+    },
+    "signupPanel": {
+      "heading": "Démarrez gratuitement",
+      "sub": "Rejoignez des milliers d'entreprises qui automatisent leurs conversations clients avec IntelliConvo.",
+      "feature1": "Essai gratuit, aucune carte bancaire requise",
+      "feature2": "Configuration en moins de 5 minutes",
+      "feature3": "Conforme RGPD & annulation à tout moment",
+      "stat": "temps de configuration moyen"
+    }
+  },
+  "dashboard": {
+    "title": "Mon tableau de bord",
+    "description": "Gérez vos sites connectés et surveillez les performances",
+    "addNewSite": "Ajouter un site",
+    "connectedSites": "Sites connectés",
+    "addFirstSite": "Ajouter votre premier site",
+    "noSites": "Aucun site connecté pour l'instant",
+    "noSitesDesc": "Commencez par ajouter votre premier site web pour activer les conversations IA",
+    "failedToLoad": "Échec du chargement des sites",
+    "failedToLoadDesc": "Veuillez essayer d'actualiser la page ou vérifier votre connexion.",
+    "verifyEmailTooltip": "Vérifiez votre e-mail pour ajouter un site"
+  },
+  "header": {
+    "backToDashboard": "Retour au tableau de bord",
+    "adminPortal": "Portail administrateur",
+    "accountSettings": "Paramètres du compte",
+    "subscription": "Abonnement",
+    "billingHistory": "Historique de facturation",
+    "signOut": "Se déconnecter",
+    "user": "Utilisateur",
+    "toggleTheme": "Changer de thème"
+  },
+  "legal": {
+    "tabs": {
+      "terms": "Conditions d'utilisation",
+      "privacy": "Politique de confidentialité",
+      "mentionsLegales": "Mentions légales"
+    },
+    "ui": {
+      "onThisPage": "Sur cette page",
+      "lastUpdated": "Dernière mise à jour",
+      "legalDocument": "Document légal",
+      "getStarted": "Commencer gratuitement →"
+    }
+  }
+}

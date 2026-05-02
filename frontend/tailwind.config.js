@@ -57,7 +57,8 @@ module.exports = {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        sans: ["Inter", "ui-sans-serif", "system-ui"],
+        sans: ["var(--font-inter)", "ui-sans-serif", "system-ui"],
+        oxanium: ["var(--font-oxanium)", "cursive"],
       },
       boxShadow: {
         'glow': '0 0 20px -5px rgb(79 70 229 / 0.3)',
@@ -71,8 +72,45 @@ module.exports = {
         'scale-in': 'scaleIn 0.2s ease-out',
         'bounce-gentle': 'bounceGentle 0.6s ease-out',
         'wiggle': 'wiggle 0.5s ease-in-out',
+        'orb-drift': 'orbDrift 10s ease-in-out infinite',
+        'orb-drift-alt': 'orbDriftAlt 14s ease-in-out infinite',
+        'float': 'floatY 5s ease-in-out infinite',
+        'pulse-glow': 'pulseGlow 3s ease-in-out infinite',
+        'marquee': 'marquee 28s linear infinite',
+        'chat-blink': 'chatBlink 1.1s step-end infinite',
+        'gradient-shift': 'gradientShift 8s ease-in-out infinite',
       },
       keyframes: {
+        orbDrift: {
+          '0%, 100%': { transform: 'translate(0, 0) scale(1)' },
+          '33%': { transform: 'translate(40px, -30px) scale(1.08)' },
+          '66%': { transform: 'translate(-25px, 35px) scale(0.95)' },
+        },
+        orbDriftAlt: {
+          '0%, 100%': { transform: 'translate(0, 0) scale(1)' },
+          '40%': { transform: 'translate(-50px, 20px) scale(1.06)' },
+          '70%': { transform: 'translate(30px, -40px) scale(0.97)' },
+        },
+        floatY: {
+          '0%, 100%': { transform: 'translateY(0px)' },
+          '50%': { transform: 'translateY(-14px)' },
+        },
+        pulseGlow: {
+          '0%, 100%': { boxShadow: '0 0 20px rgba(34,211,238,0.25), 0 0 40px rgba(34,211,238,0.08)' },
+          '50%': { boxShadow: '0 0 40px rgba(34,211,238,0.5), 0 0 80px rgba(34,211,238,0.18)' },
+        },
+        marquee: {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-50%)' },
+        },
+        chatBlink: {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0' },
+        },
+        gradientShift: {
+          '0%, 100%': { backgroundPosition: '0% 50%' },
+          '50%': { backgroundPosition: '100% 50%' },
+        },
         fadeIn: {
           '0%': { opacity: '0' },
           '100%': { opacity: '1' },

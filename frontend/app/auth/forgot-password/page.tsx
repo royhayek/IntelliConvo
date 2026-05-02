@@ -17,9 +17,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { AuthPageLayout } from "@/components/auth/auth-page-layout";
 import { usePostAuthForgotPassword } from "@/lib/api/generated/queries/authentication/authentication";
 import { AlertCircle, ArrowLeft, CheckCircle2, Mail } from "lucide-react";
 import { BrandLogo } from "@/components/ui/brand-logo";
+import { useTranslation } from "react-i18next";
 
 const forgotPasswordSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -29,12 +31,11 @@ type ForgotPasswordForm = z.infer<typeof forgotPasswordSchema>;
 
 export default function ForgotPasswordPage() {
   const [submitted, setSubmitted] = useState(false);
+  const { t } = useTranslation();
 
   const form = useForm<ForgotPasswordForm>({
     resolver: zodResolver(forgotPasswordSchema),
-    defaultValues: {
-      email: "",
-    },
+    defaultValues: { email: "" },
   });
 
   const forgotPasswordMutation = usePostAuthForgotPassword({
@@ -51,54 +52,51 @@ export default function ForgotPasswordPage() {
 
   const loading = forgotPasswordMutation.isPending;
   const errorResponse = (forgotPasswordMutation.error as { response?: { data?: { error?: { message?: string } | string } } })?.response?.data?.error;
-  const error = typeof errorResponse === 'string'
+  const error = typeof errorResponse === "string"
     ? errorResponse
-    : errorResponse?.message || (forgotPasswordMutation.isError ? "Something went wrong. Please try again." : "");
+    : errorResponse?.message || (forgotPasswordMutation.isError ? t("auth.forgotPassword.somethingWrong") : "");
 
   if (submitted) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 p-4">
-        <Card className="w-full max-w-md shadow-lg">
+      <AuthPageLayout>
+        <Card className="w-full auth-card">
           <CardHeader className="space-y-1 text-center">
             <div className="flex justify-center mb-4">
               <div className="rounded-full bg-green-100 dark:bg-green-900/30 p-3">
                 <CheckCircle2 className="h-8 w-8 text-green-600 dark:text-green-400" />
               </div>
             </div>
-            <CardTitle className="text-2xl font-bold">Check your email</CardTitle>
+            <CardTitle className="text-2xl font-bold">{t("auth.forgotPassword.checkEmail")}</CardTitle>
             <CardDescription className="text-base">
-              If an account exists for <span className="font-medium">{form.getValues("email")}</span>,
-              you will receive a password reset link shortly.
+              {t("auth.forgotPassword.checkEmailDesc", { email: form.getValues("email") })}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center gap-2 p-3 bg-muted rounded-lg text-sm text-muted-foreground">
               <Mail className="h-4 w-4 flex-shrink-0" />
-              <span>The link will expire in 1 hour for security reasons.</span>
+              <span>{t("auth.forgotPassword.linkExpires")}</span>
             </div>
             <Button asChild variant="outline" className="w-full">
               <Link href="/auth/login">
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to login
+                {t("auth.forgotPassword.backToLogin")}
               </Link>
             </Button>
           </CardContent>
         </Card>
-      </div>
+      </AuthPageLayout>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 p-4">
-      <Card className="w-full max-w-md shadow-lg">
+    <AuthPageLayout>
+      <Card className="w-full auth-card">
         <CardHeader className="space-y-1 text-center">
           <div className="flex justify-center mb-4">
             <BrandLogo size="md" showText={false} href={null} animated={false} />
           </div>
-          <CardTitle className="text-2xl font-bold">Forgot your password?</CardTitle>
-          <CardDescription>
-            Enter your email address and we&apos;ll send you a link to reset your password.
-          </CardDescription>
+          <CardTitle className="text-2xl font-bold">{t("auth.forgotPassword.title")}</CardTitle>
+          <CardDescription>{t("auth.forgotPassword.subtitle")}</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -115,11 +113,11 @@ export default function ForgotPasswordPage() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email address</FormLabel>
+                    <FormLabel>{t("auth.forgotPassword.emailLabel")}</FormLabel>
                     <FormControl>
                       <Input
                         type="email"
-                        placeholder="Enter your email"
+                        placeholder={t("auth.forgotPassword.emailPlaceholder")}
                         autoComplete="email"
                         {...field}
                       />
@@ -129,23 +127,20 @@ export default function ForgotPasswordPage() {
                 )}
               />
 
-              <Button type="submit" disabled={loading} className="w-full bg-indigo-600 hover:bg-indigo-700">
-                {loading ? "Sending..." : "Send reset link"}
+              <Button type="submit" disabled={loading} className="w-full btn-auth-gradient">
+                {loading ? t("auth.forgotPassword.sending") : t("auth.forgotPassword.sendResetLink")}
               </Button>
 
               <div className="text-center text-sm">
-                <Link
-                  href="/auth/login"
-                  className="text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300 inline-flex items-center"
-                >
+                <Link href="/auth/login" className="link-auth inline-flex items-center">
                   <ArrowLeft className="mr-1 h-3 w-3" />
-                  Back to login
+                  {t("auth.forgotPassword.backToLogin")}
                 </Link>
               </div>
             </form>
           </Form>
         </CardContent>
       </Card>
-    </div>
+    </AuthPageLayout>
   );
 }

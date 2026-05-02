@@ -8,7 +8,6 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -20,11 +19,13 @@ import {
 import { useAuthStore } from "@/lib/store";
 import { useAuthRedirect } from "@/lib/hooks/useAuth";
 import { AuthLoading } from "@/components/auth/auth-loading";
+import { AuthSplitLayout } from "@/components/auth/auth-split-layout";
 import { usePostAuthSignup } from "@/lib/api/generated/queries/authentication/authentication";
 import { useGetConfigPublic } from "@/lib/api/generated/queries/config/config";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Rocket } from "lucide-react";
 import { OAuthButtons, AuthProvider } from "@/components/auth/oauth-buttons";
 import { BrandLogo } from "@/components/ui/brand-logo";
+import { useTranslation } from "react-i18next";
 
 const signupSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -37,24 +38,18 @@ type SignupForm = z.infer<typeof signupSchema>;
 export default function SignupPage() {
   const router = useRouter();
   const { login } = useAuthStore();
+  const { t } = useTranslation();
 
-  // Redirect authenticated users to onboarding
   const { isLoading: isAuthLoading } = useAuthRedirect("/dashboard");
 
-  // Fetch public config to get enabled auth providers
   const { data: configData } = useGetConfigPublic();
   const enabledProviders = configData?.data?.enabledAuthProviders ?? [];
 
   const form = useForm<SignupForm>({
     resolver: zodResolver(signupSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-      fullName: "",
-    },
+    defaultValues: { email: "", password: "", fullName: "" },
   });
 
-  // Signup mutation
   const signupMutation = usePostAuthSignup({
     mutation: {
       onSuccess: (data) => {
@@ -67,50 +62,52 @@ export default function SignupPage() {
 
   const onSubmit = (data: SignupForm) => {
     signupMutation.mutate({
-      data: {
-        email: data.email,
-        password: data.password,
-        fullName: data.fullName,
-      },
+      data: { email: data.email, password: data.password, fullName: data.fullName },
     });
   };
 
   const loading = signupMutation.isPending;
   const errorResponse = (signupMutation.error as { response?: { data?: { error?: { message?: string } | string } } })?.response?.data?.error;
-  const error = typeof errorResponse === 'string'
+  const error = typeof errorResponse === "string"
     ? errorResponse
-    : errorResponse?.message || (signupMutation.isError ? "Failed to create account" : "");
+    : errorResponse?.message || (signupMutation.isError ? t("auth.signup.failedToCreate") : "");
 
   const handleOAuthLogin = (provider: AuthProvider) => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api/v1';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001/api/v1";
     window.location.href = `${apiUrl}/auth/${provider}`;
   };
 
-  // Show loading state while auth is hydrating
   if (isAuthLoading) {
-    return <AuthLoading message="Checking authentication" />;
+    return <AuthLoading message={t("auth.checkingAuth")} />;
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 p-4">
-      <Card className="w-full max-w-md shadow-lg">
-        <CardHeader className="space-y-1 text-center">
-          <div className="flex justify-center mb-4">
-            <BrandLogo size="md" showText={false} href={null} animated={false} />
-          </div>
-          <CardTitle className="text-3xl font-bold">Create your account</CardTitle>
-          <CardDescription>
-            Or{" "}
-            <Link href="/auth/login" className="font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
-              sign in to your existing account
+    <AuthSplitLayout panel="signup">
+      <div className="space-y-8">
+        {/* Mobile-only logo */}
+        <div className="flex lg:hidden justify-center">
+          <BrandLogo size="md" showText href={null} animated={false} />
+        </div>
+
+        {/* Header */}
+        <div className="space-y-2">
+          <h1 className="text-3xl font-bold tracking-tight">
+            <span className="text-gradient-cyan">{t("auth.signup.title")}</span>
+          </h1>
+          <p className="text-muted-foreground text-sm">
+            {t("auth.signup.hasAccount")}{" "}
+            <Link href="/auth/login" className="font-semibold link-auth">
+              {t("auth.signup.signIn")}
             </Link>
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+          </p>
+        </div>
+
+        {/* Form card */}
+        <div className="auth-card rounded-2xl p-7 space-y-6">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5 auth-form">
               {error && (
-                <Alert variant="destructive">
+                <Alert variant="destructive" className="py-3">
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
@@ -121,12 +118,16 @@ export default function SignupPage() {
                 name="fullName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Full Name (optional)</FormLabel>
+                    <FormLabel className="text-sm font-medium">
+                      {t("auth.signup.fullNameLabel")}{" "}
+                      <span className="text-muted-foreground font-normal">{t("auth.signup.fullNameOptional")}</span>
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type="text"
-                        placeholder="Enter your full name"
+                        placeholder={t("auth.signup.fullNamePlaceholder")}
                         autoComplete="name"
+                        className="h-11"
                         {...field}
                       />
                     </FormControl>
@@ -140,12 +141,13 @@ export default function SignupPage() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email address</FormLabel>
+                    <FormLabel className="text-sm font-medium">{t("auth.signup.emailLabel")}</FormLabel>
                     <FormControl>
                       <Input
                         type="email"
-                        placeholder="Enter your email"
+                        placeholder={t("auth.signup.emailPlaceholder")}
                         autoComplete="email"
+                        className="h-11"
                         {...field}
                       />
                     </FormControl>
@@ -159,12 +161,13 @@ export default function SignupPage() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel className="text-sm font-medium">{t("auth.signup.passwordLabel")}</FormLabel>
                     <FormControl>
                       <Input
                         type="password"
-                        placeholder="Enter your password (min 8 characters)"
+                        placeholder={t("auth.signup.passwordPlaceholder")}
                         autoComplete="new-password"
+                        className="h-11"
                         {...field}
                       />
                     </FormControl>
@@ -173,32 +176,44 @@ export default function SignupPage() {
                 )}
               />
 
-              <p className="text-xs text-muted-foreground">
-                By creating an account, you agree to our{" "}
-                <Link href="/terms" className="text-primary hover:underline">
-                  Terms of Service
-                </Link>{" "}
-                and{" "}
-                <Link href="/privacy" className="text-primary hover:underline">
-                  Privacy Policy
-                </Link>
-                .
-              </p>
-
-              <Button type="submit" disabled={loading} className="w-full bg-indigo-600 hover:bg-indigo-700">
-                {loading ? "Creating account..." : "Create account"}
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-full h-11 text-sm font-semibold btn-auth-gradient"
+              >
+                {loading ? (
+                  <span className="flex items-center gap-2">
+                    <span className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                    {t("auth.signup.creatingAccount")}
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2">
+                    <Rocket className="h-4 w-4" />
+                    {t("auth.signup.startFreeTrial")}
+                  </span>
+                )}
               </Button>
 
               <OAuthButtons
                 onProviderClick={handleOAuthLogin}
                 enabledProviders={enabledProviders}
                 disabled={loading}
-                separatorText="Or sign up with"
+                separatorText={t("auth.orSignUpWith")}
               />
             </form>
           </Form>
-        </CardContent>
-      </Card>
-    </div>
+        </div>
+
+        {/* Footer note */}
+        <p className="text-center text-xs text-muted-foreground">
+          {t("auth.signup.termsText")}{" "}
+          <Link href="/terms" className="link-auth hover:underline">{t("auth.signup.termsOfService")}</Link>
+          {", "}
+          <Link href="/privacy" className="link-auth hover:underline">{t("auth.signup.privacy")}</Link>
+          {" & "}
+          <Link href="/mentions-legales" className="link-auth hover:underline">{t("auth.signup.legalNotice")}</Link>
+        </p>
+      </div>
+    </AuthSplitLayout>
   );
 }

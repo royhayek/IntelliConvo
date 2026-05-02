@@ -1,0 +1,317 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "initializing": "Initializing your workspace…",
+    "pleaseWait": "Please wait...",
+    "freeTrial_one": "{{count}}-day free trial",
+    "freeTrial_other": "{{count}}-days free trial"
+  },
+  "language": {
+    "toggle": "Toggle language",
+    "en": "English",
+    "fr": "Français"
+  },
+  "theme": {
+    "dark": "Dark mode (click for system)",
+    "system": "System theme (click for light)",
+    "light": "Light mode (click for dark)",
+    "toggle": "Toggle theme"
+  },
+  "nav": {
+    "features": "Features",
+    "howItWorks": "How It Works",
+    "useCases": "Use Cases",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "getStarted": "Get Started",
+    "backToDashboard": "Back to Dashboard"
+  },
+  "hero": {
+    "title": "AI That Powers",
+    "typewriterWords": [
+      "Customer Support",
+      "Lead Generation",
+      "Sales Automation",
+      "Onboarding Flows"
+    ],
+    "description": "IntelliConvo learns from your website, answers visitor questions instantly, and keeps working long after you've logged off. No training required. Just paste your URL and go live.",
+    "startFreeTrial": "Start Free Trial",
+    "exploreFeatures": "Explore Features",
+    "cancelAnytime": "Cancel anytime",
+    "gdprCompliant": "GDPR compliant",
+    "setupIn5Minutes": "Setup in 5 minutes"
+  },
+  "features": {
+    "badge": "Features",
+    "title": "Everything You Need to",
+    "titleHighlight": "Convert",
+    "subtitle": "Built for high-traffic websites that demand precision, speed, and zero maintenance overhead.",
+    "selfLearningAI": {
+      "title": "Self-Learning AI",
+      "description": "Automatically ingests and learns from your website content, keeping answers accurate as your content evolves."
+    },
+    "sub100ms": {
+      "title": "Sub-100ms Responses",
+      "description": "Vector-search powered retrieval ensures instant, relevant answers. No user left waiting."
+    },
+    "multiLanguage": {
+      "title": "Multi-Language",
+      "description": "Auto-detect and respond in any language. Your AI speaks to the world, not just English speakers."
+    },
+    "voiceText": {
+      "title": "Voice + Text",
+      "description": "Full voice interaction alongside text, making your widget accessible to every type of visitor."
+    },
+    "secure": {
+      "title": "Secure by Design",
+      "description": "AES-256 encryption in transit and at rest. Your data and your visitors' conversations are protected by default."
+    },
+    "analytics": {
+      "title": "Deep Analytics",
+      "description": "Track conversation flows, sentiment, unanswered questions, and conversion events in real-time."
+    }
+  },
+  "howItWorks": {
+    "badge": "How It Works",
+    "title": "Live in Under",
+    "titleHighlight": "5 Minutes",
+    "subtitle": "From blank canvas to a production-grade AI assistant. No engineering team required.",
+    "connect": {
+      "title": "Connect Your Site",
+      "body": "Enter your URL and our crawler maps every page, building a semantic knowledge base automatically."
+    },
+    "tune": {
+      "title": "Tune the Persona",
+      "body": "Name your assistant, set its tone, define escalation rules. Customize everything to match your brand."
+    },
+    "deploy": {
+      "title": "Deploy in Seconds",
+      "body": "Copy one line of JavaScript. The widget goes live immediately. No build step, no DevOps required."
+    }
+  },
+  "useCases": {
+    "badge": "Use Cases",
+    "title": "Built for",
+    "titleHighlight": "Every Website",
+    "subtitle": "Whether you run a shop, a SaaS, or a content site, IntelliConvo adapts to your visitors and your goals.",
+    "ecommerce": {
+      "tag": "E-Commerce",
+      "headline": "Turn Browsers Into Buyers",
+      "description": "Answer product questions instantly, guide visitors to the right item, and never lose a sale to an unanswered question. Your AI acts as a personal shopper, available 24/7."
+    },
+    "saas": {
+      "tag": "SaaS & Startups",
+      "headline": "Qualify Leads While You Sleep",
+      "description": "Capture and pre-qualify prospects around the clock. Your AI handles the first conversation so your team stays focused on closing deals."
+    },
+    "blogs": {
+      "tag": "Blogs & Content Sites",
+      "headline": "Help Readers Find What They Need",
+      "description": "Surface your best content contextually. Visitors get instant, relevant answers instead of bouncing away to search engines."
+    }
+  },
+  "cta": {
+    "title": "Ready to Give Your Website",
+    "titleHighlight": "a Voice?",
+    "subtitle": "Set up your AI assistant in under 5 minutes. No engineering team required. Just paste one line of code and go live.",
+    "startTrial": "Start Your Free Trial",
+    "cancelAnytime": "Cancel anytime",
+    "gdprCompliant": "GDPR compliant",
+    "setupIn5Minutes": "Setup in 5 minutes"
+  },
+  "footer": {
+    "tagline": "Making websites more intelligent, one conversation at a time.",
+    "company": "Micro-entreprise · France",
+    "product": "Product",
+    "legal": "Legal",
+    "copyright": "© {{year}} IntelliConvo. All rights reserved.",
+    "features": "Features",
+    "howItWorks": "How It Works",
+    "useCases": "Use Cases",
+    "pricing": "Pricing",
+    "terms": "Terms & Conditions (CGV)",
+    "privacy": "Privacy Policy (RGPD)",
+    "legalNotice": "Legal Notice"
+  },
+  "chatDemo": {
+    "chatTab": "Chat",
+    "speakTab": "Speak",
+    "hello": "👋 Hello! How can I help you today?",
+    "typeMessage": "Type your message...",
+    "demoQ1": "What can this chatbot do for me?",
+    "demoA1": "I answer questions about your products, qualify leads, and support customers 24/7. All trained on your own website content.",
+    "demoQ2": "How long does setup take?",
+    "demoA2": "Under 5 minutes! Paste your URL, we crawl it, and your AI goes live instantly. 🚀",
+    "chatAssistant": "Chat Assistant"
+  },
+  "showcase": {
+    "badge": "Product Tour",
+    "title": "See IntelliConvo",
+    "titleHighlight": "In Action",
+    "subtitle": "A real look inside the dashboard — from content ingestion and live conversations to full widget customization.",
+    "tabs": {
+      "dashboard": "Dashboard",
+      "overview": "Site Overview",
+      "content": "Website Content",
+      "conversations": "Conversations",
+      "widget": "Widget Customization",
+      "management": "Site Management"
+    },
+    "descriptions": {
+      "dashboard": "Get a bird's-eye view of all your connected sites, conversation volume, and performance metrics at a glance.",
+      "overview": "Deep-dive into site-level analytics: message counts, top questions, response quality scores, and engagement trends over time.",
+      "content": "Browse every page and document your AI has learned from. Add, remove, or re-crawl content on demand — no re-training needed.",
+      "conversations": "Review every chat in full detail. Filter by date, rating, or unanswered status, and export transcripts for team review.",
+      "widget": "Customize your widget's colors, position, avatar, and welcome message — with a live preview that updates instantly.",
+      "management": "Manage site settings, embed codes, crawl schedules, and team access from one organized control panel."
+    }
+  },
+  "auth": {
+    "checkingAuth": "Checking authentication",
+    "orContinueWith": "Or continue with",
+    "orSignUpWith": "Or sign up with",
+    "login": {
+      "title": "Sign in",
+      "noAccount": "Don't have an account?",
+      "startFreeTrial": "Start free trial",
+      "emailLabel": "Email address",
+      "emailPlaceholder": "you@company.com",
+      "passwordLabel": "Password",
+      "forgotPassword": "Forgot password?",
+      "passwordPlaceholder": "Enter your password",
+      "signingIn": "Signing in…",
+      "signIn": "Sign in",
+      "termsText": "By signing in you agree to our",
+      "terms": "Terms",
+      "privacy": "Privacy Policy",
+      "legalNotice": "Legal Notice",
+      "invalidCredentials": "Invalid credentials"
+    },
+    "signup": {
+      "title": "Create account",
+      "hasAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "fullNameLabel": "Full name",
+      "fullNameOptional": "(optional)",
+      "fullNamePlaceholder": "Jane Smith",
+      "emailLabel": "Email address",
+      "emailPlaceholder": "you@company.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Min. 8 characters",
+      "creatingAccount": "Creating account…",
+      "startFreeTrial": "Start free trial",
+      "termsText": "By creating an account you agree to our",
+      "termsOfService": "Terms of Service",
+      "privacy": "Privacy Policy",
+      "legalNotice": "Legal Notice",
+      "failedToCreate": "Failed to create account"
+    },
+    "forgotPassword": {
+      "title": "Forgot your password?",
+      "subtitle": "Enter your email address and we'll send you a link to reset your password.",
+      "emailLabel": "Email address",
+      "emailPlaceholder": "Enter your email",
+      "sending": "Sending...",
+      "sendResetLink": "Send reset link",
+      "backToLogin": "Back to login",
+      "checkEmail": "Check your email",
+      "checkEmailDesc": "If an account exists for {{email}}, you will receive a password reset link shortly.",
+      "linkExpires": "The link will expire in 1 hour for security reasons.",
+      "somethingWrong": "Something went wrong. Please try again.",
+      "invalidEmail": "Invalid email address"
+    },
+    "resetPassword": {
+      "title": "Reset your password",
+      "subtitle": "Enter your new password below.",
+      "newPassword": "New password",
+      "newPasswordPlaceholder": "Enter new password",
+      "confirmPassword": "Confirm new password",
+      "confirmPasswordPlaceholder": "Confirm new password",
+      "requirements": "Password requirements:",
+      "req8chars": "At least 8 characters",
+      "reqUppercase": "At least one uppercase letter",
+      "reqLowercase": "At least one lowercase letter",
+      "reqNumber": "At least one number",
+      "resetting": "Resetting...",
+      "resetPasswordBtn": "Reset password",
+      "backToLogin": "Back to login",
+      "invalidLink": "Invalid link",
+      "invalidLinkDesc": "This password reset link is invalid or has expired. Please request a new one.",
+      "requestNewLink": "Request new link",
+      "successTitle": "Password reset successful",
+      "successDesc": "Your password has been updated. Redirecting you to login...",
+      "continueToLogin": "Continue to login",
+      "somethingWrong": "Something went wrong. Please try again."
+    },
+    "verifyEmail": {
+      "title": "Email Verification",
+      "missingToken": "Missing verification token",
+      "verifying": "Verifying your email address...",
+      "verified": "Your email has been verified!",
+      "unableToVerify": "Unable to verify email",
+      "pleaseWait": "Please wait while we verify your email...",
+      "successDesc": "Your email address has been successfully verified.",
+      "accessFeatures": " You can now access all features.",
+      "signInAccount": " You can now sign in to your account.",
+      "goToDashboard": "Go to Dashboard",
+      "signInBtn": "Sign in to your account",
+      "linkExpired": "Verification Link Expired",
+      "linkExpiredDesc": "This verification link has expired or has already been used. Please sign in and request a new verification email from your dashboard.",
+      "goToSignIn": "Go to Sign In",
+      "createNewAccount": "Create New Account",
+      "noTokenDesc": "No verification token was provided. Please click the link in your verification email or request a new verification email.",
+      "failedToVerify": "Failed to verify email. The link may be invalid or expired."
+    },
+    "loginPanel": {
+      "heading": "Welcome back",
+      "sub": "Sign in to manage your AI assistant and see how it's converting visitors into customers.",
+      "feature1": "AI trained on your website content",
+      "feature2": "Real-time analytics & conversation logs",
+      "feature3": "Enterprise-grade security & privacy",
+      "stat": "customer satisfaction rate"
+    },
+    "signupPanel": {
+      "heading": "Start for free today",
+      "sub": "Join thousands of businesses automating customer conversations with IntelliConvo.",
+      "feature1": "Free trial, no credit card required",
+      "feature2": "Set up in under 5 minutes",
+      "feature3": "GDPR compliant & cancel anytime",
+      "stat": "average setup time"
+    }
+  },
+  "dashboard": {
+    "title": "My Dashboard",
+    "description": "Manage your connected sites and monitor performance",
+    "addNewSite": "Add New Site",
+    "connectedSites": "Connected Sites",
+    "addFirstSite": "Add Your First Site",
+    "noSites": "No sites connected yet",
+    "noSitesDesc": "Get started by adding your first website to enable AI-powered conversations",
+    "failedToLoad": "Failed to load sites",
+    "failedToLoadDesc": "Please try refreshing the page or check your connection.",
+    "verifyEmailTooltip": "Verify your email to add new site"
+  },
+  "header": {
+    "backToDashboard": "Back to Dashboard",
+    "adminPortal": "Admin Portal",
+    "accountSettings": "Account Settings",
+    "subscription": "Subscription",
+    "billingHistory": "Billing History",
+    "signOut": "Sign Out",
+    "user": "User",
+    "toggleTheme": "Toggle theme"
+  },
+  "legal": {
+    "tabs": {
+      "terms": "Terms of Service",
+      "privacy": "Privacy Policy",
+      "mentionsLegales": "Legal Notice"
+    },
+    "ui": {
+      "onThisPage": "On this page",
+      "lastUpdated": "Last updated",
+      "legalDocument": "Legal Document",
+      "getStarted": "Get started free →"
+    }
+  }
+}

@@ -6,9 +6,11 @@ import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { BrandLogo } from "@/components/ui/brand-logo";
+import { AuthPageLayout } from "@/components/auth/auth-page-layout";
 import { postAuthVerifyEmail } from "@/lib/api/generated/queries/authentication/authentication";
 import { useAuthStore } from "@/lib/store";
 import { CheckCircle2, XCircle, Loader2, Mail } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 type VerificationState = "idle" | "loading" | "success" | "error";
 
@@ -18,6 +20,7 @@ function VerifyEmailContent() {
   const hasAttempted = useRef(false);
   const { user, updateUser } = useAuthStore();
   const isAuthenticated = !!user;
+  const { t } = useTranslation();
 
   const [state, setState] = useState<VerificationState>("idle");
   const [errorMessage, setErrorMessage] = useState("");
@@ -31,7 +34,6 @@ function VerifyEmailContent() {
     postAuthVerifyEmail({ token })
       .then(() => {
         setState("success");
-        // Update user's emailVerified status in the store if authenticated
         if (user) {
           updateUser({ emailVerified: true });
         }
@@ -39,9 +41,9 @@ function VerifyEmailContent() {
       .catch((error: unknown) => {
         setState("error");
         const axiosError = error as { response?: { data?: { error?: { message?: string } | string } } };
-        const errMsg = typeof axiosError.response?.data?.error === 'string'
+        const errMsg = typeof axiosError.response?.data?.error === "string"
           ? axiosError.response.data.error
-          : axiosError.response?.data?.error?.message || "Failed to verify email. The link may be invalid or expired.";
+          : axiosError.response?.data?.error?.message || t("auth.verifyEmail.failedToVerify");
         setErrorMessage(errMsg);
       });
   }, [token]);
@@ -52,25 +54,25 @@ function VerifyEmailContent() {
   const isError = state === "error";
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-950 dark:to-indigo-950 p-4">
-      <Card className="w-full max-w-md">
+    <AuthPageLayout>
+      <Card className="w-full auth-card">
         <CardHeader className="space-y-1 text-center">
           <div className="flex justify-center mb-4">
             <BrandLogo size="md" showText={false} href={null} animated={false} />
           </div>
-          <CardTitle className="text-3xl font-bold">Email Verification</CardTitle>
+          <CardTitle className="text-3xl font-bold">{t("auth.verifyEmail.title")}</CardTitle>
           <CardDescription>
-            {noToken && "Missing verification token"}
-            {!noToken && isLoading && "Verifying your email address..."}
-            {!noToken && isSuccess && "Your email has been verified!"}
-            {!noToken && isError && "Unable to verify email"}
+            {noToken && t("auth.verifyEmail.missingToken")}
+            {!noToken && isLoading && t("auth.verifyEmail.verifying")}
+            {!noToken && isSuccess && t("auth.verifyEmail.verified")}
+            {!noToken && isError && t("auth.verifyEmail.unableToVerify")}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {!noToken && isLoading && (
             <div className="flex flex-col items-center justify-center py-8">
-              <Loader2 className="h-16 w-16 text-indigo-600 animate-spin mb-4" />
-              <p className="text-muted-foreground">Please wait while we verify your email...</p>
+              <Loader2 className="h-16 w-16 animate-spin mb-4" style={{ color: "#22d3ee" }} />
+              <p className="text-muted-foreground">{t("auth.verifyEmail.pleaseWait")}</p>
             </div>
           )}
 
@@ -80,18 +82,18 @@ function VerifyEmailContent() {
                 <CheckCircle2 className="h-12 w-12 text-green-600 dark:text-green-400" />
               </div>
               <p className="text-center text-muted-foreground mb-6">
-                Your email address has been successfully verified.
+                {t("auth.verifyEmail.successDesc")}
                 {isAuthenticated
-                  ? " You can now access all features."
-                  : " You can now sign in to your account."}
+                  ? t("auth.verifyEmail.accessFeatures")
+                  : t("auth.verifyEmail.signInAccount")}
               </p>
               {isAuthenticated ? (
-                <Button asChild className="w-full">
-                  <Link href="/dashboard">Go to Dashboard</Link>
+                <Button asChild className="w-full btn-auth-gradient">
+                  <Link href="/dashboard">{t("auth.verifyEmail.goToDashboard")}</Link>
                 </Button>
               ) : (
-                <Button asChild className="w-full">
-                  <Link href="/auth/login">Sign in to your account</Link>
+                <Button asChild className="w-full btn-auth-gradient">
+                  <Link href="/auth/login">{t("auth.verifyEmail.signInBtn")}</Link>
                 </Button>
               )}
             </div>
@@ -103,18 +105,17 @@ function VerifyEmailContent() {
                 <XCircle className="h-12 w-12 text-red-600 dark:text-red-400" />
               </div>
               <h3 className="text-lg font-semibold text-red-700 dark:text-red-400 mb-2">
-                Verification Link Expired
+                {t("auth.verifyEmail.linkExpired")}
               </h3>
               <p className="text-center text-muted-foreground text-sm mb-6">
-                This verification link has expired or has already been used.
-                Please sign in and request a new verification email from your dashboard.
+                {t("auth.verifyEmail.linkExpiredDesc")}
               </p>
               <div className="flex flex-col gap-3 w-full">
-                <Button asChild className="w-full">
-                  <Link href="/auth/login">Go to Sign In</Link>
+                <Button asChild className="w-full btn-auth-gradient">
+                  <Link href="/auth/login">{t("auth.verifyEmail.goToSignIn")}</Link>
                 </Button>
                 <Button asChild variant="outline" className="w-full">
-                  <Link href="/auth/signup">Create New Account</Link>
+                  <Link href="/auth/signup">{t("auth.verifyEmail.createNewAccount")}</Link>
                 </Button>
               </div>
             </div>
@@ -126,41 +127,41 @@ function VerifyEmailContent() {
                 <Mail className="h-12 w-12 text-yellow-600 dark:text-yellow-400" />
               </div>
               <p className="text-center text-muted-foreground mb-6">
-                No verification token was provided. Please click the link in your verification email
-                or request a new verification email.
+                {t("auth.verifyEmail.noTokenDesc")}
               </p>
               <div className="flex flex-col gap-3 w-full">
-                <Button asChild className="w-full">
-                  <Link href="/auth/login">Go to Sign In</Link>
+                <Button asChild className="w-full btn-auth-gradient">
+                  <Link href="/auth/login">{t("auth.verifyEmail.goToSignIn")}</Link>
                 </Button>
               </div>
             </div>
           )}
         </CardContent>
       </Card>
-    </div>
+    </AuthPageLayout>
   );
 }
 
 function LoadingFallback() {
+  const { t } = useTranslation();
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-950 dark:to-indigo-950 p-4">
-      <Card className="w-full max-w-md">
+    <AuthPageLayout>
+      <Card className="w-full auth-card">
         <CardHeader className="space-y-1 text-center">
           <div className="flex justify-center mb-4">
             <BrandLogo size="md" showText={false} href={null} animated={false} />
           </div>
-          <CardTitle className="text-3xl font-bold">Email Verification</CardTitle>
-          <CardDescription>Verifying your email address...</CardDescription>
+          <CardTitle className="text-3xl font-bold">{t("auth.verifyEmail.title")}</CardTitle>
+          <CardDescription>{t("auth.verifyEmail.verifying")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col items-center justify-center py-8">
-            <Loader2 className="h-16 w-16 text-indigo-600 animate-spin mb-4" />
-            <p className="text-muted-foreground">Please wait...</p>
+            <Loader2 className="h-16 w-16 animate-spin mb-4" style={{ color: "#22d3ee" }} />
+            <p className="text-muted-foreground">{t("common.pleaseWait")}</p>
           </div>
         </CardContent>
       </Card>
-    </div>
+    </AuthPageLayout>
   );
 }
 

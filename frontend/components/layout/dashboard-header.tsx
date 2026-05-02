@@ -26,8 +26,10 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { BrandLogo } from "@/components/ui/brand-logo";
 import { NotificationBell } from "@/components/notifications/notification-bell";
 import { NavigationSettingsDrawer } from "@/components/layout/navigation-settings-drawer";
+import { LanguageToggle } from "@/components/ui/language-toggle";
 import { useAuthStore } from "@/lib/store";
 import { useLogout } from "@/lib/hooks/useAuth";
+import { useTranslation } from "react-i18next";
 
 interface DashboardHeaderProps {
   variant?: "dashboard" | "site";
@@ -53,6 +55,7 @@ export function DashboardHeader({
   const pathname = usePathname();
   const user = useAuthStore((state) => state.user);
   const handleLogout = useLogout();
+  const { t } = useTranslation();
 
   // Build the returnTo parameter for account settings navigation
   const accountSettingsHref = `/account/settings${pathname !== "/dashboard" ? `?returnTo=${encodeURIComponent(pathname)}` : ""}`;
@@ -81,7 +84,7 @@ export function DashboardHeader({
                       className="text-gray-600 hover:text-gray-900 hover:bg-white/60 dark:text-gray-400 dark:hover:text-gray-100 dark:hover:bg-slate-700/40"
                     >
                       <ArrowLeft className="h-4 w-4 sm:mr-2" />
-                      <span className="hidden sm:inline">Back to Dashboard</span>
+                      <span className="hidden sm:inline">{t("header.backToDashboard")}</span>
                     </Button>
                   </motion.div>
                 </Link>
@@ -104,6 +107,7 @@ export function DashboardHeader({
                 className="hidden sm:flex items-center space-x-2"
               >
                 <NotificationBell />
+                <LanguageToggle />
                 <ThemeToggle />
               </motion.div>
             )}
@@ -119,6 +123,7 @@ export function DashboardHeader({
                   className="flex lg:hidden items-center space-x-2"
                 >
                   <NotificationBell />
+                  <LanguageToggle />
                   <ThemeToggle />
                 </motion.div>
 
@@ -131,6 +136,7 @@ export function DashboardHeader({
                 >
                   <NotificationBell />
                   <NavigationSettingsDrawer variant="icon" />
+                  <LanguageToggle />
                   <ThemeToggle />
                 </motion.div>
               </>
@@ -167,7 +173,7 @@ export function DashboardHeader({
                     </Avatar>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">
-                        {user?.fullName || "User"}
+                        {user?.fullName || t("header.user")}
                       </p>
                       <p className="text-xs text-muted-foreground truncate">
                         {user?.email}
@@ -181,7 +187,7 @@ export function DashboardHeader({
                     <DropdownMenuItem asChild>
                       <Link href="/admin" className="cursor-pointer">
                         <Shield className="mr-2 h-4 w-4" />
-                        Admin Portal
+                        {t("header.adminPortal")}
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
@@ -190,7 +196,7 @@ export function DashboardHeader({
                 <DropdownMenuItem asChild>
                   <Link href={accountSettingsHref} className="cursor-pointer">
                     <Settings className="mr-2 h-4 w-4" />
-                    Account Settings
+                    {t("header.accountSettings")}
                   </Link>
                 </DropdownMenuItem>
                 {variant === "site" && siteId && (
@@ -201,7 +207,7 @@ export function DashboardHeader({
                         className="cursor-pointer"
                       >
                         <Crown className="mr-2 h-4 w-4" />
-                        Subscription
+                        {t("header.subscription")}
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
@@ -210,7 +216,7 @@ export function DashboardHeader({
                         className="cursor-pointer"
                       >
                         <CreditCard className="mr-2 h-4 w-4" />
-                        Billing History
+                        {t("header.billingHistory")}
                       </Link>
                     </DropdownMenuItem>
                   </>
@@ -221,7 +227,7 @@ export function DashboardHeader({
                   className="text-red-600 dark:text-red-400"
                 >
                   <LogOut className="mr-2 h-4 w-4" />
-                  Sign Out
+                  {t("header.signOut")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

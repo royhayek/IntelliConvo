@@ -18,9 +18,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { AuthPageLayout } from "@/components/auth/auth-page-layout";
 import { usePostAuthResetPassword } from "@/lib/api/generated/queries/authentication/authentication";
-import { AlertCircle, ArrowLeft, CheckCircle2, Eye, EyeOff, KeyRound } from "lucide-react";
+import { AlertCircle, ArrowLeft, CheckCircle2, Eye, EyeOff, KeyRound, Loader2 } from "lucide-react";
 import { BrandLogo } from "@/components/ui/brand-logo";
+import { useTranslation } from "react-i18next";
 
 const resetPasswordSchema = z.object({
   password: z
@@ -41,6 +43,7 @@ function ResetPasswordContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
+  const { t } = useTranslation();
 
   const [success, setSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -48,10 +51,7 @@ function ResetPasswordContent() {
 
   const form = useForm<ResetPasswordForm>({
     resolver: zodResolver(resetPasswordSchema),
-    defaultValues: {
-      password: "",
-      confirmPassword: "",
-    },
+    defaultValues: { password: "", confirmPassword: "" },
   });
 
   const resetPasswordMutation = usePostAuthResetPassword({
@@ -64,18 +64,15 @@ function ResetPasswordContent() {
 
   const onSubmit = (data: ResetPasswordForm) => {
     if (!token) return;
-    resetPasswordMutation.mutate({
-      data: { token, password: data.password },
-    });
+    resetPasswordMutation.mutate({ data: { token, password: data.password } });
   };
 
   const loading = resetPasswordMutation.isPending;
   const errorResponse = (resetPasswordMutation.error as { response?: { data?: { error?: { message?: string } | string } } })?.response?.data?.error;
-  const error = typeof errorResponse === 'string'
+  const error = typeof errorResponse === "string"
     ? errorResponse
-    : errorResponse?.message || (resetPasswordMutation.isError ? "Something went wrong. Please try again." : "");
+    : errorResponse?.message || (resetPasswordMutation.isError ? t("auth.resetPassword.somethingWrong") : "");
 
-  // Redirect to login after success
   useEffect(() => {
     if (success) {
       const timer = setTimeout(() => {
@@ -85,69 +82,61 @@ function ResetPasswordContent() {
     }
   }, [success, router]);
 
-  // No token provided
   if (!token) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-950 dark:to-indigo-950 p-4">
-        <Card className="w-full max-w-md">
+      <AuthPageLayout>
+        <Card className="w-full auth-card">
           <CardHeader className="space-y-1 text-center">
             <div className="flex justify-center mb-4">
               <div className="rounded-full bg-red-100 dark:bg-red-900/30 p-3">
                 <AlertCircle className="h-8 w-8 text-red-600 dark:text-red-400" />
               </div>
             </div>
-            <CardTitle className="text-2xl font-bold">Invalid link</CardTitle>
-            <CardDescription>
-              This password reset link is invalid or has expired. Please request a new one.
-            </CardDescription>
+            <CardTitle className="text-2xl font-bold">{t("auth.resetPassword.invalidLink")}</CardTitle>
+            <CardDescription>{t("auth.resetPassword.invalidLinkDesc")}</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button asChild className="w-full">
-              <Link href="/auth/forgot-password">Request new link</Link>
+            <Button asChild className="w-full btn-auth-gradient">
+              <Link href="/auth/forgot-password">{t("auth.resetPassword.requestNewLink")}</Link>
             </Button>
           </CardContent>
         </Card>
-      </div>
+      </AuthPageLayout>
     );
   }
 
-  // Success state
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-950 dark:to-indigo-950 p-4">
-        <Card className="w-full max-w-md">
+      <AuthPageLayout>
+        <Card className="w-full auth-card">
           <CardHeader className="space-y-1 text-center">
             <div className="flex justify-center mb-4">
               <div className="rounded-full bg-green-100 dark:bg-green-900/30 p-3">
                 <CheckCircle2 className="h-8 w-8 text-green-600 dark:text-green-400" />
               </div>
             </div>
-            <CardTitle className="text-2xl font-bold">Password reset successful</CardTitle>
-            <CardDescription>
-              Your password has been updated. Redirecting you to login...
-            </CardDescription>
+            <CardTitle className="text-2xl font-bold">{t("auth.resetPassword.successTitle")}</CardTitle>
+            <CardDescription>{t("auth.resetPassword.successDesc")}</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button asChild className="w-full">
-              <Link href="/auth/login">Continue to login</Link>
+            <Button asChild className="w-full btn-auth-gradient">
+              <Link href="/auth/login">{t("auth.resetPassword.continueToLogin")}</Link>
             </Button>
           </CardContent>
         </Card>
-      </div>
+      </AuthPageLayout>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-950 dark:to-indigo-950 p-4">
-      <Card className="w-full max-w-md">
+    <AuthPageLayout>
+      <Card className="w-full auth-card">
         <CardHeader className="space-y-1 text-center">
           <div className="flex justify-center mb-4">
             <BrandLogo size="md" showText={false} href={null} animated={false} />
           </div>
-          <CardTitle className="text-2xl font-bold">Reset your password</CardTitle>
-          <CardDescription>
-            Enter your new password below.
-          </CardDescription>
+          <CardTitle className="text-2xl font-bold">{t("auth.resetPassword.title")}</CardTitle>
+          <CardDescription>{t("auth.resetPassword.subtitle")}</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -164,12 +153,12 @@ function ResetPasswordContent() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>New password</FormLabel>
+                    <FormLabel>{t("auth.resetPassword.newPassword")}</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
                           type={showPassword ? "text" : "password"}
-                          placeholder="Enter new password"
+                          placeholder={t("auth.resetPassword.newPasswordPlaceholder")}
                           autoComplete="new-password"
                           {...field}
                         />
@@ -198,12 +187,12 @@ function ResetPasswordContent() {
                 name="confirmPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Confirm new password</FormLabel>
+                    <FormLabel>{t("auth.resetPassword.confirmPassword")}</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
                           type={showConfirmPassword ? "text" : "password"}
-                          placeholder="Confirm new password"
+                          placeholder={t("auth.resetPassword.confirmPasswordPlaceholder")}
                           autoComplete="new-password"
                           {...field}
                         />
@@ -230,47 +219,44 @@ function ResetPasswordContent() {
               <div className="text-xs text-muted-foreground space-y-1">
                 <p className="flex items-center gap-1">
                   <KeyRound className="h-3 w-3" />
-                  Password requirements:
+                  {t("auth.resetPassword.requirements")}
                 </p>
                 <ul className="list-disc list-inside pl-4 space-y-0.5">
-                  <li>At least 8 characters</li>
-                  <li>At least one uppercase letter</li>
-                  <li>At least one lowercase letter</li>
-                  <li>At least one number</li>
+                  <li>{t("auth.resetPassword.req8chars")}</li>
+                  <li>{t("auth.resetPassword.reqUppercase")}</li>
+                  <li>{t("auth.resetPassword.reqLowercase")}</li>
+                  <li>{t("auth.resetPassword.reqNumber")}</li>
                 </ul>
               </div>
 
-              <Button type="submit" disabled={loading} className="w-full">
-                {loading ? "Resetting..." : "Reset password"}
+              <Button type="submit" disabled={loading} className="w-full btn-auth-gradient">
+                {loading ? t("auth.resetPassword.resetting") : t("auth.resetPassword.resetPasswordBtn")}
               </Button>
 
               <div className="text-center text-sm">
-                <Link
-                  href="/auth/login"
-                  className="text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300 inline-flex items-center"
-                >
+                <Link href="/auth/login" className="link-auth inline-flex items-center">
                   <ArrowLeft className="mr-1 h-3 w-3" />
-                  Back to login
+                  {t("auth.resetPassword.backToLogin")}
                 </Link>
               </div>
             </form>
           </Form>
         </CardContent>
       </Card>
-    </div>
+    </AuthPageLayout>
   );
 }
 
 export default function ResetPasswordPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-950 dark:to-indigo-950 p-4">
-        <Card className="w-full max-w-md">
+      <AuthPageLayout>
+        <Card className="w-full auth-card">
           <CardContent className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+            <Loader2 className="h-8 w-8 animate-spin" style={{ color: "#22d3ee" }} />
           </CardContent>
         </Card>
-      </div>
+      </AuthPageLayout>
     }>
       <ResetPasswordContent />
     </Suspense>

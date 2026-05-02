@@ -22,6 +22,7 @@ import { EmailVerificationAlert } from "@/components/ui/email-verification-alert
 import { SubscriptionAlert } from "@/components/ui/subscription-alert";
 import { computeDashboardStats } from "@/lib/utils/dashboard-stats";
 import { useAuthStore } from "@/lib/store";
+import { useTranslation } from "react-i18next";
 
 export default function DashboardPage() {
   // Protected route - redirects to login if not authenticated, admins to admin portal
@@ -29,6 +30,7 @@ export default function DashboardPage() {
 
   // Get user from auth store to check email verification status
   const { user } = useAuthStore();
+  const { t } = useTranslation();
 
   // Check if email is not verified
   const isEmailUnverified = user && !user.emailVerified;
@@ -123,12 +125,12 @@ export default function DashboardPage() {
         {/* Subscription Alert for cancelled/expiring subscriptions */}
         {sites.length > 0 && <SubscriptionAlert sites={sites} className="mb-6" />}
         <PageHeader
-          title="My Dashboard"
-          description="Manage your connected sites and monitor performance"
+          title={t("dashboard.title")}
+          description={t("dashboard.description")}
           action={
             isEmailUnverified ? (
               <Tooltip
-                content="Verify your email to add new site"
+                content={t("dashboard.verifyEmailTooltip")}
                 position="bottom"
               >
                 <div>
@@ -139,7 +141,7 @@ export default function DashboardPage() {
                     disabled
                   >
                     <Plus className="w-5 h-5 mr-2" />
-                    Add New Site
+                    {t("dashboard.addNewSite")}
                   </Button>
                 </div>
               </Tooltip>
@@ -147,7 +149,7 @@ export default function DashboardPage() {
               <Link href="/onboarding">
                 <Button variant="gradient" size="lg" className="px-8 py-4">
                   <Plus className="w-5 h-5 mr-2" />
-                  Add New Site
+                  {t("dashboard.addNewSite")}
                 </Button>
               </Link>
             )
@@ -179,7 +181,7 @@ export default function DashboardPage() {
             transition={{ duration: 0.6, delay: 0.5 }}
             className="text-2xl font-bold text-gray-900 dark:text-white mb-8"
           >
-            Connected Sites
+            {t("dashboard.connectedSites")}
           </motion.h2>
 
           {error ? (
@@ -188,8 +190,8 @@ export default function DashboardPage() {
               animate={{ opacity: 1, scale: 1 }}
             >
               <ErrorState
-                title="Failed to load sites"
-                message="Please try refreshing the page or check your connection."
+                title={t("dashboard.failedToLoad")}
+                message={t("dashboard.failedToLoadDesc")}
                 onRetry={() => window.location.reload()}
               />
             </motion.div>
@@ -201,13 +203,13 @@ export default function DashboardPage() {
             >
               <EmptyState
                 icon={Plus}
-                title="No sites connected yet"
-                description="Get started by adding your first website to enable AI-powered conversations"
+                title={t("dashboard.noSites")}
+                description={t("dashboard.noSitesDesc")}
                 action={
                   isEmailUnverified
                     ? undefined
                     : {
-                        label: "Add Your First Site",
+                        label: t("dashboard.addFirstSite"),
                         href: "/onboarding",
                         icon: Plus,
                         variant: "gradient",
@@ -217,12 +219,12 @@ export default function DashboardPage() {
               {isEmailUnverified && (
                 <div className="flex justify-center mt-6">
                   <Tooltip
-                    content="Verify your email to add new site"
+                    content={t("dashboard.verifyEmailTooltip")}
                     position="top"
                   >
                     <Button variant="gradient" size="lg" disabled>
                       <Plus className="w-5 h-5 mr-2" />
-                      Add Your First Site
+                      {t("dashboard.addFirstSite")}
                     </Button>
                   </Tooltip>
                 </div>

@@ -4,12 +4,13 @@ import { Moon, Sun } from "lucide-react";
 import { motion } from "framer-motion";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const { t } = useTranslation();
 
-  // Avoid hydration mismatch
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -43,9 +44,9 @@ export function ThemeToggle() {
   };
 
   const getTitle = () => {
-    if (theme === "dark") return "Dark mode (click for system)";
-    if (theme === "system") return "System theme (click for light)";
-    return "Light mode (click for dark)";
+    if (theme === "dark") return t("theme.dark");
+    if (theme === "system") return t("theme.system");
+    return t("theme.light");
   };
 
   return (

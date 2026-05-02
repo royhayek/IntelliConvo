@@ -1,3 +1,4 @@
+import { useId } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -12,52 +13,99 @@ interface BrandLogoProps {
 }
 
 const sizeConfig = {
-  xs: {
-    container: 32,
-    bubble: 19,
-    fontSize: 6,
-    sparkle: 8,
-    sparkleOffset: -2,
-    text: "text-base",
-    borderRadius: 8,
-  },
-  sm: {
-    container: 40,
-    bubble: 24,
-    fontSize: 7.5,
-    sparkle: 10,
-    sparkleOffset: -2.5,
-    text: "text-lg",
-    borderRadius: 10,
-  },
-  md: {
-    container: 56,
-    bubble: 34,
-    fontSize: 10.5,
-    sparkle: 14,
-    sparkleOffset: -3.5,
-    text: "text-xl",
-    borderRadius: 14,
-  },
-  lg: {
-    container: 80,
-    bubble: 48,
-    fontSize: 15,
-    sparkle: 20,
-    sparkleOffset: -5,
-    text: "text-2xl",
-    borderRadius: 20,
-  },
-  xl: {
-    container: 120,
-    bubble: 72,
-    fontSize: 22.5,
-    sparkle: 30,
-    sparkleOffset: -7.5,
-    text: "text-3xl",
-    borderRadius: 30,
-  },
+  xs: { container: 32, text: "text-lg" },
+  sm: { container: 40, text: "text-xl" },
+  md: { container: 56, text: "text-2xl" },
+  lg: { container: 80, text: "text-3xl" },
+  xl: { container: 120, text: "text-4xl" },
 };
+
+// Bubble: body x=4–96, y=4–84 (92×80), corner radius 32, tail bottom-left
+// Tail base: x=27–45 (18 units wide)
+const BUBBLE_PATH =
+  "M 36,4 L 64,4 Q 96,4 96,36 L 96,52 Q 96,84 64,84 L 45,84 L 21,96 L 27,84 L 36,84 Q 4,84 4,52 L 4,36 Q 4,4 36,4 Z";
+
+interface LogoMarkProps {
+  size: number;
+  animated: boolean;
+  bgId: string;
+  hlId: string;
+  shadowId: string;
+  className?: string;
+}
+
+function LogoMark({ size, animated, bgId, hlId, shadowId, className }: LogoMarkProps) {
+  const apexDot = animated ? (
+    <>
+      <motion.circle
+        cx="73"
+        cy="44"
+        r="7"
+        fill="white"
+        fillOpacity="0.12"
+        animate={{ scale: [1, 1.6, 1], opacity: [0.12, 0.26, 0.12] }}
+        transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.circle
+        cx="73"
+        cy="44"
+        r="3.5"
+        fill="white"
+        fillOpacity="0.85"
+        animate={{ scale: [1, 1.2, 1], opacity: [0.85, 1, 0.85] }}
+        transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+      />
+    </>
+  ) : (
+    <>
+      <circle cx="73" cy="44" r="7" fill="white" fillOpacity="0.12" />
+      <circle cx="73" cy="44" r="3.5" fill="white" fillOpacity="0.85" />
+    </>
+  );
+
+  return (
+    <svg
+      viewBox="0 0 100 100"
+      width={size}
+      height={size}
+      fill="none"
+      className={className}
+      style={{ display: "block", overflow: "visible" }}
+    >
+      <defs>
+        {/* Primary gradient: light indigo → primary (hsl 239 84% 67%) → deep indigo */}
+        <linearGradient id={bgId} x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#818cf8" />
+          <stop offset="50%" stopColor="#6466f1" />
+          <stop offset="100%" stopColor="#4f46e5" />
+        </linearGradient>
+        {/* Top-left radial highlight */}
+        <radialGradient id={hlId} cx="0.3" cy="0.22" r="0.6" gradientUnits="objectBoundingBox">
+          <stop offset="0%" stopColor="white" stopOpacity="0.22" />
+          <stop offset="100%" stopColor="white" stopOpacity="0" />
+        </radialGradient>
+        {/* Drop shadow */}
+        <filter id={shadowId} x="-25%" y="-25%" width="150%" height="160%">
+          <feDropShadow dx="0" dy="3" stdDeviation="5" floodColor="#6366f1" floodOpacity="0.45" />
+        </filter>
+      </defs>
+
+      {/* Bubble background — gradient fill + shadow */}
+      <path d={BUBBLE_PATH} fill={`url(#${bgId})`} filter={`url(#${shadowId})`} />
+      {/* Highlight overlay */}
+      <path d={BUBBLE_PATH} fill={`url(#${hlId})`} />
+
+      {/* I — x=27, right edge=35. C opens at x=37. Mark spans x=27–73, center=50 ✓ */}
+      <rect x="27" y="30" width="8" height="28" rx="4" fill="white" />
+
+      {/* Reversed-C — start M 49,27, radius 18, center≈(55,44), opens at x=37, apex at x=73 */}
+      <path d="M 49,27 A 18,18 0 1,1 49,61" stroke="white" strokeWidth="7" strokeLinecap="round" fill="none" />
+
+      {/* Apex dot at rightmost extent of C arc */}
+      {apexDot}
+    </svg>
+  );
+}
 
 export function BrandLogo({
   size = "md",
@@ -67,125 +115,29 @@ export function BrandLogo({
   className,
   variant = "default",
 }: BrandLogoProps) {
-  const config =
-    typeof size === "number"
-      ? {
-          container: size,
-          bubble: size * 0.6,
-          fontSize: size * 0.1875,
-          sparkle: size * 0.25,
-          sparkleOffset: size * -0.0625,
-          text: "text-xl",
-          borderRadius: size * 0.25,
-        }
-      : sizeConfig[size];
+  const raw = useId();
+  const uid = raw.replace(/[^a-zA-Z0-9]/g, "");
 
-  const LogoIcon = (
-    <div
-      className={cn(
-        "relative bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center shadow-lg overflow-hidden",
-        className
-      )}
-      style={{
-        width: config.container,
-        height: config.container,
-        borderRadius: config.borderRadius,
-      }}
-    >
-      {/* Subtle light gradient overlay */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 60%)",
-        }}
-      />
+  const config = typeof size === "number" ? { container: size, text: "text-xl" } : sizeConfig[size];
 
-      {/* Chat bubble with IC letters */}
-      <div className="relative z-10">
-        <div
-          className="relative bg-white flex items-center justify-center"
-          style={{
-            width: config.bubble,
-            height: config.bubble,
-            borderRadius: "50% 50% 50% 0",
-          }}
-        >
-          <span
-            className="font-extrabold text-indigo-600 select-none"
-            style={{
-              fontSize: config.fontSize,
-              letterSpacing: "-0.025em",
-            }}
-          >
-            IC
-          </span>
-
-          {/* Animated sparkle badge */}
-          {animated ? (
-            <motion.div
-              className="absolute bg-amber-400 rounded-full flex items-center justify-center"
-              style={{
-                top: config.sparkleOffset,
-                right: config.sparkleOffset,
-                width: config.sparkle,
-                height: config.sparkle,
-              }}
-              animate={{
-                scale: [1, 1.1, 1],
-                opacity: [1, 0.8, 1],
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-            >
-              <span
-                style={{
-                  fontSize: config.sparkle * 0.5,
-                  lineHeight: 1,
-                }}
-              >
-                ✨
-              </span>
-            </motion.div>
-          ) : (
-            <div
-              className="absolute bg-amber-400 rounded-full flex items-center justify-center"
-              style={{
-                top: config.sparkleOffset,
-                right: config.sparkleOffset,
-                width: config.sparkle,
-                height: config.sparkle,
-              }}
-            >
-              <span
-                style={{
-                  fontSize: config.sparkle * 0.5,
-                  lineHeight: 1,
-                }}
-              >
-                ✨
-              </span>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+  const icon = (
+    <LogoMark
+      size={config.container}
+      animated={animated}
+      bgId={`bg-${uid}`}
+      hlId={`hl-${uid}`}
+      shadowId={`sh-${uid}`}
+      className={className}
+    />
   );
 
   const Content = (
     <div className="flex items-center space-x-3">
-      {LogoIcon}
+      {icon}
       {showText && variant === "default" && (
-        <span
-          className={cn(
-            config.text,
-            "font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent hidden sm:block"
-          )}
-        >
-          IntelliConvo
+        <span className={cn(config.text, "hidden sm:flex")} style={{ fontFamily: "var(--font-oxanium)" }}>
+          <span className="font-bold text-[#6466f1]">Intelli</span>
+          <span className="font-medium text-[#6466f1]">Convo</span>
         </span>
       )}
     </div>
@@ -193,10 +145,7 @@ export function BrandLogo({
 
   if (!href) {
     return animated ? (
-      <motion.div
-        whileHover={{ scale: 1.05 }}
-        transition={{ type: "spring", stiffness: 300, damping: 20 }}
-      >
+      <motion.div whileHover={{ scale: 1.05 }} transition={{ type: "spring", stiffness: 300, damping: 20 }}>
         {Content}
       </motion.div>
     ) : (
@@ -207,10 +156,7 @@ export function BrandLogo({
   return (
     <Link href={href} className="inline-flex items-center">
       {animated ? (
-        <motion.div
-          whileHover={{ scale: 1.05 }}
-          transition={{ type: "spring", stiffness: 300, damping: 20 }}
-        >
+        <motion.div whileHover={{ scale: 1.05 }} transition={{ type: "spring", stiffness: 300, damping: 20 }}>
           {Content}
         </motion.div>
       ) : (
