@@ -149,7 +149,7 @@ export default function SiteManagePage() {
   );
 
   return (
-    <div className="min-h-screen gradient-surface">
+    <div className="min-h-screen gradient-surface landing-grid-bg">
       <DashboardHeader
         variant="site"
         siteName={site?.siteName}

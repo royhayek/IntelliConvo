@@ -64,7 +64,7 @@ export function DashboardHeader({
     <motion.header
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="glass-effect border-b border-white/10 shadow-soft sticky top-0 z-40"
+      className="glass-effect shadow-soft sticky top-0 z-40"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
@@ -81,14 +81,14 @@ export function DashboardHeader({
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="text-gray-600 hover:text-gray-900 hover:bg-white/60 dark:text-gray-400 dark:hover:text-gray-100 dark:hover:bg-slate-700/40"
+                      className="text-gray-600 hover:text-cyan-700 hover:bg-cyan-50 dark:text-gray-400 dark:hover:text-cyan-300 dark:hover:bg-cyan-900/20"
                     >
                       <ArrowLeft className="h-4 w-4 sm:mr-2" />
                       <span className="hidden sm:inline">{t("header.backToDashboard")}</span>
                     </Button>
                   </motion.div>
                 </Link>
-                <div className="h-6 border-l border-gray-300/50 dark:border-gray-600/50"></div>
+                <div className="h-6 border-l border-cyan-200/50 dark:border-cyan-800/30"></div>
               </>
             )}
 
@@ -150,7 +150,7 @@ export function DashboardHeader({
                   className="flex items-center space-x-2 px-2 sm:px-3"
                 >
                   <Avatar className="h-8 w-8">
-                    <AvatarFallback className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold text-sm">
+                    <AvatarFallback className="bg-gradient-to-r from-cyan-500 to-indigo-600 text-white font-semibold text-sm">
                       {user?.fullName
                         ? user.fullName.charAt(0).toUpperCase()
                         : user?.email?.charAt(0).toUpperCase()}
@@ -165,7 +165,7 @@ export function DashboardHeader({
                 <DropdownMenuLabel>
                   <div className="flex items-center space-x-3">
                     <Avatar className="h-10 w-10">
-                      <AvatarFallback className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold text-sm">
+                      <AvatarFallback className="bg-gradient-to-r from-cyan-500 to-indigo-600 text-white font-semibold text-sm">
                         {user?.fullName
                           ? user.fullName.charAt(0).toUpperCase()
                           : user?.email?.charAt(0).toUpperCase()}

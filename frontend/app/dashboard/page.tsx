@@ -66,7 +66,7 @@ export default function DashboardPage() {
 
   if (isSitesLoading) {
     return (
-      <div className="min-h-screen gradient-surface">
+      <div className="min-h-screen gradient-surface landing-grid-bg">
         <DashboardHeader variant="dashboard" />
         <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
           <div className="mb-10">
@@ -114,7 +114,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen gradient-surface">
+    <div className="min-h-screen gradient-surface landing-grid-bg">
       <DashboardHeader variant="dashboard" />
 
       {/* Main Content */}

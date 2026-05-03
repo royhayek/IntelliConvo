@@ -82,7 +82,7 @@ function AccountSettingsPageContent() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-950">
+    <div className="min-h-screen gradient-surface landing-grid-bg">
       <DashboardHeader
         variant="dashboard"
         showBackButton={true}

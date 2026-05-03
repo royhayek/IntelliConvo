@@ -22,7 +22,7 @@ export function SiteCard({ site, index = 0, animated = true }: SiteCardProps) {
   const displayStatus = getDisplayStatus(site);
 
   const content = (
-    <Card className="h-full hover:shadow-md transition-shadow">
+    <Card className="h-full dashboard-card">
       <CardContent className="p-6">
         <div className="flex items-start justify-between gap-3 mb-4">
           <div className="flex items-center space-x-4 min-w-0 flex-1">

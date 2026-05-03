@@ -113,6 +113,11 @@ export function createAuthRateLimiter() {
     standardHeaders: true,
     legacyHeaders: false,
     skipSuccessfulRequests: true,
+    // Key by email so limits are per-account, not per-IP
+    keyGenerator: (req: Request) => {
+      const email = req.body?.email;
+      return email ? email.toLowerCase() : (req.ip || 'unknown');
+    },
     handler: async (req, res) => {
       const retryAfter = Math.ceil(defaultAuthWindowMs / 1000);
       const error = new RateLimitError(

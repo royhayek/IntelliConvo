@@ -66,7 +66,7 @@ export function StatsGrid({
         const TrendIcon = stat.trend?.isPositive !== false ? TrendingUp : TrendingDown;
 
         return (
-          <Card key={index}>
+          <Card key={index} className="dashboard-card">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div className="flex-1">

@@ -76,20 +76,20 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "glass-effect border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-3xl text-center",
+        "dashboard-card border-2 border-dashed rounded-3xl text-center",
         sizes.container,
         className
       )}
     >
       <div
         className={cn(
-          "mx-auto bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/30 dark:to-purple-900/30 flex items-center justify-center",
+          "mx-auto bg-gradient-to-br from-cyan-100 to-indigo-100 dark:from-cyan-900/20 dark:to-indigo-900/20 flex items-center justify-center",
           sizes.icon
         )}
       >
         <Icon
           className={cn(
-            "text-indigo-600 dark:text-indigo-400",
+            "text-cyan-600 dark:text-cyan-400",
             sizes.iconSize
           )}
         />

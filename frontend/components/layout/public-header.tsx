@@ -67,6 +67,8 @@ export function PublicHeader() {
               [t("nav.features"),    "/#features"],
               [t("nav.howItWorks"),  "/#how"],
               [t("nav.useCases"),    "/#usecases"],
+              [t("nav.pricing"),     "/#pricing"],
+              [t("nav.faq"),         "/#faq"],
             ] as [string, string][]).map(([label, href]) => (
               <Link
                 key={href}
