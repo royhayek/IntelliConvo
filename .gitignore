@@ -100,3 +100,9 @@ agenthub/agents/youtube/db
 
 # Mobile development
 android-sdk/ 
+
+# Secrets and local logs
+.env.*
+*.log
+logs/
+*-service-account*.json
